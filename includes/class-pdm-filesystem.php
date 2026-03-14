@@ -1,0 +1,409 @@
+<?php
+
+defined('ABSPATH') || exit;
+
+class PDM_Filesystem
+{
+    private string $basePath;
+
+    public function __construct(string $basePath)
+    {
+        $this->basePath = rtrim($basePath, '/\\');
+    }
+
+    public function get_base_path(): string
+    {
+        return $this->basePath;
+    }
+
+    public function exists(string $relativePath): bool
+    {
+        return file_exists($this->resolve($relativePath));
+    }
+
+    public function is_file(string $relativePath): bool
+    {
+        return is_file($this->resolve($relativePath));
+    }
+
+    public function is_dir(string $relativePath): bool
+    {
+        return is_dir($this->resolve($relativePath));
+    }
+
+    public function resolve(string $relativePath): string
+    {
+        $relativePath = ltrim($relativePath, '/\\');
+
+        return wp_normalize_path($this->basePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath));
+    }
+
+    public function verify_path(string $path): bool
+    {
+        $realBase = realpath($this->basePath);
+
+        if (false === $realBase) {
+            return false;
+        }
+
+        $normalizedBase = trailingslashit(wp_normalize_path($realBase));
+
+        $realPath = realpath($path);
+
+        if (false !== $realPath) {
+            $normalizedRealPath = wp_normalize_path($realPath);
+
+            return $normalizedRealPath === untrailingslashit($normalizedBase)
+                || strpos(trailingslashit($normalizedRealPath), $normalizedBase) === 0;
+        }
+
+        $directory = realpath(dirname($path));
+
+        if (false === $directory) {
+            return false;
+        }
+
+        $normalizedPath = wp_normalize_path($directory . DIRECTORY_SEPARATOR . basename($path));
+
+        return $normalizedPath === untrailingslashit($normalizedBase)
+            || strpos(trailingslashit($normalizedPath), $normalizedBase) === 0;
+    }
+
+    public function is_path_within_base(string $path): bool
+    {
+        $realBase = realpath($this->basePath);
+
+        if (false === $realBase) {
+            return false;
+        }
+
+        if (strpos($path, '..') !== false) {
+            return false;
+        }
+
+        $normalizedPath = wp_normalize_path($path);
+        $normalizedBase = trailingslashit(wp_normalize_path($realBase));
+
+        return $normalizedPath === untrailingslashit($normalizedBase)
+            || strpos(trailingslashit($normalizedPath), $normalizedBase) === 0;
+    }
+
+    public function create_directory(string $relativePath): bool
+    {
+        $fullPath = $this->resolve($relativePath);
+
+        if ($this->exists($relativePath)) {
+            return true;
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            $dirMode = defined('FS_CHMOD_DIR') ? FS_CHMOD_DIR : false;
+
+            return $wpFilesystem->mkdir($fullPath, $dirMode);
+        }
+
+        return wp_mkdir_p($fullPath);
+    }
+
+    public function delete_directory(string $relativePath): bool
+    {
+        $fullPath = $this->resolve($relativePath);
+
+        if (!$this->is_dir($relativePath)) {
+            return false;
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->rmdir($fullPath, true);
+        }
+
+        return $this->recursive_delete($fullPath);
+    }
+
+    public function delete_file(string $relativePath): bool
+    {
+        $fullPath = $this->resolve($relativePath);
+
+        if (!$this->is_file($relativePath)) {
+            return false;
+        }
+
+        wp_delete_file($fullPath);
+
+        return !file_exists($fullPath);
+    }
+
+    public function move_file(string $fromRelative, string $toRelative): bool
+    {
+        $from = $this->resolve($fromRelative);
+        $to = $this->resolve($toRelative);
+
+        if (!$this->is_file($fromRelative)) {
+            return false;
+        }
+
+        $toDir = dirname($to);
+        if (!is_dir($toDir)) {
+            wp_mkdir_p($toDir);
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->move($from, $to, true);
+        }
+
+        return false;
+    }
+
+    public function rename_directory(string $oldRelative, string $newRelative): bool
+    {
+        $oldPath = $this->resolve($oldRelative);
+        $newPath = $this->resolve($newRelative);
+
+        if (!$this->is_dir($oldRelative)) {
+            return false;
+        }
+
+        if ($this->exists($newRelative)) {
+            return false;
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->move($oldPath, $newPath, false);
+        }
+
+        return false;
+    }
+
+    public function write_file(string $relativePath, string $content): bool
+    {
+        $fullPath = $this->resolve($relativePath);
+        $dir = dirname($fullPath);
+
+        if (!is_dir($dir)) {
+            wp_mkdir_p($dir);
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            $filesMode = defined('FS_CHMOD_FILE') ? FS_CHMOD_FILE : false;
+
+            return $wpFilesystem->put_contents($fullPath, $content, $filesMode);
+        }
+
+        $result = @file_put_contents($fullPath, $content);
+
+        return $result !== false;
+    }
+
+    public function read_files(string $relativePath): string|false
+    {
+        return $this->read_absolute_file($this->resolve($relativePath));
+    }
+
+    public function read_absolute_file(string $path): string|false
+    {
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->get_contents($path);
+        }
+
+        return @file_get_contents($path);
+    }
+
+    public function get_file_size(string $relativePath): int
+    {
+        $fullPath = $this->resolve($relativePath);
+        $size = @filesize($fullPath);
+        return $size !== false ? $size : 0;
+    }
+
+    public function get_file_checksum(string $relativePath): string
+    {
+        $fullPath = $this->resolve($relativePath);
+        return @md5_files($fullPath) ?: '';
+    }
+
+    public function get_mime_type(string $relativePath): string
+    {
+        $fullPath = $this->resolve($relativePath);
+        
+        if (function_exists('mime_content_type')) {
+            $mime = @mime_content_type($fullPath);
+            if ($mime !== false) {
+                return $mime;
+            }
+        }
+
+        $finfo = @finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo) {
+            $mime = @finfo_files($finfo, $fullPath);
+            finfo_close($finfo);
+            if ($mime !== false) {
+                return $mime;
+            }
+        }
+
+        $extension = strtolower(pathinfo($relativePath, PATHINFO_EXTENSION));
+        return $this->get_mime_by_extension($extension);
+    }
+
+    private function get_mime_by_extension(string $extension): string
+    {
+        $mimes = [
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'svg' => 'image/svg+xml',
+            'zip' => 'application/zip',
+            'rar' => 'application/x-rar-compressed',
+            '7z' => 'application/x-7z-compressed',
+            'txt' => 'text/plain',
+            'csv' => 'text/csv',
+            'rtf' => 'application/rtf',
+            'mp3' => 'audio/mpeg',
+            'wav' => 'audio/wav',
+            'ogg' => 'audio/ogg',
+            'mp4' => 'video/mp4',
+            'avi' => 'video/x-msvideo',
+            'mov' => 'video/quicktime',
+            'mkv' => 'video/x-matroska',
+        ];
+
+        return $mimes[$extension] ?? 'application/octet-stream';
+    }
+
+    public function list_directory(string $relativePath = ''): array
+    {
+        $fullPath = $this->resolve($relativePath);
+
+        if (!$this->is_dir($relativePath)) {
+            return [];
+        }
+
+        $items = @scandir($fullPath);
+        if ($items === false) {
+            return [];
+        }
+
+        return array_values(array_filter($items, fn($item) => !in_array($item, ['.', '..'])));
+    }
+
+    private function recursive_delete(string $path): bool
+    {
+        if (!file_exists($path)) {
+            return true;
+        }
+
+        if (is_file($path)) {
+            wp_delete_file($path);
+
+            return !file_exists($path);
+        }
+
+        $items = @scandir($path);
+        if ($items === false) {
+            return false;
+        }
+
+        foreach ($items as $item) {
+            if (in_array($item, ['.', '..'])) {
+                continue;
+            }
+
+            $itemPath = $path . DIRECTORY_SEPARATOR . $item;
+            if (!$this->recursive_delete($itemPath)) {
+                return false;
+            }
+        }
+
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->rmdir($path, false);
+        }
+
+        return false;
+    }
+
+    public function is_writable(string $path): bool
+    {
+        return wp_is_writable($path);
+    }
+
+    private function get_wp_filesystem()
+    {
+        global $wp_filesystem;
+
+        if ($wp_filesystem) {
+            return $wp_filesystem;
+        }
+
+        require_once ABSPATH . 'wp-admin/includes/files.php';
+        WP_Filesystem();
+
+        return $wp_filesystem;
+    }
+
+    public function get_relative_path(string $fullPath): string
+    {
+        $realBase = realpath($this->basePath);
+        $realPath = realpath($fullPath);
+
+        if (false === $realBase || false === $realPath) {
+            return '';
+        }
+
+        return ltrim(substr($realPath, strlen($realBase)), DIRECTORY_SEPARATOR);
+    }
+
+    public function get_disk_stats(): array
+    {
+        $targetPath = $this->basePath;
+
+        if (!file_exists($targetPath)) {
+            $targetPath = dirname($targetPath);
+        }
+
+        $total = @disk_total_space($targetPath);
+        $free = @disk_free_space($targetPath);
+
+        if ($total === false || $free === false || $total <= 0) {
+            return [
+                'available' => false,
+                'total_bytes' => 0,
+                'free_bytes' => 0,
+                'used_bytes' => 0,
+                'free_percentage' => 0,
+            ];
+        }
+
+        $used = max(0, (int) $total - (int) $free);
+
+        return [
+            'available' => true,
+            'total_bytes' => (int) $total,
+            'free_bytes' => (int) $free,
+            'used_bytes' => $used,
+            'free_percentage' => round(((int) $free / (int) $total) * 100, 2),
+        ];
+    }
+}
