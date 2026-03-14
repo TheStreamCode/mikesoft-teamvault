@@ -1,0 +1,334 @@
+<?php
+
+defined('ABSPATH') || exit;
+
+class PDM_Storage
+{
+    private PDM_Settings $settings;
+    private PDM_Filesystem $filesystem;
+
+    public function __construct(PDM_Settings $settings)
+    {
+        $this->settings = $settings;
+        $this->filesystem = new PDM_Filesystem($settings->get_storage_path());
+    }
+
+    public function get_filesystem(): PDM_Filesystem
+    {
+        return $this->filesystem;
+    }
+
+    public function get_base_path(): string
+    {
+        return $this->filesystem->get_base_path();
+    }
+
+    public function get_storage_stats(PDM_Repository_Files $filesRepo): array
+    {
+        $diskStats = $this->filesystem->get_disk_stats();
+        $pluginUsedBytes = $filesRepo->get_total_size();
+
+        return [
+            'disk' => $diskStats,
+            'plugin_used_bytes' => $pluginUsedBytes,
+            'plugin_used_formatted' => PDM_Helpers::format_filesize($pluginUsedBytes),
+            'disk_total_formatted' => PDM_Helpers::format_filesize($diskStats['total_bytes']),
+            'disk_free_formatted' => PDM_Helpers::format_filesize($diskStats['free_bytes']),
+            'disk_used_formatted' => PDM_Helpers::format_filesize($diskStats['used_bytes']),
+        ];
+    }
+
+    public function get_folder_path(?int $folderId, PDM_Repository_Folders $folderRepo): string
+    {
+        if (null === $folderId) {
+            return '';
+        }
+
+        $folder = $folderRepo->find($folderId);
+        if (!$folder) {
+            return '';
+        }
+
+        return $folder->relative_path;
+    }
+
+    public function store_uploaded_file(
+        array $uploadedFile,
+        ?int $folderId,
+        PDM_Repository_Folders $folderRepo
+    ): array {
+        $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
+        $storedName = PDM_Helpers::generate_secure_filename($extension);
+        
+        $folderPath = $this->get_folder_path($folderId, $folderRepo);
+        $relativePath = $this->build_file_path($folderPath, $storedName);
+        $fullPath = $this->filesystem->resolve($relativePath);
+
+        if (!$this->filesystem->is_path_within_base($fullPath)) {
+            return [
+                'success' => false,
+                'error' => __('Invalid destination path.', 'private-document-manager'),
+            ];
+        }
+
+        $targetDir = dirname($fullPath);
+        if (!is_dir($targetDir)) {
+            wp_mkdir_p($targetDir);
+        }
+
+        $contents = file_get_contents($uploadedFile['tmp_name']);
+
+        if ($contents === false || !$this->filesystem->write_file($relativePath, $contents)) {
+            return [
+                'success' => false,
+                'error' => __('Unable to save the file.', 'private-document-manager'),
+            ];
+        }
+
+        $checksum = $this->filesystem->get_file_checksum($relativePath);
+        $fileSize = $this->filesystem->get_file_size($relativePath);
+
+        return [
+            'success' => true,
+            'stored_name' => $storedName,
+            'relative_path' => $relativePath,
+            'extension' => $extension,
+            'file_size' => $fileSize,
+            'checksum' => $checksum,
+        ];
+    }
+
+    public function create_folder(string $name, ?int $parentId, PDM_Repository_Folders $folderRepo): array
+    {
+        $slug = PDM_Helpers::sanitize_folder_name($name);
+        
+        if (empty($slug)) {
+            return [
+                'success' => false,
+                'error' => __('Invalid folder name.', 'private-document-manager'),
+            ];
+        }
+
+        $parentPath = '';
+        if ($parentId) {
+            $parent = $folderRepo->find($parentId);
+            if (!$parent) {
+                return [
+                    'success' => false,
+                    'error' => __('Parent folder not found.', 'private-document-manager'),
+                ];
+            }
+            $parentPath = $parent->relative_path;
+        }
+
+        $relativePath = $this->build_folder_path($parentPath, $slug);
+
+        if (!$this->filesystem->is_path_within_base($this->filesystem->resolve($relativePath))) {
+            return [
+                'success' => false,
+                'error' => __('Invalid folder path.', 'private-document-manager'),
+            ];
+        }
+
+        if ($this->filesystem->exists($relativePath)) {
+            return [
+                'success' => false,
+                'error' => __('Folder already exists.', 'private-document-manager'),
+            ];
+        }
+
+        $created = $this->filesystem->create_directory($relativePath);
+        if (!$created) {
+            return [
+                'success' => false,
+                'error' => __('Unable to create the folder.', 'private-document-manager'),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'slug' => $slug,
+            'relative_path' => $relativePath,
+        ];
+    }
+
+    public function delete_folder(int $folderId, PDM_Repository_Folders $folderRepo, PDM_Repository_Files $filesRepo): array
+    {
+        $folder = $folderRepo->find($folderId);
+        if (!$folder) {
+            return [
+                'success' => false,
+                'error' => __('Folder not found.', 'private-document-manager'),
+            ];
+        }
+
+        $children = $folderRepo->find_by_parent($folderId);
+        if (!empty($children)) {
+            return [
+                'success' => false,
+                'error' => __('The folder contains subfolders. Delete the subfolders first.', 'private-document-manager'),
+            ];
+        }
+
+        $files = $filesRepo->find_by_folder($folderId);
+        if (!empty($files)) {
+            return [
+                'success' => false,
+                'error' => __('The folder contains files. Delete the files first.', 'private-document-manager'),
+            ];
+        }
+
+        $deleted = $this->filesystem->delete_directory($folder->relative_path);
+        if (!$deleted) {
+            return [
+                'success' => false,
+                'error' => __('Unable to delete the folder from the filesystem.', 'private-document-manager'),
+            ];
+        }
+
+        return ['success' => true];
+    }
+
+    public function delete_file(int $fileId, PDM_Repository_Files $filesRepo): array
+    {
+        $files = $filesRepo->find($fileId);
+        if (!$files) {
+            return [
+                'success' => false,
+                'error' => __('File not found.', 'private-document-manager'),
+            ];
+        }
+
+        $deleted = $this->filesystem->delete_file($files->relative_path);
+        if (!$deleted) {
+            return [
+                'success' => false,
+                'error' => __('Unable to delete the files from the filesystem.', 'private-document-manager'),
+            ];
+        }
+
+        return ['success' => true];
+    }
+
+    public function move_file(
+        int $fileId,
+        ?int $targetFolderId,
+        PDM_Repository_Files $filesRepo,
+        PDM_Repository_Folders $folderRepo
+    ): array {
+        $files = $filesRepo->find($fileId);
+        if (!$files) {
+            return [
+                'success' => false,
+                'error' => __('File not found.', 'private-document-manager'),
+            ];
+        }
+
+        $targetPath = $this->get_folder_path($targetFolderId, $folderRepo);
+        $newRelativePath = $this->build_file_path($targetPath, $files->stored_name);
+
+        if ($files->folder_id === $targetFolderId) {
+            return [
+                'success' => false,
+                'error' => __('The files is already in the destination folder.', 'private-document-manager'),
+            ];
+        }
+
+        $moved = $this->filesystem->move_file($files->relative_path, $newRelativePath);
+        if (!$moved) {
+            return [
+                'success' => false,
+                'error' => __('Unable to move the file.', 'private-document-manager'),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'new_relative_path' => $newRelativePath,
+        ];
+    }
+
+    public function rename_folder(
+        int $folderId,
+        string $newName,
+        PDM_Repository_Folders $folderRepo
+    ): array {
+        $folder = $folderRepo->find($folderId);
+        if (!$folder) {
+            return [
+                'success' => false,
+                'error' => __('Folder not found.', 'private-document-manager'),
+            ];
+        }
+
+        $newSlug = PDM_Helpers::sanitize_folder_name($newName);
+        if (empty($newSlug)) {
+            return [
+                'success' => false,
+                'error' => __('Invalid folder name.', 'private-document-manager'),
+            ];
+        }
+
+        $parentPath = dirname($folder->relative_path);
+        if ($parentPath === '.') {
+            $parentPath = '';
+        }
+
+        $newRelativePath = $this->build_folder_path($parentPath, $newSlug);
+
+        if ($folder->slug === $newSlug) {
+            return [
+                'success' => false,
+                'error' => __('The new name is identical to the current name.', 'private-document-manager'),
+            ];
+        }
+
+        if ($this->filesystem->exists($newRelativePath)) {
+            return [
+                'success' => false,
+                'error' => __('A folder with this name already exists.', 'private-document-manager'),
+            ];
+        }
+
+        $renamed = $this->filesystem->rename_directory($folder->relative_path, $newRelativePath);
+        if (!$renamed) {
+            return [
+                'success' => false,
+                'error' => __('Unable to rename the folder.', 'private-document-manager'),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'new_slug' => $newSlug,
+            'new_relative_path' => $newRelativePath,
+        ];
+    }
+
+    public function ensure_storage_directory(): bool
+    {
+        $basePath = $this->get_base_path();
+        
+        if (!is_dir($basePath)) {
+            wp_mkdir_p($basePath);
+        }
+
+        return is_dir($basePath) && $this->filesystem->is_writable($basePath);
+    }
+
+    private function build_file_path(string $folderPath, string $filename): string
+    {
+        if (empty($folderPath)) {
+            return $filename;
+        }
+        return rtrim($folderPath, '/\\') . '/' . $filename;
+    }
+
+    private function build_folder_path(string $parentPath, string $slug): string
+    {
+        if (empty($parentPath)) {
+            return $slug;
+        }
+        return rtrim($parentPath, '/\\') . '/' . $slug;
+    }
+}

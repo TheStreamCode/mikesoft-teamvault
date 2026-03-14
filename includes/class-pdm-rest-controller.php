@@ -1,0 +1,678 @@
+<?php
+
+defined('ABSPATH') || exit;
+
+class PDM_REST_Controller
+{
+    private const NAMESPACE = 'pdm/v1';
+
+    private PDM_Settings $settings;
+    private PDM_Auth $auth;
+    private PDM_Storage $storage;
+    private PDM_Validator $validator;
+    private PDM_Repository_Folders $folderRepo;
+    private PDM_Repository_Files $filesRepo;
+    private PDM_Download $download;
+    private PDM_Preview $preview;
+    private PDM_Logger $logger;
+
+    public function __construct(
+        PDM_Settings $settings,
+        PDM_Auth $auth,
+        PDM_Storage $storage,
+        PDM_Validator $validator,
+        PDM_Repository_Folders $folderRepo,
+        PDM_Repository_Files $filesRepo,
+        PDM_Download $download,
+        PDM_Preview $preview,
+        PDM_Logger $logger
+    ) {
+        $this->settings = $settings;
+        $this->auth = $auth;
+        $this->storage = $storage;
+        $this->validator = $validator;
+        $this->folderRepo = $folderRepo;
+        $this->filesRepo = $filesRepo;
+        $this->download = $download;
+        $this->preview = $preview;
+        $this->logger = $logger;
+    }
+
+    public function register_routes(): void
+    {
+        register_rest_route(self::NAMESPACE, '/browser', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_browser_data'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/folders', [
+            'methods' => 'POST',
+            'callback' => [$this, 'create_folder'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'name' => ['required' => true, 'type' => 'string'],
+                'parent_id' => [
+                    'required' => false,
+                    'sanitize_callback' => static function ($value) {
+                        return ($value === null || $value === '') ? null : absint($value);
+                    },
+                    'validate_callback' => static function ($value) {
+                        return $value === null || $value === '' || is_numeric($value);
+                    },
+                ],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)', [
+            'methods' => 'PATCH',
+            'callback' => [$this, 'update_folder'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+                'name' => ['required' => true, 'type' => 'string'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)', [
+            'methods' => 'DELETE',
+            'callback' => [$this, 'delete_folder'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/upload', [
+            'methods' => 'POST',
+            'callback' => [$this, 'upload_file'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)', [
+            'methods' => 'PATCH',
+            'callback' => [$this, 'update_file'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)', [
+            'methods' => 'DELETE',
+            'callback' => [$this, 'delete_file'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/move', [
+            'methods' => 'POST',
+            'callback' => [$this, 'move_file'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+                'folder_id' => [
+                    'required' => false,
+                    'sanitize_callback' => static function ($value) {
+                        return ($value === null || $value === '') ? null : absint($value);
+                    },
+                    'validate_callback' => static function ($value) {
+                        return $value === null || $value === '' || is_numeric($value);
+                    },
+                ],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/download', [
+            'methods' => 'GET',
+            'callback' => [$this, 'download_files'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/preview', [
+            'methods' => 'GET',
+            'callback' => [$this, 'preview_files'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/search', [
+            'methods' => 'GET',
+            'callback' => [$this, 'search'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'q' => ['required' => true, 'type' => 'string'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/settings', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_settings'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/settings', [
+            'methods' => 'POST',
+            'callback' => [$this, 'update_settings'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/logs', [
+            'methods' => 'GET',
+            'callback' => [$this, 'get_logs'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/users/search', [
+            'methods' => 'GET',
+            'callback' => [$this, 'search_users'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'q' => ['required' => true, 'type' => 'string'],
+            ],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/export', [
+            'methods' => 'GET',
+            'callback' => [$this, 'export_all'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+        ]);
+
+        register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)/export', [
+            'methods' => 'GET',
+            'callback' => [$this, 'export_folder'],
+            'permission_callback' => [$this->auth, 'verify_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+            ],
+        ]);
+    }
+
+    public function get_browser_data(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $folderId = $request->get_param('folder_id');
+        $folderId = $folderId ? (int) $folderId : null;
+        $orderBy = sanitize_text_field($request->get_param('order_by') ?: 'display_name');
+        $order = sanitize_text_field($request->get_param('order') ?: 'ASC');
+
+        $folders = $this->folderRepo->find_by_parent($folderId);
+        $files = $this->filesRepo->find_by_folder($folderId, $orderBy, $order);
+        $allFolders = $this->folderRepo->find_all_with_hierarchy();
+        $breadcrumb = $folderId ? $this->folderRepo->get_breadcrumb_data($folderId) : [];
+
+        $formattedFolders = array_map([$this, 'format_folder'], $folders);
+        $formattedFiles = array_map([$this, 'format_files'], $files);
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'current_folder' => $folderId,
+                'folders' => $formattedFolders,
+                'files' => $formattedFiles,
+                'folder_tree' => $allFolders,
+                'breadcrumb' => $breadcrumb,
+                'storage_stats' => $this->storage->get_storage_stats($this->filesRepo),
+            ],
+        ]);
+    }
+
+    public function create_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $name = sanitize_text_field($request->get_param('name'));
+        $parentId = $request->get_param('parent_id');
+        $parentId = $parentId ? (int) $parentId : null;
+
+        $validation = $this->validator->validate_folder_name($name);
+        if (!$validation['valid']) {
+            return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
+        }
+
+        if ($this->folderRepo->exists_by_name_and_parent($name, $parentId)) {
+            return new \WP_Error('duplicate_error', __('Folder already exists.', 'private-document-manager'), ['status' => 400]);
+        }
+
+        $result = $this->storage->create_folder($name, $parentId, $this->folderRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+        }
+
+        $folderId = $this->folderRepo->create([
+            'parent_id' => $parentId,
+            'name' => $name,
+            'slug' => $result['slug'],
+            'relative_path' => $result['relative_path'],
+            'created_by' => $this->auth->get_current_user_id(),
+        ]);
+
+        $this->logger->log_folder_create($folderId, $name);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_folder_created($folderId, [
+                'name' => $name,
+                'parent_id' => $parentId,
+                'relative_path' => $result['relative_path'],
+            ]);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_folder($this->folderRepo->find($folderId)),
+        ]);
+    }
+
+    public function update_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+        $name = sanitize_text_field($request->get_param('name'));
+
+        $folder = $this->folderRepo->find($id);
+        if (!$folder) {
+            return new \WP_Error('not_found', __('Folder not found.', 'private-document-manager'), ['status' => 404]);
+        }
+
+        $validation = $this->validator->validate_folder_name($name);
+        if (!$validation['valid']) {
+            return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
+        }
+
+        $result = $this->storage->rename_folder($id, $name, $this->folderRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+        }
+
+        $this->folderRepo->update($id, [
+            'name' => $name,
+            'slug' => $result['new_slug'],
+            'relative_path' => $result['new_relative_path'],
+        ]);
+
+        $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+        $this->logger->log_rename('folder', $id, $folder->name, $name);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_folder_renamed($id, $folder->name, $name);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_folder($this->folderRepo->find($id)),
+        ]);
+    }
+
+    public function delete_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+
+        $folder = $this->folderRepo->find($id);
+        if (!$folder) {
+            return new \WP_Error('not_found', __('Folder not found.', 'private-document-manager'), ['status' => 404]);
+        }
+
+        $result = $this->storage->delete_folder($id, $this->folderRepo, $this->filesRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
+        }
+
+        $this->folderRepo->delete($id);
+        $this->logger->log_delete('folder', $id, $folder->name);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_folder_deleted($id, $folder->name);
+        }
+
+        return new \WP_REST_Response(['success' => true]);
+    }
+
+    public function upload_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST nonce is enforced in the permission callback.
+        if (empty($_FILES['file'])) {
+            return new \WP_Error('no_files', __('No file uploaded.', 'private-document-manager'), ['status' => 400]);
+        }
+
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES is validated by validate_upload_full().
+        $files = $_FILES['file'];
+        $folderId = $request->get_param('folder_id');
+        $folderId = $folderId ? (int) $folderId : null;
+
+        $validation = $this->validator->validate_upload_full($files);
+        if (!$validation['valid']) {
+            return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
+        }
+
+        $displayName = PDM_Helpers::sanitize_file_display_name($request->get_param('display_name') ?: pathinfo($files['name'], PATHINFO_FILENAME));
+
+        if (class_exists('PDM_Hooks')) {
+            $displayName = PDM_Hooks::filter_file_name($displayName, (string) $files['name']);
+        }
+
+        $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+        }
+
+        $fileId = $this->filesRepo->create([
+            'folder_id' => $folderId,
+            'original_name' => $files['name'],
+            'stored_name' => $result['stored_name'],
+            'display_name' => $displayName,
+            'relative_path' => $result['relative_path'],
+            'extension' => $validation['extension'],
+            'mime_type' => $validation['mime_type'],
+            'file_size' => $validation['size'],
+            'checksum' => $result['checksum'],
+            'created_by' => $this->auth->get_current_user_id(),
+        ]);
+
+        $this->logger->log_upload($fileId, $displayName);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_file_uploaded($fileId, [
+                'display_name' => $displayName,
+                'folder_id' => $folderId,
+                'extension' => $validation['extension'],
+                'mime_type' => $validation['mime_type'],
+                'file_size' => $validation['size'],
+            ]);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_file($this->filesRepo->find($fileId)),
+        ]);
+    }
+
+    public function update_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+        $displayName = PDM_Helpers::sanitize_file_display_name((string) $request->get_param('display_name'));
+
+        $files = $this->filesRepo->find($id);
+        if (!$files) {
+            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+        }
+
+        if (empty($displayName)) {
+            return new \WP_Error('validation_error', __('The name cannot be empty.', 'private-document-manager'), ['status' => 400]);
+        }
+
+        $oldName = $files->display_name;
+        $this->filesRepo->rename($id, $displayName);
+        $this->logger->log_rename('file', $id, $oldName, $displayName);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_file_renamed($id, $oldName, $displayName);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_file($this->filesRepo->find($id)),
+        ]);
+    }
+
+    public function delete_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+
+        $files = $this->filesRepo->find($id);
+        if (!$files) {
+            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+        }
+
+        $result = $this->storage->delete_file($id, $this->filesRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+        }
+
+        $this->filesRepo->delete($id);
+        $this->logger->log_delete('file', $id, $files->display_name);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_file_deleted($id, [
+                'display_name' => $files->display_name,
+                'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
+                'relative_path' => $files->relative_path,
+            ]);
+        }
+
+        return new \WP_REST_Response(['success' => true]);
+    }
+
+    public function move_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+        $targetFolderId = $request->get_param('folder_id');
+        $targetFolderId = $targetFolderId ? (int) $targetFolderId : null;
+
+        $files = $this->filesRepo->find($id);
+        if (!$files) {
+            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+        }
+
+        $result = $this->storage->move_file($id, $targetFolderId, $this->filesRepo, $this->folderRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
+        }
+
+        $oldFolderId = $files->folder_id;
+        $this->filesRepo->move_to_folder($id, $targetFolderId, $result['new_relative_path']);
+        $this->logger->log_move($id, $files->display_name, $oldFolderId, $targetFolderId);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_file_moved($id, $oldFolderId ? (int) $oldFolderId : null, $targetFolderId);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_file($this->filesRepo->find($id)),
+        ]);
+    }
+
+    public function download_files(\WP_REST_Request $request): void
+    {
+        $id = (int) $request->get_param('id');
+        $this->download->serve($id);
+    }
+
+    public function preview_files(\WP_REST_Request $request): void
+    {
+        $id = (int) $request->get_param('id');
+        $this->preview->serve($id);
+    }
+
+    public function search(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $query = sanitize_text_field($request->get_param('q'));
+
+        if (strlen($query) < 2) {
+            return new \WP_REST_Response([
+                'success' => true,
+                'data' => ['folders' => [], 'files' => []],
+            ]);
+        }
+
+        $folders = [];
+        $files = $this->filesRepo->search($query);
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'folders' => $folders,
+                'files' => array_map([$this, 'format_files'], $files),
+            ],
+        ]);
+    }
+
+    public function get_settings(\WP_REST_Request $request): \WP_REST_Response
+    {
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => [
+                'allowed_extensions' => $this->settings->get_allowed_extensions(),
+                'max_file_size' => $this->settings->get_max_file_size(),
+                'max_file_size_formatted' => PDM_Helpers::format_filesize($this->settings->get_max_file_size()),
+                'log_enabled' => $this->settings->is_log_enabled(),
+                'pdf_preview_enabled' => $this->settings->is_pdf_preview_enabled(),
+                'remove_data_on_uninstall' => $this->settings->should_remove_data_on_uninstall(),
+            ],
+        ]);
+    }
+
+    public function update_settings(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $settings = $request->get_json_params();
+
+        if (isset($settings['allowed_extensions'])) {
+            $this->settings->update('pdm_allowed_extensions', $this->settings->sanitize_extensions((string) $settings['allowed_extensions']));
+        }
+
+        if (isset($settings['max_file_size'])) {
+            $this->settings->update('pdm_max_file_size', absint($settings['max_file_size']));
+        }
+
+        if (isset($settings['log_enabled'])) {
+            $this->settings->update('pdm_log_enabled', (bool) $settings['log_enabled']);
+        }
+
+        if (isset($settings['pdf_preview_enabled'])) {
+            $this->settings->update('pdm_pdf_preview_enabled', (bool) $settings['pdf_preview_enabled']);
+        }
+
+        if (isset($settings['remove_data_on_uninstall'])) {
+            $this->settings->update('pdm_remove_data_on_uninstall', (bool) $settings['remove_data_on_uninstall']);
+        }
+
+        return new \WP_REST_Response(['success' => true]);
+    }
+
+    public function get_logs(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $repo = new PDM_Repository_Logs();
+        $limit = (int) ($request->get_param('limit') ?: 100);
+        $logs = $repo->find_recent($limit);
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => array_map([$this, 'format_log'], $logs),
+        ]);
+    }
+
+    public function search_users(\WP_REST_Request $request): \WP_REST_Response
+    {
+        $query = sanitize_text_field($request->get_param('q'));
+
+        if (strlen($query) < 2) {
+            return new \WP_REST_Response([
+                'success' => true,
+                'data' => [],
+            ]);
+        }
+
+        $users = get_users([
+            'search' => "*{$query}*",
+            'search_columns' => ['user_login', 'user_email', 'display_name'],
+            'number' => 10,
+            'orderby' => 'display_name',
+            'order' => 'ASC',
+        ]);
+
+        $formatted = array_map(function ($user) {
+            return [
+                'id' => $user->ID,
+                'login' => $user->user_login,
+                'display_name' => $user->display_name,
+                'email' => $user->user_email,
+                'avatar' => get_avatar_url($user->ID, ['size' => 32]),
+            ];
+        }, $users);
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $formatted,
+        ]);
+    }
+
+    public function export_all(\WP_REST_Request $request): void
+    {
+        $export = new PDM_Export(
+            $this->storage,
+            $this->filesRepo,
+            $this->folderRepo,
+            $this->auth
+        );
+
+        $export->export_all();
+    }
+
+    public function export_folder(\WP_REST_Request $request): void
+    {
+        $folderId = (int) $request->get_param('id');
+
+        $export = new PDM_Export(
+            $this->storage,
+            $this->filesRepo,
+            $this->folderRepo,
+            $this->auth
+        );
+
+        $export->export_folder($folderId);
+    }
+
+    private function format_folder(object $folder): array
+    {
+        return [
+            'id' => (int) $folder->id,
+            'parent_id' => $folder->parent_id ? (int) $folder->parent_id : null,
+            'name' => $folder->name,
+            'slug' => $folder->slug,
+            'created_at' => $folder->created_at,
+            'created_at_human' => PDM_Helpers::human_time_diff_mysql($folder->created_at),
+            'has_children' => $this->folderRepo->count_children((int) $folder->id) > 0,
+        ];
+    }
+
+    private function format_file(object $files): array
+    {
+        return [
+            'id' => (int) $files->id,
+            'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
+            'original_name' => $files->original_name,
+            'display_name' => $files->display_name,
+            'extension' => $files->extension,
+            'mime_type' => $files->mime_type,
+            'file_size' => (int) $files->file_size,
+            'file_size_formatted' => PDM_Helpers::format_filesize((int) $files->file_size),
+            'icon' => PDM_Helpers::get_file_icon($files->extension),
+            'is_previewable' => PDM_Helpers::is_previewable($files->extension, $files->mime_type),
+            'is_image' => strpos((string) $files->mime_type, 'image/') === 0,
+            'preview_url' => $this->preview->get_preview_url((int) $files->id),
+            'download_url' => $this->download->get_download_url((int) $files->id),
+            'created_at' => $files->created_at,
+            'created_at_human' => PDM_Helpers::human_time_diff_mysql($files->created_at),
+            'created_by' => (int) $files->created_by,
+        ];
+    }
+
+    private function format_log(object $log): array
+    {
+        return [
+            'id' => (int) $log->id,
+            'user_id' => (int) $log->user_id,
+            'user_login' => $log->user_login ?? '',
+            'action' => $log->action,
+            'target_type' => $log->target_type,
+            'target_id' => $log->target_id ? (int) $log->target_id : null,
+            'context' => json_decode($log->context ?? '{}', true),
+            'ip_address' => $log->ip_address,
+            'created_at' => $log->created_at,
+            'created_at_human' => PDM_Helpers::human_time_diff_mysql($log->created_at),
+        ];
+    }
+}

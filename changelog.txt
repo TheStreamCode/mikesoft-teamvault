@@ -1,0 +1,86 @@
+Private Document Manager Changelog
+
+1.1.8
+- Standardized the main plugin presentation around English-first source text
+- Polished README, WordPress.org readme, and contribution documentation
+- Repaired naming inconsistencies introduced during the language cleanup pass
+
+1.1.7
+- Improved binary streaming handlers for preview, download, and ZIP export
+- Improved custom table handling for repository classes
+- Hardened admin sanitization for allowed files extension settings
+
+1.1.6
+- Fixed Windows path normalization in filesystem boundary checks
+- Resolved false upload failures caused by mixed slash formats in destination paths
+- Improved compatibility for uploads on Local and other Windows-based environments
+
+1.1.5
+- Fixed internal drag and drop so files can be moved reliably into folders
+- Added drop targets to the folder tree and root breadcrumb
+- Prevented internal drag operations from triggering the upload overlay
+
+1.1.4
+- Moved files and folder shortcut actions from hover overlays into the details sidebar
+- Added folder selection state with sidebar actions and double-click open behavior
+- Simplified content cards and list rows by removing inline hover action controls
+
+1.1.3
+- Fixed remaining Plugin Check errors for translator comments and query ordering
+- Replaced remaining streamed `readfile()` calls with filesystem-backed reads
+- Improved admin settings input handling and repository log sanitization
+
+1.1.2
+- Improved admin escaping, metadata consistency, and release packaging
+- Added `languages/` directory support and removed deprecated manual textdomain loading
+- Reworked streamed preview and download URLs through authenticated admin-post handlers with dedicated nonce support
+- Reduced Plugin Check issues across settings handling, uninstall cleanup, and filesystem operations
+
+1.0.9
+- Added ZIP export feature for folders and all documents
+- Export current folder or entire document tree
+- Maintains folder structure in ZIP archive
+- Export button in toolbar with confirmation modal
+
+1.0.8
+- Fixed downloaded files so they keep the correct extension in the saved filename
+
+1.0.7
+- Refactored user whitelist to use WordPress capabilities natively
+- Users in the whitelist automatically receive `manage_private_documents`
+- Menu visibility follows capability checks correctly
+- Added automatic capability sync on plugin upgrade
+- Added settings saved notification message
+
+1.0.6
+- Fixed user whitelist visibility for menu and API access
+
+1.0.5
+- Added user-specific access control with whitelist mode
+- Added settings UI for user management
+- Added REST endpoint for user search
+- Added EN/IT strings for user management
+
+1.0.4
+- Added image thumbnails for file cards
+- Fixed hover action buttons overflow
+- Added disk space usage indicator in sidebar
+- Added EN/IT strings for storage indicator
+
+1.0.3
+- Set English as the default plugin interface language
+- Added plugin setting to switch between English and Italian
+- Added runtime EN/IT translation layer for plugin UI strings
+
+1.0.2
+- Fixed `parent_id` and `folder_id` validation for REST requests
+- Fixed root folder creation and move-to-root behavior in the frontend
+
+1.0.1
+- Fixed REST bootstrap and infinite loading in the interface
+- Fixed REST URLs in the frontend and asset cache busting
+- Fixed files schema by adding `relative_path`
+- Fixed upload, move, delete, download, and preview behavior
+
+1.0.0
+- Initial release
