@@ -1,6 +1,6 @@
 # Private Document Manager
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.8-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.19-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -17,6 +17,7 @@
 - **PDF Preview** - Inline PDF preview in supported browsers
 - **ZIP Export** - Export folders or entire document tree as ZIP archive
 - **Activity Logging** - Track uploads, downloads, moves, and deletions
+- **Orphan Cleanup** - Detect and remove database records whose files are missing from private storage
 - **Multilingual** - English (default) with optional Italian translation
 - **Disk Space Indicator** - Visual storage usage in sidebar
 
@@ -65,7 +66,9 @@ git clone https://github.com/mikesoft-codex/wp-private-document-manager.git priv
 
 Default: `wp-content/uploads/private-documents/`
 
-Custom path configurable in Settings. Directory is protected via `.htaccess` and `web.config`.
+The directory is created automatically when the plugin initializes and is protected via `.htaccess` and `web.config`.
+
+If you move a site between environments, copy this private storage folder too; otherwise the database records will remain visible but the original binaries will be missing. The settings page includes a maintenance cleanup action for orphaned records.
 
 ### User Access Control
 
@@ -156,6 +159,38 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [readme.txt](readme.txt) for full changelog.
 
 ### Recent Changes
+
+**v1.1.19**
+- Fixed the remaining Plugin Check findings in uninstall cleanup and admin request sanitization paths
+
+**v1.1.18**
+- Added automatic storage self-healing on browser load and folder creation so missing database records are restored without manual maintenance steps
+
+**v1.1.17**
+- Added maintenance reindex to restore folder and file records from storage when database entries are missing
+- Restored creation of folders whose physical directory still exists after uninstall or partial cleanup
+
+**v1.1.16**
+- Restored folder creation when a directory already exists on disk but its database record was removed
+
+**v1.1.13**
+- Fixed Plugin Check issues around paginated queries, admin request sanitization, and filesystem fallbacks
+- Normalized line endings across the plugin files flagged by the report
+
+**v1.1.12**
+- Simplified the export modal to two choices only: full library or selected folders
+
+**v1.1.11**
+- Removed host-sensitive filesystem abstraction from create/upload writes to improve folder creation and uploads on local environments
+- Improved admin API error parsing so backend critical responses surface a readable message in the UI
+
+**v1.1.10**
+- Added export choices for full library, current folder, or selected folders directly in the export modal
+- Fixed the sort icon direction so it reflects ascending and descending order correctly
+
+**v1.1.9**
+- Fixed upload validation regressions and duplicate upload controls in the overlay
+- Added runtime storage directory self-healing, live filesystem metadata fallback, and maintenance cleanup for orphaned file records
 
 **v1.1.8**
 - Standardized the main plugin presentation around English-first source text

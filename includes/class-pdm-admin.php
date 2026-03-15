@@ -17,10 +17,13 @@ class PDM_Admin
         add_action('admin_menu', [$this, 'add_menu']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_post_pdm_save_settings', [$this, 'handle_save_settings']);
+        add_action('admin_post_pdm_cleanup_orphans', [$this, 'handle_cleanup_orphans']);
+        add_action('admin_post_pdm_reindex_storage', [$this, 'handle_reindex_storage']);
         add_action('admin_post_pdm_download_file', [$this, 'handle_download_file']);
         add_action('admin_post_pdm_preview_file', [$this, 'handle_preview_file']);
         add_action('admin_post_pdm_export_all', [$this, 'handle_export_all']);
         add_action('admin_post_pdm_export_folder', [$this, 'handle_export_folder']);
+        add_action('admin_post_pdm_export_selection', [$this, 'handle_export_selection']);
     }
 
     public function add_menu(): void
@@ -91,6 +94,18 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
+        $orphaned_files_count = $this->count_orphaned_files();
+        $cleanup_result = get_transient('pdm_cleanup_orphans_' . get_current_user_id());
+        $reindex_result = get_transient('pdm_reindex_storage_' . get_current_user_id());
+
+        if ($cleanup_result !== false) {
+            delete_transient('pdm_cleanup_orphans_' . get_current_user_id());
+        }
+
+        if ($reindex_result !== false) {
+            delete_transient('pdm_reindex_storage_' . get_current_user_id());
+        }
+
         include PDM_PLUGIN_DIR . 'admin/views/settings-page.php';
     }
 
@@ -150,6 +165,46 @@ class PDM_Admin
         exit;
     }
 
+    public function handle_cleanup_orphans(): void
+    {
+        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+        }
+
+        $nonce = isset($_POST['pdm_cleanup_orphans_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_cleanup_orphans_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'pdm_cleanup_orphans')) {
+            wp_die(esc_html__('Invalid security token.', 'private-document-manager'));
+        }
+
+        $deletedCount = $this->cleanup_orphaned_files();
+
+        set_transient('pdm_cleanup_orphans_' . get_current_user_id(), [
+            'deleted_count' => $deletedCount,
+        ], MINUTE_IN_SECONDS);
+
+        wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+        exit;
+    }
+
+    public function handle_reindex_storage(): void
+    {
+        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+        }
+
+        $nonce = isset($_POST['pdm_reindex_storage_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_reindex_storage_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'pdm_reindex_storage')) {
+            wp_die(esc_html__('Invalid security token.', 'private-document-manager'));
+        }
+
+        $result = $this->reindex_storage_records();
+
+        set_transient('pdm_reindex_storage_' . get_current_user_id(), $result, MINUTE_IN_SECONDS);
+
+        wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+        exit;
+    }
+
     public function handle_download_file(): void
     {
         $this->guard_stream_request();
@@ -198,6 +253,26 @@ class PDM_Admin
         $export->export_folder($folderId > 0 ? $folderId : null);
     }
 
+    public function handle_export_selection(): void
+    {
+        $this->guard_stream_request();
+
+        $folderIds = [];
+
+        $rawFolderIds = filter_input(INPUT_POST, 'folder_ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+
+        if (is_array($rawFolderIds)) {
+            $folderIds = array_map(
+                'absint',
+                array_map('sanitize_text_field', $rawFolderIds)
+            );
+        }
+
+        $services = $this->build_files_services();
+        $export = new PDM_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export->export_selection($folderIds);
+    }
+
     private function guard_stream_request(): void
     {
         if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
@@ -211,6 +286,7 @@ class PDM_Admin
     {
         $auth = new PDM_Auth($this->settings);
         $storage = new PDM_Storage($this->settings);
+        $storage->ensure_storage_directory();
         $filesRepo = new PDM_Repository_Files();
         $folderRepo = new PDM_Repository_Folders();
         $logRepo = new PDM_Repository_Logs();
@@ -224,5 +300,50 @@ class PDM_Admin
             'download' => new PDM_Download($storage, $filesRepo, $auth, $logger),
             'preview' => new PDM_Preview($storage, $filesRepo, $auth),
         ];
+    }
+
+    private function count_orphaned_files(): int
+    {
+        $services = $this->build_files_services();
+        $filesystem = $services['storage']->get_filesystem();
+        $count = 0;
+
+        foreach ($services['files_repo']->find_all() as $file) {
+            if (!$filesystem->is_file((string) $file->relative_path)) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    private function cleanup_orphaned_files(): int
+    {
+        $services = $this->build_files_services();
+        $filesystem = $services['storage']->get_filesystem();
+        $deletedCount = 0;
+
+        foreach ($services['files_repo']->find_all() as $file) {
+            if ($filesystem->is_file((string) $file->relative_path)) {
+                continue;
+            }
+
+            if ($services['files_repo']->delete((int) $file->id)) {
+                $deletedCount++;
+            }
+        }
+
+        return $deletedCount;
+    }
+
+    private function reindex_storage_records(): array
+    {
+        $services = $this->build_files_services();
+
+        return $services['storage']->reindex_storage_records(
+            $services['folder_repo'],
+            $services['files_repo'],
+            get_current_user_id()
+        );
     }
 }

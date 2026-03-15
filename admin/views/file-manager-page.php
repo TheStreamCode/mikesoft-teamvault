@@ -77,6 +77,15 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                             </svg>
                         </button>
                     </div>
+                    <div class="pdm-page-size-control">
+                        <label class="pdm-toolbar-label" for="pdm-per-page-select"><?php esc_html_e('Per page', 'private-document-manager'); ?></label>
+                        <select class="pdm-select" id="pdm-per-page-select">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                        </select>
+                    </div>
                     <div class="pdm-view-toggle">
                         <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost active" id="pdm-view-grid" title="<?php echo esc_attr__('Grid view', 'private-document-manager'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -70,6 +70,35 @@ class PDM_Repository_Logs
         );
     }
 
+    public function find_recent_paginated(int $page = 1, int $perPage = 50): array
+    {
+        global $wpdb;
+
+        $page = $this->sanitize_page($page);
+        $perPage = $this->sanitize_per_page($perPage);
+        $totalItems = $this->get_count();
+        $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+        $page = $this->normalize_page($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+
+        $items = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT l.*, u.user_login FROM {$this->table} l LEFT JOIN {$wpdb->users} u ON l.user_id = u.ID ORDER BY l.created_at DESC LIMIT %d OFFSET %d",
+                $perPage,
+                $offset
+            )
+        );
+
+        return $this->build_paginated_result($items, $page, $perPage, $totalItems, $offset);
+    }
+
+    public function get_count(): int
+    {
+        global $wpdb;
+
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM {$this->table}");
+    }
+
     public function delete_old(int $daysOld = 90): int
     {
         global $wpdb;
@@ -104,6 +133,46 @@ class PDM_Repository_Logs
         return isset($_SERVER['HTTP_USER_AGENT']) 
             ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) 
             : '';
+    }
+
+    private function sanitize_page(int $page): int
+    {
+        return max(1, $page);
+    }
+
+    private function sanitize_per_page(int $perPage): int
+    {
+        return max(1, min(200, $perPage));
+    }
+
+    private function normalize_page(int $page, int $totalPages): int
+    {
+        if ($totalPages < 1) {
+            return 1;
+        }
+
+        return min(max(1, $page), $totalPages);
+    }
+
+    private function build_paginated_result(array $items, int $page, int $perPage, int $totalItems, int $offset): array
+    {
+        $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+        $fromItem = $totalItems > 0 ? $offset + 1 : 0;
+        $toItem = $totalItems > 0 ? min($offset + count($items), $totalItems) : 0;
+
+        return [
+            'items' => $items,
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total_items' => $totalItems,
+                'total_pages' => $totalPages,
+                'has_prev' => $page > 1,
+                'has_next' => $totalPages > 0 && $page < $totalPages,
+                'from_item' => $fromItem,
+                'to_item' => $toItem,
+            ],
+        ];
     }
 }
 

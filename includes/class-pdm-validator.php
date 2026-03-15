@@ -168,7 +168,7 @@ class PDM_Validator
     {
         $errors = [];
 
-        if (!isset($files['tmp_name']) || !is_uploaded_files($files['tmp_name'])) {
+        if (!isset($files['tmp_name']) || !is_uploaded_file($files['tmp_name'])) {
             $errors[] = __('Invalid file.', 'private-document-manager');
             return ['valid' => false, 'errors' => $errors];
         }
@@ -201,9 +201,13 @@ class PDM_Validator
             );
         }
 
+        $detectedMime = 'application/octet-stream';
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $detectedMime = finfo_files($finfo, $files['tmp_name']);
-        finfo_close($finfo);
+
+        if ($finfo) {
+            $detectedMime = finfo_file($finfo, $files['tmp_name']) ?: $detectedMime;
+            finfo_close($finfo);
+        }
 
         if (!$this->validate_mime_type($detectedMime)) {
             $errors[] = __('Type di files non consentito.', 'private-document-manager');
@@ -261,7 +265,7 @@ class PDM_Validator
             return $result;
         }
 
-        if (isset($files['tmp_name']) && is_uploaded_files($files['tmp_name'])) {
+        if (isset($files['tmp_name']) && is_uploaded_file($files['tmp_name'])) {
             $scanResult = $this->scan_file_content($files['tmp_name']);
 
             if (!$scanResult['valid']) {

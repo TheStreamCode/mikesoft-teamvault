@@ -30,6 +30,84 @@ class PDM_Export
         $this->export_folder(null, 'documents-export');
     }
 
+    public function export_selection(array $folderIds, ?string $zipName = null): void
+    {
+        if (!$this->auth->can_read()) {
+            wp_die(
+                esc_html__('Access denied.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 403]
+            );
+        }
+
+        if (!class_exists('ZipArchive')) {
+            wp_die(
+                esc_html__('ZipArchive is not available on this server. Contact the server administrator.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 500]
+            );
+        }
+
+        $selectedFolders = $this->get_selected_export_folders($folderIds);
+
+        if (empty($selectedFolders)) {
+            wp_die(
+                esc_html__('No folders selected for export.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 400]
+            );
+        }
+
+        $zipName = $zipName ?: 'selected-folders-export';
+        $zipPath = $this->create_temp_zip_path($zipName);
+
+        $this->currentZipPath = $zipPath;
+        $this->currentFileCount = 0;
+        register_shutdown_function([$this, 'cleanup_zip']);
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_export_started(null, $zipPath);
+        }
+
+        $zip = new ZipArchive();
+        $result = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+        if ($result !== true) {
+            wp_delete_file($zipPath);
+            wp_die(
+                esc_html__('Unable to create the ZIP file.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 500]
+            );
+        }
+
+        try {
+            $usedPaths = [];
+
+            foreach ($selectedFolders as $folder) {
+                $folderPath = $this->build_unique_zip_path($folder->name, $usedPaths);
+                $zip->addEmptyDir($folderPath);
+                $this->add_folder_to_zip($zip, (int) $folder->id, $folderPath);
+            }
+
+            $zip->close();
+        } catch (\Exception $e) {
+            $zip->close();
+            wp_delete_file($zipPath);
+            wp_die(
+                esc_html__('Error while creating the ZIP file.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 500]
+            );
+        }
+
+        if (class_exists('PDM_Hooks')) {
+            PDM_Hooks::do_export_completed(null, $zipPath, $this->currentFileCount);
+        }
+
+        $this->stream_zip($zipPath, $zipName);
+    }
+
     public function export_folder(?int $folderId, ?string $zipName = null): void
     {
         if (!$this->auth->can_read()) {
@@ -159,6 +237,64 @@ class PDM_Export
         }
 
         return $name;
+    }
+
+    private function get_selected_export_folders(array $folderIds): array
+    {
+        $folderIds = array_values(array_unique(array_filter(array_map('absint', $folderIds))));
+
+        if (empty($folderIds)) {
+            return [];
+        }
+
+        $folderMap = [];
+        foreach ($this->folderRepo->find_all() as $folder) {
+            $folderMap[(int) $folder->id] = $folder;
+        }
+
+        $selectedFolders = [];
+
+        foreach ($folderIds as $folderId) {
+            if (!isset($folderMap[$folderId])) {
+                continue;
+            }
+
+            $current = $folderMap[$folderId];
+            $skip = false;
+
+            while ($current && $current->parent_id !== null) {
+                $parentId = (int) $current->parent_id;
+
+                if (in_array($parentId, $folderIds, true)) {
+                    $skip = true;
+                    break;
+                }
+
+                $current = $folderMap[$parentId] ?? null;
+            }
+
+            if (!$skip) {
+                $selectedFolders[] = $folderMap[$folderId];
+            }
+        }
+
+        return $selectedFolders;
+    }
+
+    private function build_unique_zip_path(string $folderName, array &$usedPaths): string
+    {
+        $baseName = $this->sanitize_zip_name($folderName);
+        $candidate = $baseName;
+        $suffix = 2;
+
+        while (in_array($candidate, $usedPaths, true)) {
+            $candidate = $baseName . '-' . $suffix;
+            $suffix++;
+        }
+
+        $usedPaths[] = $candidate;
+
+        return $candidate . '/';
     }
 
     private function create_temp_zip_path(string $name): string

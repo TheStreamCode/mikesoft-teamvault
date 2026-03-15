@@ -4,7 +4,7 @@ Tags: documents, private, secure, file-manager, access-control
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.8
+Stable tag: 1.1.19
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,7 @@ Files are stored in a private directory and delivered only through authenticated
 * Drag-and-drop uploads with image and PDF previews
 * ZIP export for the full library or a specific folder
 * Activity logging for uploads, downloads, moves, and deletes
+* Orphaned-record detection and cleanup after local or staging migrations
 * English default interface with optional Italian translation
 * Multisite-aware database tables and secure file streaming
 
@@ -55,6 +56,10 @@ Yes. You can configure a custom writable path in the plugin settings.
 
 By default the plugin allows common office documents, images, archives, text files, and media files. You can customize the allowed extensions in the settings.
 
+= Why do I see files listed but they cannot be opened after a local migration? =
+
+The plugin stores binaries in its private storage directory, not in the Media Library. If you move the database without copying `wp-content/uploads/private-documents/` (or your custom storage path), the database records remain but the physical files are missing. The settings page includes a maintenance tool to clean orphaned records.
+
 = What happens on uninstall? =
 
 You can choose whether all plugin data should be removed on uninstall. By default the cleanup option is disabled for safety.
@@ -71,6 +76,43 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.19 =
+* Fixed the remaining Plugin Check findings in uninstall cleanup and admin request sanitization paths
+
+= 1.1.18 =
+* Added automatic storage self-healing on browser load and folder creation so missing database records are restored without manual maintenance steps
+
+= 1.1.17 =
+* Added maintenance reindex to restore folder and file records from the storage directory when database entries are missing
+* Restored creation of folders whose physical directory still exists after uninstall or partial cleanup
+
+= 1.1.16 =
+* Restored folder creation when a directory already exists on disk but its database record was removed
+
+= 1.1.13 =
+* Fixed Plugin Check issues around paginated queries, admin request sanitization, and filesystem fallbacks
+* Normalized line endings across the plugin files flagged by the report
+
+= 1.1.12 =
+* Simplified the export modal to two choices only: export all or export selected folders
+
+= 1.1.11 =
+* Removed create/upload reliance on the WordPress filesystem abstraction for local file writes to improve compatibility on local environments
+* Improved admin API error parsing so critical backend responses surface a readable message in the UI
+
+= 1.1.10 =
+* Added export choices for the full library, the current folder, or selected folders directly from the export modal
+* Fixed the sort-order button icon so it matches ascending and descending states correctly
+* Added live filesystem metadata fallback for preview and download streams to reduce issues with stale stored metadata
+
+= 1.1.9 =
+* Fixed upload validation regressions that could block new file uploads
+* Fixed duplicate upload controls shown inside the upload overlay
+* Added runtime self-healing for the private storage directory
+* Added live filesystem metadata fallback so existing files keep working even if stored MIME or size metadata is stale
+* Marked missing binaries clearly in the file manager and disabled invalid preview/download actions
+* Added a settings maintenance action to clean orphaned file records after local migrations
 
 = 1.1.8 =
 * Standardized the main plugin interface and project documentation around English source text
@@ -134,6 +176,42 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.19 =
+
+Recommended maintenance update for final Plugin Check cleanup on uninstall and admin request handling.
+
+= 1.1.18 =
+
+Recommended usability update. The plugin now attempts automatic recovery from leftover storage data without requiring technical maintenance actions.
+
+= 1.1.17 =
+
+Recommended maintenance update for recovering folders and files that still exist on disk after uninstall or partial data loss.
+
+= 1.1.16 =
+
+Recommended maintenance update for environments where physical folders survived after uninstall while database records were removed.
+
+= 1.1.13 =
+
+Recommended maintenance update for Plugin Check compliance and cleaner filesystem compatibility fallbacks.
+
+= 1.1.12 =
+
+Recommended UX refinement. The export modal now offers only full-library export or selected-folder export.
+
+= 1.1.11 =
+
+Recommended compatibility fix for local environments. Improves folder creation and uploads, and makes backend failures easier to diagnose from the UI.
+
+= 1.1.10 =
+
+Recommended feature and maintenance update. Adds selective folder export, fixes sort direction feedback, and makes preview/download more resilient to stale stored metadata.
+
+= 1.1.9 =
+
+Recommended maintenance update. Fixes upload regressions, improves missing-file handling after local migrations, and adds orphaned-record cleanup.
 
 = 1.1.8 =
 

@@ -8,6 +8,8 @@
             files: [],
             folderTree: [],
             breadcrumb: [],
+            searchQuery: '',
+            isSearchMode: false,
             selectedFile: null,
             selectedFolder: null,
             draggedItem: null,
@@ -18,12 +20,25 @@
             sidebarOpen: false,
             detailsOpen: false,
             storageStats: null,
+            pagination: {
+                page: 1,
+                perPage: Number(pdmConfig.browserPerPage || 50),
+                totalItems: 0,
+                totalPages: 0,
+                hasPrev: false,
+                hasNext: false,
+                fromItem: 0,
+                toItem: 0,
+            },
         },
 
         elements: {},
 
         init() {
+            this.state.pagination.perPage = this.getStoredBrowserPerPage();
             this.cacheElements();
+            this.syncPerPageSelect();
+            this.syncSortOrderButton();
             this.bindEvents();
             this.loadBrowser();
         },
@@ -38,6 +53,7 @@
                 breadcrumb: document.getElementById('pdm-breadcrumb'),
                 content: document.getElementById('pdm-content'),
                 sortSelect: document.getElementById('pdm-sort-select'),
+                perPageSelect: document.getElementById('pdm-per-page-select'),
                 sortOrderBtn: document.getElementById('pdm-sort-order'),
                 viewGridBtn: document.getElementById('pdm-view-grid'),
                 viewListBtn: document.getElementById('pdm-view-list'),
@@ -62,6 +78,7 @@
             this.elements.newFolderBtn?.addEventListener('click', () => this.showNewFolderModal());
             this.elements.searchInput?.addEventListener('input', this.debounce((e) => this.search(e.target.value), 300));
             this.elements.sortSelect?.addEventListener('change', (e) => this.updateSort(e.target.value));
+            this.elements.perPageSelect?.addEventListener('change', (e) => this.updatePerPage(e.target.value));
             this.elements.sortOrderBtn?.addEventListener('click', () => this.toggleSortOrder());
             this.elements.viewGridBtn?.addEventListener('click', () => this.setViewMode('grid'));
             this.elements.viewListBtn?.addEventListener('click', () => this.setViewMode('list'));
@@ -135,8 +152,14 @@
             });
         },
 
-        async loadBrowser(folderId = null) {
+        async loadBrowser(folderId = null, page = 1, options = {}) {
+            if (options.clearSearchInput && this.elements.searchInput) {
+                this.elements.searchInput.value = '';
+            }
+
             this.state.isLoading = true;
+            this.state.isSearchMode = false;
+            this.state.searchQuery = '';
             this.state.currentFolder = folderId;
             this.state.draggedItem = null;
             this.state.selectedFile = null;
@@ -149,6 +172,8 @@
                     folder_id: folderId || '',
                     order_by: this.state.sortBy,
                     order: this.state.sortOrder,
+                    page: String(page),
+                    per_page: String(this.state.pagination.perPage),
                 });
 
                 const response = await this.apiGet(`browser?${params}`);
@@ -159,6 +184,8 @@
                     this.state.folderTree = response.data.folder_tree;
                     this.state.breadcrumb = response.data.breadcrumb;
                     this.state.storageStats = response.data.storage_stats;
+                    this.state.pagination = this.normalizePagination(response.data.pagination);
+                    this.syncPerPageSelect();
                     
                     this.renderFolderTree();
                     this.renderBreadcrumb();
@@ -181,7 +208,7 @@
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
                     const folderId = el.dataset.folderId;
-                    this.loadBrowser(folderId ? parseInt(folderId) : null);
+                    this.loadBrowser(folderId ? parseInt(folderId, 10) : null, 1, { clearSearchInput: true });
                 });
 
                 el.addEventListener('contextmenu', (e) => {
@@ -283,7 +310,7 @@
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
                     const folderId = el.dataset.folderId;
-                    this.loadBrowser(folderId ? parseInt(folderId) : null);
+                    this.loadBrowser(folderId ? parseInt(folderId, 10) : null, 1, { clearSearchInput: true });
                 });
 
                 el.addEventListener('dragover', (e) => {
@@ -323,6 +350,9 @@
             const totalItems = this.state.folders.length + this.state.files.length;
 
             if (totalItems === 0) {
+                const emptyTitle = this.state.isSearchMode ? pdmConfig.i18n.noResults : pdmConfig.i18n.emptyState;
+                const emptyDescription = this.state.isSearchMode ? pdmConfig.i18n.searchNoResultsDesc : pdmConfig.i18n.emptyStateDesc;
+
                 this.elements.content.innerHTML = `
                     <div class="pdm-empty-state">
                         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -330,8 +360,8 @@
                             <line x1="12" y1="11" x2="12" y2="17"/>
                             <line x1="9" y1="14" x2="15" y2="14"/>
                         </svg>
-                        <h3>${pdmConfig.i18n.emptyState}</h3>
-                        <p>${pdmConfig.i18n.emptyStateDesc}</p>
+                        <h3>${emptyTitle}</h3>
+                        <p>${emptyDescription}</p>
                     </div>
                 `;
                 return;
@@ -342,6 +372,8 @@
             } else {
                 this.renderListView();
             }
+
+            this.renderPagination();
         },
 
         renderGridView() {
@@ -361,9 +393,12 @@
             });
 
             this.state.files.forEach(files => {
-                const iconContent = files.is_image 
+                const iconContent = files.exists_on_disk && files.is_image
                     ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
                     : this.getFileIconSvg(files.icon);
+                const availabilityBadge = files.exists_on_disk
+                    ? ''
+                    : `<div class="pdm-item-status pdm-item-status--missing">${pdmConfig.i18n.fileMissingShort}</div>`;
                 
                 html += `
                     <div class="pdm-item pdm-item--files" data-type="files" data-id="${files.id}" draggable="true">
@@ -371,6 +406,7 @@
                             ${iconContent}
                         </div>
                         <div class="pdm-item-name">${this.escapeHtml(files.display_name)}</div>
+                        ${availabilityBadge}
                         <div class="pdm-item-meta">${files.file_size_formatted}</div>
                     </div>
                 `;
@@ -401,9 +437,10 @@
             });
 
             this.state.files.forEach(files => {
-                const iconContent = files.is_image 
+                const iconContent = files.exists_on_disk && files.is_image
                     ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
                     : this.getFileIconSvg(files.icon, 32);
+                const statusText = files.exists_on_disk ? '' : ` · ${pdmConfig.i18n.fileMissingShort}`;
                 
                 html += `
                     <div class="pdm-list-item pdm-list-item--files" data-type="files" data-id="${files.id}" draggable="true">
@@ -412,7 +449,7 @@
                         </div>
                         <div class="pdm-list-item-info">
                             <div class="pdm-list-item-name">${this.escapeHtml(files.display_name)}</div>
-                            <div class="pdm-list-item-meta">${files.file_size_formatted} · ${files.created_at_human}</div>
+                            <div class="pdm-list-item-meta">${files.file_size_formatted} · ${files.created_at_human}${statusText}</div>
                         </div>
                     </div>
                 `;
@@ -421,6 +458,59 @@
             html += '</div>';
             this.elements.content.innerHTML = html;
             this.bindContentEvents();
+        },
+
+        renderPagination() {
+            if (this.state.pagination.totalPages <= 1) {
+                return;
+            }
+
+            const pager = document.createElement('div');
+            const rangeLabel = this.state.isSearchMode ? pdmConfig.i18n.results : pdmConfig.i18n.files;
+
+            pager.className = 'pdm-pagination';
+            pager.innerHTML = `
+                <div class="pdm-pagination-summary">
+                    ${this.state.pagination.fromItem}-${this.state.pagination.toItem} ${pdmConfig.i18n.of} ${this.state.pagination.totalItems} ${rangeLabel}
+                </div>
+                <div class="pdm-pagination-controls">
+                    <button type="button" class="pdm-btn pdm-btn-ghost pdm-pagination-btn" data-page="${this.state.pagination.page - 1}" ${this.state.pagination.hasPrev ? '' : 'disabled'}>
+                        ${pdmConfig.i18n.previous}
+                    </button>
+                    <span class="pdm-pagination-status">
+                        ${pdmConfig.i18n.page} ${this.state.pagination.page} ${pdmConfig.i18n.of} ${this.state.pagination.totalPages}
+                    </span>
+                    <button type="button" class="pdm-btn pdm-btn-ghost pdm-pagination-btn" data-page="${this.state.pagination.page + 1}" ${this.state.pagination.hasNext ? '' : 'disabled'}>
+                        ${pdmConfig.i18n.next}
+                    </button>
+                </div>
+            `;
+
+            this.elements.content.appendChild(pager);
+            this.bindPaginationEvents();
+        },
+
+        bindPaginationEvents() {
+            this.elements.content.querySelectorAll('.pdm-pagination-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (btn.disabled) {
+                        return;
+                    }
+
+                    const targetPage = parseInt(btn.dataset.page, 10);
+
+                    if (Number.isNaN(targetPage) || targetPage < 1) {
+                        return;
+                    }
+
+                    if (this.state.isSearchMode) {
+                        this.search(this.state.searchQuery, targetPage);
+                        return;
+                    }
+
+                    this.loadBrowser(this.state.currentFolder, targetPage);
+                });
+            });
         },
 
         bindContentEvents() {
@@ -463,7 +553,7 @@
                         return;
                     }
 
-                    e.dataTransfer.setDate('text/plain', JSON.stringify({
+                    e.dataTransfer.setData('text/plain', JSON.stringify({
                         type: el.dataset.type,
                         id: parseInt(el.dataset.id)
                     }));
@@ -496,7 +586,7 @@
                         el.classList.remove('pdm-drop-target');
                         
                         try {
-                            const data = JSON.parse(e.dataTransfer.getDate('text/plain'));
+                            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
                             if (data.type === 'files') {
                                 this.moveFile(data.id, parseInt(el.dataset.id, 10));
                             }
@@ -607,14 +697,15 @@
         openFolder(folderId) {
             this.state.selectedFolder = null;
             this.state.selectedFile = null;
-            this.loadBrowser(folderId);
+            this.loadBrowser(folderId, 1, { clearSearchInput: true });
         },
 
         renderFileDetails(files) {
+            const isAvailable = this.isFileAvailable(files);
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-preview">
-                        ${files.is_previewable && files.icon === 'image' 
+                        ${isAvailable && files.is_previewable && files.icon === 'image'
                             ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}">`
                             : this.getFileIconSvg(files.icon, 64)
                         }
@@ -622,6 +713,12 @@
                     <div class="pdm-details-name">${this.escapeHtml(files.display_name)}</div>
                 </div>
                 <div class="pdm-details-body">
+                    ${isAvailable ? '' : `
+                        <div class="pdm-details-notice pdm-details-notice--warning">
+                            <strong>${pdmConfig.i18n.fileMissing}</strong>
+                            <span>${pdmConfig.i18n.fileMissingDesc}</span>
+                        </div>
+                    `}
                     <div class="pdm-details-section">
                         <div class="pdm-details-section-title">${pdmConfig.i18n.files}</div>
                         <div class="pdm-details-row">
@@ -640,11 +737,15 @@
                             <span class="pdm-details-row-label">${pdmConfig.i18n.created}</span>
                             <span class="pdm-details-row-value">${files.created_at_human}</span>
                         </div>
+                        <div class="pdm-details-row">
+                            <span class="pdm-details-row-label">${pdmConfig.i18n.availability}</span>
+                            <span class="pdm-details-row-value ${isAvailable ? '' : 'pdm-details-row-value--danger'}">${isAvailable ? pdmConfig.i18n.available : pdmConfig.i18n.missing}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="pdm-details-actions">
                     ${files.is_previewable ? `
-                        <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-preview-btn">
+                        <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-preview-btn" ${isAvailable ? '' : 'disabled'}>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
@@ -652,7 +753,7 @@
                             ${pdmConfig.i18n.preview}
                         </button>
                     ` : ''}
-                    <button type="button" class="pdm-btn pdm-btn-primary pdm-details-download-btn">
+                    <button type="button" class="pdm-btn pdm-btn-primary pdm-details-download-btn" ${isAvailable ? '' : 'disabled'}>
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7 10 12 15 17 10"/>
@@ -959,12 +1060,12 @@
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.folderCreateSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder);
+                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.folderCreateError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.folderCreateError, 'error');
+                this.showToast(error.message || pdmConfig.i18n.folderCreateError, 'error');
                 console.error('Create folder error:', error);
             }
         },
@@ -976,7 +1077,7 @@
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder);
+                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.renameError, 'error');
                 }
@@ -994,7 +1095,7 @@
 
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.deleteSuccess, 'success');
-                    this.loadBrowser(this.state.currentFolder);
+                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.deleteError, 'error');
                 }
@@ -1011,7 +1112,7 @@
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder);
+                    this.reloadCurrentView();
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.renameError, 'error');
                 }
@@ -1029,7 +1130,7 @@
 
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.deleteSuccess, 'success');
-                    this.loadBrowser(this.state.currentFolder);
+                    this.reloadCurrentView();
                     this.clearDetails();
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.deleteError, 'error');
@@ -1053,7 +1154,7 @@
                 if (response.success) {
                     this.showToast(pdmConfig.i18n.moveSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder);
+                    this.reloadCurrentView();
                     this.clearDetails();
                 } else {
                     this.showToast(response.message || pdmConfig.i18n.moveError, 'error');
@@ -1080,6 +1181,11 @@
             const files = this.state.files.find(f => f.id === fileId);
             if (!files) return;
 
+            if (!this.isFileAvailable(files) || !files.download_url) {
+                this.showToast(pdmConfig.i18n.fileMissingDesc, 'warning');
+                return;
+            }
+
             const link = document.createElement('a');
             link.href = files.download_url;
             link.download = files.display_name;
@@ -1092,6 +1198,11 @@
         previewFile(fileId) {
             const files = this.state.files.find(f => f.id === fileId);
             if (!files || !files.is_previewable) return;
+
+            if (!this.isFileAvailable(files) || !files.preview_url) {
+                this.showToast(pdmConfig.i18n.fileMissingDesc, 'warning');
+                return;
+            }
 
             this.elements.previewContainer.innerHTML = '';
 
@@ -1118,22 +1229,46 @@
             this.elements.previewContainer.innerHTML = '';
         },
 
-        async search(query) {
-            if (query.length < 2) {
-                this.loadBrowser(this.state.currentFolder);
+        async search(query, page = 1) {
+            const normalizedQuery = String(query || '').trim();
+
+            if (normalizedQuery.length < 2) {
+                this.loadBrowser(this.state.currentFolder, 1);
                 return;
             }
 
+            this.state.isLoading = true;
+            this.state.isSearchMode = true;
+            this.state.searchQuery = normalizedQuery;
+            this.state.draggedItem = null;
+            this.state.selectedFile = null;
+            this.state.selectedFolder = null;
+            this.clearDetails();
+            this.renderContent();
+
             try {
-                const response = await this.apiGet(`search?q=${encodeURIComponent(query)}`);
+                const params = new URLSearchParams({
+                    q: normalizedQuery,
+                    order_by: this.state.sortBy,
+                    order: this.state.sortOrder,
+                    page: String(page),
+                    per_page: String(this.state.pagination.perPage),
+                });
+
+                const response = await this.apiGet(`search?${params}`);
                 
                 if (response.success) {
                     this.state.folders = response.data.folders;
                     this.state.files = response.data.files;
-                    this.renderContent();
+                    this.state.pagination = this.normalizePagination(response.data.pagination);
+                    this.syncPerPageSelect();
                 }
             } catch (error) {
+                this.showToast(pdmConfig.i18n.errorGeneric, 'error');
                 console.error('Search error:', error);
+            } finally {
+                this.state.isLoading = false;
+                this.renderContent();
             }
         },
 
@@ -1174,29 +1309,61 @@
                     body: formData,
                 });
 
-                const data = await response.json();
+                const data = await this.parseApiResponse(response);
 
                 if (data.success) {
                     this.showToast(pdmConfig.i18n.uploadSuccess, 'success');
-                    this.loadBrowser(this.state.currentFolder);
+                    this.reloadCurrentView();
                 } else {
                     this.showToast(data.message || pdmConfig.i18n.uploadError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.uploadError, 'error');
+                this.showToast(error.message || pdmConfig.i18n.uploadError, 'error');
                 console.error('Upload error:', error);
             }
         },
 
         updateSort(sortBy) {
             this.state.sortBy = sortBy;
-            this.loadBrowser(this.state.currentFolder);
+
+            if (this.state.isSearchMode) {
+                this.search(this.state.searchQuery, 1);
+                return;
+            }
+
+            this.loadBrowser(this.state.currentFolder, 1);
+        },
+
+        updatePerPage(value) {
+            const nextPerPage = parseInt(value, 10);
+
+            if (!this.isValidPerPage(nextPerPage)) {
+                this.syncPerPageSelect();
+                return;
+            }
+
+            this.state.pagination.perPage = nextPerPage;
+            this.setStoredBrowserPerPage(nextPerPage);
+            this.syncPerPageSelect();
+
+            if (this.state.isSearchMode) {
+                this.search(this.state.searchQuery, 1);
+                return;
+            }
+
+            this.loadBrowser(this.state.currentFolder, 1);
         },
 
         toggleSortOrder() {
             this.state.sortOrder = this.state.sortOrder === 'ASC' ? 'DESC' : 'ASC';
-            this.elements.sortOrderBtn?.classList.toggle('active');
-            this.loadBrowser(this.state.currentFolder);
+            this.syncSortOrderButton();
+
+            if (this.state.isSearchMode) {
+                this.search(this.state.searchQuery, 1);
+                return;
+            }
+
+            this.loadBrowser(this.state.currentFolder, 1);
         },
 
         setViewMode(mode) {
@@ -1330,7 +1497,7 @@
 
             menu.querySelector('.pdm-context-open')?.addEventListener('click', () => {
                 this.hideContextMenu();
-                this.loadBrowser(folderId);
+                this.loadBrowser(folderId, 1, { clearSearchInput: true });
             });
 
             menu.querySelector('.pdm-context-rename')?.addEventListener('click', () => {
@@ -1351,6 +1518,7 @@
 
             const files = this.state.files.find(f => f.id === fileId);
             if (!files) return;
+            const isAvailable = this.isFileAvailable(files);
 
             const menu = document.createElement('div');
             menu.className = 'context-menu';
@@ -1364,7 +1532,7 @@
                         ${pdmConfig.i18n.preview}
                     </div>
                 ` : ''}
-                <div class="context-menu-item pdm-context-download">
+                <div class="context-menu-item pdm-context-download ${isAvailable ? '' : 'context-menu-item--disabled'}">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
@@ -1481,6 +1649,10 @@
             if (totalEl) totalEl.textContent = stats.disk_total_formatted;
         },
 
+        isFileAvailable(files) {
+            return Boolean(files && files.exists_on_disk);
+        },
+
         getFileIconClass(icon) {
             const classes = {
                 'pdf': 'pdf',
@@ -1537,6 +1709,86 @@
             return svgs[icon] || svgs['default'];
         },
 
+        syncPerPageSelect() {
+            if (!this.elements.perPageSelect) {
+                return;
+            }
+
+            this.elements.perPageSelect.value = String(this.state.pagination.perPage);
+        },
+
+        syncSortOrderButton() {
+            if (!this.elements.sortOrderBtn) {
+                return;
+            }
+
+            const isDescending = this.state.sortOrder === 'DESC';
+
+            this.elements.sortOrderBtn.classList.toggle('active', isDescending);
+            this.elements.sortOrderBtn.setAttribute('aria-pressed', String(isDescending));
+        },
+
+        normalizePagination(pagination = {}) {
+            return {
+                page: Number(pagination.page) || 1,
+                perPage: Number(pagination.per_page) || this.state.pagination.perPage,
+                totalItems: Number(pagination.total_items) || 0,
+                totalPages: Number(pagination.total_pages) || 0,
+                hasPrev: Boolean(pagination.has_prev),
+                hasNext: Boolean(pagination.has_next),
+                fromItem: Number(pagination.from_item) || 0,
+                toItem: Number(pagination.to_item) || 0,
+            };
+        },
+
+        reloadCurrentView(page = this.state.pagination.page) {
+            if (this.state.isSearchMode && this.state.searchQuery.length >= 2) {
+                return this.search(this.state.searchQuery, page);
+            }
+
+            return this.loadBrowser(this.state.currentFolder, page);
+        },
+
+        getStoredBrowserPerPage() {
+            const storage = this.getLocalStorage();
+            const defaultPerPage = Number(pdmConfig.browserPerPage || 50);
+
+            if (!storage) {
+                return defaultPerPage;
+            }
+
+            const rawValue = storage.getItem('pdmBrowserPerPage');
+            const parsedValue = parseInt(rawValue, 10);
+
+            if (!this.isValidPerPage(parsedValue)) {
+                return defaultPerPage;
+            }
+
+            return parsedValue;
+        },
+
+        setStoredBrowserPerPage(value) {
+            const storage = this.getLocalStorage();
+
+            if (!storage) {
+                return;
+            }
+
+            storage.setItem('pdmBrowserPerPage', String(value));
+        },
+
+        getLocalStorage() {
+            try {
+                return window.localStorage;
+            } catch (error) {
+                return null;
+            }
+        },
+
+        isValidPerPage(value) {
+            return [25, 50, 100, 200].includes(value);
+        },
+
         async apiGet(endpoint) {
             const response = await fetch(this.buildApiUrl(endpoint), {
                 headers: {
@@ -1544,7 +1796,7 @@
                     'X-WP-Nonce': pdmConfig.restNonce,
                 },
             });
-            return response.json();
+            return this.parseApiResponse(response);
         },
 
         async apiPost(endpoint, data) {
@@ -1556,7 +1808,7 @@
                 },
                 body: JSON.stringify(data),
             });
-            return response.json();
+            return this.parseApiResponse(response);
         },
 
         async apiPatch(endpoint, data) {
@@ -1568,7 +1820,7 @@
                 },
                 body: JSON.stringify(data),
             });
-            return response.json();
+            return this.parseApiResponse(response);
         },
 
         async apiDelete(endpoint) {
@@ -1579,7 +1831,23 @@
                     'X-WP-Nonce': pdmConfig.restNonce,
                 },
             });
-            return response.json();
+            return this.parseApiResponse(response);
+        },
+
+        async parseApiResponse(response) {
+            const contentType = response.headers.get('content-type') || '';
+
+            if (contentType.includes('application/json')) {
+                return response.json();
+            }
+
+            const text = await response.text();
+            const message = text
+                .replace(/<[^>]+>/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+
+            throw new Error(message || `HTTP ${response.status}`);
         },
 
         buildApiUrl(endpoint) {
@@ -1741,18 +2009,34 @@
         },
 
         showExportModal() {
-            const isRoot = this.state.currentFolder === null;
-            const folderName = isRoot 
-                ? pdmConfig.i18n.rootFolder 
-                : (this.state.breadcrumb[this.state.breadcrumb.length - 1]?.name || pdmConfig.i18n.rootFolder);
+            const hasFolders = Array.isArray(this.state.folderTree) && this.state.folderTree.length > 0;
+            const defaultMode = 'all';
+            const preselectedFolders = this.state.currentFolder === null ? [] : [this.state.currentFolder];
+            const exportTreeHtml = hasFolders
+                ? this.buildExportFolderTreeHtml(this.state.folderTree, new Set(preselectedFolders))
+                : `<p class="pdm-export-empty">${pdmConfig.i18n.noFoldersAvailable}</p>`;
 
             const body = `
                 <div class="pdm-export-options">
-                    <p>${
-                        isRoot 
-                            ? pdmConfig.i18n.exportAll 
-                            : `${pdmConfig.i18n.exportFolder}: <strong>${this.escapeHtml(folderName)}</strong>`
-                    }</p>
+                    <label class="pdm-export-choice">
+                        <input type="radio" name="pdm-export-mode" value="all" ${defaultMode === 'all' ? 'checked' : ''}>
+                        <span>
+                            <strong>${pdmConfig.i18n.exportAll}</strong>
+                            <small>${pdmConfig.i18n.exportAllDesc}</small>
+                        </span>
+                    </label>
+                    <label class="pdm-export-choice ${hasFolders ? '' : 'pdm-export-choice--disabled'}">
+                        <input type="radio" name="pdm-export-mode" value="selection" ${hasFolders ? '' : 'disabled'}>
+                        <span>
+                            <strong>${pdmConfig.i18n.exportSelectedFolders}</strong>
+                            <small>${pdmConfig.i18n.exportSelectedFoldersDesc}</small>
+                        </span>
+                    </label>
+                    <div class="pdm-export-folder-tree" ${defaultMode === 'selection' ? '' : 'hidden'}>
+                        <div class="pdm-export-folder-tree-inner">
+                            ${exportTreeHtml}
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -1772,17 +2056,66 @@
 
             const confirmBtn = this.elements.modal.querySelector('.pdm-export-confirm');
             const cancelBtn = this.elements.modal.querySelector('.pdm-modal-cancel');
+            const modeInputs = this.elements.modal.querySelectorAll('input[name="pdm-export-mode"]');
+            const folderTree = this.elements.modal.querySelector('.pdm-export-folder-tree');
+
+            modeInputs.forEach((input) => {
+                input.addEventListener('change', () => {
+                    if (!folderTree) {
+                        return;
+                    }
+
+                    folderTree.hidden = input.value !== 'selection' || !input.checked;
+                });
+            });
 
             confirmBtn?.addEventListener('click', () => {
+                const selectedMode = this.elements.modal.querySelector('input[name="pdm-export-mode"]:checked')?.value || defaultMode;
+                const selectedFolderIds = selectedMode === 'selection'
+                    ? Array.from(this.elements.modal.querySelectorAll('input[name="pdm-export-folder"]:checked')).map((input) => parseInt(input.value, 10)).filter((id) => Number.isInteger(id) && id > 0)
+                    : [];
+
+                if (selectedMode === 'selection' && selectedFolderIds.length === 0) {
+                    this.showToast(pdmConfig.i18n.exportNoFoldersSelected, 'warning');
+                    return;
+                }
+
                 this.hideModal();
-                this.startExport();
+                this.startExport({
+                    mode: selectedMode,
+                    folderIds: selectedFolderIds,
+                });
             });
 
             cancelBtn?.addEventListener('click', () => this.hideModal());
         },
 
-        startExport() {
-            const folderId = this.state.currentFolder;
+        buildExportFolderTreeHtml(folders, selectedIds = new Set()) {
+            if (!Array.isArray(folders) || folders.length === 0) {
+                return '';
+            }
+
+            return folders.map((folder) => {
+                const isChecked = selectedIds.has(folder.id);
+                const childrenHtml = folder.children?.length
+                    ? `<div class="pdm-export-folder-children">${this.buildExportFolderTreeHtml(folder.children, selectedIds)}</div>`
+                    : '';
+
+                return `
+                    <div class="pdm-export-folder-node">
+                        <label class="pdm-export-folder-option">
+                            <input type="checkbox" name="pdm-export-folder" value="${folder.id}" ${isChecked ? 'checked' : ''}>
+                            <span>${this.escapeHtml(folder.name)}</span>
+                        </label>
+                        ${childrenHtml}
+                    </div>
+                `;
+            }).join('');
+        },
+
+        startExport(options = {}) {
+            const mode = options.mode || 'all';
+            const folderIds = Array.isArray(options.folderIds) ? options.folderIds : [];
 
             this.showToast(pdmConfig.i18n.exporting, 'info');
 
@@ -1795,7 +2128,7 @@
             const actionInput = document.createElement('input');
             actionInput.type = 'hidden';
             actionInput.name = 'action';
-            actionInput.value = folderId ? 'pdm_export_folder' : 'pdm_export_all';
+            actionInput.value = mode === 'selection' ? 'pdm_export_selection' : 'pdm_export_all';
             form.appendChild(actionInput);
 
             const nonceInput = document.createElement('input');
@@ -1804,12 +2137,14 @@
             nonceInput.value = pdmConfig.streamNonce;
             form.appendChild(nonceInput);
 
-            if (folderId) {
-                const folderInput = document.createElement('input');
-                folderInput.type = 'hidden';
-                folderInput.name = 'folder_id';
-                folderInput.value = String(folderId);
-                form.appendChild(folderInput);
+            if (mode === 'selection') {
+                folderIds.forEach((selectedFolderId) => {
+                    const folderInput = document.createElement('input');
+                    folderInput.type = 'hidden';
+                    folderInput.name = 'folder_ids[]';
+                    folderInput.value = String(selectedFolderId);
+                    form.appendChild(folderInput);
+                });
             }
 
             document.body.appendChild(form);

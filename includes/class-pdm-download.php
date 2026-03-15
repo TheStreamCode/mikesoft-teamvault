@@ -72,8 +72,15 @@ class PDM_Download
         }
 
         $downloadFilename = $this->build_download_filename($files->display_name, $files->extension);
+        $mimeType = $filesystem->get_mime_type($files->relative_path);
+        $fileSize = $filesystem->get_file_size($files->relative_path);
 
-        $this->stream_file($fullPath, $downloadFilename, $files->mime_type, $files->file_size);
+        $this->stream_file(
+            $fullPath,
+            $downloadFilename,
+            $mimeType ?: (string) $files->mime_type,
+            $fileSize > 0 ? $fileSize : (int) $files->file_size
+        );
     }
 
     private function build_download_filename(string $displayName, string $extension): string
