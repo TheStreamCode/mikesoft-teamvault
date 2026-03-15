@@ -101,7 +101,9 @@ class PDM_Filesystem
         if ($wpFilesystem) {
             $dirMode = defined('FS_CHMOD_DIR') ? FS_CHMOD_DIR : false;
 
-            return $wpFilesystem->mkdir($fullPath, $dirMode);
+            if ($wpFilesystem->mkdir($fullPath, $dirMode)) {
+                return true;
+            }
         }
 
         return wp_mkdir_p($fullPath);
@@ -115,12 +117,6 @@ class PDM_Filesystem
             return false;
         }
 
-        $wpFilesystem = $this->get_wp_filesystem();
-
-        if ($wpFilesystem) {
-            return $wpFilesystem->rmdir($fullPath, true);
-        }
-
         return $this->recursive_delete($fullPath);
     }
 
@@ -132,7 +128,20 @@ class PDM_Filesystem
             return false;
         }
 
-        wp_delete_file($fullPath);
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem && $wpFilesystem->delete($fullPath, false, 'f')) {
+            if (!file_exists($fullPath)) {
+                return true;
+            }
+        }
+
+        if (function_exists('wp_delete_file')) {
+            wp_delete_file($fullPath);
+        } else {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Fallback only when WordPress deletion helpers are unavailable.
+            @unlink($fullPath);
+        }
 
         return !file_exists($fullPath);
     }
@@ -153,11 +162,14 @@ class PDM_Filesystem
 
         $wpFilesystem = $this->get_wp_filesystem();
 
-        if ($wpFilesystem) {
-            return $wpFilesystem->move($from, $to, true);
+        if ($wpFilesystem && $wpFilesystem->move($from, $to, true)) {
+            if (!file_exists($from) && file_exists($to)) {
+                return true;
+            }
         }
 
-        return false;
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Fallback only when WP_Filesystem move is unavailable.
+        return @rename($from, $to);
     }
 
     public function rename_directory(string $oldRelative, string $newRelative): bool
@@ -175,11 +187,14 @@ class PDM_Filesystem
 
         $wpFilesystem = $this->get_wp_filesystem();
 
-        if ($wpFilesystem) {
-            return $wpFilesystem->move($oldPath, $newPath, false);
+        if ($wpFilesystem && $wpFilesystem->move($oldPath, $newPath, false)) {
+            if (!file_exists($oldPath) && file_exists($newPath)) {
+                return true;
+            }
         }
 
-        return false;
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Fallback only when WP_Filesystem move is unavailable.
+        return @rename($oldPath, $newPath);
     }
 
     public function write_file(string $relativePath, string $content): bool
@@ -195,8 +210,11 @@ class PDM_Filesystem
 
         if ($wpFilesystem) {
             $filesMode = defined('FS_CHMOD_FILE') ? FS_CHMOD_FILE : false;
+            $result = $wpFilesystem->put_contents($fullPath, $content, $filesMode);
 
-            return $wpFilesystem->put_contents($fullPath, $content, $filesMode);
+            if ($result) {
+                return true;
+            }
         }
 
         $result = @file_put_contents($fullPath, $content);
@@ -214,7 +232,11 @@ class PDM_Filesystem
         $wpFilesystem = $this->get_wp_filesystem();
 
         if ($wpFilesystem) {
-            return $wpFilesystem->get_contents($path);
+            $contents = $wpFilesystem->get_contents($path);
+
+            if ($contents !== false) {
+                return $contents;
+            }
         }
 
         return @file_get_contents($path);
@@ -230,7 +252,7 @@ class PDM_Filesystem
     public function get_file_checksum(string $relativePath): string
     {
         $fullPath = $this->resolve($relativePath);
-        return @md5_files($fullPath) ?: '';
+        return @md5_file($fullPath) ?: '';
     }
 
     public function get_mime_type(string $relativePath): string
@@ -246,7 +268,7 @@ class PDM_Filesystem
 
         $finfo = @finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
-            $mime = @finfo_files($finfo, $fullPath);
+            $mime = @finfo_file($finfo, $fullPath);
             finfo_close($finfo);
             if ($mime !== false) {
                 return $mime;
@@ -337,16 +359,33 @@ class PDM_Filesystem
 
         $wpFilesystem = $this->get_wp_filesystem();
 
-        if ($wpFilesystem) {
-            return $wpFilesystem->rmdir($path, false);
+        if ($wpFilesystem && $wpFilesystem->rmdir($path, false)) {
+            if (!file_exists($path)) {
+                return true;
+            }
         }
 
-        return false;
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Fallback only when WP_Filesystem directory removal is unavailable.
+        return @rmdir($path);
     }
 
     public function is_writable(string $path): bool
     {
-        return wp_is_writable($path);
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem) {
+            return $wpFilesystem->is_writable($path);
+        }
+
+        if (file_exists($path)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Fallback only when WP_Filesystem is unavailable.
+            return is_writable($path);
+        }
+
+        $parent = dirname($path);
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_is_writable -- Fallback only when WP_Filesystem is unavailable.
+        return $parent !== '' && is_dir($parent) && is_writable($parent);
     }
 
     private function get_wp_filesystem()
@@ -357,8 +396,11 @@ class PDM_Filesystem
             return $wp_filesystem;
         }
 
-        require_once ABSPATH . 'wp-admin/includes/files.php';
-        WP_Filesystem();
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+
+        if (!WP_Filesystem()) {
+            return null;
+        }
 
         return $wp_filesystem;
     }

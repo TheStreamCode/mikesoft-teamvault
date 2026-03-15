@@ -37,14 +37,6 @@ class PDM_Preview
             );
         }
 
-        if (!PDM_Helpers::is_previewable($files->extension, $files->mime_type)) {
-            wp_die(
-                esc_html__('Preview is not available for this file type.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
-                ['response' => 400]
-            );
-        }
-
         $filesystem = $this->storage->get_filesystem();
         $fullPath = $filesystem->resolve($files->relative_path);
 
@@ -64,6 +56,17 @@ class PDM_Preview
             );
         }
 
+        $mimeType = $filesystem->get_mime_type($files->relative_path);
+        $fileSize = $filesystem->get_file_size($files->relative_path);
+
+        if (!PDM_Helpers::is_previewable($files->extension, $mimeType ?: (string) $files->mime_type)) {
+            wp_die(
+                esc_html__('Preview is not available for this file type.', 'private-document-manager'),
+                esc_html__('Error', 'private-document-manager'),
+                ['response' => 400]
+            );
+        }
+
         if (class_exists('PDM_Hooks')) {
             PDM_Hooks::do_file_previewed($fileId, [
                 'display_name' => $files->display_name,
@@ -72,7 +75,12 @@ class PDM_Preview
             ]);
         }
 
-        $this->stream_preview($fullPath, $files->display_name, $files->mime_type, $files->file_size);
+        $this->stream_preview(
+            $fullPath,
+            $files->display_name,
+            $mimeType ?: (string) $files->mime_type,
+            $fileSize > 0 ? $fileSize : (int) $files->file_size
+        );
     }
 
     private function stream_preview(string $path, string $filename, string $mimeType, int $fileSize): void

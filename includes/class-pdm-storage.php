@@ -11,6 +11,7 @@ class PDM_Storage
     {
         $this->settings = $settings;
         $this->filesystem = new PDM_Filesystem($settings->get_storage_path());
+        $this->ensure_storage_directory();
     }
 
     public function get_filesystem(): PDM_Filesystem
@@ -38,6 +39,53 @@ class PDM_Storage
         ];
     }
 
+    public function reindex_storage_records(
+        PDM_Repository_Folders $folderRepo,
+        PDM_Repository_Files $filesRepo,
+        int $createdBy
+    ): array {
+        if (!$this->ensure_storage_directory()) {
+            return [
+                'success' => false,
+                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+            ];
+        }
+
+        $folderMap = [];
+        foreach ($folderRepo->find_all() as $folder) {
+            $folderMap[(string) $folder->relative_path] = (int) $folder->id;
+        }
+
+        $fileMap = [];
+        foreach ($filesRepo->find_all() as $files) {
+            $fileMap[(string) $files->relative_path] = true;
+        }
+
+        $stats = [
+            'folders_created' => 0,
+            'files_created' => 0,
+        ];
+
+        $this->reindex_directory('', $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
+
+        return [
+            'success' => true,
+            'folders_created' => $stats['folders_created'],
+            'files_created' => $stats['files_created'],
+        ];
+    }
+
+    public function has_reindexable_content(): bool
+    {
+        foreach ($this->filesystem->list_directory('') as $item) {
+            if (!$this->should_skip_reindex_item('', $item)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function get_folder_path(?int $folderId, PDM_Repository_Folders $folderRepo): string
     {
         if (null === $folderId) {
@@ -57,6 +105,13 @@ class PDM_Storage
         ?int $folderId,
         PDM_Repository_Folders $folderRepo
     ): array {
+        if (!$this->ensure_storage_directory()) {
+            return [
+                'success' => false,
+                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+            ];
+        }
+
         $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
         $storedName = PDM_Helpers::generate_secure_filename($extension);
         
@@ -100,6 +155,13 @@ class PDM_Storage
 
     public function create_folder(string $name, ?int $parentId, PDM_Repository_Folders $folderRepo): array
     {
+        if (!$this->ensure_storage_directory()) {
+            return [
+                'success' => false,
+                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+            ];
+        }
+
         $slug = PDM_Helpers::sanitize_folder_name($name);
         
         if (empty($slug)) {
@@ -131,6 +193,14 @@ class PDM_Storage
         }
 
         if ($this->filesystem->exists($relativePath)) {
+            if ($this->filesystem->is_dir($relativePath)) {
+                return [
+                    'success' => true,
+                    'slug' => $slug,
+                    'relative_path' => $relativePath,
+                ];
+            }
+
             return [
                 'success' => false,
                 'error' => __('Folder already exists.', 'private-document-manager'),
@@ -313,7 +383,136 @@ class PDM_Storage
             wp_mkdir_p($basePath);
         }
 
+        if (is_dir($basePath)) {
+            $this->create_protection_files($basePath);
+        }
+
         return is_dir($basePath) && $this->filesystem->is_writable($basePath);
+    }
+
+    private function create_protection_files(string $path): void
+    {
+        $htaccess = $path . '/.htaccess';
+        if (!file_exists($htaccess)) {
+            $content = "# Private Document Manager - Access Denied\n";
+            $content .= "Order deny,allow\n";
+            $content .= "Deny from all\n";
+            $content .= "<IfModule mod_rewrite.c>\n";
+            $content .= "RewriteEngine On\n";
+            $content .= "RewriteRule .* - [F]\n";
+            $content .= "</IfModule>\n";
+            @file_put_contents($htaccess, $content);
+        }
+
+        $webconfig = $path . '/web.config';
+        if (!file_exists($webconfig)) {
+            $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            $content .= "<configuration>\n";
+            $content .= "  <system.webServer>\n";
+            $content .= "    <handlers>\n";
+            $content .= "      <clear />\n";
+            $content .= "    </handlers>\n";
+            $content .= "    <httpProtocol>\n";
+            $content .= "      <customHeaders>\n";
+            $content .= "        <add name=\"X-Content-Type-Options\" value=\"nosniff\" />\n";
+            $content .= "      </customHeaders>\n";
+            $content .= "    </httpProtocol>\n";
+            $content .= "  </system.webServer>\n";
+            $content .= "</configuration>";
+            @file_put_contents($webconfig, $content);
+        }
+
+        $index = $path . '/index.php';
+        if (!file_exists($index)) {
+            @file_put_contents($index, "<?php // Silence is golden");
+        }
+    }
+
+    private function reindex_directory(
+        string $relativePath,
+        PDM_Repository_Folders $folderRepo,
+        PDM_Repository_Files $filesRepo,
+        array &$folderMap,
+        array &$fileMap,
+        int $createdBy,
+        array &$stats
+    ): void {
+        foreach ($this->filesystem->list_directory($relativePath) as $item) {
+            if ($this->should_skip_reindex_item($relativePath, $item)) {
+                continue;
+            }
+
+            $itemRelativePath = $this->join_relative_paths($relativePath, $item);
+
+            if ($this->filesystem->is_dir($itemRelativePath)) {
+                $folderId = $folderMap[$itemRelativePath] ?? 0;
+
+                if ($folderId <= 0) {
+                    $parentPath = $this->get_parent_relative_path($itemRelativePath);
+                    $folderId = $folderRepo->create([
+                        'parent_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
+                        'name' => $item,
+                        'slug' => PDM_Helpers::sanitize_folder_name($item),
+                        'relative_path' => $itemRelativePath,
+                        'created_by' => $createdBy,
+                    ]);
+                    $folderMap[$itemRelativePath] = $folderId;
+                    $stats['folders_created']++;
+                }
+
+                $this->reindex_directory($itemRelativePath, $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
+                continue;
+            }
+
+            if (isset($fileMap[$itemRelativePath])) {
+                continue;
+            }
+
+            $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
+            $displayName = pathinfo($item, PATHINFO_FILENAME);
+            $parentPath = $this->get_parent_relative_path($itemRelativePath);
+
+            $filesRepo->create([
+                'folder_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
+                'original_name' => $item,
+                'stored_name' => $item,
+                'display_name' => $displayName !== '' ? $displayName : $item,
+                'relative_path' => $itemRelativePath,
+                'extension' => $extension,
+                'mime_type' => $this->filesystem->get_mime_type($itemRelativePath),
+                'file_size' => $this->filesystem->get_file_size($itemRelativePath),
+                'checksum' => $this->filesystem->get_file_checksum($itemRelativePath),
+                'created_by' => $createdBy,
+            ]);
+
+            $fileMap[$itemRelativePath] = true;
+            $stats['files_created']++;
+        }
+    }
+
+    private function should_skip_reindex_item(string $relativePath, string $item): bool
+    {
+        if ($relativePath !== '') {
+            return false;
+        }
+
+        return in_array($item, ['.htaccess', 'web.config', 'index.php'], true);
+    }
+
+    private function join_relative_paths(string $base, string $item): string
+    {
+        if ($base === '') {
+            return str_replace('\\', '/', $item);
+        }
+
+        return str_replace('\\', '/', trim($base, '/\\') . '/' . $item);
+    }
+
+    private function get_parent_relative_path(string $relativePath): string
+    {
+        $parentPath = dirname(str_replace('\\', '/', $relativePath));
+
+        return $parentPath === '.' ? '' : trim(str_replace('\\', '/', $parentPath), '/');
     }
 
     private function build_file_path(string $folderPath, string $filename): string

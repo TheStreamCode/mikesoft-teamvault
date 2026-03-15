@@ -40,6 +40,10 @@ function pdm_uninstall_site() {
     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Expected cleanup during uninstall.
     $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($logs_table) . '`');
 
+    $custom_storage_path = (string) get_option('pdm_storage_path', '');
+    $upload_dir = wp_upload_dir();
+    $default_storage_path = isset($upload_dir['basedir']) ? $upload_dir['basedir'] . '/private-documents' : '';
+
     delete_option('pdm_storage_path');
     delete_option('pdm_interface_language');
     delete_option('pdm_allowed_extensions');
@@ -51,18 +55,27 @@ function pdm_uninstall_site() {
     delete_option('pdm_use_user_whitelist');
     delete_option('pdm_allowed_users');
 
-    $upload_dir = wp_upload_dir();
-    $storage_path = $upload_dir['basedir'] . '/private-documents';
+    $storage_paths = array_filter(array_unique([
+        pdm_normalize_uninstall_path($custom_storage_path),
+        pdm_normalize_uninstall_path($default_storage_path),
+    ]));
 
-    if (is_dir($storage_path)) {
-        pdm_recursive_delete($storage_path);
+    foreach ($storage_paths as $storage_path) {
+        if (is_dir($storage_path)) {
+            pdm_recursive_delete($storage_path);
+        }
     }
 
-    $roles = wp_roles();
-    foreach ($roles->roles as $role_name => $role_data) {
-        $role = get_role($role_name);
-        if ($role && $role->has_cap('manage_private_documents')) {
-            $role->remove_cap('manage_private_documents');
+    if (function_exists('wp_roles')) {
+        $roles = wp_roles();
+
+        if ($roles && !empty($roles->roles) && is_array($roles->roles)) {
+            foreach ($roles->roles as $role_name => $role_data) {
+                $role = get_role($role_name);
+                if ($role && $role->has_cap('manage_private_documents')) {
+                    $role->remove_cap('manage_private_documents');
+                }
+            }
         }
     }
 }
@@ -92,12 +105,25 @@ function pdm_recursive_delete($path) {
         }
     }
 
-    require_once ABSPATH . 'wp-admin/includes/files.php';
-    WP_Filesystem();
+    require_once ABSPATH . 'wp-admin/includes/file.php';
 
     global $wp_filesystem;
+
+    if (!$wp_filesystem) {
+        WP_Filesystem();
+    }
 
     if ($wp_filesystem) {
         $wp_filesystem->rmdir($path, false);
     }
+}
+
+function pdm_normalize_uninstall_path($path) {
+    $path = is_string($path) ? trim($path) : '';
+
+    if ($path === '') {
+        return '';
+    }
+
+    return rtrim($path, '/\\');
 }

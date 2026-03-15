@@ -77,6 +77,29 @@ class PDM_Repository_Files
             : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY display_name ASC", $folderId));
     }
 
+    public function find_by_folder_paginated(
+        ?int $folderId,
+        string $orderBy = 'display_name',
+        string $order = 'ASC',
+        int $page = 1,
+        int $perPage = 50
+    ): array {
+        global $wpdb;
+
+        $orderBy = $this->sanitize_order_by($orderBy);
+        $order = $this->sanitize_order_direction($order);
+        $page = $this->sanitize_page($page);
+        $perPage = $this->sanitize_per_page($perPage);
+
+        $totalItems = $this->count_by_folder($folderId);
+        $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+        $page = $this->normalize_page($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+        $items = $this->get_paginated_folder_items($folderId, $orderBy, $order, $perPage, $offset);
+
+        return $this->build_paginated_result($items, $page, $perPage, $totalItems, $offset);
+    }
+
     public function find_all(string $orderBy = 'display_name', string $order = 'ASC'): array
     {
         global $wpdb;
@@ -130,6 +153,55 @@ class PDM_Repository_Files
                 $searchTerm
             )
         );
+    }
+
+    public function search_paginated(
+        string $query,
+        ?int $folderId = null,
+        string $orderBy = 'display_name',
+        string $order = 'ASC',
+        int $page = 1,
+        int $perPage = 50
+    ): array {
+        global $wpdb;
+
+        $searchTerm = '%' . $wpdb->esc_like($query) . '%';
+        $orderBy = $this->sanitize_order_by($orderBy);
+        $order = $this->sanitize_order_direction($order);
+        $page = $this->sanitize_page($page);
+        $perPage = $this->sanitize_per_page($perPage);
+
+        if (null === $folderId) {
+            $totalItems = (int) $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$this->table} WHERE display_name LIKE %s",
+                    $searchTerm
+                )
+            );
+
+            $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+            $page = $this->normalize_page($page, $totalPages);
+            $offset = ($page - 1) * $perPage;
+            $items = $this->get_paginated_search_items(null, $searchTerm, $orderBy, $order, $perPage, $offset);
+
+            return $this->build_paginated_result($items, $page, $perPage, $totalItems, $offset);
+        }
+
+        $totalItems = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s)",
+                $folderId,
+                $searchTerm,
+                $searchTerm
+            )
+        );
+
+        $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+        $page = $this->normalize_page($page, $totalPages);
+        $offset = ($page - 1) * $perPage;
+        $items = $this->get_paginated_search_items($folderId, $searchTerm, $orderBy, $order, $perPage, $offset);
+
+        return $this->build_paginated_result($items, $page, $perPage, $totalItems, $offset);
     }
 
     public function create(array $data): int
@@ -247,6 +319,148 @@ class PDM_Repository_Files
     private function sanitize_order_direction(string $order): string
     {
         return strtoupper($order) === 'DESC' ? 'DESC' : 'ASC';
+    }
+
+    private function sanitize_page(int $page): int
+    {
+        return max(1, $page);
+    }
+
+    private function sanitize_per_page(int $perPage): int
+    {
+        return max(1, min(200, $perPage));
+    }
+
+    private function normalize_page(int $page, int $totalPages): int
+    {
+        if ($totalPages < 1) {
+            return 1;
+        }
+
+        return min(max(1, $page), $totalPages);
+    }
+
+    private function build_paginated_result(array $items, int $page, int $perPage, int $totalItems, int $offset): array
+    {
+        $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
+        $fromItem = $totalItems > 0 ? $offset + 1 : 0;
+        $toItem = $totalItems > 0 ? min($offset + count($items), $totalItems) : 0;
+
+        return [
+            'items' => $items,
+            'pagination' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total_items' => $totalItems,
+                'total_pages' => $totalPages,
+                'has_prev' => $page > 1,
+                'has_next' => $totalPages > 0 && $page < $totalPages,
+                'from_item' => $fromItem,
+                'to_item' => $toItem,
+            ],
+        ];
+    }
+
+    private function get_paginated_folder_items(?int $folderId, string $orderBy, string $order, int $perPage, int $offset): array
+    {
+        global $wpdb;
+
+        if (null === $folderId) {
+            if ('created_at' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY created_at DESC LIMIT %d OFFSET %d", $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY created_at ASC LIMIT %d OFFSET %d", $perPage, $offset));
+            }
+
+            if ('file_size' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY file_size DESC LIMIT %d OFFSET %d", $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY file_size ASC LIMIT %d OFFSET %d", $perPage, $offset));
+            }
+
+            if ('extension' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY extension DESC LIMIT %d OFFSET %d", $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY extension ASC LIMIT %d OFFSET %d", $perPage, $offset));
+            }
+
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY display_name DESC LIMIT %d OFFSET %d", $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id IS NULL ORDER BY display_name ASC LIMIT %d OFFSET %d", $perPage, $offset));
+        }
+
+        if ('created_at' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY created_at DESC LIMIT %d OFFSET %d", $folderId, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY created_at ASC LIMIT %d OFFSET %d", $folderId, $perPage, $offset));
+        }
+
+        if ('file_size' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY file_size DESC LIMIT %d OFFSET %d", $folderId, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY file_size ASC LIMIT %d OFFSET %d", $folderId, $perPage, $offset));
+        }
+
+        if ('extension' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY extension DESC LIMIT %d OFFSET %d", $folderId, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY extension ASC LIMIT %d OFFSET %d", $folderId, $perPage, $offset));
+        }
+
+        return 'DESC' === $order
+            ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY display_name DESC LIMIT %d OFFSET %d", $folderId, $perPage, $offset))
+            : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d ORDER BY display_name ASC LIMIT %d OFFSET %d", $folderId, $perPage, $offset));
+    }
+
+    private function get_paginated_search_items(?int $folderId, string $searchTerm, string $orderBy, string $order, int $perPage, int $offset): array
+    {
+        global $wpdb;
+
+        if (null === $folderId) {
+            if ('created_at' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY created_at DESC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY created_at ASC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset));
+            }
+
+            if ('file_size' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY file_size DESC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY file_size ASC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset));
+            }
+
+            if ('extension' === $orderBy) {
+                return 'DESC' === $order
+                    ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY extension DESC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset))
+                    : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY extension ASC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset));
+            }
+
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY display_name DESC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s ORDER BY display_name ASC LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset));
+        }
+
+        if ('created_at' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY created_at DESC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY created_at ASC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset));
+        }
+
+        if ('file_size' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY file_size DESC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY file_size ASC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset));
+        }
+
+        if ('extension' === $orderBy) {
+            return 'DESC' === $order
+                ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY extension DESC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset))
+                : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY extension ASC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset));
+        }
+
+        return 'DESC' === $order
+            ? $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY display_name DESC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset))
+            : $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) ORDER BY display_name ASC LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset));
     }
 
 }

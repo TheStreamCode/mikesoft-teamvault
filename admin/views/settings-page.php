@@ -28,6 +28,41 @@ $max_server_upload_size = (int) wp_max_upload_size();
         </div>
     <?php endif; ?>
 
+    <?php if (!empty($cleanup_result) && isset($cleanup_result['deleted_count'])) : ?>
+        <div class="pdm-notice pdm-notice-success">
+            <?php
+            echo esc_html(
+                sprintf(
+                    /* translators: %d: number of deleted orphaned records. */
+                    __('Cleanup completed. Removed %d orphaned file records.', 'private-document-manager'),
+                    (int) $cleanup_result['deleted_count']
+                )
+            );
+            ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($reindex_result) && !empty($reindex_result['success'])) : ?>
+        <div class="pdm-notice pdm-notice-success">
+            <?php
+            echo esc_html(
+                sprintf(
+                    /* translators: 1: folder count, 2: file count. */
+                    __('Reindex completed. Restored %1$d folders and %2$d files from storage.', 'private-document-manager'),
+                    (int) ($reindex_result['folders_created'] ?? 0),
+                    (int) ($reindex_result['files_created'] ?? 0)
+                )
+            );
+            ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($reindex_result) && empty($reindex_result['success']) && !empty($reindex_result['error'])) : ?>
+        <div class="pdm-notice pdm-notice-error">
+            <?php echo esc_html((string) $reindex_result['error']); ?>
+        </div>
+    <?php endif; ?>
+
     <div class="pdm-settings-header">
         <h1 class="pdm-settings-title"><?php esc_html_e('Private Document Manager Settings', 'private-document-manager'); ?></h1>
         <p class="pdm-settings-desc"><?php esc_html_e('Configure the plugin options for private document management.', 'private-document-manager'); ?></p>
@@ -181,6 +216,42 @@ $max_server_upload_size = (int) wp_max_upload_size();
             </div>
         </div>
 
+        <div class="pdm-settings-section">
+            <h2 class="pdm-section-title"><?php esc_html_e('Maintenance', 'private-document-manager'); ?></h2>
+
+            <div class="pdm-field">
+                <label class="pdm-field-label"><?php esc_html_e('Orphaned file records', 'private-document-manager'); ?></label>
+                <p class="pdm-field-desc">
+                    <?php
+                    echo esc_html(
+                        sprintf(
+                            /* translators: %d: number of orphaned records. */
+                            __('Found %d database records whose files are missing from the private storage directory.', 'private-document-manager'),
+                            (int) $orphaned_files_count
+                        )
+                    );
+                    ?>
+                </p>
+                <p class="pdm-field-desc"><?php esc_html_e('Use cleanup after a local migration if the private storage folder was not copied.', 'private-document-manager'); ?></p>
+                <div class="pdm-inline-form pdm-maintenance-form">
+                    <button type="submit" form="pdm-cleanup-orphans-form" class="pdm-btn pdm-btn-secondary" <?php disabled((int) $orphaned_files_count, 0); ?>>
+                        <?php esc_html_e('Clean orphaned records', 'private-document-manager'); ?>
+                    </button>
+                </div>
+            </div>
+
+            <div class="pdm-field">
+                <label class="pdm-field-label"><?php esc_html_e('Reindex storage', 'private-document-manager'); ?></label>
+                <p class="pdm-field-desc"><?php esc_html_e('Restore folder and file records that still exist on disk but are missing from the database.', 'private-document-manager'); ?></p>
+                <p class="pdm-field-desc"><?php esc_html_e('Use this after an incomplete uninstall or a migration where the storage directory remained available.', 'private-document-manager'); ?></p>
+                <div class="pdm-inline-form pdm-maintenance-form">
+                    <button type="submit" form="pdm-reindex-storage-form" class="pdm-btn pdm-btn-secondary">
+                        <?php esc_html_e('Reindex storage', 'private-document-manager'); ?>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="pdm-settings-section pdm-settings-section--danger">
             <h2 class="pdm-section-title"><?php esc_html_e('Uninstall', 'private-document-manager'); ?></h2>
 
@@ -205,6 +276,16 @@ $max_server_upload_size = (int) wp_max_upload_size();
         <div class="pdm-settings-actions">
             <?php submit_button(esc_html__('Save Settings', 'private-document-manager'), 'primary pdm-btn-primary', 'submit', false); ?>
         </div>
+    </form>
+
+    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="pdm-cleanup-orphans-form">
+        <input type="hidden" name="action" value="pdm_cleanup_orphans">
+        <?php wp_nonce_field('pdm_cleanup_orphans', 'pdm_cleanup_orphans_nonce'); ?>
+    </form>
+
+    <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" id="pdm-reindex-storage-form">
+        <input type="hidden" name="action" value="pdm_reindex_storage">
+        <?php wp_nonce_field('pdm_reindex_storage', 'pdm_reindex_storage_nonce'); ?>
     </form>
 
     <div class="pdm-settings-info">

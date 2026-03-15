@@ -1,5 +1,49 @@
 Private Document Manager Changelog
 
+1.1.19
+- Fixed remaining Plugin Check findings in uninstall cleanup, logs pagination input handling, and selected-folder export request sanitization
+
+1.1.18
+- Added automatic storage self-healing on browser load and folder creation so non-technical users do not need to run manual reindex after leftover storage is detected
+
+1.1.17
+- Added maintenance reindex to restore folder and file records from the storage directory when database entries are missing
+- Restored creation of folders whose physical directory still exists after uninstall or partial cleanup
+
+1.1.16
+- Restored folder creation when a directory already exists on disk but its database record was removed
+
+1.1.15
+- Fixed uninstall cleanup when "delete all data" is enabled by loading the correct WordPress filesystem API and cleaning both default and custom storage paths
+
+1.1.14
+- Fixed folder recreation when an empty directory remained on disk after deletion
+- Hardened filesystem rename/delete verification so stale directories are less likely to survive a successful admin action
+
+1.1.13
+- Fixed Plugin Check issues around paginated repository queries, admin request sanitization, and filesystem fallbacks
+- Normalized line endings across the reported plugin files for cleaner Plugin Check output
+
+1.1.12
+- Simplified the export modal to two choices only: full library or selected folders
+
+1.1.11
+- Removed REST create/upload reliance on WordPress filesystem abstraction for local file operations to avoid host-specific failures
+- Improved API error parsing in the admin app so critical backend responses surface a readable message instead of a generic upload error
+
+1.1.10
+- Added export choices for full library, current folder, or selected folders from the export modal
+- Fixed sort order button direction so the icon follows ascending and descending states correctly
+- Added live filesystem metadata fallback for preview and download streams to reduce issues with stale stored metadata
+
+1.1.9
+- Fixed upload validation regressions that could block new file uploads
+- Fixed duplicate upload controls shown in the upload overlay
+- Added runtime self-healing for the private storage directory
+- Added live filesystem metadata fallback so existing files keep working even if stored MIME or size metadata is stale
+- Marked missing binaries clearly in the browser and disabled invalid preview/download actions
+- Added a maintenance action to clean orphaned file records after local migrations
+
 1.1.8
 - Standardized the main plugin presentation around English-first source text
 - Polished README, WordPress.org readme, and contribution documentation
