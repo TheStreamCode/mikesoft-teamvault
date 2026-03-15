@@ -1,6 +1,6 @@
 # Private Document Manager
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.19-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.20-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -159,6 +159,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [readme.txt](readme.txt) for full changelog.
 
 ### Recent Changes
+
+**v1.1.20**
+- Added clearer move-destination selection feedback, restored the root node in the sidebar tree, and completed the latest Italian translation review
 
 **v1.1.19**
 - Fixed the remaining Plugin Check findings in uninstall cleanup and admin request sanitization paths
