@@ -4,7 +4,7 @@ Tags: documents, private, secure, file-manager, access-control
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.19
+Stable tag: 1.1.20
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.20 =
+* Added clearer move-destination selection feedback and restored the root node in the sidebar tree
+* Completed the latest Italian translation review for pagination, maintenance, export, and storage recovery strings
 
 = 1.1.19 =
 * Fixed the remaining Plugin Check findings in uninstall cleanup and admin request sanitization paths
@@ -176,6 +180,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.20 =
+
+Recommended UX and localization update. Improves move selection clarity, restores the root node in navigation, and completes recent Italian translations.
 
 = 1.1.19 =
 

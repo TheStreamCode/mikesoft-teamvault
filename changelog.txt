@@ -1,5 +1,9 @@
 Private Document Manager Changelog
 
+1.1.20
+- Added visible selection highlighting in the move dialog and restored the root node in the left sidebar tree
+- Completed the latest Italian translation review for pagination, maintenance, export, and storage recovery strings
+
 1.1.19
 - Fixed remaining Plugin Check findings in uninstall cleanup, logs pagination input handling, and selected-folder export request sanitization
 

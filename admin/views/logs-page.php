@@ -22,11 +22,11 @@ if (!function_exists('pdm_get_action_label')) {
     function pdm_get_action_label(string $action): string
     {
         $labels = [
-            'upload' => __('Upload', 'private-document-manager'),
-            'download' => __('Download', 'private-document-manager'),
+            'upload' => __('Upload action', 'private-document-manager'),
+            'download' => __('Download action', 'private-document-manager'),
             'delete' => __('Deletion', 'private-document-manager'),
-            'rename' => __('Rename', 'private-document-manager'),
-            'move' => __('Move', 'private-document-manager'),
+            'rename' => __('Rename action', 'private-document-manager'),
+            'move' => __('Move action', 'private-document-manager'),
             'create' => __('Creation', 'private-document-manager'),
         ];
 
