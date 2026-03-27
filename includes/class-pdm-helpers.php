@@ -25,7 +25,7 @@ class PDM_Helpers
         $name = preg_replace('/\.{2,}/', ' ', $name);
         $name = preg_replace('/\s+/', ' ', (string) $name);
 
-        return trim((string) $name, ". \t\n\r\0\x0B");
+        return trim((string) $name);
     }
 
     public static function sanitize_archive_entry_segment(string $name, string $fallback = self::FALLBACK_ARCHIVE_NAME): string
