@@ -97,6 +97,13 @@
 
         bindEvents() {
             this.elements.sidebarToggle?.addEventListener('click', () => this.toggleSidebar());
+            
+            const sidebarHeader = this.elements.sidebar?.querySelector('.pdm-sidebar-header');
+            sidebarHeader?.addEventListener('click', (e) => {
+                if (e.target.closest('.pdm-btn')) return;
+                this.toggleSidebar();
+            });
+
             this.elements.newFolderBtn?.addEventListener('click', () => this.showNewFolderModal());
             this.elements.searchInput?.addEventListener('input', this.debounce((e) => this.search(e.target.value), 300));
             this.elements.sortSelect?.addEventListener('change', (e) => this.updateSort(e.target.value));
@@ -123,6 +130,25 @@
             this.elements.previewModal?.querySelector('.pdm-preview-close')?.addEventListener('click', () => this.hidePreview());
 
             this.elements.backdrop?.addEventListener('click', () => this.closeMobilePanels());
+
+            this.elements.filtersToggle?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleFiltersDropdown();
+            });
+
+            this.elements.filtersSort?.addEventListener('change', (e) => {
+                this.updateSort(e.target.value);
+                if (this.elements.sortSelect) {
+                    this.elements.sortSelect.value = e.target.value;
+                }
+            });
+
+            this.elements.filtersPerPage?.addEventListener('change', (e) => {
+                this.updatePerPage(e.target.value);
+                if (this.elements.perPageSelect) {
+                    this.elements.perPageSelect.value = e.target.value;
+                }
+            });
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
