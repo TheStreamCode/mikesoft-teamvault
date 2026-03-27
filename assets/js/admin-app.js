@@ -70,6 +70,10 @@
                 previewModal: document.getElementById('pdm-preview-modal'),
                 previewContainer: document.getElementById('pdm-preview-container'),
                 previewDownload: document.getElementById('pdm-preview-download'),
+                filtersToggle: document.getElementById('pdm-filters-toggle'),
+                filtersDropdown: document.getElementById('pdm-filters-dropdown'),
+                filtersSort: document.querySelector('.pdm-filters-sort'),
+                filtersPerPage: document.querySelector('.pdm-filters-per-page'),
                 backdrop: null,
             };
 
@@ -123,6 +127,13 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     this.closeMobilePanels();
+                    this.elements.filtersDropdown?.classList.remove('active');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.pdm-toolbar-filters') && !e.target.closest('.pdm-toolbar-filters-dropdown')) {
+                    this.elements.filtersDropdown?.classList.remove('active');
                 }
             });
 
@@ -320,6 +331,10 @@
         },
 
         renderBreadcrumb() {
+            const items = this.state.breadcrumb;
+            const maxItems = window.innerWidth < 600 ? 2 : items.length;
+            const showTruncated = items.length > maxItems + 1;
+
             let html = `
                 <a href="#" class="pdm-breadcrumb-item ${this.state.currentFolder === null ? 'current' : ''}" data-folder-id="">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -329,21 +344,31 @@
                 </a>
             `;
 
-            this.state.breadcrumb.forEach((item, index) => {
-                const isLast = index === this.state.breadcrumb.length - 1;
-                html += `
-                    <span class="pdm-breadcrumb-separator">/</span>
-                    <a href="#" class="pdm-breadcrumb-item ${isLast ? 'current' : ''}" data-folder-id="${item.id}">
-                        <span>${this.escapeHtml(item.name)}</span>
-                    </a>
-                `;
-            });
+            if (showTruncated && items.length > 2) {
+                html += `<span class="pdm-breadcrumb-separator">/</span>`;
+                html += `<span class="pdm-breadcrumb-item truncated">...</span>`;
+                const lastItem = items[items.length - 1];
+                html += `<span class="pdm-breadcrumb-separator">/</span>`;
+                html += `<a href="#" class="pdm-breadcrumb-item current" data-folder-id="${lastItem.id}">`;
+                html += `<span>${this.escapeHtml(lastItem.name)}</span></a>`;
+            } else {
+                items.forEach((item, index) => {
+                    const isLast = index === items.length - 1;
+                    html += `
+                        <span class="pdm-breadcrumb-separator">/</span>
+                        <a href="#" class="pdm-breadcrumb-item ${isLast ? 'current' : ''}" data-folder-id="${item.id}">
+                            <span>${this.escapeHtml(item.name)}</span>
+                        </a>
+                    `;
+                });
+            }
 
             this.elements.breadcrumb.innerHTML = html;
 
             this.elements.breadcrumb.querySelectorAll('.pdm-breadcrumb-item').forEach(el => {
                 el.addEventListener('click', (e) => {
                     e.preventDefault();
+                    if (el.classList.contains('truncated')) return;
                     const folderId = el.dataset.folderId;
                     this.loadBrowser(folderId ? parseInt(folderId, 10) : null, 1, { clearSearchInput: true });
                 });
@@ -1464,6 +1489,28 @@
             }
         },
 
+        toggleFiltersDropdown() {
+            const dropdown = this.elements.filtersDropdown;
+            if (!dropdown) return;
+
+            const isActive = dropdown.classList.contains('active');
+            
+            document.querySelectorAll('.pdm-toolbar-filters-dropdown.active').forEach(d => {
+                d.classList.remove('active');
+            });
+
+            if (!isActive) {
+                dropdown.classList.add('active');
+                
+                if (this.elements.sortSelect && this.elements.filtersSort) {
+                    this.elements.filtersSort.value = this.state.sortBy;
+                }
+                if (this.elements.perPageSelect && this.elements.filtersPerPage) {
+                    this.elements.filtersPerPage.value = String(this.state.pagination.perPage);
+                }
+            }
+        },
+
         clearDetails() {
             this.state.selectedFile = null;
             this.state.selectedFolder = null;
@@ -2030,7 +2077,17 @@
                     userResults.innerHTML = '';
                 });
 
-                document.addEventListener('click', (e) => {
+                this.elements.filtersToggle?.addEventListener('click', () => this.toggleFiltersDropdown());
+            this.elements.filtersSort?.addEventListener('change', (e) => {
+                this.updateSort(e.target.value);
+                this.elements.sortSelect.value = e.target.value;
+            });
+            this.elements.filtersPerPage?.addEventListener('change', (e) => {
+                this.updatePerPage(e.target.value);
+                this.elements.perPageSelect.value = e.target.value;
+            });
+
+            document.addEventListener('click', (e) => {
                     if (!e.target.closest('.pdm-user-search')) {
                         userResults.classList.remove('active');
                     }

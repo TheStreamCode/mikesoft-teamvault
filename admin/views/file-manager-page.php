@@ -65,6 +65,32 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                     </nav>
                 </div>
                 <div class="pdm-toolbar-right">
+                    <div class="pdm-toolbar-filters">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'private-document-manager'); ?>">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                            </svg>
+                        </button>
+                        <div class="pdm-toolbar-filters-dropdown" id="pdm-filters-dropdown">
+                            <div class="pdm-toolbar-filters-row">
+                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Sort', 'private-document-manager'); ?></span>
+                                <select class="pdm-toolbar-filters-select pdm-filters-sort">
+                                    <option value="display_name"><?php esc_html_e('Name', 'private-document-manager'); ?></option>
+                                    <option value="created_at"><?php esc_html_e('Date', 'private-document-manager'); ?></option>
+                                    <option value="file_size"><?php esc_html_e('Size', 'private-document-manager'); ?></option>
+                                </select>
+                            </div>
+                            <div class="pdm-toolbar-filters-row">
+                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Per page', 'private-document-manager'); ?></span>
+                                <select class="pdm-toolbar-filters-select pdm-filters-per-page">
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="200">200</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="pdm-sort-dropdown">
                         <select class="pdm-select" id="pdm-sort-select">
                             <option value="display_name"><?php esc_html_e('Name', 'private-document-manager'); ?></option>
