@@ -197,39 +197,12 @@
 }
 
 .pdm-sidebar-toggle {
-    display: none;
-}
-
-.pdm-breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-}
-
-.pdm-breadcrumb-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--pdm-color-text-secondary);
-    text-decoration: none;
-    padding: 4px 8px;
-    border-radius: var(--pdm-radius-sm);
-    transition: var(--pdm-transition);
-}
-
-.pdm-breadcrumb-item:hover {
-    background: var(--pdm-color-bg);
-    color: var(--pdm-color-text);
-}
-
-.pdm-breadcrumb-item.current {
-    color: var(--pdm-color-text);
-    font-weight: 500;
+    display: none !important;
 }
 
 .pdm-breadcrumb-separator {
     color: var(--pdm-color-text-muted);
+    flex-shrink: 0;
 }
 
 .pdm-sort-dropdown {
@@ -1159,7 +1132,7 @@
     }
 
     .pdm-sidebar-toggle {
-        display: flex;
+        display: flex !important;
     }
 
     .pdm-details {
@@ -1260,20 +1233,110 @@
 }
 
 /* ============================================
-   MOBILE TOOLBAR RESPONSIVENESS
+   SMART BREADCRUMB TRUNCATION
    ============================================ */
+
+.pdm-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.pdm-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--pdm-color-text-secondary);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: var(--pdm-radius-sm);
+    transition: var(--pdm-transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pdm-breadcrumb-item.current {
+    color: var(--pdm-color-text);
+    font-weight: 500;
+}
+
+.pdm-breadcrumb-item.truncated {
+    padding: 4px;
+}
+
+.pdm-breadcrumb-separator {
+    color: var(--pdm-color-text-muted);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   MOBILE TOOLBAR - FILTER DROPDOWN
+   ============================================ */
+
+.pdm-toolbar-filters {
+    position: relative;
+}
+
+.pdm-toolbar-filters-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius);
+    box-shadow: var(--pdm-shadow-lg);
+    padding: 12px;
+    min-width: 180px;
+    z-index: 50;
+    display: none;
+    margin-top: 8px;
+}
+
+.pdm-toolbar-filters-dropdown.active {
+    display: block;
+}
+
+.pdm-toolbar-filters-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.pdm-toolbar-filters-row:last-child {
+    margin-bottom: 0;
+}
+
+.pdm-toolbar-filters-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pdm-color-text-secondary);
+    min-width: 60px;
+}
+
+.pdm-toolbar-filters-select {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius);
+    font-size: 13px;
+    background: var(--pdm-color-bg-secondary);
+    color: var(--pdm-color-text);
+}
 
 @media (max-width: 768px) {
     .pdm-toolbar {
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 10px;
         padding: 12px;
     }
 
     .pdm-toolbar-left {
         flex: 1;
         min-width: 0;
-        gap: 8px;
     }
 
     .pdm-toolbar-right {
@@ -1281,105 +1344,90 @@
         gap: 6px;
     }
 
-    .pdm-toolbar-label {
-        display: none;
-    }
-
-    .pdm-page-size-control {
-        gap: 6px;
-    }
-
+    /* Hide secondary controls on mobile, show via dropdown */
+    .pdm-page-size-control,
     .pdm-sort-dropdown {
-        gap: 4px;
-    }
-
-    .pdm-select {
-        padding: 8px 10px;
-        font-size: 13px;
-    }
-
-    .pdm-btn {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-
-    .pdm-btn span {
         display: none;
     }
 
-    .pdm-btn-secondary span {
-        display: none;
-    }
-
-    .pdm-btn-primary span {
-        display: inline;
-    }
-}
-
-@media (max-width: 580px) {
-    .pdm-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
-    }
-
-    .pdm-toolbar-left {
-        justify-content: flex-start;
-    }
-
-    .pdm-toolbar-right {
-        justify-content: space-between;
-        flex-wrap: nowrap;
-    }
-
-    .pdm-view-toggle,
-    .pdm-btn-secondary:not(.pdm-sidebar-toggle) {
-        display: none;
+    /* Show filter dropdown toggle */
+    .pdm-toolbar-filters {
+        display: block;
     }
 
     .pdm-btn-primary {
+        order: 1;
+    }
+
+    .pdm-view-toggle {
+        order: 0;
+    }
+
+    .pdm-btn-secondary {
+        order: 2;
+    }
+}
+
+@media (min-width: 769px) {
+    /* Hide filter dropdown toggle on desktop */
+    .pdm-toolbar-filters {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    /* Extra small: hide export button */
+    .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
+        display: none;
+    }
+
+    /* But keep Upload visible */
+    .pdm-btn-primary {
         flex: 1;
-        justify-content: center;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .pdm-toolbar-right {
+        width: 100%;
+        justify-content: flex-end;
     }
 
-    .pdm-btn-primary span {
-        display: inline;
+    .pdm-view-toggle {
+        display: none;
     }
+}
 
-    .pdm-page-size-control,
-    .pdm-sort-dropdown {
-        flex-shrink: 0;
+/* ============================================
+   BREADCRUMB MOBILE TRUNCATION
+   ============================================ */
+
+@media (max-width: 600px) {
+    .pdm-breadcrumb {
+        max-width: 200px;
     }
 }
 
 @media (max-width: 400px) {
-    .pdm-sort-dropdown .pdm-select {
-        min-width: 90px;
-    }
-
-    .pdm-page-size-control .pdm-select {
-        min-width: 70px;
-    }
-
-    .pdm-page-size-control {
-        gap: 4px;
-    }
-
-    .pdm-btn {
-        padding: 10px;
-        font-size: 14px;
+    .pdm-breadcrumb {
+        max-width: 150px;
     }
 }
 
+/* Touch devices */
 @media (hover: none) and (pointer: coarse) {
-    .pdm-toolbar .pdm-btn {
-        min-height: 44px;
-        min-width: 44px;
+    .pdm-toolbar-filters-dropdown {
+        min-width: 200px;
     }
 
-    .pdm-toolbar .pdm-select {
+    .pdm-toolbar-filters-select {
         min-height: 44px;
         padding: 10px 12px;
+    }
+
+    .pdm-breadcrumb-item {
+        min-height: 44px;
     }
 }
 
