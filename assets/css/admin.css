@@ -1259,6 +1259,130 @@
     }
 }
 
+/* ============================================
+   MOBILE TOOLBAR RESPONSIVENESS
+   ============================================ */
+
+@media (max-width: 768px) {
+    .pdm-toolbar {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px;
+    }
+
+    .pdm-toolbar-left {
+        flex: 1;
+        min-width: 0;
+        gap: 8px;
+    }
+
+    .pdm-toolbar-right {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pdm-toolbar-label {
+        display: none;
+    }
+
+    .pdm-page-size-control {
+        gap: 6px;
+    }
+
+    .pdm-sort-dropdown {
+        gap: 4px;
+    }
+
+    .pdm-select {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .pdm-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .pdm-btn span {
+        display: none;
+    }
+
+    .pdm-btn-secondary span {
+        display: none;
+    }
+
+    .pdm-btn-primary span {
+        display: inline;
+    }
+}
+
+@media (max-width: 580px) {
+    .pdm-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .pdm-toolbar-left {
+        justify-content: flex-start;
+    }
+
+    .pdm-toolbar-right {
+        justify-content: space-between;
+        flex-wrap: nowrap;
+    }
+
+    .pdm-view-toggle,
+    .pdm-btn-secondary:not(.pdm-sidebar-toggle) {
+        display: none;
+    }
+
+    .pdm-btn-primary {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .pdm-btn-primary span {
+        display: inline;
+    }
+
+    .pdm-page-size-control,
+    .pdm-sort-dropdown {
+        flex-shrink: 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .pdm-sort-dropdown .pdm-select {
+        min-width: 90px;
+    }
+
+    .pdm-page-size-control .pdm-select {
+        min-width: 70px;
+    }
+
+    .pdm-page-size-control {
+        gap: 4px;
+    }
+
+    .pdm-btn {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .pdm-toolbar .pdm-btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .pdm-toolbar .pdm-select {
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+}
+
 .pdm-settings-wrapper {
     padding: 20px;
     background: var(--pdm-color-bg-secondary);
