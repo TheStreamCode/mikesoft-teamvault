@@ -1,5 +1,8 @@
 Private Document Manager Changelog
 
+1.1.24
+- Reverted mobile sidebar to off-canvas drawer pattern (slide from left)
+
 1.1.23
 - Fixed critical CSS typos (invalid background color, font-family misspellings)
 - Added mobile backdrop overlay for sidebar/details panels with click-to-close
