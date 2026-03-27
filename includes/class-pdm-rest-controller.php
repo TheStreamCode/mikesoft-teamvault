@@ -492,7 +492,7 @@ class PDM_REST_Controller
     public function update_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $id = (int) $request->get_param('id');
-        $rawDisplayName = sanitize_text_field((string) $request->get_param('display_name'));
+        $rawDisplayName = (string) $request->get_param('display_name');
         $fileNameValidation = $this->validator->validate_file_name($rawDisplayName);
 
         if (!$fileNameValidation['valid']) {
