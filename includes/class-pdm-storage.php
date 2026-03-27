@@ -131,7 +131,7 @@ class PDM_Storage
             wp_mkdir_p($targetDir);
         }
 
-        $contents = file_get_contents($uploadedFile['tmp_name']);
+        $contents = @file_get_contents($uploadedFile['tmp_name']);
 
         if ($contents === false || !$this->filesystem->write_file($relativePath, $contents)) {
             return [
