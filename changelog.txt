@@ -1,5 +1,18 @@
 Private Document Manager Changelog
 
+1.1.23
+- Fixed critical CSS typos (invalid background color, font-family misspellings)
+- Added mobile backdrop overlay for sidebar/details panels with click-to-close
+- Implemented ESC key handler for closing mobile panels
+- Added body scroll lock when sidebar/details panels are open on mobile
+- Increased touch targets to minimum 44x44px for better mobile interaction
+- Improved modal responsiveness with adaptive sizing for small screens
+- Added focus-visible states for better keyboard navigation and accessibility
+- Added prefers-reduced-motion support for users who prefer reduced animations
+- Added prefers-contrast support for high contrast mode
+- Added safe area insets support for notched devices
+- Fixed file rename sanitization issue where names with dots could become empty
+
 1.1.22
 - Fixed Plugin Check compliance by removing forbidden filesystem functions (move_uploaded_file, fopen/fread/fclose, streaming)
 - Hardened database migrations with hash_equals() table name validation before ALTER operations

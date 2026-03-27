@@ -70,7 +70,25 @@
                 previewModal: document.getElementById('pdm-preview-modal'),
                 previewContainer: document.getElementById('pdm-preview-container'),
                 previewDownload: document.getElementById('pdm-preview-download'),
+                backdrop: null,
             };
+
+            this.createBackdrop();
+        },
+
+        createBackdrop() {
+            const existingBackdrop = document.getElementById('pdm-backdrop');
+            if (existingBackdrop) {
+                this.elements.backdrop = existingBackdrop;
+                return;
+            }
+
+            const backdrop = document.createElement('div');
+            backdrop.id = 'pdm-backdrop';
+            backdrop.className = 'pdm-backdrop';
+            backdrop.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(backdrop);
+            this.elements.backdrop = backdrop;
         },
 
         bindEvents() {
@@ -99,6 +117,14 @@
 
             this.elements.previewModal?.querySelector('.pdm-preview-backdrop')?.addEventListener('click', () => this.hidePreview());
             this.elements.previewModal?.querySelector('.pdm-preview-close')?.addEventListener('click', () => this.hidePreview());
+
+            this.elements.backdrop?.addEventListener('click', () => this.closeMobilePanels());
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeMobilePanels();
+                }
+            });
 
             document.addEventListener('dragover', (e) => {
                 if (this.state.draggedItem) {
@@ -820,9 +846,7 @@
                 this.deleteFile(files.id);
             });
 
-            if (window.innerWidth <= 992) {
-                this.elements.details.classList.add('open');
-            }
+            this.openMobileDetails();
         },
 
         renderFolderDetails(folder) {
@@ -892,9 +916,7 @@
                 this.deleteFolder(folder.id);
             });
 
-            if (window.innerWidth <= 992) {
-                this.elements.details.classList.add('open');
-            }
+            this.openMobileDetails();
         },
 
         showNewFolderModal() {
@@ -1392,11 +1414,60 @@
         toggleSidebar() {
             this.state.sidebarOpen = !this.state.sidebarOpen;
             this.elements.sidebar?.classList.toggle('open', this.state.sidebarOpen);
+            
+            if (this.state.sidebarOpen) {
+                this.showBackdrop();
+                document.body.classList.add('pdm-no-scroll');
+            } else {
+                this.hideBackdrop();
+                document.body.classList.remove('pdm-no-scroll');
+            }
+        },
+
+        closeSidebar() {
+            if (this.state.sidebarOpen) {
+                this.state.sidebarOpen = false;
+                this.elements.sidebar?.classList.remove('open');
+                this.hideBackdrop();
+                document.body.classList.remove('pdm-no-scroll');
+            }
+        },
+
+        closeDetails() {
+            if (this.state.detailsOpen) {
+                this.state.detailsOpen = false;
+                this.elements.details?.classList.remove('open');
+                this.hideBackdrop();
+                document.body.classList.remove('pdm-no-scroll');
+            }
+        },
+
+        closeMobilePanels() {
+            this.closeSidebar();
+            this.closeDetails();
+        },
+
+        showBackdrop() {
+            this.elements.backdrop?.classList.add('active');
+        },
+
+        hideBackdrop() {
+            this.elements.backdrop?.classList.remove('active');
+        },
+
+        openMobileDetails() {
+            if (window.innerWidth <= 992) {
+                this.state.detailsOpen = true;
+                this.elements.details?.classList.add('open');
+                this.showBackdrop();
+                document.body.classList.add('pdm-no-scroll');
+            }
         },
 
         clearDetails() {
             this.state.selectedFile = null;
             this.state.selectedFolder = null;
+            this.closeDetails();
             this.elements.details.innerHTML = `
                 <div class="pdm-details-empty">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
