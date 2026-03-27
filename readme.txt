@@ -4,7 +4,7 @@ Tags: documents, private, secure, file-manager, access-control
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.20
+Stable tag: 1.1.22
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -76,6 +76,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.21 =
+* Hardened whitelist enforcement so role-based access and user whitelists are applied consistently across REST, admin screens, and streamed handlers
+* Normalized legacy log target types, improved storage cleanup safety, and switched file delivery to chunked streaming for large exports and previews
 
 = 1.1.20 =
 * Added clearer move-destination selection feedback and restored the root node in the sidebar tree

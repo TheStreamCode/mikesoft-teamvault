@@ -85,16 +85,7 @@ class PDM_Download
 
     private function build_download_filename(string $displayName, string $extension): string
     {
-        $filename = $this->sanitize_filename($displayName);
-        
-        $lowerExtension = strtolower($extension);
-        $filenameLower = strtolower($filename);
-        
-        if (!preg_match('/\.' . preg_quote($lowerExtension, '/') . '$/i', $filename)) {
-            $filename .= '.' . $extension;
-        }
-        
-        return $filename;
+        return PDM_Helpers::build_safe_download_filename($displayName, $extension);
     }
 
     private function stream_file(string $path, string $filename, string $mimeType, int $fileSize): void
@@ -137,8 +128,7 @@ class PDM_Download
 
     private function sanitize_filename(string $filename): string
     {
-        $filename = str_replace(["\r", "\n", '"', "'", '\\', '/', "\0"], '', $filename);
-        return $filename;
+        return PDM_Helpers::sanitize_archive_entry_segment($filename);
     }
 
     public function get_download_url(int $fileId): string

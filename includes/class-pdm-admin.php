@@ -28,7 +28,7 @@ class PDM_Admin
 
     public function add_menu(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             return;
         }
 
@@ -81,7 +81,7 @@ class PDM_Admin
 
     public function render_file_manager_page(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -90,7 +90,7 @@ class PDM_Admin
 
     public function render_settings_page(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -111,7 +111,7 @@ class PDM_Admin
 
     public function render_logs_page(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -120,7 +120,7 @@ class PDM_Admin
 
     public function handle_save_settings(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -150,6 +150,16 @@ class PDM_Admin
             ? absint(wp_unslash($_POST['pdm_max_file_size']))
             : 52428800;
 
+        if ($whitelistEnabled) {
+            $whitelistCheck = $this->settings->validate_whitelist_selection($userIds, get_current_user_id());
+
+            if ($whitelistCheck instanceof \WP_Error) {
+                set_transient('pdm_settings_error_' . get_current_user_id(), $whitelistCheck->get_error_message(), MINUTE_IN_SECONDS);
+                wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+                exit;
+            }
+        }
+
         $this->settings->sync_capabilities_on_whitelist_change($userIds, $whitelistEnabled);
 
         update_option('pdm_interface_language', $interfaceLanguage);
@@ -167,7 +177,7 @@ class PDM_Admin
 
     public function handle_cleanup_orphans(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -188,7 +198,7 @@ class PDM_Admin
 
     public function handle_reindex_storage(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
         }
 
@@ -275,7 +285,7 @@ class PDM_Admin
 
     private function guard_stream_request(): void
     {
-        if (!current_user_can(PDM_Capabilities::CAP_MANAGE)) {
+        if (!$this->current_user_can_manage()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'), esc_html__('Error', 'private-document-manager'), ['response' => 403]);
         }
 
@@ -345,5 +355,12 @@ class PDM_Admin
             $services['files_repo'],
             get_current_user_id()
         );
+    }
+
+    private function current_user_can_manage(): bool
+    {
+        $auth = new PDM_Auth($this->settings);
+
+        return $auth->can_access();
     }
 }

@@ -143,6 +143,13 @@ class PDM_Validator
             }
         }
 
+        $reserved = ['con', 'prn', 'aux', 'nul', 'com1', 'com2', 'com3', 'com4', 'com5',
+                     'com6', 'com7', 'com8', 'com9', 'lpt1', 'lpt2', 'lpt3', 'lpt4',
+                     'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9'];
+        if (in_array(strtolower($name), $reserved, true)) {
+            $errors[] = __('This name is reserved by the system.', 'private-document-manager');
+        }
+
         return [
             'valid' => empty($errors),
             'errors' => $errors,

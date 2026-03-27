@@ -24,6 +24,7 @@ Thumbs.db
 
 # Log files
 *.log
+.phpunit.cache/
 
 # Environments
 .env
@@ -32,3 +33,6 @@ Thumbs.db
 # Build artifacts
 /build/
 /dist/
+
+# Local git worktrees
+/.worktrees/

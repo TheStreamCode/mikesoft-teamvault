@@ -1,0 +1,8 @@
+{
+  "name": "mikesoft/private-document-manager",
+  "description": "Development tooling for Private Document Manager",
+  "type": "project",
+  "require-dev": {
+    "phpunit/phpunit": "^11.5"
+  }
+}

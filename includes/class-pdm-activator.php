@@ -5,10 +5,19 @@ defined('ABSPATH') || exit;
 class PDM_Activator
 {
     private const VERSION_OPTION = 'pdm_plugin_version';
+    private const STORAGE_MARKER_FILE = '.pdm-storage';
 
-    public static function activate(): void
+    public static function activate(bool $networkWide = false): void
     {
-        self::run_setup();
+        if ($networkWide && is_multisite()) {
+            $siteIds = get_sites(['fields' => 'ids']);
+
+            foreach ($siteIds as $siteId) {
+                self::initialize_site((int) $siteId);
+            }
+        } else {
+            self::run_setup();
+        }
 
         flush_rewrite_rules();
     }
@@ -22,30 +31,23 @@ class PDM_Activator
         }
 
         self::run_setup();
-        self::sync_user_whitelist_capabilities();
+    }
+
+    public static function initialize_site(int $siteId): void
+    {
+        if ($siteId <= 0) {
+            return;
+        }
+
+        switch_to_blog($siteId);
+        self::run_setup();
+        restore_current_blog();
     }
 
     private static function sync_user_whitelist_capabilities(): void
     {
-        $useWhitelist = get_option('pdm_use_user_whitelist', false);
-        
-        if (!$useWhitelist) {
-            return;
-        }
-
-        $userIds = get_option('pdm_allowed_users', []);
-        
-        if (!is_array($userIds) || empty($userIds)) {
-            return;
-        }
-
-        foreach ($userIds as $userId) {
-            $user = get_user_by('id', $userId);
-            if ($user && !$user->has_cap(PDM_Capabilities::CAP_MANAGE)) {
-                $user->add_cap(PDM_Capabilities::CAP_MANAGE);
-                update_user_meta($userId, 'pdm_granted_capability', true);
-            }
-        }
+        $settings = new PDM_Settings();
+        $settings->sync_existing_whitelist();
     }
 
     private static function run_setup(): void
@@ -54,6 +56,7 @@ class PDM_Activator
         self::create_storage_directory();
         self::register_capabilities();
         self::set_default_options();
+        self::sync_user_whitelist_capabilities();
         update_option(self::VERSION_OPTION, PDM_VERSION);
     }
 
@@ -111,7 +114,7 @@ class PDM_Activator
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT(20) UNSIGNED NOT NULL,
             action VARCHAR(50) NOT NULL,
-            target_type ENUM('folder', 'files') NOT NULL,
+            target_type VARCHAR(20) NOT NULL,
             target_id BIGINT(20) UNSIGNED NULL,
             context TEXT NULL,
             ip_address VARCHAR(45) NULL,
@@ -129,6 +132,54 @@ class PDM_Activator
         foreach ($sql as $query) {
             dbDelta($query);
         }
+
+        self::normalize_logs_table($logs_table);
+    }
+
+    private static function normalize_logs_table(string $logsTable): void
+    {
+        global $wpdb;
+
+        $safeLogsTable = self::normalize_logs_table_name_for_upgrade(
+            $logsTable,
+            $wpdb->get_blog_prefix(get_current_blog_id())
+        );
+
+        if ($safeLogsTable === '') {
+            return;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQL.NotPrepared -- Safe table name is restricted to the expected blog-specific logs table before interpolation.
+        $wpdb->query('ALTER TABLE `' . $safeLogsTable . '` MODIFY target_type VARCHAR(20) NOT NULL');
+
+        self::migrate_legacy_log_target_types($wpdb, $safeLogsTable);
+    }
+
+    public static function normalize_logs_table_name_for_upgrade(string $logsTable, string $blogPrefix): string
+    {
+        $expectedTable = $blogPrefix . 'pdm_logs';
+
+        if (!preg_match('/^[A-Za-z0-9_]+$/', $expectedTable)) {
+            return '';
+        }
+
+        return hash_equals($expectedTable, $logsTable) ? $expectedTable : '';
+    }
+
+    public static function migrate_legacy_log_target_types($wpdb, string $logsTable): bool
+    {
+        if ($logsTable === '' || !is_object($wpdb) || !method_exists($wpdb, 'update')) {
+            return false;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- One-time migration on activation; caching not applicable.
+        $result = $wpdb->update(
+            $logsTable,
+            ['target_type' => 'file'],
+            ['target_type' => 'files']
+        );
+
+        return $result !== false;
     }
 
     private static function create_storage_directory(): void
@@ -179,6 +230,11 @@ class PDM_Activator
         $index = $path . '/index.php';
         if (!file_exists($index)) {
             @file_put_contents($index, "<?php // Silence is golden");
+        }
+
+        $marker = $path . '/' . self::STORAGE_MARKER_FILE;
+        if (!file_exists($marker)) {
+            @file_put_contents($marker, "Private Document Manager storage marker\n");
         }
     }
 

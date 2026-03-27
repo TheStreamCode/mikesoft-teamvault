@@ -13,7 +13,7 @@ class PDM_Auth
 
     public function can_access(): bool
     {
-        return is_user_logged_in() && PDM_Capabilities::can_manage();
+        return $this->has_effective_access();
     }
 
     public function can_read(): bool
@@ -41,7 +41,7 @@ class PDM_Auth
             );
         }
 
-        if (!PDM_Capabilities::can_manage()) {
+        if (!$this->has_effective_access()) {
             return new \WP_Error(
                 'pdm_forbidden',
                 __('You do not have permission to access this resource.', 'private-document-manager'),
@@ -83,5 +83,14 @@ class PDM_Auth
         }
 
         return true;
+    }
+
+    public function has_effective_access(): bool
+    {
+        if (!is_user_logged_in() || !PDM_Capabilities::can_manage()) {
+            return false;
+        }
+
+        return $this->settings->is_user_allowed($this->get_current_user_id());
     }
 }

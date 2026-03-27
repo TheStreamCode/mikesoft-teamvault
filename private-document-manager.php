@@ -3,7 +3,7 @@
  * Plugin Name: Private Document Manager
  * Plugin URI: https://github.com/mikesoft-codex/wp-private-document-manager
  * Description: Private document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
- * Version: 1.1.20
+ * Version: 1.1.22
  * Author: Michael Gasperini
  * Author URI: https://mikesoft.it
  * License: GPL v2 or later
@@ -16,7 +16,7 @@
 
 defined('ABSPATH') || exit;
 
-define('PDM_VERSION', '1.1.20');
+define('PDM_VERSION', '1.1.22');
 define('PDM_PLUGIN_FILE', __FILE__);
 define('PDM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PDM_PLUGIN_URL', plugin_dir_url(__FILE__));
