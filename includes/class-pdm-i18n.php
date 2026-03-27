@@ -145,7 +145,7 @@ class PDM_I18n
         'Rename' => 'Rinomina',
         'Renamed successfully.' => 'Rinominato con successo.',
         'Required capability:' => 'Capability richiesta:',
-        'Root folder' => 'Cartella principale',
+        'Root folder' => 'Home',
         'results' => 'risultati',
         'Save Settings' => 'Salva Impostazioni',
         'Search files...' => 'Cerca file...',
