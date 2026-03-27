@@ -269,7 +269,7 @@ class PDM_Filesystem
         $finfo = @finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
             $mime = @finfo_file($finfo, $fullPath);
-            finfo_close($finfo);
+            @finfo_close($finfo);
             if ($mime !== false) {
                 return $mime;
             }
@@ -398,7 +398,7 @@ class PDM_Filesystem
 
         require_once ABSPATH . 'wp-admin/includes/file.php';
 
-        if (!WP_Filesystem()) {
+        if (!@WP_Filesystem()) {
             return null;
         }
 

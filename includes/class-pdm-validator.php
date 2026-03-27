@@ -237,7 +237,7 @@ class PDM_Validator
             return ['valid' => true, 'errors' => []];
         }
 
-        $content = file_get_contents($filesPath, false, null, 0, 65536);
+        $content = @file_get_contents($filesPath, false, null, 0, 65536);
 
         if ($content === false) {
             return ['valid' => true, 'errors' => []];

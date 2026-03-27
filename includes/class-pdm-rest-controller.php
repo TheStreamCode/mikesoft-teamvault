@@ -409,12 +409,16 @@ class PDM_REST_Controller
 
     public function upload_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
+        ob_start();
+
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST nonce is enforced in the permission callback.
         if (empty($_FILES['file'])) {
+            ob_end_clean();
             return new \WP_Error('no_files', __('No file uploaded.', 'private-document-manager'), ['status' => 400]);
         }
 
         if (!$this->storage->ensure_storage_directory()) {
+            ob_end_clean();
             return new \WP_Error('storage_error', __('Unable to initialize the storage directory.', 'private-document-manager'), ['status' => 500]);
         }
 
@@ -425,6 +429,7 @@ class PDM_REST_Controller
 
         $validation = $this->validator->validate_upload_full($files);
         if (!$validation['valid']) {
+            ob_end_clean();
             return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
         }
 
@@ -435,6 +440,7 @@ class PDM_REST_Controller
 
         $fileNameValidation = $this->validator->validate_file_name($rawDisplayName);
         if (!$fileNameValidation['valid']) {
+            ob_end_clean();
             return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
         }
 
@@ -446,6 +452,7 @@ class PDM_REST_Controller
 
         $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
         if (!$result['success']) {
+            ob_end_clean();
             return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
         }
 
@@ -473,6 +480,8 @@ class PDM_REST_Controller
                 'file_size' => $validation['size'],
             ]);
         }
+
+        ob_end_clean();
 
         return new \WP_REST_Response([
             'success' => true,
