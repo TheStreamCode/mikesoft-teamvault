@@ -9,7 +9,7 @@
     --pdm-color-danger-light: #fee2e2;
     --pdm-color-warning: #f59e0b;
     --pdm-color-warning-light: #fef3c7;
-    --pdm-color-bg: #f8agofc;
+    --pdm-color-bg: #f8fafc;
     --pdm-color-bg-secondary: #ffffff;
     --pdm-color-border: #e2e8f0;
     --pdm-color-text: #1e293b;
@@ -32,7 +32,7 @@
 
 .pdm-wrapper {
     margin: 20px 0 -20px -20px;
-    font-agomily: var(--pdm-font-sans);
+    font-family: var(--pdm-font-sans);
     color: var(--pdm-color-text);
     background: var(--pdm-color-bg);
 }
@@ -1746,4 +1746,303 @@
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+/* ============================================
+   MOBILE BACKDROP OVERLAY
+   ============================================ */
+
+.pdm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.pdm-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ============================================
+   BODY SCROLL LOCK
+   ============================================ */
+
+body.pdm-no-scroll {
+    overflow: hidden;
+}
+
+/* ============================================
+   FOCUS VISIBLE STATES
+   ============================================ */
+
+.pdm-btn:focus-visible,
+.pdm-input:focus-visible,
+.pdm-select:focus-visible,
+.pdm-textarea:focus-visible,
+.pdm-folder-item:focus-visible,
+.pdm-item:focus-visible,
+.pdm-list-item:focus-visible {
+    outline: 2px solid var(--pdm-color-primary);
+    outline-offset: 2px;
+}
+
+.pdm-sidebar-search .pdm-input:focus-visible {
+    box-shadow: 0 0 0 3px var(--pdm-color-primary-light);
+}
+
+/* ============================================
+   REDUCED MOTION PREFERENCES
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .pdm-toast {
+        animation: none;
+    }
+
+    .pdm-spinner {
+        animation: none;
+        border-top-color: var(--pdm-color-primary);
+    }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+
+@media (prefers-contrast: high) {
+    :root {
+        --pdm-color-text-muted: #1e293b;
+        --pdm-color-border: #64748b;
+    }
+
+    .pdm-btn-secondary {
+        border-width: 2px;
+    }
+}
+
+/* ============================================
+   SAFE AREA INSETS (NOTCHED DEVICES)
+   ============================================ */
+
+@supports (padding: max(0px)) {
+    .pdm-sidebar {
+        padding-left: max(0px, env(safe-area-inset-left));
+    }
+
+    .pdm-details {
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+
+    .pdm-toolbar {
+        padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    .pdm-toast-container {
+        bottom: max(20px, env(safe-area-inset-bottom));
+        right: max(20px, env(safe-area-inset-right));
+    }
+}
+
+/* ============================================
+   IMPROVED MOBILE RESPONSIVENESS
+   ============================================ */
+
+@media (max-width: 992px) {
+    .pdm-backdrop {
+        display: block;
+    }
+
+    .pdm-sidebar {
+        box-shadow: var(--pdm-shadow-lg);
+        z-index: 100;
+    }
+
+    .pdm-details {
+        box-shadow: var(--pdm-shadow-lg);
+        z-index: 110;
+    }
+
+    .pdm-modal-content {
+        max-width: calc(100vw - 32px);
+        margin: 16px;
+    }
+
+    .pdm-preview-container {
+        padding: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdm-content {
+        padding: 16px;
+    }
+
+    .pdm-item-icon {
+        width: 56px;
+        height: 56px;
+    }
+
+    .pdm-item-icon svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .pdm-details-header {
+        padding: 16px;
+    }
+
+    .pdm-details-body {
+        padding: 16px;
+    }
+
+    .pdm-details-actions {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pdm-toolbar {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .pdm-toolbar-left {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pdm-toolbar-right {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pdm-content {
+        padding: 12px;
+    }
+
+    .pdm-modal-content {
+        margin: 8px;
+        max-width: calc(100vw - 16px);
+        max-height: calc(100vh - 16px);
+    }
+
+    .pdm-modal-header {
+        padding: 12px 16px;
+    }
+
+    .pdm-modal-body {
+        padding: 16px;
+    }
+
+    .pdm-modal-footer {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+    }
+
+    .pdm-preview-content {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .pdm-details-actions .pdm-btn {
+        flex: 1 1 100%;
+    }
+}
+
+/* ============================================
+   TOUCH TARGETS (MIN 44x44px FOR MOBILE)
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+    .pdm-btn {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+
+    .pdm-btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .pdm-folder-item {
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .pdm-list-item {
+        min-height: 52px;
+        padding: 14px 16px;
+    }
+
+    .pdm-pagination-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .context-menu-item {
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .pdm-input,
+    .pdm-select {
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .pdmm-checkbox-label input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+    }
+
+    .pdm-move-item {
+        min-height: 44px;
+        padding: 12px;
+    }
+
+    .pdm-export-folder-option {
+        min-height: 44px;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    .pdm-sidebar,
+    .pdm-toolbar,
+    .pdm-details,
+    .pdm-upload-overlay,
+    .pdm-modal,
+    .pdm-toast-container,
+    .pdm-preview-modal {
+        display: none !important;
+    }
+
+    .pdm-main {
+        width: 100% !important;
+    }
+
+    .pdm-content {
+        padding: 0 !important;
+    }
+
+    .pdm-item,
+    .pdm-list-item {
+        break-inside: avoid;
+    }
 }
