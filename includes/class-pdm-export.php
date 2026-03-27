@@ -12,6 +12,7 @@ class PDM_Export
     private PDM_Auth $auth;
     private string $currentZipPath = '';
     private int $currentFileCount = 0;
+    private array $reservedArchivePaths = [];
 
     public function __construct(
         PDM_Storage $storage,
@@ -63,6 +64,7 @@ class PDM_Export
 
         $this->currentZipPath = $zipPath;
         $this->currentFileCount = 0;
+        $this->reservedArchivePaths = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
         if (class_exists('PDM_Hooks')) {
@@ -141,6 +143,7 @@ class PDM_Export
 
         $this->currentZipPath = $zipPath;
         $this->currentFileCount = 0;
+        $this->reservedArchivePaths = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
         if (class_exists('PDM_Hooks')) {
@@ -191,7 +194,7 @@ class PDM_Export
         $folders = $this->folderRepo->find_by_parent($folderId);
 
         foreach ($folders as $folder) {
-            $folderPath = $basePath . $folder->name . '/';
+            $folderPath = $this->build_unique_folder_archive_path($basePath, $folder->name);
             $zip->addEmptyDir($folderPath);
             $this->add_folder_to_zip($zip, $folder->id, $folderPath);
         }
@@ -206,7 +209,7 @@ class PDM_Export
             $filesPath = $this->storage->get_filesystem()->resolve($files->relative_path);
 
             if (file_exists($filesPath) && is_readable($filesPath)) {
-                $zipPath = $basePath . $this->get_filename_with_extension($files);
+                $zipPath = $this->build_unique_file_archive_path($basePath, $files);
                 $zip->addFile($filesPath, $zipPath);
                 $this->currentFileCount++;
             }
@@ -215,28 +218,12 @@ class PDM_Export
 
     private function get_filename_with_extension(object $files): string
     {
-        $name = $files->display_name;
-        $ext = $files->extension;
-
-        if (!preg_match('/\.' . preg_quote($ext, '/') . '$/i', $name)) {
-            $name .= '.' . $ext;
-        }
-
-        return $name;
+        return PDM_Helpers::build_safe_download_filename((string) $files->display_name, (string) $files->extension);
     }
 
     private function sanitize_zip_name(string $name): string
     {
-        $name = sanitize_file_name($name);
-        $name = preg_replace('/[^a-zA-Z0-9._-]/', '-', $name);
-        $name = preg_replace('/-+/', '-', $name);
-        $name = trim($name, '-._');
-
-        if (empty($name)) {
-            $name = 'export';
-        }
-
-        return $name;
+        return PDM_Helpers::sanitize_archive_entry_segment($name, 'export');
     }
 
     private function get_selected_export_folders(array $folderIds): array
@@ -295,6 +282,54 @@ class PDM_Export
         $usedPaths[] = $candidate;
 
         return $candidate . '/';
+    }
+
+    private function build_unique_folder_archive_path(string $basePath, string $folderName): string
+    {
+        $baseName = PDM_Helpers::sanitize_archive_entry_segment($folderName, 'folder');
+        $candidate = $basePath . $baseName . '/';
+        $suffix = 2;
+
+        while ($this->is_reserved_archive_path($candidate)) {
+            $candidate = $basePath . $baseName . '-' . $suffix . '/';
+            $suffix++;
+        }
+
+        $this->reserve_archive_path($candidate);
+
+        return $candidate;
+    }
+
+    private function build_unique_file_archive_path(string $basePath, object $files): string
+    {
+        $baseName = $this->get_filename_with_extension($files);
+        $extension = pathinfo($baseName, PATHINFO_EXTENSION);
+        $filename = pathinfo($baseName, PATHINFO_FILENAME);
+        $candidate = $basePath . $baseName;
+        $suffix = 2;
+
+        while ($this->is_reserved_archive_path($candidate)) {
+            $candidateName = $filename . '-' . $suffix;
+            if ($extension !== '') {
+                $candidateName .= '.' . $extension;
+            }
+            $candidate = $basePath . $candidateName;
+            $suffix++;
+        }
+
+        $this->reserve_archive_path($candidate);
+
+        return $candidate;
+    }
+
+    private function reserve_archive_path(string $path): void
+    {
+        $this->reservedArchivePaths[strtolower($path)] = true;
+    }
+
+    private function is_reserved_archive_path(string $path): bool
+    {
+        return isset($this->reservedArchivePaths[strtolower($path)]);
     }
 
     private function create_temp_zip_path(string $name): string

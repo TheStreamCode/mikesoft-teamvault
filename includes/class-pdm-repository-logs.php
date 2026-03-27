@@ -18,10 +18,12 @@ class PDM_Repository_Logs
     {
         global $wpdb;
 
+        $targetType = PDM_Logger::normalize_target_type((string) ($data['target_type'] ?? 'file'));
+
         $wpdb->insert($this->table, [
             'user_id' => $data['user_id'],
             'action' => $data['action'],
-            'target_type' => $data['target_type'],
+            'target_type' => $targetType,
             'target_id' => $data['target_id'] ?? null,
             'context' => isset($data['context']) ? json_encode($data['context']) : null,
             'ip_address' => $data['ip_address'] ?? $this->get_client_ip(),
@@ -47,6 +49,20 @@ class PDM_Repository_Logs
     public function find_by_target(string $targetType, int $targetId, int $limit = 50): array
     {
         global $wpdb;
+
+        $targetType = PDM_Logger::normalize_target_type($targetType);
+
+        if ($targetType === 'file') {
+            return $wpdb->get_results(
+                $wpdb->prepare(
+                    "SELECT * FROM {$this->table} WHERE target_type IN (%s, %s) AND target_id = %d ORDER BY created_at DESC LIMIT %d",
+                    'file',
+                    'files',
+                    $targetId,
+                    $limit
+                )
+            );
+        }
 
         return $wpdb->get_results(
             $wpdb->prepare(

@@ -29,10 +29,21 @@ class PDM_Logger
         return $this->repo->create([
             'user_id' => get_current_user_id(),
             'action' => $action,
-            'target_type' => $targetType,
+            'target_type' => self::normalize_target_type($targetType),
             'target_id' => $targetId,
             'context' => $context,
         ]);
+    }
+
+    public static function normalize_target_type(string $targetType): string
+    {
+        $targetType = strtolower(trim($targetType));
+
+        if ($targetType === 'files') {
+            return 'file';
+        }
+
+        return $targetType === 'folder' ? 'folder' : 'file';
     }
 
     public function log_upload(int $fileId, string $filename): int

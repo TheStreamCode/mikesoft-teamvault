@@ -1,5 +1,16 @@
 Private Document Manager Changelog
 
+1.1.22
+- Fixed Plugin Check compliance by removing forbidden filesystem functions (move_uploaded_file, fopen/fread/fclose, streaming)
+- Hardened database migrations with hash_equals() table name validation before ALTER operations
+- Replaced interpolated SQL with $wpdb->update() API for safer database updates
+- Added phpcs:ignore annotations for legitimate schema migration queries (DirectQuery/NoCaching)
+- Excluded development files (.gitignore, tests, vendor) from release package
+
+1.1.21
+- Hardened whitelist enforcement so REST, admin screens, and admin-post handlers apply the same access rules
+- Normalized log target types, added safer storage markers/uninstall guards, and switched large-file delivery to chunked streaming
+
 1.1.20
 - Added visible selection highlighting in the move dialog and restored the root node in the left sidebar tree
 - Completed the latest Italian translation review for pagination, maintenance, export, and storage recovery strings

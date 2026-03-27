@@ -125,7 +125,7 @@ class PDM_Preview
 
     private function sanitize_filename(string $filename): string
     {
-        return str_replace(["\r", "\n", '"', "'", '\\', '/', "\0"], '', $filename);
+        return PDM_Helpers::sanitize_archive_entry_segment($filename);
     }
 
     public function get_preview_url(int $fileId): string

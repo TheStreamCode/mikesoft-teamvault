@@ -19,6 +19,8 @@ class PDM_Settings
         'pdm_allowed_users' => [],
     ];
 
+    private const LEGACY_GRANTED_CAPABILITY_META = 'pdm_granted_capability';
+
     public function init(): void
     {
         add_action('admin_init', [$this, 'register_settings']);
@@ -198,8 +200,10 @@ class PDM_Settings
 
     public function sync_capabilities_on_whitelist_change(array $newUserIds, bool $whitelistEnabled): void
     {
+        $newUserIds = $this->sanitize_user_ids($newUserIds);
         $oldUserIds = $this->get_allowed_users();
-        $wasEnabled = $this->use_user_whitelist();
+
+        $this->cleanup_legacy_granted_capabilities();
 
         if ($whitelistEnabled) {
             $this->grant_capability_to_users($newUserIds, $oldUserIds);
@@ -207,42 +211,74 @@ class PDM_Settings
             $this->revoke_all_granted_capabilities();
         }
 
-        $this->update('pdm_allowed_users', $this->sanitize_user_ids($newUserIds));
+        $this->update('pdm_allowed_users', $newUserIds);
         $this->update('pdm_use_user_whitelist', $whitelistEnabled);
+    }
+
+    public function validate_whitelist_selection(array $userIds, int $currentUserId): bool|\WP_Error
+    {
+        $userIds = $this->sanitize_user_ids($userIds);
+
+        if (empty($userIds)) {
+            return new \WP_Error(
+                'pdm_invalid_whitelist',
+                __('Select at least one authorized user before enabling the whitelist.', 'private-document-manager')
+            );
+        }
+
+        if (!in_array($currentUserId, $userIds, true)) {
+            return new \WP_Error(
+                'pdm_whitelist_lockout',
+                __('Add your current account to the whitelist before enabling it, otherwise you will lock yourself out.', 'private-document-manager')
+            );
+        }
+
+        return true;
+    }
+
+    public function get_granted_capability_meta_key(): string
+    {
+        return self::LEGACY_GRANTED_CAPABILITY_META . '_' . get_current_blog_id();
     }
 
     private function grant_capability_to_users(array $newUserIds, array $oldUserIds): void
     {
-        $toAdd = array_diff($newUserIds, $oldUserIds);
+        $metaKey = $this->get_granted_capability_meta_key();
         $toRemove = array_diff($oldUserIds, $newUserIds);
 
-        foreach ($toAdd as $userId) {
+        foreach ($newUserIds as $userId) {
             $user = get_user_by('id', $userId);
             if ($user) {
-                $user->add_cap(PDM_Capabilities::CAP_MANAGE);
-                update_user_meta($userId, 'pdm_granted_capability', true);
+                if (!$user->has_cap(PDM_Capabilities::CAP_MANAGE)) {
+                    $user->add_cap(PDM_Capabilities::CAP_MANAGE);
+                }
+
+                if (!get_user_meta($userId, $metaKey, true)) {
+                    update_user_meta($userId, $metaKey, true);
+                }
             }
         }
 
         foreach ($toRemove as $userId) {
-            if (get_user_meta($userId, 'pdm_granted_capability', true)) {
+            if (get_user_meta($userId, $metaKey, true)) {
                 $user = get_user_by('id', $userId);
                 if ($user) {
                     $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
                 }
-                delete_user_meta($userId, 'pdm_granted_capability');
+                delete_user_meta($userId, $metaKey);
             }
         }
     }
 
     private function revoke_all_granted_capabilities(): void
     {
+        $metaKey = $this->get_granted_capability_meta_key();
         // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- User capability cleanup runs rarely and targets plugin-managed metadata only.
-        $users = get_users(['meta_key' => 'pdm_granted_capability', 'meta_value' => true]);
+        $users = get_users(['meta_key' => $metaKey, 'meta_value' => true]);
 
         foreach ($users as $user) {
             $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
-            delete_user_meta($user->ID, 'pdm_granted_capability');
+            delete_user_meta($user->ID, $metaKey);
         }
     }
 
@@ -252,13 +288,16 @@ class PDM_Settings
             return;
         }
 
+        $this->cleanup_legacy_granted_capabilities();
+
         $userIds = $this->get_allowed_users();
+        $metaKey = $this->get_granted_capability_meta_key();
 
         foreach ($userIds as $userId) {
             $user = get_user_by('id', $userId);
             if ($user && !$user->has_cap(PDM_Capabilities::CAP_MANAGE)) {
                 $user->add_cap(PDM_Capabilities::CAP_MANAGE);
-                update_user_meta($userId, 'pdm_granted_capability', true);
+                update_user_meta($userId, $metaKey, true);
             }
         }
     }
@@ -274,13 +313,42 @@ class PDM_Settings
         }
 
         $realpath = realpath($path);
-        $abspath = realpath(ABSPATH);
-        
         if (false === $realpath) {
             return false;
         }
 
-        return true;
+        $normalizedRealpath = wp_normalize_path($realpath);
+        $uploadDir = wp_upload_dir();
+        $uploadBase = isset($uploadDir['basedir']) ? realpath($uploadDir['basedir']) : false;
+
+        if ($uploadBase !== false) {
+            $normalizedUploadBase = trailingslashit(wp_normalize_path($uploadBase));
+
+            if ($normalizedRealpath === untrailingslashit($normalizedUploadBase)
+                || strpos(trailingslashit($normalizedRealpath), $normalizedUploadBase) === 0) {
+                return true;
+            }
+        }
+
+        return file_exists($realpath . DIRECTORY_SEPARATOR . '.pdm-storage');
+    }
+
+    private function cleanup_legacy_granted_capabilities(): void
+    {
+        $allowedUsers = $this->get_allowed_users();
+        $metaKey = $this->get_granted_capability_meta_key();
+        // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key,WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- Legacy cleanup runs rarely during settings sync/upgrade.
+        $users = get_users(['meta_key' => self::LEGACY_GRANTED_CAPABILITY_META, 'meta_value' => true]);
+
+        foreach ($users as $user) {
+            if ($this->use_user_whitelist() && in_array((int) $user->ID, $allowedUsers, true)) {
+                update_user_meta($user->ID, $metaKey, true);
+            } else {
+                $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
+            }
+
+            delete_user_meta($user->ID, self::LEGACY_GRANTED_CAPABILITY_META);
+        }
     }
 
     public function update(string $key, $value): bool

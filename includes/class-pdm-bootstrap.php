@@ -65,11 +65,12 @@ final class PDM_Bootstrap
         add_action('init', [$this, 'maybe_upgrade'], 1);
         add_action('init', [$this, 'init_services'], 5);
         add_action('rest_api_init', [$this, 'init_rest_api']);
+        add_action('wp_initialize_site', [$this, 'initialize_site'], 10, 1);
     }
 
-    public function activate(): void
+    public function activate(bool $networkWide = false): void
     {
-        PDM_Activator::activate();
+        PDM_Activator::activate($networkWide);
     }
 
     public function deactivate(): void
@@ -101,6 +102,15 @@ final class PDM_Bootstrap
     public function maybe_upgrade(): void
     {
         PDM_Activator::maybe_upgrade();
+    }
+
+    public function initialize_site(\WP_Site $newSite): void
+    {
+        if (empty($newSite->blog_id)) {
+            return;
+        }
+
+        PDM_Activator::initialize_site((int) $newSite->blog_id);
     }
 
     public function init_rest_api(): void

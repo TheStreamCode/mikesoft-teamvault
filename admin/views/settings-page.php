@@ -11,9 +11,14 @@ $pdf_preview_enabled = (bool) get_option('pdm_pdf_preview_enabled', true);
 $log_enabled = (bool) get_option('pdm_log_enabled', true);
 $remove_data_on_uninstall = (bool) get_option('pdm_remove_data_on_uninstall', false);
 $settings_saved = (bool) get_transient('pdm_settings_saved_' . get_current_user_id());
+$settings_error = get_transient('pdm_settings_error_' . get_current_user_id());
 
 if ($settings_saved) {
     delete_transient('pdm_settings_saved_' . get_current_user_id());
+}
+
+if ($settings_error !== false) {
+    delete_transient('pdm_settings_error_' . get_current_user_id());
 }
 
 $allowed_users = is_array($allowed_users) ? $allowed_users : [];
@@ -25,6 +30,12 @@ $max_server_upload_size = (int) wp_max_upload_size();
     <?php if ($settings_saved) : ?>
         <div class="pdm-notice pdm-notice-success">
             <?php esc_html_e('Settings saved successfully.', 'private-document-manager'); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if (!empty($settings_error)) : ?>
+        <div class="pdm-notice pdm-notice-error">
+            <?php echo esc_html((string) $settings_error); ?>
         </div>
     <?php endif; ?>
 
@@ -101,7 +112,7 @@ $max_server_upload_size = (int) wp_max_upload_size();
                     >
                     <span class="pdm-checkbox-text"><?php esc_html_e('Limit access to specific users', 'private-document-manager'); ?></span>
                 </label>
-                <p class="pdm-field-desc"><?php esc_html_e('If enabled, only users in the list will have access. If disabled, roles/capabilities will be used.', 'private-document-manager'); ?></p>
+                <p class="pdm-field-desc"><?php esc_html_e('If enabled, users still need the plugin capability and must also be present in this list. Include your current account before saving to avoid locking yourself out.', 'private-document-manager'); ?></p>
             </div>
 
             <div class="pdm-field pdm-user-whitelist-field" style="<?php echo esc_attr($use_user_whitelist ? '' : 'display:none;'); ?>">

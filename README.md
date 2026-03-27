@@ -1,6 +1,6 @@
 # Private Document Manager
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.20-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.21-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -87,9 +87,9 @@ $role->add_cap('manage_private_documents');
 2. Enable "Limit access to specific users"
 3. Search and add users to the whitelist
 4. Users will automatically receive the `manage_private_documents` capability
-5. Only whitelisted users will see the menu and have access
+5. Only whitelisted users with the plugin capability will see the menu and have access
 
-> **Note:** The whitelist uses WordPress native capability system. Users receive the capability when added to the whitelist and lose it when removed or when the whitelist is disabled.
+> **Note:** When the whitelist is enabled, it becomes an extra authorization gate on top of the plugin capability. Keep your current account in the whitelist before saving to avoid locking yourself out.
 
 ### Allowed File Types
 
@@ -159,6 +159,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [readme.txt](readme.txt) for full changelog.
 
 ### Recent Changes
+
+**v1.1.21**
+- Hardened whitelist enforcement, normalized legacy log target types, and made file streaming safer for large downloads, previews, and ZIP exports
 
 **v1.1.20**
 - Added clearer move-destination selection feedback, restored the root node in the sidebar tree, and completed the latest Italian translation review

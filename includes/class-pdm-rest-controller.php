@@ -428,7 +428,17 @@ class PDM_REST_Controller
             return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
         }
 
-        $displayName = PDM_Helpers::sanitize_file_display_name($request->get_param('display_name') ?: pathinfo($files['name'], PATHINFO_FILENAME));
+        $rawDisplayName = $request->get_param('display_name');
+        $rawDisplayName = is_string($rawDisplayName) && $rawDisplayName !== ''
+            ? sanitize_text_field($rawDisplayName)
+            : pathinfo((string) $files['name'], PATHINFO_FILENAME);
+
+        $fileNameValidation = $this->validator->validate_file_name($rawDisplayName);
+        if (!$fileNameValidation['valid']) {
+            return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
+        }
+
+        $displayName = PDM_Helpers::sanitize_file_display_name($rawDisplayName);
 
         if (class_exists('PDM_Hooks')) {
             $displayName = PDM_Hooks::filter_file_name($displayName, (string) $files['name']);
@@ -473,7 +483,14 @@ class PDM_REST_Controller
     public function update_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $id = (int) $request->get_param('id');
-        $displayName = PDM_Helpers::sanitize_file_display_name((string) $request->get_param('display_name'));
+        $rawDisplayName = sanitize_text_field((string) $request->get_param('display_name'));
+        $fileNameValidation = $this->validator->validate_file_name($rawDisplayName);
+
+        if (!$fileNameValidation['valid']) {
+            return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
+        }
+
+        $displayName = PDM_Helpers::sanitize_file_display_name($rawDisplayName);
 
         $files = $this->filesRepo->find($id);
         if (!$files) {

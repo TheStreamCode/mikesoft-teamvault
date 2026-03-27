@@ -426,6 +426,11 @@ class PDM_Storage
         if (!file_exists($index)) {
             @file_put_contents($index, "<?php // Silence is golden");
         }
+
+        $marker = $path . '/.pdm-storage';
+        if (!file_exists($marker)) {
+            @file_put_contents($marker, "Private Document Manager storage marker\n");
+        }
     }
 
     private function reindex_directory(
@@ -469,14 +474,14 @@ class PDM_Storage
             }
 
             $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-            $displayName = pathinfo($item, PATHINFO_FILENAME);
+            $displayName = PDM_Helpers::sanitize_file_display_name((string) pathinfo($item, PATHINFO_FILENAME));
             $parentPath = $this->get_parent_relative_path($itemRelativePath);
 
             $filesRepo->create([
                 'folder_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
                 'original_name' => $item,
                 'stored_name' => $item,
-                'display_name' => $displayName !== '' ? $displayName : $item,
+                'display_name' => $displayName !== '' ? $displayName : PDM_Helpers::sanitize_file_display_name($item),
                 'relative_path' => $itemRelativePath,
                 'extension' => $extension,
                 'mime_type' => $this->filesystem->get_mime_type($itemRelativePath),
@@ -496,7 +501,7 @@ class PDM_Storage
             return false;
         }
 
-        return in_array($item, ['.htaccess', 'web.config', 'index.php'], true);
+        return in_array($item, ['.htaccess', 'web.config', 'index.php', '.pdm-storage'], true);
     }
 
     private function join_relative_paths(string $base, string $item): string
