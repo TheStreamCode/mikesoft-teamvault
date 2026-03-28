@@ -99,6 +99,8 @@ class PDM_Assets
                 'status' => __('Status', 'mikesoft-teamvault'),
                 'folderHasChildren' => __('Contains subfolders', 'mikesoft-teamvault'),
                 'folderEmpty' => __('No subfolders', 'mikesoft-teamvault'),
+                'expand' => __('Expand', 'mikesoft-teamvault'),
+                'collapse' => __('Collapse', 'mikesoft-teamvault'),
                 'selectItem' => __('Select a file or folder to view details', 'mikesoft-teamvault'),
                 'untitledFolder' => __('New folder', 'mikesoft-teamvault'),
                 'moveTo' => __('Move to...', 'mikesoft-teamvault'),

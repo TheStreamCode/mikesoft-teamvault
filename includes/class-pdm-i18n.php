@@ -27,6 +27,7 @@ class PDM_I18n
         'Cancel' => 'Annulla',
         'Choose the plugin interface language. The default language is English.' => 'Scegli la lingua dell\'interfaccia del plugin. La lingua predefinita e inglese.',
         'Close' => 'Chiudi',
+        'Collapse' => 'Raccogli',
         'Comma-separated list of allowed file extensions for upload.' => 'Lista delle estensioni file consentite per l\'upload, separate da virgola.',
         'Configure the plugin options for private document management.' => 'Configura le opzioni del plugin per la gestione dei documenti privati.',
         'Confirm' => 'Conferma',
@@ -66,6 +67,7 @@ class PDM_I18n
         'Export completed' => 'Esportazione completata',
         'Export Folder' => 'Esporta cartella',
         'Exporting...' => 'Esportazione in corso...',
+        'Expand' => 'Espandi',
         'Extension .%s is not allowed.' => 'Estensione .%s non consentita.',
         'File' => 'File',
         'File Manager' => 'File Manager',
@@ -223,7 +225,7 @@ class PDM_I18n
         'You do not have permission to access this resource.' => 'Non hai i permessi necessari per accedere a questa risorsa.',
         'ZipArchive is not available on this server. Contact the server administrator.' => 'ZipArchive non e disponibile su questo server. Contatta l\'amministratore del server.',
         'Unable to delete the files from the filesystem.' => 'Impossibile eliminare i file dal filesystem.',
-        'The files is already in the destination folder.' => 'Il file e gia nella cartella di destinazione.',
+        'The file is already in the destination folder.' => 'Il file e gia nella cartella di destinazione.',
     ];
 
     public function init(): void

@@ -338,7 +338,7 @@
                 let html = `
                     <div class="pdm-folder-item ${isActive ? 'active' : ''} ${isDeep && hasChildren ? 'collapsed' : ''}" data-folder-id="${folder.id}" data-depth="${level}">
                         ${hasChildren ? `
-                            <span class="pdm-folder-toggle" title="${isDeep ? 'Espandi' : 'Raccogli'}">
+                            <span class="pdm-folder-toggle" title="${isDeep ? pdmConfig.i18n.expand : pdmConfig.i18n.collapse}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 9l6 6 6-6"/>
                                 </svg>

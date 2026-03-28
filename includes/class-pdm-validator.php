@@ -128,17 +128,17 @@ class PDM_Validator
         $name = trim($name);
 
         if (empty($name)) {
-            $errors[] = __('The files name cannot be empty.', 'mikesoft-teamvault');
+            $errors[] = __('The file name cannot be empty.', 'mikesoft-teamvault');
         }
 
         if (mb_strlen($name) > 255) {
-            $errors[] = __('The files name is too long (maximum 255 characters).', 'mikesoft-teamvault');
+            $errors[] = __('The file name is too long (maximum 255 characters).', 'mikesoft-teamvault');
         }
 
         $forbidden = ['..', '/', '\\', "\0", "\t", "\n", "\r"];
         foreach ($forbidden as $char) {
             if (strpos($name, $char) !== false) {
-                $errors[] = __('The files name contains invalid characters.', 'mikesoft-teamvault');
+                $errors[] = __('The file name contains invalid characters.', 'mikesoft-teamvault');
                 break;
             }
         }
@@ -188,7 +188,7 @@ class PDM_Validator
         $extension = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
 
         if ($this->has_dangerous_double_extension((string) ($files['name'] ?? ''))) {
-            $errors[] = __('The files contains multiple disallowed extensions.', 'mikesoft-teamvault');
+            $errors[] = __('The file contains multiple disallowed extensions.', 'mikesoft-teamvault');
         }
 
         if (!$this->validate_extension($extension)) {
@@ -202,8 +202,8 @@ class PDM_Validator
         if (!$this->validate_file_size($files['size'])) {
             $maxSize = PDM_Helpers::format_filesize($this->settings->get_max_file_size());
             $errors[] = sprintf(
-                /* translators: %s: maximum allowed files size. */
-                __('Size files superiore al limite consentito (%s).', 'mikesoft-teamvault'),
+                /* translators: %s: maximum allowed file size. */
+                __('The file size exceeds the allowed limit (%s).', 'mikesoft-teamvault'),
                 $maxSize
             );
         }
@@ -217,7 +217,7 @@ class PDM_Validator
         }
 
         if (!$this->validate_mime_type($detectedMime)) {
-            $errors[] = __('Type di files non consentito.', 'mikesoft-teamvault');
+            $errors[] = __('This file type is not allowed.', 'mikesoft-teamvault');
         }
 
         return [
@@ -245,17 +245,17 @@ class PDM_Validator
 
         foreach (self::DANGEROUS_PATTERNS as $pattern) {
             if (preg_match($pattern, $content)) {
-                $errors[] = __('The files contains potentially dangerous content.', 'mikesoft-teamvault');
+                $errors[] = __('The file contains potentially dangerous content.', 'mikesoft-teamvault');
                 break;
             }
         }
 
         if (strpos($content, '<?php') !== false) {
-            $errors[] = __('The files contains PHP code.', 'mikesoft-teamvault');
+            $errors[] = __('The file contains PHP code.', 'mikesoft-teamvault');
         }
 
         if (preg_match('/<\s*script\s+[^>]*language\s*=\s*["\']?\s*php\s*["\']?[^>]*>/i', $content)) {
-            $errors[] = __('The files contains PHP scripts.', 'mikesoft-teamvault');
+            $errors[] = __('The file contains PHP scripts.', 'mikesoft-teamvault');
         }
 
         return [
@@ -314,12 +314,12 @@ class PDM_Validator
     private function get_upload_error_message(int $errorCode): string
     {
         $messages = [
-            UPLOAD_ERR_INI_SIZE => __('The files exceeds the maximum size configured on the server.', 'mikesoft-teamvault'),
-            UPLOAD_ERR_FORM_SIZE => __('The files exceeds the maximum size configured in the form.', 'mikesoft-teamvault'),
-            UPLOAD_ERR_PARTIAL => __('The files was only partially uploaded.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_INI_SIZE => __('The file exceeds the maximum size configured on the server.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_FORM_SIZE => __('The file exceeds the maximum size configured in the form.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_PARTIAL => __('The file was only partially uploaded.', 'mikesoft-teamvault'),
             UPLOAD_ERR_NO_FILE => __('No file uploaded.', 'mikesoft-teamvault'),
-            UPLOAD_ERR_NO_TMP_DIR => __('Folder temporanea mancante.', 'mikesoft-teamvault'),
-            UPLOAD_ERR_CANT_WRITE => __('Unable to write the files to disk.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_NO_TMP_DIR => __('Temporary folder is missing.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_CANT_WRITE => __('Unable to write the file to disk.', 'mikesoft-teamvault'),
             UPLOAD_ERR_EXTENSION => __('Upload stopped by a PHP extension.', 'mikesoft-teamvault'),
         ];
 
