@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Private Document Manager
- * Plugin URI: https://github.com/mikesoft-codex/wp-private-document-manager
- * Description: Private document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
+ * Plugin Name: Mikesoft TeamVault
+ * Plugin URI: https://github.com/mikesoft-codex/mikesoft-teamvault
+ * Description: Private shared document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
  * Version: 1.1.24
  * Author: Michael Gasperini
  * Author URI: https://mikesoft.it
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: private-document-manager
+ * Text Domain: mikesoft-teamvault
  * Domain Path: /languages
  * Requires at least: 6.0
  * Requires PHP: 8.0

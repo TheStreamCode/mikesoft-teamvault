@@ -312,7 +312,7 @@ class PDM_REST_Controller
         }
 
         if ($this->folderRepo->exists_by_name_and_parent($name, $parentId)) {
-            return new \WP_Error('duplicate_error', __('Folder already exists.', 'private-document-manager'), ['status' => 400]);
+            return new \WP_Error('duplicate_error', __('Folder already exists.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
         $result = $this->storage->create_folder($name, $parentId, $this->folderRepo);
@@ -351,7 +351,7 @@ class PDM_REST_Controller
 
         $folder = $this->folderRepo->find($id);
         if (!$folder) {
-            return new \WP_Error('not_found', __('Folder not found.', 'private-document-manager'), ['status' => 404]);
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
         $validation = $this->validator->validate_folder_name($name);
@@ -389,7 +389,7 @@ class PDM_REST_Controller
 
         $folder = $this->folderRepo->find($id);
         if (!$folder) {
-            return new \WP_Error('not_found', __('Folder not found.', 'private-document-manager'), ['status' => 404]);
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
         $result = $this->storage->delete_folder($id, $this->folderRepo, $this->filesRepo);
@@ -414,12 +414,12 @@ class PDM_REST_Controller
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST nonce is enforced in the permission callback.
         if (empty($_FILES['file'])) {
             ob_end_clean();
-            return new \WP_Error('no_files', __('No file uploaded.', 'private-document-manager'), ['status' => 400]);
+            return new \WP_Error('no_files', __('No file uploaded.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
         if (!$this->storage->ensure_storage_directory()) {
             ob_end_clean();
-            return new \WP_Error('storage_error', __('Unable to initialize the storage directory.', 'private-document-manager'), ['status' => 500]);
+            return new \WP_Error('storage_error', __('Unable to initialize the storage directory.', 'mikesoft-teamvault'), ['status' => 500]);
         }
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES is validated by validate_upload_full().
@@ -503,11 +503,11 @@ class PDM_REST_Controller
 
         $files = $this->filesRepo->find($id);
         if (!$files) {
-            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+            return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
         if (empty($displayName)) {
-            return new \WP_Error('validation_error', __('The name cannot be empty.', 'private-document-manager'), ['status' => 400]);
+            return new \WP_Error('validation_error', __('The name cannot be empty.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
         $oldName = $files->display_name;
@@ -530,7 +530,7 @@ class PDM_REST_Controller
 
         $files = $this->filesRepo->find($id);
         if (!$files) {
-            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+            return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
         $result = $this->storage->delete_file($id, $this->filesRepo);
@@ -560,7 +560,7 @@ class PDM_REST_Controller
 
         $files = $this->filesRepo->find($id);
         if (!$files) {
-            return new \WP_Error('not_found', __('File not found.', 'private-document-manager'), ['status' => 404]);
+            return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
         $result = $this->storage->move_file($id, $targetFolderId, $this->filesRepo, $this->folderRepo);

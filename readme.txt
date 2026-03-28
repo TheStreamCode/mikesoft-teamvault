@@ -1,6 +1,6 @@
-=== Private Document Manager ===
+=== Mikesoft TeamVault ===
 Contributors: thestreamcode
-Tags: documents, private, secure, file-manager, access-control
+Tags: documents, private, secure, file-manager, access-control, team, shared
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
@@ -8,17 +8,18 @@ Stable tag: 1.1.24
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Private document management separated from the WordPress Media Library with secure access control, previews, ZIP export, and drag-and-drop uploads.
+Private shared document management separated from the WordPress Media Library with secure access control, previews, ZIP export, and drag-and-drop uploads.
 
 == Description ==
 
-Private Document Manager helps teams manage confidential documents in a protected storage area outside the normal WordPress Media Library workflow.
+Mikesoft TeamVault helps teams manage confidential documents in a protected storage area outside the normal WordPress Media Library workflow. Perfect for sharing files with partners, clients, or team members within your own hosting environment.
 
 Files are stored in a private directory and delivered only through authenticated WordPress handlers. The plugin includes folder management, previews, access control, activity logs, and export tools in a modern admin interface.
 
 **Main features:**
 
 * Protected private storage outside the Media Library flow
+* Shared access for teams, partners, and clients
 * Role-based and user-specific access control
 * Folder creation, rename, move, and delete operations
 * Drag-and-drop uploads with image and PDF previews
@@ -32,11 +33,11 @@ The plugin does not require any external service to work.
 
 == Installation ==
 
-1. Upload the `private-document-manager` folder to `/wp-content/plugins/`
+1. Upload the `mikesoft-teamvault` folder to `/wp-content/plugins/`
 2. Activate the plugin from the WordPress Plugins screen
 3. The plugin creates its database tables and private storage directory automatically
 4. Administrators and Editors receive the `manage_private_documents` capability by default
-5. Open **Private Documents** in the WordPress admin menu
+5. Open **TeamVault** in the WordPress admin menu
 
 == Frequently Asked Questions ==
 

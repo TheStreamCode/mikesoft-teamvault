@@ -22,8 +22,8 @@ class PDM_Preview
     {
         if (!$this->auth->can_read()) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
@@ -31,8 +31,8 @@ class PDM_Preview
         $files = $this->filesRepo->find($fileId);
         if (!$files) {
             wp_die(
-                esc_html__('File not found.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('File not found.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
             );
         }
@@ -42,16 +42,16 @@ class PDM_Preview
 
         if (!$filesystem->is_file($files->relative_path)) {
             wp_die(
-                esc_html__('File not found in the filesystem.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('File not found in the filesystem.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
             );
         }
 
         if (!$filesystem->verify_path($fullPath)) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
@@ -61,8 +61,8 @@ class PDM_Preview
 
         if (!PDM_Helpers::is_previewable($files->extension, $mimeType ?: (string) $files->mime_type)) {
             wp_die(
-                esc_html__('Preview is not available for this file type.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Preview is not available for this file type.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 400]
             );
         }
@@ -101,8 +101,8 @@ class PDM_Preview
 
         if (!is_readable($path)) {
             wp_die(
-                esc_html__('Unable to read the file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -111,8 +111,8 @@ class PDM_Preview
 
         if ($contents === false) {
             wp_die(
-                esc_html__('Unable to read the file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }

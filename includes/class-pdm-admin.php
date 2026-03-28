@@ -37,39 +37,39 @@ class PDM_Admin
         );
 
         add_menu_page(
-            __('Private Documents', 'private-document-manager'),
-            __('Private Documents', 'private-document-manager'),
+            __('Private Documents', 'mikesoft-teamvault'),
+            __('Private Documents', 'mikesoft-teamvault'),
             PDM_Capabilities::CAP_MANAGE,
-            'private-document-manager',
+            'mikesoft-teamvault',
             [$this, 'render_file_manager_page'],
             $menu_icon,
             30
         );
 
         add_submenu_page(
-            'private-document-manager',
-            __('File Manager', 'private-document-manager'),
-            __('File Manager', 'private-document-manager'),
+            'mikesoft-teamvault',
+            __('File Manager', 'mikesoft-teamvault'),
+            __('File Manager', 'mikesoft-teamvault'),
             PDM_Capabilities::CAP_MANAGE,
-            'private-document-manager',
+            'mikesoft-teamvault',
             [$this, 'render_file_manager_page']
         );
 
         add_submenu_page(
-            'private-document-manager',
-            __('Settings', 'private-document-manager'),
-            __('Settings', 'private-document-manager'),
+            'mikesoft-teamvault',
+            __('Settings', 'mikesoft-teamvault'),
+            __('Settings', 'mikesoft-teamvault'),
             PDM_Capabilities::CAP_MANAGE,
-            'private-document-manager-settings',
+            'mikesoft-teamvault-settings',
             [$this, 'render_settings_page']
         );
 
         add_submenu_page(
-            'private-document-manager',
-            __('Activity Log', 'private-document-manager'),
-            __('Activity Log', 'private-document-manager'),
+            'mikesoft-teamvault',
+            __('Activity Log', 'mikesoft-teamvault'),
+            __('Activity Log', 'mikesoft-teamvault'),
             PDM_Capabilities::CAP_MANAGE,
-            'private-document-manager-logs',
+            'mikesoft-teamvault-logs',
             [$this, 'render_logs_page']
         );
     }
@@ -82,7 +82,7 @@ class PDM_Admin
     public function render_file_manager_page(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         include PDM_PLUGIN_DIR . 'admin/views/file-manager-page.php';
@@ -91,7 +91,7 @@ class PDM_Admin
     public function render_settings_page(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         $orphaned_files_count = $this->count_orphaned_files();
@@ -112,7 +112,7 @@ class PDM_Admin
     public function render_logs_page(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         include PDM_PLUGIN_DIR . 'admin/views/logs-page.php';
@@ -121,12 +121,12 @@ class PDM_Admin
     public function handle_save_settings(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         $nonce = isset($_POST['pdm_settings_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_settings_nonce'])) : '';
         if (!$nonce || !wp_verify_nonce($nonce, 'pdm_settings_nonce')) {
-            wp_die(esc_html__('Invalid security token.', 'private-document-manager'));
+            wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
         $whitelistEnabled = !empty($_POST['pdm_use_user_whitelist']);
@@ -155,7 +155,7 @@ class PDM_Admin
 
             if ($whitelistCheck instanceof \WP_Error) {
                 set_transient('pdm_settings_error_' . get_current_user_id(), $whitelistCheck->get_error_message(), MINUTE_IN_SECONDS);
-                wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+                wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
                 exit;
             }
         }
@@ -171,19 +171,19 @@ class PDM_Admin
 
         set_transient('pdm_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
 
-        wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+        wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
     }
 
     public function handle_cleanup_orphans(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         $nonce = isset($_POST['pdm_cleanup_orphans_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_cleanup_orphans_nonce'])) : '';
         if (!$nonce || !wp_verify_nonce($nonce, 'pdm_cleanup_orphans')) {
-            wp_die(esc_html__('Invalid security token.', 'private-document-manager'));
+            wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
         $deletedCount = $this->cleanup_orphaned_files();
@@ -192,26 +192,26 @@ class PDM_Admin
             'deleted_count' => $deletedCount,
         ], MINUTE_IN_SECONDS);
 
-        wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+        wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
     }
 
     public function handle_reindex_storage(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'));
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         $nonce = isset($_POST['pdm_reindex_storage_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_reindex_storage_nonce'])) : '';
         if (!$nonce || !wp_verify_nonce($nonce, 'pdm_reindex_storage')) {
-            wp_die(esc_html__('Invalid security token.', 'private-document-manager'));
+            wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
         $result = $this->reindex_storage_records();
 
         set_transient('pdm_reindex_storage_' . get_current_user_id(), $result, MINUTE_IN_SECONDS);
 
-        wp_safe_redirect(admin_url('admin.php?page=private-document-manager-settings'));
+        wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
     }
 
@@ -222,7 +222,7 @@ class PDM_Admin
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in guard_stream_request().
         $fileId = isset($_REQUEST['file_id']) ? absint(wp_unslash($_REQUEST['file_id'])) : 0;
         if ($fileId <= 0) {
-            wp_die(esc_html__('File not found.', 'private-document-manager'), esc_html__('Error', 'private-document-manager'), ['response' => 404]);
+            wp_die(esc_html__('File not found.', 'mikesoft-teamvault'), esc_html__('Error', 'mikesoft-teamvault'), ['response' => 404]);
         }
 
         $services = $this->build_files_services();
@@ -236,7 +236,7 @@ class PDM_Admin
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in guard_stream_request().
         $fileId = isset($_REQUEST['file_id']) ? absint(wp_unslash($_REQUEST['file_id'])) : 0;
         if ($fileId <= 0) {
-            wp_die(esc_html__('File not found.', 'private-document-manager'), esc_html__('Error', 'private-document-manager'), ['response' => 404]);
+            wp_die(esc_html__('File not found.', 'mikesoft-teamvault'), esc_html__('Error', 'mikesoft-teamvault'), ['response' => 404]);
         }
 
         $services = $this->build_files_services();
@@ -286,7 +286,7 @@ class PDM_Admin
     private function guard_stream_request(): void
     {
         if (!$this->current_user_can_manage()) {
-            wp_die(esc_html__('You do not have permission to access this page.', 'private-document-manager'), esc_html__('Error', 'private-document-manager'), ['response' => 403]);
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'), esc_html__('Error', 'mikesoft-teamvault'), ['response' => 403]);
         }
 
         check_admin_referer('pdm_stream_action', 'pdm_stream_nonce');

@@ -22,12 +22,12 @@ if (!function_exists('pdm_get_action_label')) {
     function pdm_get_action_label(string $action): string
     {
         $labels = [
-            'upload' => __('Upload action', 'private-document-manager'),
-            'download' => __('Download action', 'private-document-manager'),
-            'delete' => __('Deletion', 'private-document-manager'),
-            'rename' => __('Rename action', 'private-document-manager'),
-            'move' => __('Move action', 'private-document-manager'),
-            'create' => __('Creation', 'private-document-manager'),
+            'upload' => __('Upload action', 'mikesoft-teamvault'),
+            'download' => __('Download action', 'mikesoft-teamvault'),
+            'delete' => __('Deletion', 'mikesoft-teamvault'),
+            'rename' => __('Rename action', 'mikesoft-teamvault'),
+            'move' => __('Move action', 'mikesoft-teamvault'),
+            'create' => __('Creation', 'mikesoft-teamvault'),
         ];
 
         return $labels[$action] ?? $action;
@@ -38,7 +38,7 @@ if (!function_exists('pdm_get_logs_page_url')) {
     function pdm_get_logs_page_url(int $page, int $perPage): string
     {
         return add_query_arg([
-            'page' => 'private-document-manager-logs',
+            'page' => 'mikesoft-teamvault-logs',
             'paged' => $page,
             'per_page' => $perPage,
         ], admin_url('admin.php'));
@@ -49,30 +49,30 @@ if (!function_exists('pdm_get_log_target_label')) {
     function pdm_get_log_target_label(string $targetType): string
     {
         return in_array($targetType, ['file', 'files'], true)
-            ? __('File', 'private-document-manager')
-            : __('Folder', 'private-document-manager');
+            ? __('File', 'mikesoft-teamvault')
+            : __('Folder', 'mikesoft-teamvault');
     }
 }
 ?>
 <div class="pdm-wrapper pdm-logs-wrapper">
     <div class="pdm-logs-header">
-        <h1 class="pdm-logs-title"><?php esc_html_e('Activity Log', 'private-document-manager'); ?></h1>
-        <p class="pdm-logs-desc"><?php esc_html_e('History of operations performed on private documents.', 'private-document-manager'); ?></p>
+        <h1 class="pdm-logs-title"><?php esc_html_e('Activity Log', 'mikesoft-teamvault'); ?></h1>
+        <p class="pdm-logs-desc"><?php esc_html_e('History of operations performed on private documents.', 'mikesoft-teamvault'); ?></p>
     </div>
 
     <div class="pdm-logs-toolbar">
         <div class="pdm-pagination-summary">
             <?php if ($pagination['total_items'] > 0) : ?>
-                <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'private-document-manager') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'private-document-manager')); ?>
+                <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
             <?php else : ?>
-                <?php echo esc_html('0 ' . __('Entries', 'private-document-manager')); ?>
+                <?php echo esc_html('0 ' . __('Entries', 'mikesoft-teamvault')); ?>
             <?php endif; ?>
         </div>
 
         <form method="get" action="<?php echo esc_url(admin_url('admin.php')); ?>" class="pdm-inline-form">
-            <input type="hidden" name="page" value="private-document-manager-logs">
+            <input type="hidden" name="page" value="mikesoft-teamvault-logs">
             <input type="hidden" name="paged" value="1">
-            <label class="pdm-toolbar-label" for="pdm-logs-per-page"><?php esc_html_e('Per page', 'private-document-manager'); ?></label>
+            <label class="pdm-toolbar-label" for="pdm-logs-per-page"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></label>
             <select class="pdm-select" name="per_page" id="pdm-logs-per-page">
                 <?php foreach ($allowed_per_page as $per_page_option) : ?>
                     <option value="<?php echo esc_attr((string) $per_page_option); ?>" <?php selected($selected_per_page, $per_page_option); ?>>
@@ -80,7 +80,7 @@ if (!function_exists('pdm_get_log_target_label')) {
                     </option>
                 <?php endforeach; ?>
             </select>
-            <button type="submit" class="pdm-btn pdm-btn-secondary"><?php esc_html_e('Apply', 'private-document-manager'); ?></button>
+            <button type="submit" class="pdm-btn pdm-btn-secondary"><?php esc_html_e('Apply', 'mikesoft-teamvault'); ?></button>
         </form>
     </div>
 
@@ -94,20 +94,20 @@ if (!function_exists('pdm_get_log_target_label')) {
                     <line x1="16" y1="17" x2="8" y2="17"/>
                     <polyline points="10 9 9 9 8 9"/>
                 </svg>
-                <h3><?php esc_html_e('No logs available', 'private-document-manager'); ?></h3>
-                <p><?php esc_html_e('Document operations will be recorded here.', 'private-document-manager'); ?></p>
+                <h3><?php esc_html_e('No logs available', 'mikesoft-teamvault'); ?></h3>
+                <p><?php esc_html_e('Document operations will be recorded here.', 'mikesoft-teamvault'); ?></p>
             </div>
         <?php else : ?>
             <div class="pdm-table-responsive">
                 <table class="pdm-table">
                     <thead>
                         <tr>
-                            <th><?php esc_html_e('Date/Time', 'private-document-manager'); ?></th>
-                            <th><?php esc_html_e('User', 'private-document-manager'); ?></th>
-                            <th><?php esc_html_e('Action', 'private-document-manager'); ?></th>
-                            <th><?php esc_html_e('Type', 'private-document-manager'); ?></th>
-                            <th><?php esc_html_e('Details', 'private-document-manager'); ?></th>
-                            <th><?php esc_html_e('IP', 'private-document-manager'); ?></th>
+                            <th><?php esc_html_e('Date/Time', 'mikesoft-teamvault'); ?></th>
+                            <th><?php esc_html_e('User', 'mikesoft-teamvault'); ?></th>
+                            <th><?php esc_html_e('Action', 'mikesoft-teamvault'); ?></th>
+                            <th><?php esc_html_e('Type', 'mikesoft-teamvault'); ?></th>
+                            <th><?php esc_html_e('Details', 'mikesoft-teamvault'); ?></th>
+                            <th><?php esc_html_e('IP', 'mikesoft-teamvault'); ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -149,27 +149,27 @@ if (!function_exists('pdm_get_log_target_label')) {
             <?php if ($pagination['total_pages'] > 1) : ?>
                 <div class="pdm-pagination">
                     <div class="pdm-pagination-summary">
-                        <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'private-document-manager') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'private-document-manager')); ?>
+                        <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
                     </div>
                     <div class="pdm-pagination-controls">
                         <?php if ($pagination['has_prev']) : ?>
                             <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(pdm_get_logs_page_url($pagination['page'] - 1, $pagination['per_page'])); ?>">
-                                <?php esc_html_e('Previous', 'private-document-manager'); ?>
+                                <?php esc_html_e('Previous', 'mikesoft-teamvault'); ?>
                             </a>
                         <?php else : ?>
-                            <button type="button" class="pdm-btn pdm-btn-ghost" disabled><?php esc_html_e('Previous', 'private-document-manager'); ?></button>
+                            <button type="button" class="pdm-btn pdm-btn-ghost" disabled><?php esc_html_e('Previous', 'mikesoft-teamvault'); ?></button>
                         <?php endif; ?>
 
                         <span class="pdm-pagination-status">
-                            <?php echo esc_html(__('Page', 'private-document-manager') . ' ' . $pagination['page'] . ' ' . __('of', 'private-document-manager') . ' ' . $pagination['total_pages']); ?>
+                            <?php echo esc_html(__('Page', 'mikesoft-teamvault') . ' ' . $pagination['page'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_pages']); ?>
                         </span>
 
                         <?php if ($pagination['has_next']) : ?>
                             <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(pdm_get_logs_page_url($pagination['page'] + 1, $pagination['per_page'])); ?>">
-                                <?php esc_html_e('Next', 'private-document-manager'); ?>
+                                <?php esc_html_e('Next', 'mikesoft-teamvault'); ?>
                             </a>
                         <?php else : ?>
-                            <button type="button" class="pdm-btn pdm-btn-ghost" disabled><?php esc_html_e('Next', 'private-document-manager'); ?></button>
+                            <button type="button" class="pdm-btn pdm-btn-ghost" disabled><?php esc_html_e('Next', 'mikesoft-teamvault'); ?></button>
                         <?php endif; ?>
                     </div>
                 </div>

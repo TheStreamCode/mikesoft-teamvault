@@ -9,39 +9,39 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
     <div class="pdm-app" id="pdm-app">
         <div class="pdm-sidebar" id="pdm-sidebar">
             <div class="pdm-sidebar-header">
-                <h2 class="pdm-sidebar-title"><?php esc_html_e('Folders', 'private-document-manager'); ?></h2>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-new-folder-btn" title="<?php echo esc_attr__('New folder', 'private-document-manager'); ?>">
+                <h2 class="pdm-sidebar-title"><?php esc_html_e('Folders', 'mikesoft-teamvault'); ?></h2>
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-new-folder-btn" title="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                     </svg>
                 </button>
             </div>
             <div class="pdm-sidebar-search">
-                <input type="search" class="pdm-input" id="pdm-search-input" placeholder="<?php echo esc_attr__('Search files...', 'private-document-manager'); ?>">
+                <input type="search" class="pdm-input" id="pdm-search-input" placeholder="<?php echo esc_attr__('Search files...', 'mikesoft-teamvault'); ?>">
             </div>
             <div class="pdm-folder-tree" id="pdm-folder-tree">
                 <div class="pdm-loading">
                     <div class="pdm-spinner"></div>
-                    <span><?php esc_html_e('Loading...', 'private-document-manager'); ?></span>
+                    <span><?php esc_html_e('Loading...', 'mikesoft-teamvault'); ?></span>
                 </div>
             </div>
             <div class="pdm-storage-indicator" id="pdm-storage-indicator">
-                <div class="pdm-storage-title"><?php esc_html_e('Disk Space', 'private-document-manager'); ?></div>
+                <div class="pdm-storage-title"><?php esc_html_e('Disk Space', 'mikesoft-teamvault'); ?></div>
                 <div class="pdm-storage-bar">
                     <div class="pdm-storage-bar-fill" id="pdm-storage-bar-fill" style="width: 0%;"></div>
                 </div>
                 <div class="pdm-storage-stats">
                     <div class="pdm-storage-stat">
                         <span class="pdm-storage-stat-value" id="pdm-storage-used">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Used', 'private-document-manager'); ?></span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('Used', 'mikesoft-teamvault'); ?></span>
                     </div>
                     <div class="pdm-storage-stat">
                         <span class="pdm-storage-stat-value" id="pdm-storage-free">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Free', 'private-document-manager'); ?></span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('Free', 'mikesoft-teamvault'); ?></span>
                     </div>
                     <div class="pdm-storage-stat">
                         <span class="pdm-storage-stat-value" id="pdm-storage-total">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Total', 'private-document-manager'); ?></span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('Total', 'mikesoft-teamvault'); ?></span>
                     </div>
                 </div>
             </div>
@@ -60,28 +60,28 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                             </svg>
-                            <span><?php esc_html_e('Home', 'private-document-manager'); ?></span>
+                            <span><?php esc_html_e('Home', 'mikesoft-teamvault'); ?></span>
                         </a>
                     </nav>
                 </div>
                 <div class="pdm-toolbar-right">
                     <div class="pdm-toolbar-filters">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'private-document-manager'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
                         </button>
                         <div class="pdm-toolbar-filters-dropdown" id="pdm-filters-dropdown">
                             <div class="pdm-toolbar-filters-row">
-                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Sort', 'private-document-manager'); ?></span>
+                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Sort', 'mikesoft-teamvault'); ?></span>
                                 <select class="pdm-toolbar-filters-select pdm-filters-sort">
-                                    <option value="display_name"><?php esc_html_e('Name', 'private-document-manager'); ?></option>
-                                    <option value="created_at"><?php esc_html_e('Date', 'private-document-manager'); ?></option>
-                                    <option value="file_size"><?php esc_html_e('Size', 'private-document-manager'); ?></option>
+                                    <option value="display_name"><?php esc_html_e('Name', 'mikesoft-teamvault'); ?></option>
+                                    <option value="created_at"><?php esc_html_e('Date', 'mikesoft-teamvault'); ?></option>
+                                    <option value="file_size"><?php esc_html_e('Size', 'mikesoft-teamvault'); ?></option>
                                 </select>
                             </div>
                             <div class="pdm-toolbar-filters-row">
-                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Per page', 'private-document-manager'); ?></span>
+                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></span>
                                 <select class="pdm-toolbar-filters-select pdm-filters-per-page">
                                     <option value="25">25</option>
                                     <option value="50">50</option>
@@ -93,18 +93,18 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                     </div>
                     <div class="pdm-sort-dropdown">
                         <select class="pdm-select" id="pdm-sort-select">
-                            <option value="display_name"><?php esc_html_e('Name', 'private-document-manager'); ?></option>
-                            <option value="created_at"><?php esc_html_e('Date', 'private-document-manager'); ?></option>
-                            <option value="file_size"><?php esc_html_e('Size', 'private-document-manager'); ?></option>
+                            <option value="display_name"><?php esc_html_e('Name', 'mikesoft-teamvault'); ?></option>
+                            <option value="created_at"><?php esc_html_e('Date', 'mikesoft-teamvault'); ?></option>
+                            <option value="file_size"><?php esc_html_e('Size', 'mikesoft-teamvault'); ?></option>
                         </select>
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-sort-order" title="<?php echo esc_attr__('Order', 'private-document-manager'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-sort-order" title="<?php echo esc_attr__('Order', 'mikesoft-teamvault'); ?>">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18"/>
                             </svg>
                         </button>
                     </div>
                     <div class="pdm-page-size-control">
-                        <label class="pdm-toolbar-label" for="pdm-per-page-select"><?php esc_html_e('Per page', 'private-document-manager'); ?></label>
+                        <label class="pdm-toolbar-label" for="pdm-per-page-select"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></label>
                         <select class="pdm-select" id="pdm-per-page-select">
                             <option value="25">25</option>
                             <option value="50" selected>50</option>
@@ -113,7 +113,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                         </select>
                     </div>
                     <div class="pdm-view-toggle">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost active" id="pdm-view-grid" title="<?php echo esc_attr__('Grid view', 'private-document-manager'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost active" id="pdm-view-grid" title="<?php echo esc_attr__('Grid view', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="7" height="7"/>
                                 <rect x="14" y="3" width="7" height="7"/>
@@ -121,7 +121,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                                 <rect x="14" y="14" width="7" height="7"/>
                             </svg>
                         </button>
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-view-list" title="<?php echo esc_attr__('List view', 'private-document-manager'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-view-list" title="<?php echo esc_attr__('List view', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
                             </svg>
@@ -133,13 +133,13 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <span><?php esc_html_e('Export', 'private-document-manager'); ?></span>
+                        <span><?php esc_html_e('Export', 'mikesoft-teamvault'); ?></span>
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-primary" id="pdm-upload-btn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                         </svg>
-                        <span><?php esc_html_e('Upload', 'private-document-manager'); ?></span>
+                        <span><?php esc_html_e('Upload', 'mikesoft-teamvault'); ?></span>
                     </button>
                 </div>
             </div>
@@ -147,7 +147,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
             <div class="pdm-content" id="pdm-content">
                 <div class="pdm-loading">
                     <div class="pdm-spinner"></div>
-                    <span><?php esc_html_e('Loading...', 'private-document-manager'); ?></span>
+                    <span><?php esc_html_e('Loading...', 'mikesoft-teamvault'); ?></span>
                 </div>
             </div>
         </div>
@@ -158,7 +158,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35"/>
                 </svg>
-                <p><?php esc_html_e('Select a file to view details', 'private-document-manager'); ?></p>
+                <p><?php esc_html_e('Select a file to view details', 'mikesoft-teamvault'); ?></p>
             </div>
         </div>
     </div>
@@ -170,9 +170,9 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                 </svg>
             </div>
-            <p class="pdm-upload-text"><?php esc_html_e('Drag files here to upload them', 'private-document-manager'); ?></p>
-            <p class="pdm-upload-subtext"><?php esc_html_e('or', 'private-document-manager'); ?></p>
-            <button type="button" class="pdm-btn pdm-btn-primary"><?php esc_html_e('Browse files', 'private-document-manager'); ?></button>
+            <p class="pdm-upload-text"><?php esc_html_e('Drag files here to upload them', 'mikesoft-teamvault'); ?></p>
+            <p class="pdm-upload-subtext"><?php esc_html_e('or', 'mikesoft-teamvault'); ?></p>
+            <button type="button" class="pdm-btn pdm-btn-primary"><?php esc_html_e('Browse files', 'mikesoft-teamvault'); ?></button>
             <input type="file" id="pdm-file-input" multiple accept="<?php echo esc_attr($accept_attribute); ?>">
         </div>
     </div>
@@ -209,7 +209,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                     </svg>
-                    <span><?php esc_html_e('Download', 'private-document-manager'); ?></span>
+                    <span><?php esc_html_e('Download', 'mikesoft-teamvault'); ?></span>
                 </button>
             </div>
         </div>
