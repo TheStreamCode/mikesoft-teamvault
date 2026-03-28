@@ -21,4 +21,20 @@ final class PDMHelpersTest extends TestCase
             PDM_Helpers::build_safe_download_filename('budget/summary', 'pdf')
         );
     }
+
+    public function test_resolve_file_display_name_falls_back_to_original_basename_when_empty(): void
+    {
+        self::assertSame(
+            'photo_01',
+            PDM_Helpers::resolve_file_display_name('', 'photo_01.jpg')
+        );
+    }
+
+    public function test_resolve_file_display_name_prefers_explicit_name_when_valid(): void
+    {
+        self::assertSame(
+            'immagine',
+            PDM_Helpers::resolve_file_display_name('immagine', 'photo_01.jpg')
+        );
+    }
 }

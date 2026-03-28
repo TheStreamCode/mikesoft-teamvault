@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+1.1.25
+- Fixed file rename regression where legacy records with empty display names opened an empty rename modal and could fail validation on save
+- Added safer display-name fallback resolution during upload, reindex, browser payload formatting, and rename flows
+- Tightened file rename request args and added regression tests for display-name fallback handling
+
 1.1.24
 - Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" to comply with WordPress.org plugin guidelines
 - Updated textdomain from "private-document-manager" to "mikesoft-teamvault"

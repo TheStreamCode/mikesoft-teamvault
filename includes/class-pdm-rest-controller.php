@@ -127,6 +127,7 @@ class PDM_REST_Controller
             'permission_callback' => [$this->auth, 'verify_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
+                'display_name' => ['required' => true, 'type' => 'string'],
             ],
         ]);
 
@@ -449,10 +450,15 @@ class PDM_REST_Controller
             return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
         }
 
-        $displayName = PDM_Helpers::sanitize_file_display_name($rawDisplayName);
+        $displayName = PDM_Helpers::resolve_file_display_name((string) $rawDisplayName, (string) $files['name']);
 
         if (class_exists('PDM_Hooks')) {
-            $displayName = PDM_Hooks::filter_file_name($displayName, (string) $files['name']);
+            $displayName = PDM_Helpers::resolve_file_display_name((string) PDM_Hooks::filter_file_name($displayName, (string) $files['name']), (string) $files['name']);
+        }
+
+        if ($displayName === '') {
+            ob_end_clean();
+            return new \WP_Error('validation_error', __('The file name cannot be empty.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
         $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
@@ -854,7 +860,7 @@ class PDM_REST_Controller
             'id' => (int) $files->id,
             'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
             'original_name' => $files->original_name,
-            'display_name' => $files->display_name,
+            'display_name' => PDM_Helpers::resolve_file_display_name((string) $files->display_name, (string) $files->original_name),
             'extension' => $files->extension,
             'mime_type' => $runtime['mime_type'],
             'file_size' => $runtime['file_size'],
