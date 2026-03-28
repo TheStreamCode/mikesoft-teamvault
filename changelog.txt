@@ -1,5 +1,9 @@
 Mikesoft TeamVault Changelog
 
+1.1.26
+- Refined the mobile header toolbar so filters, actions, and controls stay on a single row
+- Reduced the mobile width of the Upload and Export actions for a tighter toolbar layout
+
 1.1.25
 - Fixed file rename regression where legacy records with empty display names opened an empty rename modal and could fail validation on save
 - Added safer display-name fallback resolution during upload, reindex, browser payload formatting, and rename flows

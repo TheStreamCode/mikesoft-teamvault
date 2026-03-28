@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.25
+Stable tag: 1.1.26
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.26 =
+* Kept the mobile header toolbar on a single row by compacting filters and action controls
+* Reduced the mobile footprint of the Upload and Export buttons for a cleaner responsive header
 
 = 1.1.25 =
 * Fixed file rename fallback handling for legacy records with empty display names
@@ -204,6 +208,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.26 =
+
+Recommended mobile UI refinement update. Keeps the file manager header controls on a single row on small screens.
 
 = 1.1.25 =
 
