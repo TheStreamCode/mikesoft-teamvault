@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Mikesoft TeamVault
- * Plugin URI: https://github.com/mikesoft-codex/mikesoft-teamvault
+ * Plugin URI: https://github.com/TheStreamCode/mikesoft-teamvault
  * Description: Private shared document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
  * Version: 1.1.26
  * Author: Michael Gasperini

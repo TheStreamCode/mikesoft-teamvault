@@ -38,7 +38,7 @@ If you need to reproduce a bug locally, collect at least:
 
 1. Fork and clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/mikesoft-teamvault.git mikesoft-teamvault-src
+git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamvault-src
 cd mikesoft-teamvault-src
 ```
 
