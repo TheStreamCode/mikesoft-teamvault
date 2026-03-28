@@ -1,10 +1,10 @@
-# Contributing to Private Document Manager
+# Contributing to Mikesoft TeamVault
 
 Thank you for your interest in contributing!
 
 ## Bug Reports
 
-Please use [GitHub Issues](https://github.com/mikesoft-codex/wp-private-document-manager/issues) and include:
+Please use [GitHub Issues](https://github.com/mikesoft-codex/mikesoft-teamvault/issues) and include:
 
 - WordPress version
 - PHP version
@@ -16,7 +16,7 @@ Please use [GitHub Issues](https://github.com/mikesoft-codex/wp-private-document
 
 ## Feature Requests
 
-Open a [GitHub Discussion](https://github.com/mikesoft-codex/wp-private-document-manager/discussions) with the `ideas` label.
+Open a [GitHub Discussion](https://github.com/mikesoft-codex/mikesoft-teamvault/discussions) with the `ideas` label.
 
 ## Development Setup
 
@@ -30,17 +30,17 @@ Open a [GitHub Discussion](https://github.com/mikesoft-codex/wp-private-document
 
 1. Fork and clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/wp-private-document-manager.git
-cd wp-private-document-manager
+git clone https://github.com/YOUR_USERNAME/mikesoft-teamvault.git
+cd mikesoft-teamvault
 ```
 
 2. Link to your WordPress plugins directory
 ```bash
 # Linux/macOS
-ln -s $(pwd) /path/to/wordpress/wp-content/plugins/private-document-manager
+ln -s $(pwd) /path/to/wordpress/wp-content/plugins/mikesoft-teamvault
 
 # Windows (PowerShell, run as Admin)
-New-Item -ItemType Junction -Path "C:\path\to\wordpress\wp-content\plugins\private-document-manager" -Target "$(pwd)"
+New-Item -ItemType Junction -Path "C:\path\to\wordpress\wp-content\plugins\mikesoft-teamvault" -Target "$(pwd)"
 ```
 
 3. Activate in WordPress admin (Plugins menu)
@@ -103,7 +103,7 @@ private const ITALIAN_MAP = [
 ```php
 'i18n' => [
     // Add your strings here.
-    'yourKey' => __('English source string', 'private-document-manager'),
+    'yourKey' => __('English source string', 'mikesoft-teamvault'),
     // ...existing strings
 ],
 ```
@@ -142,39 +142,39 @@ git commit -m "Refactor: description of the refactoring"
 ## Project Structure
 
 ```
-private-document-manager/
-├── private-document-manager.php    # Main plugin file
-├── uninstall.php                   # Cleanup on uninstall
-├── readme.txt                      # WordPress.org readme
-├── README.md                       # GitHub readme
-├── CONTRIBUTING.md                 # This file
-├── LICENSE                         # GPL v2+
-├── changelog.txt                   # Extended release history
-├── includes/                       # PHP classes
+mikesoft-teamvault/
+├── mikesoft-teamvault.php       # Main plugin file
+├── uninstall.php                 # Cleanup on uninstall
+├── readme.txt                   # WordPress.org readme
+├── README.md                    # GitHub readme
+├── CONTRIBUTING.md             # This file
+├── LICENSE                      # GPL v2+
+├── changelog.txt                # Extended release history
+├── includes/                    # PHP classes
 │   ├── class-pdm-bootstrap.php     # Service container
-│   ├── class-pdm-activator.php     # Activation hooks
-│   ├── class-pdm-settings.php      # Settings management
-│   ├── class-pdm-auth.php          # Authentication
-│   ├── class-pdm-storage.php       # File storage
-│   ├── class-pdm-filesystem.php    # File operations
+│   ├── class-pdm-activator.php    # Activation hooks
+│   ├── class-pdm-settings.php     # Settings management
+│   ├── class-pdm-auth.php         # Authentication
+│   ├── class-pdm-storage.php      # File storage
+│   ├── class-pdm-filesystem.php   # File operations
 │   ├── class-pdm-rest-controller.php
-│   ├── class-pdm-i18n.php          # Translations
+│   ├── class-pdm-i18n.php        # Translations
 │   └── ...
-├── languages/                      # Translation loading path
+├── languages/                   # Translation loading path
 │   └── index.php
-├── admin/views/                    # Admin templates
+├── admin/views/                # Admin templates
 │   ├── file-manager-page.php
 │   ├── settings-page.php
 │   └── logs-page.php
-└── assets/                         # Frontend assets
+└── assets/                     # Frontend assets
     ├── css/admin.css
     └── js/admin-app.js
 ```
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/mikesoft-codex/wp-private-document-manager/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mikesoft-codex/wp-private-document-manager/discussions)
+- **Issues**: [GitHub Issues](https://github.com/mikesoft-codex/mikesoft-teamvault/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mikesoft-codex/mikesoft-teamvault/discussions)
 - **Email**: info@mikesoft.it
 
 Thank you for contributing!

@@ -1,17 +1,17 @@
-# Private Document Manager
+# Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.21-blue.svg)](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.24-blue.svg)](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
 
-**Secure private document management for WordPress**, fully separated from the Media Library.
+**Secure shared document management for WordPress**, fully separated from the Media Library. Perfect for teams, partners, and clients who need a private space to collaborate on documents within your own hosting environment.
 
 ## Features
 
-- **Private Storage** - Files stored in protected directory, not accessible via public URL
-- **User Access Control** - Limit access to specific users or use role-based permissions
-- **Folder Management** - Create, rename, delete folders and subfolders
+- **Shared Team Storage** - Files stored in protected directory, accessible only to authorized users
+- **Team Access Control** - Limit access to specific users, roles, or use capability-based permissions
+- **Folder Management** - Create, rename, move, and delete folders and subfolders
 - **Drag & Drop Upload** - Intuitive file upload with progress feedback
 - **Image Thumbnails** - Automatic preview thumbnails for image files
 - **PDF Preview** - Inline PDF preview in supported browsers
@@ -20,6 +20,7 @@
 - **Orphan Cleanup** - Detect and remove database records whose files are missing from private storage
 - **Multilingual** - English (default) with optional Italian translation
 - **Disk Space Indicator** - Visual storage usage in sidebar
+- **Responsive Mobile UI** - Optimized sidebar navigation with off-canvas drawer pattern
 
 ## Requirements
 
@@ -37,21 +38,21 @@
 
 ### Manual Installation
 
-1. Download the [latest release](https://github.com/mikesoft-codex/wp-private-document-manager/releases)
-2. Upload to `/wp-content/plugins/private-document-manager/`
+1. Download the [latest release](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
+2. Upload to `/wp-content/plugins/mikesoft-teamvault/`
 3. Activate in WordPress Plugins menu
-4. Configure in **Private Documents > Settings**
+4. Configure in **TeamVault > Settings**
 
 ### From GitHub
 
 ```bash
 cd /path/to/wordpress/wp-content/plugins/
-git clone https://github.com/mikesoft-codex/wp-private-document-manager.git private-document-manager
+git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-teamvault
 ```
 
 ## Distribution
 
-- GitHub repository and source of truth: `https://github.com/mikesoft-codex/wp-private-document-manager`
+- GitHub repository and source of truth: `https://github.com/mikesoft-codex/mikesoft-teamvault`
 - WordPress.org can be used as the public distribution channel for stable releases and auto-updates
 - Recommended workflow: develop on GitHub, release stable versions to WordPress.org SVN
 
@@ -83,7 +84,7 @@ $role->add_cap('manage_private_documents');
 
 **Option 2: User whitelist (recommended)**
 
-1. Go to **Private Documents > Settings > User Access**
+1. Go to **TeamVault > Settings > User Access**
 2. Enable "Limit access to specific users"
 3. Search and add users to the whitelist
 4. Users will automatically receive the `manage_private_documents` capability
@@ -160,56 +161,26 @@ See [readme.txt](readme.txt) for full changelog.
 
 ### Recent Changes
 
-**v1.1.21**
-- Hardened whitelist enforcement, normalized legacy log target types, and made file streaming safer for large downloads, previews, and ZIP exports
+**v1.1.24**
+- Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" for WordPress.org compliance
+- Updated textdomain to "mikesoft-teamvault"
+- Sorted folder tree alphabetically
+- Added scrollable sidebar with fixed header/footer
+- Implemented collapsible tree for deep folder hierarchies
+- Reverted mobile sidebar to off-canvas drawer pattern
 
-**v1.1.20**
-- Added clearer move-destination selection feedback, restored the root node in the sidebar tree, and completed the latest Italian translation review
-
-**v1.1.19**
-- Fixed the remaining Plugin Check findings in uninstall cleanup and admin request sanitization paths
-
-**v1.1.18**
-- Added automatic storage self-healing on browser load and folder creation so missing database records are restored without manual maintenance steps
-
-**v1.1.17**
-- Added maintenance reindex to restore folder and file records from storage when database entries are missing
-- Restored creation of folders whose physical directory still exists after uninstall or partial cleanup
-
-**v1.1.16**
-- Restored folder creation when a directory already exists on disk but its database record was removed
-
-**v1.1.13**
-- Fixed Plugin Check issues around paginated queries, admin request sanitization, and filesystem fallbacks
-- Normalized line endings across the plugin files flagged by the report
-
-**v1.1.12**
-- Simplified the export modal to two choices only: full library or selected folders
-
-**v1.1.11**
-- Removed host-sensitive filesystem abstraction from create/upload writes to improve folder creation and uploads on local environments
-- Improved admin API error parsing so backend critical responses surface a readable message in the UI
-
-**v1.1.10**
-- Added export choices for full library, current folder, or selected folders directly in the export modal
-- Fixed the sort icon direction so it reflects ascending and descending order correctly
-
-**v1.1.9**
-- Fixed upload validation regressions and duplicate upload controls in the overlay
-- Added runtime storage directory self-healing, live filesystem metadata fallback, and maintenance cleanup for orphaned file records
-
-**v1.1.8**
-- Standardized the main plugin presentation around English-first source text
-- Polished public documentation and repaired naming inconsistencies introduced during the language cleanup
-
-**v1.1.7**
-- Improved release hardening for streaming handlers and admin settings sanitization
-
-**v1.1.6**
-- Fixed Windows path normalization for uploads and storage validation
-
-**v1.1.5**
-- Improved internal drag and drop for moving files between folders
+**v1.1.23**
+- Fixed critical CSS typos (invalid background color, font-family misspellings)
+- Added mobile backdrop overlay for sidebar/details panels with click-to-close
+- Implemented ESC key handler for closing mobile panels
+- Added body scroll lock when sidebar/details panels are open on mobile
+- Increased touch targets to minimum 44x44px for better mobile interaction
+- Improved modal responsiveness with adaptive sizing for small screens
+- Added focus-visible states for better keyboard navigation and accessibility
+- Added prefers-reduced-motion support for users who prefer reduced animations
+- Added prefers-contrast support for high contrast mode
+- Added safe area insets support for notched devices
+- Fixed file rename sanitization issue where names with dots could become empty
 
 See `changelog.txt` for the complete release history.
 
