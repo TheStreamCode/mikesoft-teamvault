@@ -1078,10 +1078,15 @@
             const files = this.state.files.find(f => f.id === fileId);
             if (!files) return;
 
+            const fallbackName = files.original_name
+                ? files.original_name.replace(/\.[^/.]+$/, '')
+                : '';
+            const initialName = (files.display_name || fallbackName || '').trim();
+
             const html = `
                 <div class="pdm-field">
                     <label class="pdm-field-label">${pdmConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-files-name" value="${this.escapeHtml(files.display_name)}" autofocus>
+                    <input type="text" class="pdm-input" id="pdm-files-name" value="${this.escapeHtml(initialName)}" autofocus>
                 </div>
             `;
 

@@ -474,14 +474,14 @@ class PDM_Storage
             }
 
             $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-            $displayName = PDM_Helpers::sanitize_file_display_name((string) pathinfo($item, PATHINFO_FILENAME));
+            $displayName = PDM_Helpers::resolve_file_display_name('', (string) $item);
             $parentPath = $this->get_parent_relative_path($itemRelativePath);
 
             $filesRepo->create([
                 'folder_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
                 'original_name' => $item,
                 'stored_name' => $item,
-                'display_name' => $displayName !== '' ? $displayName : PDM_Helpers::sanitize_file_display_name($item),
+                'display_name' => $displayName,
                 'relative_path' => $itemRelativePath,
                 'extension' => $extension,
                 'mime_type' => $this->filesystem->get_mime_type($itemRelativePath),

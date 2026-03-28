@@ -21,11 +21,29 @@ class PDM_Helpers
     {
         $name = trim($name);
         $name = sanitize_text_field($name);
-        $name = preg_replace('/[\\\/]+/', ' ', $name);
+        $name = preg_replace('~[\\/]+~', ' ', $name);
         $name = preg_replace('/\.{2,}/', ' ', $name);
         $name = preg_replace('/\s+/', ' ', (string) $name);
 
         return trim((string) $name);
+    }
+
+    public static function resolve_file_display_name(string $displayName, string $originalName): string
+    {
+        $displayName = self::sanitize_file_display_name($displayName);
+
+        if ($displayName !== '') {
+            return $displayName;
+        }
+
+        $fallback = pathinfo($originalName, PATHINFO_FILENAME);
+        $fallback = self::sanitize_file_display_name((string) $fallback);
+
+        if ($fallback !== '') {
+            return $fallback;
+        }
+
+        return self::sanitize_file_display_name($originalName);
     }
 
     public static function sanitize_archive_entry_segment(string $name, string $fallback = self::FALLBACK_ARCHIVE_NAME): string

@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.24-blue.svg)](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.25-blue.svg)](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -176,6 +176,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.25**
+- Fixed the file rename flow for legacy records with empty display names
+- Added safer display-name fallback resolution across upload, reindex, browser payload formatting, and rename flows
 
 **v1.1.24**
 - Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" for WordPress.org compliance

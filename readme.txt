@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.24
+Stable tag: 1.1.25
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,11 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.25 =
+* Fixed file rename fallback handling for legacy records with empty display names
+* Added safer display-name fallback resolution during upload, reindex, browser payload formatting, and rename flows
+* Tightened the file rename request handling and added regression coverage for the rename path
 
 = 1.1.24 =
 * Renamed the plugin branding to Mikesoft TeamVault and aligned the release package with the new slug
@@ -199,6 +204,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.25 =
+
+Recommended maintenance update for file rename reliability and safer display-name fallback handling.
 
 = 1.1.24 =
 
