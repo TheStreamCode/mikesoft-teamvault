@@ -1212,6 +1212,10 @@
     .pdm-details.open {
         transform: translateX(0);
     }
+
+    .pdm-breadcrumb {
+        display: none;
+    }
 }
 
 @media (max-width: 640px) {
