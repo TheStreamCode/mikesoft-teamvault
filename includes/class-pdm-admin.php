@@ -37,8 +37,8 @@ class PDM_Admin
         );
 
         add_menu_page(
-            __('Private Documents', 'mikesoft-teamvault'),
-            __('Private Documents', 'mikesoft-teamvault'),
+            __('TeamVault', 'mikesoft-teamvault'),
+            __('TeamVault', 'mikesoft-teamvault'),
             PDM_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault',
             [$this, 'render_file_manager_page'],
