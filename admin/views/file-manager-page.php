@@ -73,7 +73,6 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                         </button>
                         <div class="pdm-toolbar-filters-dropdown" id="pdm-filters-dropdown">
                             <div class="pdm-toolbar-filters-row">
-                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Sort', 'mikesoft-teamvault'); ?></span>
                                 <select class="pdm-toolbar-filters-select pdm-filters-sort">
                                     <option value="display_name"><?php esc_html_e('Name', 'mikesoft-teamvault'); ?></option>
                                     <option value="created_at"><?php esc_html_e('Date', 'mikesoft-teamvault'); ?></option>
@@ -81,7 +80,6 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                                 </select>
                             </div>
                             <div class="pdm-toolbar-filters-row">
-                                <span class="pdm-toolbar-filters-label"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></span>
                                 <select class="pdm-toolbar-filters-select pdm-filters-per-page">
                                     <option value="25">25</option>
                                     <option value="50">50</option>

@@ -1411,15 +1411,48 @@
         gap: 6px;
     }
 
-    /* Hide secondary controls on mobile, show via dropdown */
+    /* Hide secondary controls on mobile */
     .pdm-page-size-control,
     .pdm-sort-dropdown {
         display: none;
     }
 
-    /* Show filter dropdown toggle */
+    /* Show filter inline, hide toggle button */
     .pdm-toolbar-filters {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pdm-filters-toggle {
+        display: none !important;
+    }
+
+    .pdm-toolbar-filters-dropdown {
+        position: static;
+        display: flex !important;
+        flex-direction: row;
+        gap: 8px;
+        padding: 0;
+        margin-top: 0;
+        box-shadow: none;
+        border: none;
+        min-width: auto;
+        background: transparent;
+    }
+
+    .pdm-toolbar-filters-row {
+        margin-bottom: 0;
+    }
+
+    .pdm-toolbar-filters-label {
+        display: none;
+    }
+
+    .pdm-toolbar-filters-select {
+        padding: 6px 8px;
+        font-size: 12px;
+        min-height: 36px;
     }
 
     .pdm-btn-primary {
