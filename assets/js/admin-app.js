@@ -2,6 +2,7 @@
     'use strict';
 
     const PDM = {
+        FOLDER_MAX_EXPANDED_DEPTH: 3,
         state: {
             currentFolder: null,
             folders: [],
@@ -311,15 +312,17 @@
                 });
             });
 
-            this.elements.folderTree.querySelectorAll('.pdm-folder-toggle').forEach(el => {
-                el.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    el.classList.toggle('collapsed');
-                    const children = el.closest('.pdm-folder-item')?.nextElementSibling;
-                    if (children) {
-                        children.style.display = el.classList.contains('collapsed') ? 'none' : 'block';
-                    }
-                });
+            this.elements.folderTree?.addEventListener('click', (e) => {
+                const toggle = e.target.closest('.pdm-folder-toggle');
+                if (!toggle) return;
+                
+                e.stopPropagation();
+                const folderItem = toggle.closest('.pdm-folder-item');
+                toggle.classList.toggle('collapsed');
+                const children = folderItem?.nextElementSibling;
+                if (children) {
+                    children.style.display = toggle.classList.contains('collapsed') ? 'none' : 'block';
+                }
             });
         },
 
@@ -329,11 +332,13 @@
             return folders.map(folder => {
                 const isActive = this.state.currentFolder === folder.id;
                 const hasChildren = folder.has_children;
+                const isDeep = level >= this.FOLDER_MAX_EXPANDED_DEPTH;
+                const childrenCount = hasChildren ? this.countDescendants(folder) : 0;
                 
                 let html = `
-                    <div class="pdm-folder-item ${isActive ? 'active' : ''}" data-folder-id="${folder.id}">
+                    <div class="pdm-folder-item ${isActive ? 'active' : ''} ${isDeep && hasChildren ? 'collapsed' : ''}" data-folder-id="${folder.id}" data-depth="${level}">
                         ${hasChildren ? `
-                            <span class="pdm-folder-toggle">
+                            <span class="pdm-folder-toggle" title="${isDeep ? 'Espandi' : 'Raccogli'}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 9l6 6 6-6"/>
                                 </svg>
@@ -343,17 +348,27 @@
                             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                         </svg>
                         <span class="pdm-folder-name">${this.escapeHtml(folder.name)}</span>
+                        ${isDeep && childrenCount > 0 ? `<span class="pdm-folder-count">+${childrenCount}</span>` : ''}
                     </div>
                 `;
 
                 if (hasChildren) {
-                    html += `<div class="pdm-folder-children" style="display: block;">`;
+                    html += `<div class="pdm-folder-children" style="display: ${isDeep ? 'none' : 'block'};">`;
                     html += this.buildFolderTreeHtml(folder.children, level + 1);
                     html += `</div>`;
                 }
 
                 return html;
             }).join('');
+        },
+
+        countDescendants(folder) {
+            if (!folder.children || folder.children.length === 0) return 0;
+            let count = folder.children.length;
+            folder.children.forEach(child => {
+                count += this.countDescendants(child);
+            });
+            return count;
         },
 
         renderBreadcrumb() {

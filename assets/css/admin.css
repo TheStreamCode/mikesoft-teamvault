@@ -168,6 +168,23 @@
     transform: rotate(-90deg);
 }
 
+.pdm-folder-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--pdm-color-text-muted);
+    background: var(--pdm-color-bg);
+    padding: 2px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--pdm-color-border);
+}
+
+.pdm-folder-count:hover {
+    background: var(--pdm-color-primary);
+    color: white;
+    border-color: var(--pdm-color-primary);
+}
+
 .pdm-main {
     flex: 1;
     display: flex;
