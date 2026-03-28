@@ -181,6 +181,8 @@ class PDM_Repository_Folders
             }
         }
 
+        usort($tree, fn($a, $b) => strcasecmp($a['name'], $b['name']));
+
         return $tree;
     }
 
