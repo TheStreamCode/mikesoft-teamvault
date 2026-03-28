@@ -90,12 +90,12 @@ class PDM_Helpers
     public static function is_previewable(string $extension, string $mimeType): bool
     {
         $previewable = [
-            'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg',
+            'jpg', 'jpeg', 'png', 'gif', 'webp',
             'pdf',
         ];
 
         $previewableMimes = [
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
             'application/pdf',
         ];
 

@@ -33,13 +33,22 @@ class PDM_Validator
     ];
 
     private const DANGEROUS_PATTERNS = [
-        '/<\?php/i',
-        '/<\?=/i',
-        '/<script\s+language\s*=\s*["\']?php["\']?/i',
         '/<%.*%>/i',
         '/<asp:/i',
         '/<jsp:/i',
         '/<cf/i',
+    ];
+
+    private const PHP_DANGEROUS_PATTERNS = [
+        '/<\?php/i',
+        '/<\?=/i',
+        '/<script\s+language\s*=\s*["\']?php["\']?/i',
+    ];
+
+    private const MARKUP_DANGEROUS_PATTERNS = [
+        '/<script\b/i',
+        '/\son[a-z]+\s*=/i',
+        '/<foreignObject\b/i',
     ];
 
     private PDM_Settings $settings;
@@ -229,7 +238,7 @@ class PDM_Validator
         ];
     }
 
-    public function scan_file_content(string $filesPath): array
+    public function scan_file_content(string $filesPath, ?string $extension = null, ?string $mimeType = null): array
     {
         $errors = [];
 
@@ -250,11 +259,29 @@ class PDM_Validator
             }
         }
 
-        if (strpos($content, '<?php') !== false) {
+        if (!$this->should_allow_literal_code_samples($extension, $mimeType)) {
+            foreach (self::PHP_DANGEROUS_PATTERNS as $pattern) {
+                if (preg_match($pattern, $content)) {
+                    $errors[] = __('The file contains potentially dangerous content.', 'mikesoft-teamvault');
+                    break;
+                }
+            }
+        }
+
+        if ($this->should_scan_as_markup($content, $extension, $mimeType)) {
+            foreach (self::MARKUP_DANGEROUS_PATTERNS as $pattern) {
+                if (preg_match($pattern, $content)) {
+                    $errors[] = __('The file contains potentially dangerous content.', 'mikesoft-teamvault');
+                    break;
+                }
+            }
+        }
+
+        if (!$this->should_allow_literal_code_samples($extension, $mimeType) && strpos($content, '<?php') !== false) {
             $errors[] = __('The file contains PHP code.', 'mikesoft-teamvault');
         }
 
-        if (preg_match('/<\s*script\s+[^>]*language\s*=\s*["\']?\s*php\s*["\']?[^>]*>/i', $content)) {
+        if (!$this->should_allow_literal_code_samples($extension, $mimeType) && preg_match('/<\s*script\s+[^>]*language\s*=\s*["\']?\s*php\s*["\']?[^>]*>/i', $content)) {
             $errors[] = __('The file contains PHP scripts.', 'mikesoft-teamvault');
         }
 
@@ -273,7 +300,7 @@ class PDM_Validator
         }
 
         if (isset($files['tmp_name']) && is_uploaded_file($files['tmp_name'])) {
-            $scanResult = $this->scan_file_content($files['tmp_name']);
+            $scanResult = $this->scan_file_content($files['tmp_name'], $result['extension'] ?? null, $result['mime_type'] ?? null);
 
             if (!$scanResult['valid']) {
                 $result['valid'] = false;
@@ -324,5 +351,30 @@ class PDM_Validator
         ];
 
         return $messages[$errorCode] ?? __('Unknown upload error.', 'mikesoft-teamvault');
+    }
+
+    private function should_scan_as_markup(string $content, ?string $extension, ?string $mimeType): bool
+    {
+        $extension = strtolower(trim((string) $extension));
+        $mimeType = strtolower(trim((string) $mimeType));
+
+        if (in_array($extension, ['svg', 'xml', 'html', 'htm'], true)) {
+            return true;
+        }
+
+        if (in_array($mimeType, ['image/svg+xml', 'application/xml', 'text/xml', 'text/html'], true)) {
+            return true;
+        }
+
+        return preg_match('/^\s*<svg\b/i', $content) === 1;
+    }
+
+    private function should_allow_literal_code_samples(?string $extension, ?string $mimeType): bool
+    {
+        $extension = strtolower(trim((string) $extension));
+        $mimeType = strtolower(trim((string) $mimeType));
+
+        return in_array($extension, ['txt', 'csv', 'rtf'], true)
+            || in_array($mimeType, ['text/plain', 'text/csv', 'application/rtf'], true);
     }
 }

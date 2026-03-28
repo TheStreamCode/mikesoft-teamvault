@@ -7,15 +7,18 @@ class PDM_Preview
     private PDM_Storage $storage;
     private PDM_Repository_Files $filesRepo;
     private PDM_Auth $auth;
+    private PDM_Settings $settings;
 
     public function __construct(
         PDM_Storage $storage,
         PDM_Repository_Files $filesRepo,
-        PDM_Auth $auth
+        PDM_Auth $auth,
+        PDM_Settings $settings
     ) {
         $this->storage = $storage;
         $this->filesRepo = $filesRepo;
         $this->auth = $auth;
+        $this->settings = $settings;
     }
 
     public function serve(int $fileId): void
@@ -59,7 +62,10 @@ class PDM_Preview
         $mimeType = $filesystem->get_mime_type($files->relative_path);
         $fileSize = $filesystem->get_file_size($files->relative_path);
 
-        if (!PDM_Helpers::is_previewable($files->extension, $mimeType ?: (string) $files->mime_type)) {
+        if (!$this->can_preview((object) [
+            'extension' => $files->extension,
+            'mime_type' => $mimeType ?: (string) $files->mime_type,
+        ])) {
             wp_die(
                 esc_html__('Preview is not available for this file type.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -139,6 +145,10 @@ class PDM_Preview
 
     public function can_preview(object $files): bool
     {
+        if (strtolower((string) $files->extension) === 'pdf' && !$this->settings->is_pdf_preview_enabled()) {
+            return false;
+        }
+
         return PDM_Helpers::is_previewable($files->extension, $files->mime_type);
     }
 }

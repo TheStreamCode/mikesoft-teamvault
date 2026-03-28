@@ -394,7 +394,7 @@ class PDM_Storage
     {
         $htaccess = $path . '/.htaccess';
         if (!file_exists($htaccess)) {
-            $content = "# Private Document Manager - Access Denied\n";
+            $content = "# Mikesoft TeamVault - Access Denied\n";
             $content .= "Order deny,allow\n";
             $content .= "Deny from all\n";
             $content .= "<IfModule mod_rewrite.c>\n";
@@ -429,7 +429,7 @@ class PDM_Storage
 
         $marker = $path . '/.pdm-storage';
         if (!file_exists($marker)) {
-            @file_put_contents($marker, "Private Document Manager storage marker\n");
+            @file_put_contents($marker, "Mikesoft TeamVault storage marker\n");
         }
     }
 

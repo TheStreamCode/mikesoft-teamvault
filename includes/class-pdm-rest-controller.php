@@ -370,6 +370,7 @@ class PDM_REST_Controller
             'relative_path' => $result['new_relative_path'],
         ]);
 
+        $this->filesRepo->update_relative_paths_for_folder_rename((string) $folder->relative_path, $result['new_relative_path']);
         $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
         $this->logger->log_rename('folder', $id, $folder->name, $name);
 
@@ -424,8 +425,12 @@ class PDM_REST_Controller
 
         // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES is validated by validate_upload_full().
         $files = $_FILES['file'];
-        $folderId = $request->get_param('folder_id');
-        $folderId = $folderId ? (int) $folderId : null;
+        $folderId = $this->resolve_folder_id($request->get_param('folder_id'));
+
+        if ($folderId instanceof \WP_Error) {
+            ob_end_clean();
+            return $folderId;
+        }
 
         $validation = $this->validator->validate_upload_full($files);
         if (!$validation['valid']) {
@@ -555,8 +560,11 @@ class PDM_REST_Controller
     public function move_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $id = (int) $request->get_param('id');
-        $targetFolderId = $request->get_param('folder_id');
-        $targetFolderId = $targetFolderId ? (int) $targetFolderId : null;
+        $targetFolderId = $this->resolve_folder_id($request->get_param('folder_id'));
+
+        if ($targetFolderId instanceof \WP_Error) {
+            return $targetFolderId;
+        }
 
         $files = $this->filesRepo->find($id);
         if (!$files) {
@@ -586,6 +594,33 @@ class PDM_REST_Controller
     {
         $id = (int) $request->get_param('id');
         $this->download->serve($id);
+    }
+
+    private function resolve_folder_id($rawFolderId): int|\WP_Error|null
+    {
+        if ($rawFolderId === null || $rawFolderId === '') {
+            return null;
+        }
+
+        if (!is_string($rawFolderId) && !is_int($rawFolderId)) {
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        if (is_string($rawFolderId) && !preg_match('/^\d+$/', $rawFolderId)) {
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        $folderId = (int) $rawFolderId;
+
+        if ($folderId <= 0) {
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        if (!$this->folderRepo->find($folderId)) {
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        return $folderId;
     }
 
     public function preview_files(\WP_REST_Request $request): void
@@ -810,6 +845,11 @@ class PDM_REST_Controller
     {
         $runtime = $this->get_file_runtime_state($files);
 
+        $previewable = $runtime['exists_on_disk'] && $this->preview->can_preview((object) [
+            'extension' => $files->extension,
+            'mime_type' => $runtime['mime_type'],
+        ]);
+
         return [
             'id' => (int) $files->id,
             'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
@@ -821,9 +861,9 @@ class PDM_REST_Controller
             'file_size_formatted' => PDM_Helpers::format_filesize($runtime['file_size']),
             'icon' => PDM_Helpers::get_file_icon($files->extension),
             'exists_on_disk' => $runtime['exists_on_disk'],
-            'is_previewable' => $runtime['exists_on_disk'] && PDM_Helpers::is_previewable($files->extension, $runtime['mime_type']),
+            'is_previewable' => $previewable,
             'is_image' => $runtime['exists_on_disk'] && strpos($runtime['mime_type'], 'image/') === 0,
-            'preview_url' => $runtime['exists_on_disk'] ? $this->preview->get_preview_url((int) $files->id) : null,
+            'preview_url' => $previewable ? $this->preview->get_preview_url((int) $files->id) : null,
             'download_url' => $runtime['exists_on_disk'] ? $this->download->get_download_url((int) $files->id) : null,
             'created_at' => $files->created_at,
             'created_at_human' => PDM_Helpers::human_time_diff_mysql($files->created_at),

@@ -279,6 +279,48 @@ class PDM_Repository_Files
         ]);
     }
 
+    public function update_relative_paths_for_folder_rename(string $oldPrefix, string $newPrefix): int
+    {
+        global $wpdb;
+
+        $oldPrefix = trim($oldPrefix, '/\\');
+        $newPrefix = trim($newPrefix, '/\\');
+
+        if ($oldPrefix === '' || $oldPrefix === $newPrefix) {
+            return 0;
+        }
+
+        $search = $oldPrefix . '/%';
+        $records = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT id, relative_path FROM {$this->table} WHERE relative_path LIKE %s",
+                $search
+            )
+        );
+
+        $updated = 0;
+
+        foreach ($records as $record) {
+            $currentPath = (string) $record->relative_path;
+            if (!str_starts_with($currentPath, $oldPrefix . '/')) {
+                continue;
+            }
+
+            $newPath = $newPrefix . substr($currentPath, strlen($oldPrefix));
+            $result = $wpdb->update(
+                $this->table,
+                ['relative_path' => $newPath],
+                ['id' => (int) $record->id]
+            );
+
+            if ($result !== false) {
+                $updated++;
+            }
+        }
+
+        return $updated;
+    }
+
     public function find_by_checksum(string $checksum): array
     {
         global $wpdb;

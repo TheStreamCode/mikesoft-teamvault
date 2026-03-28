@@ -1,6 +1,6 @@
 === Mikesoft TeamVault ===
 Contributors: thestreamcode
-Tags: documents, private, secure, file-manager, access-control, team, shared
+Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
@@ -8,7 +8,7 @@ Stable tag: 1.1.24
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Private shared document management separated from the WordPress Media Library with secure access control, previews, ZIP export, and drag-and-drop uploads.
+Secure private team document storage for WordPress with controlled access, previews, ZIP export, and drag-and-drop uploads.
 
 == Description ==
 
@@ -77,6 +77,20 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.24 =
+* Renamed the plugin branding to Mikesoft TeamVault and aligned the release package with the new slug
+* Removed SVG from default allowed uploads, blocked unsafe inline preview paths, and enforced the PDF preview setting
+* Fixed nested folder rename path updates so descendant files keep working after folder renames
+* Rejected invalid destination folder IDs instead of silently falling back to the root folder
+* Improved admin UI consistency, mobile details controls, and release hardening files
+
+= 1.1.23 =
+* Refined the mobile file manager with off-canvas navigation, responsive filters, and sidebar scrolling
+* Fixed rename validation edge cases and several Italian translation issues
+
+= 1.1.22 =
+* Fixed Plugin Check compliance issues in filesystem operations, schema migration safety, and packaging
 
 = 1.1.21 =
 * Hardened whitelist enforcement so role-based access and user whitelists are applied consistently across REST, admin screens, and streamed handlers
@@ -185,6 +199,18 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.24 =
+
+Recommended security and consistency update. Improves release packaging, blocks unsafe preview scenarios, and fixes nested folder rename path handling.
+
+= 1.1.23 =
+
+Recommended mobile UX update. Improves off-canvas navigation, filters, and responsive file manager behavior.
+
+= 1.1.22 =
+
+Recommended maintenance update for Plugin Check compliance and safer low-level filesystem and migration handling.
 
 = 1.1.20 =
 

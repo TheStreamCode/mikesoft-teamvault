@@ -199,7 +199,7 @@ class PDM_Activator
     {
         $htaccess = $path . '/.htaccess';
         if (!file_exists($htaccess)) {
-            $content = "# Private Document Manager - Access Denied\n";
+            $content = "# Mikesoft TeamVault - Access Denied\n";
             $content .= "Order deny,allow\n";
             $content .= "Deny from all\n";
             $content .= "<IfModule mod_rewrite.c>\n";
@@ -234,7 +234,7 @@ class PDM_Activator
 
         $marker = $path . '/' . self::STORAGE_MARKER_FILE;
         if (!file_exists($marker)) {
-            @file_put_contents($marker, "Private Document Manager storage marker\n");
+            @file_put_contents($marker, "Mikesoft TeamVault storage marker\n");
         }
     }
 
@@ -258,7 +258,7 @@ class PDM_Activator
             'pdm_storage_path' => '',
             'pdm_allowed_extensions' => implode(',', [
                 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
-                'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg',
+                'jpg', 'jpeg', 'png', 'gif', 'webp',
                 'zip', 'rar', '7z',
                 'txt', 'csv', 'rtf',
                 'mp3', 'wav', 'ogg',
