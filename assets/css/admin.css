@@ -1213,7 +1213,7 @@
         transform: translateX(0);
     }
 
-    .pdm-breadcrumb {
+    .pdm-toolbar .pdm-breadcrumb {
         display: none;
     }
 }
