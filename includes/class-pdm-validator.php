@@ -93,17 +93,17 @@ class PDM_Validator
         $name = trim($name);
 
         if (empty($name)) {
-            $errors[] = __('The folder name cannot be empty.', 'private-document-manager');
+            $errors[] = __('The folder name cannot be empty.', 'mikesoft-teamvault');
         }
 
         if (mb_strlen($name) > 255) {
-            $errors[] = __('The folder name is too long (maximum 255 characters).', 'private-document-manager');
+            $errors[] = __('The folder name is too long (maximum 255 characters).', 'mikesoft-teamvault');
         }
 
         $forbidden = ['..', '.', '/', '\\', "\0", "\t", "\n", "\r"];
         foreach ($forbidden as $char) {
             if (strpos($name, $char) !== false) {
-                $errors[] = __('The folder name contains invalid characters.', 'private-document-manager');
+                $errors[] = __('The folder name contains invalid characters.', 'mikesoft-teamvault');
                 break;
             }
         }
@@ -112,7 +112,7 @@ class PDM_Validator
                      'com6', 'com7', 'com8', 'com9', 'lpt1', 'lpt2', 'lpt3', 'lpt4', 
                      'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9'];
         if (in_array(strtolower($name), $reserved, true)) {
-            $errors[] = __('This name is reserved by the system.', 'private-document-manager');
+            $errors[] = __('This name is reserved by the system.', 'mikesoft-teamvault');
         }
 
         return [
@@ -128,17 +128,17 @@ class PDM_Validator
         $name = trim($name);
 
         if (empty($name)) {
-            $errors[] = __('The files name cannot be empty.', 'private-document-manager');
+            $errors[] = __('The files name cannot be empty.', 'mikesoft-teamvault');
         }
 
         if (mb_strlen($name) > 255) {
-            $errors[] = __('The files name is too long (maximum 255 characters).', 'private-document-manager');
+            $errors[] = __('The files name is too long (maximum 255 characters).', 'mikesoft-teamvault');
         }
 
         $forbidden = ['..', '/', '\\', "\0", "\t", "\n", "\r"];
         foreach ($forbidden as $char) {
             if (strpos($name, $char) !== false) {
-                $errors[] = __('The files name contains invalid characters.', 'private-document-manager');
+                $errors[] = __('The files name contains invalid characters.', 'mikesoft-teamvault');
                 break;
             }
         }
@@ -147,7 +147,7 @@ class PDM_Validator
                      'com6', 'com7', 'com8', 'com9', 'lpt1', 'lpt2', 'lpt3', 'lpt4',
                      'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9'];
         if (in_array(strtolower($name), $reserved, true)) {
-            $errors[] = __('This name is reserved by the system.', 'private-document-manager');
+            $errors[] = __('This name is reserved by the system.', 'mikesoft-teamvault');
         }
 
         return [
@@ -176,7 +176,7 @@ class PDM_Validator
         $errors = [];
 
         if (!isset($files['tmp_name']) || !is_uploaded_file($files['tmp_name'])) {
-            $errors[] = __('Invalid file.', 'private-document-manager');
+            $errors[] = __('Invalid file.', 'mikesoft-teamvault');
             return ['valid' => false, 'errors' => $errors];
         }
 
@@ -188,13 +188,13 @@ class PDM_Validator
         $extension = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
 
         if ($this->has_dangerous_double_extension((string) ($files['name'] ?? ''))) {
-            $errors[] = __('The files contains multiple disallowed extensions.', 'private-document-manager');
+            $errors[] = __('The files contains multiple disallowed extensions.', 'mikesoft-teamvault');
         }
 
         if (!$this->validate_extension($extension)) {
             $errors[] = sprintf(
                 /* translators: %s: files extension. */
-                __('Extension .%s is not allowed.', 'private-document-manager'),
+                __('Extension .%s is not allowed.', 'mikesoft-teamvault'),
                 $extension
             );
         }
@@ -203,7 +203,7 @@ class PDM_Validator
             $maxSize = PDM_Helpers::format_filesize($this->settings->get_max_file_size());
             $errors[] = sprintf(
                 /* translators: %s: maximum allowed files size. */
-                __('Size files superiore al limite consentito (%s).', 'private-document-manager'),
+                __('Size files superiore al limite consentito (%s).', 'mikesoft-teamvault'),
                 $maxSize
             );
         }
@@ -217,7 +217,7 @@ class PDM_Validator
         }
 
         if (!$this->validate_mime_type($detectedMime)) {
-            $errors[] = __('Type di files non consentito.', 'private-document-manager');
+            $errors[] = __('Type di files non consentito.', 'mikesoft-teamvault');
         }
 
         return [
@@ -245,17 +245,17 @@ class PDM_Validator
 
         foreach (self::DANGEROUS_PATTERNS as $pattern) {
             if (preg_match($pattern, $content)) {
-                $errors[] = __('The files contains potentially dangerous content.', 'private-document-manager');
+                $errors[] = __('The files contains potentially dangerous content.', 'mikesoft-teamvault');
                 break;
             }
         }
 
         if (strpos($content, '<?php') !== false) {
-            $errors[] = __('The files contains PHP code.', 'private-document-manager');
+            $errors[] = __('The files contains PHP code.', 'mikesoft-teamvault');
         }
 
         if (preg_match('/<\s*script\s+[^>]*language\s*=\s*["\']?\s*php\s*["\']?[^>]*>/i', $content)) {
-            $errors[] = __('The files contains PHP scripts.', 'private-document-manager');
+            $errors[] = __('The files contains PHP scripts.', 'mikesoft-teamvault');
         }
 
         return [
@@ -314,15 +314,15 @@ class PDM_Validator
     private function get_upload_error_message(int $errorCode): string
     {
         $messages = [
-            UPLOAD_ERR_INI_SIZE => __('The files exceeds the maximum size configured on the server.', 'private-document-manager'),
-            UPLOAD_ERR_FORM_SIZE => __('The files exceeds the maximum size configured in the form.', 'private-document-manager'),
-            UPLOAD_ERR_PARTIAL => __('The files was only partially uploaded.', 'private-document-manager'),
-            UPLOAD_ERR_NO_FILE => __('No file uploaded.', 'private-document-manager'),
-            UPLOAD_ERR_NO_TMP_DIR => __('Folder temporanea mancante.', 'private-document-manager'),
-            UPLOAD_ERR_CANT_WRITE => __('Unable to write the files to disk.', 'private-document-manager'),
-            UPLOAD_ERR_EXTENSION => __('Upload stopped by a PHP extension.', 'private-document-manager'),
+            UPLOAD_ERR_INI_SIZE => __('The files exceeds the maximum size configured on the server.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_FORM_SIZE => __('The files exceeds the maximum size configured in the form.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_PARTIAL => __('The files was only partially uploaded.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_NO_FILE => __('No file uploaded.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_NO_TMP_DIR => __('Folder temporanea mancante.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_CANT_WRITE => __('Unable to write the files to disk.', 'mikesoft-teamvault'),
+            UPLOAD_ERR_EXTENSION => __('Upload stopped by a PHP extension.', 'mikesoft-teamvault'),
         ];
 
-        return $messages[$errorCode] ?? __('Unknown upload error.', 'private-document-manager');
+        return $messages[$errorCode] ?? __('Unknown upload error.', 'mikesoft-teamvault');
     }
 }

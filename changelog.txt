@@ -1,6 +1,9 @@
-Private Document Manager Changelog
+Mikesoft TeamVault Changelog
 
 1.1.24
+- Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" to comply with WordPress.org plugin guidelines
+- Updated textdomain from "private-document-manager" to "mikesoft-teamvault"
+- Updated all admin menu slugs to use new plugin slug
 - Reverted mobile sidebar to off-canvas drawer pattern (slide from left)
 
 1.1.23

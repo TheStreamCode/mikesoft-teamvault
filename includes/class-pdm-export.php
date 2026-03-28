@@ -35,16 +35,16 @@ class PDM_Export
     {
         if (!$this->auth->can_read()) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
 
         if (!class_exists('ZipArchive')) {
             wp_die(
-                esc_html__('ZipArchive is not available on this server. Contact the server administrator.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('ZipArchive is not available on this server. Contact the server administrator.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -53,8 +53,8 @@ class PDM_Export
 
         if (empty($selectedFolders)) {
             wp_die(
-                esc_html__('No folders selected for export.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('No folders selected for export.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 400]
             );
         }
@@ -77,8 +77,8 @@ class PDM_Export
         if ($result !== true) {
             wp_delete_file($zipPath);
             wp_die(
-                esc_html__('Unable to create the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to create the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -97,8 +97,8 @@ class PDM_Export
             $zip->close();
             wp_delete_file($zipPath);
             wp_die(
-                esc_html__('Error while creating the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Error while creating the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -114,16 +114,16 @@ class PDM_Export
     {
         if (!$this->auth->can_read()) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
 
         if (!class_exists('ZipArchive')) {
             wp_die(
-                esc_html__('ZipArchive is not available on this server. Contact the server administrator.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('ZipArchive is not available on this server. Contact the server administrator.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -132,8 +132,8 @@ class PDM_Export
 
         if ($folderId && !$folder) {
             wp_die(
-                esc_html__('Folder not found.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Folder not found.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
             );
         }
@@ -156,8 +156,8 @@ class PDM_Export
         if ($result !== true) {
             wp_delete_file($zipPath);
             wp_die(
-                esc_html__('Unable to create the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to create the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -169,8 +169,8 @@ class PDM_Export
             $zip->close();
             wp_delete_file($zipPath);
             wp_die(
-                esc_html__('Error while creating the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Error while creating the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -363,8 +363,8 @@ class PDM_Export
         if (!is_readable($zipPath)) {
             wp_delete_file($zipPath);
             wp_die(
-                esc_html__('Unable to read the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -375,8 +375,8 @@ class PDM_Export
             wp_delete_file($zipPath);
 
             wp_die(
-                esc_html__('Unable to read the ZIP file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }

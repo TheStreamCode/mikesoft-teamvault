@@ -233,7 +233,7 @@ class PDM_I18n
 
     public function filter_gettext(string $translation, string $text, string $domain): string
     {
-        if ('private-document-manager' !== $domain) {
+        if ('mikesoft-teamvault' !== $domain) {
             return $translation;
         }
 

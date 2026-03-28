@@ -106,7 +106,7 @@ class PDM_Helpers
     public static function human_time_diff_mysql(string $mysqlTime): string
     {
         $time = strtotime($mysqlTime);
-        return human_time_diff($time, time()) . ' ' . __('ago', 'private-document-manager');
+        return human_time_diff($time, time()) . ' ' . __('ago', 'mikesoft-teamvault');
     }
 
     public static function build_breadcrumb(array $folders, int $currentFolderId): array

@@ -25,8 +25,8 @@ class PDM_Download
     {
         if (!$this->auth->can_read()) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
@@ -34,8 +34,8 @@ class PDM_Download
         $files = $this->filesRepo->find($fileId);
         if (!$files) {
             wp_die(
-                esc_html__('File not found.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('File not found.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
             );
         }
@@ -45,16 +45,16 @@ class PDM_Download
 
         if (!$filesystem->is_file($files->relative_path)) {
             wp_die(
-                esc_html__('File not found in the filesystem.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('File not found in the filesystem.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
             );
         }
 
         if (!$filesystem->verify_path($fullPath)) {
             wp_die(
-                esc_html__('Access denied.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 403]
             );
         }
@@ -104,8 +104,8 @@ class PDM_Download
 
         if (!is_readable($path)) {
             wp_die(
-                esc_html__('Unable to read the file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }
@@ -114,8 +114,8 @@ class PDM_Download
 
         if ($contents === false) {
             wp_die(
-                esc_html__('Unable to read the file.', 'private-document-manager'),
-                esc_html__('Error', 'private-document-manager'),
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 500]
             );
         }

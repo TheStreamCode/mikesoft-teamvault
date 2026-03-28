@@ -222,14 +222,14 @@ class PDM_Settings
         if (empty($userIds)) {
             return new \WP_Error(
                 'pdm_invalid_whitelist',
-                __('Select at least one authorized user before enabling the whitelist.', 'private-document-manager')
+                __('Select at least one authorized user before enabling the whitelist.', 'mikesoft-teamvault')
             );
         }
 
         if (!in_array($currentUserId, $userIds, true)) {
             return new \WP_Error(
                 'pdm_whitelist_lockout',
-                __('Add your current account to the whitelist before enabling it, otherwise you will lock yourself out.', 'private-document-manager')
+                __('Add your current account to the whitelist before enabling it, otherwise you will lock yourself out.', 'mikesoft-teamvault')
             );
         }
 

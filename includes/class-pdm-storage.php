@@ -47,7 +47,7 @@ class PDM_Storage
         if (!$this->ensure_storage_directory()) {
             return [
                 'success' => false,
-                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+                'error' => __('Unable to initialize the storage directory.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -108,7 +108,7 @@ class PDM_Storage
         if (!$this->ensure_storage_directory()) {
             return [
                 'success' => false,
-                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+                'error' => __('Unable to initialize the storage directory.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -122,7 +122,7 @@ class PDM_Storage
         if (!$this->filesystem->is_path_within_base($fullPath)) {
             return [
                 'success' => false,
-                'error' => __('Invalid destination path.', 'private-document-manager'),
+                'error' => __('Invalid destination path.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -136,7 +136,7 @@ class PDM_Storage
         if ($contents === false || !$this->filesystem->write_file($relativePath, $contents)) {
             return [
                 'success' => false,
-                'error' => __('Unable to save the file.', 'private-document-manager'),
+                'error' => __('Unable to save the file.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -158,7 +158,7 @@ class PDM_Storage
         if (!$this->ensure_storage_directory()) {
             return [
                 'success' => false,
-                'error' => __('Unable to initialize the storage directory.', 'private-document-manager'),
+                'error' => __('Unable to initialize the storage directory.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -167,7 +167,7 @@ class PDM_Storage
         if (empty($slug)) {
             return [
                 'success' => false,
-                'error' => __('Invalid folder name.', 'private-document-manager'),
+                'error' => __('Invalid folder name.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -177,7 +177,7 @@ class PDM_Storage
             if (!$parent) {
                 return [
                     'success' => false,
-                    'error' => __('Parent folder not found.', 'private-document-manager'),
+                    'error' => __('Parent folder not found.', 'mikesoft-teamvault'),
                 ];
             }
             $parentPath = $parent->relative_path;
@@ -188,7 +188,7 @@ class PDM_Storage
         if (!$this->filesystem->is_path_within_base($this->filesystem->resolve($relativePath))) {
             return [
                 'success' => false,
-                'error' => __('Invalid folder path.', 'private-document-manager'),
+                'error' => __('Invalid folder path.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -203,7 +203,7 @@ class PDM_Storage
 
             return [
                 'success' => false,
-                'error' => __('Folder already exists.', 'private-document-manager'),
+                'error' => __('Folder already exists.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -211,7 +211,7 @@ class PDM_Storage
         if (!$created) {
             return [
                 'success' => false,
-                'error' => __('Unable to create the folder.', 'private-document-manager'),
+                'error' => __('Unable to create the folder.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -228,7 +228,7 @@ class PDM_Storage
         if (!$folder) {
             return [
                 'success' => false,
-                'error' => __('Folder not found.', 'private-document-manager'),
+                'error' => __('Folder not found.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -236,7 +236,7 @@ class PDM_Storage
         if (!empty($children)) {
             return [
                 'success' => false,
-                'error' => __('The folder contains subfolders. Delete the subfolders first.', 'private-document-manager'),
+                'error' => __('The folder contains subfolders. Delete the subfolders first.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -244,7 +244,7 @@ class PDM_Storage
         if (!empty($files)) {
             return [
                 'success' => false,
-                'error' => __('The folder contains files. Delete the files first.', 'private-document-manager'),
+                'error' => __('The folder contains files. Delete the files first.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -252,7 +252,7 @@ class PDM_Storage
         if (!$deleted) {
             return [
                 'success' => false,
-                'error' => __('Unable to delete the folder from the filesystem.', 'private-document-manager'),
+                'error' => __('Unable to delete the folder from the filesystem.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -265,7 +265,7 @@ class PDM_Storage
         if (!$files) {
             return [
                 'success' => false,
-                'error' => __('File not found.', 'private-document-manager'),
+                'error' => __('File not found.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -273,7 +273,7 @@ class PDM_Storage
         if (!$deleted) {
             return [
                 'success' => false,
-                'error' => __('Unable to delete the files from the filesystem.', 'private-document-manager'),
+                'error' => __('Unable to delete the files from the filesystem.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -290,7 +290,7 @@ class PDM_Storage
         if (!$files) {
             return [
                 'success' => false,
-                'error' => __('File not found.', 'private-document-manager'),
+                'error' => __('File not found.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -300,7 +300,7 @@ class PDM_Storage
         if ($files->folder_id === $targetFolderId) {
             return [
                 'success' => false,
-                'error' => __('The files is already in the destination folder.', 'private-document-manager'),
+                'error' => __('The files is already in the destination folder.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -308,7 +308,7 @@ class PDM_Storage
         if (!$moved) {
             return [
                 'success' => false,
-                'error' => __('Unable to move the file.', 'private-document-manager'),
+                'error' => __('Unable to move the file.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -327,7 +327,7 @@ class PDM_Storage
         if (!$folder) {
             return [
                 'success' => false,
-                'error' => __('Folder not found.', 'private-document-manager'),
+                'error' => __('Folder not found.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -335,7 +335,7 @@ class PDM_Storage
         if (empty($newSlug)) {
             return [
                 'success' => false,
-                'error' => __('Invalid folder name.', 'private-document-manager'),
+                'error' => __('Invalid folder name.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -349,14 +349,14 @@ class PDM_Storage
         if ($folder->slug === $newSlug) {
             return [
                 'success' => false,
-                'error' => __('The new name is identical to the current name.', 'private-document-manager'),
+                'error' => __('The new name is identical to the current name.', 'mikesoft-teamvault'),
             ];
         }
 
         if ($this->filesystem->exists($newRelativePath)) {
             return [
                 'success' => false,
-                'error' => __('A folder with this name already exists.', 'private-document-manager'),
+                'error' => __('A folder with this name already exists.', 'mikesoft-teamvault'),
             ];
         }
 
@@ -364,7 +364,7 @@ class PDM_Storage
         if (!$renamed) {
             return [
                 'success' => false,
-                'error' => __('Unable to rename the folder.', 'private-document-manager'),
+                'error' => __('Unable to rename the folder.', 'mikesoft-teamvault'),
             ];
         }
 
