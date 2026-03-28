@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.26-blue.svg)](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.26-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -46,7 +46,7 @@ The supported plugin release slug and installed folder name are always `mikesoft
 
 ### Manual Installation
 
-1. Download the [latest release](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
+1. Download the [latest release](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
 2. Upload to `/wp-content/plugins/mikesoft-teamvault/`
 3. Activate in WordPress Plugins menu
 4. Configure in **TeamVault > Settings**
@@ -55,18 +55,18 @@ The supported plugin release slug and installed folder name are always `mikesoft
 
 ```bash
 cd /path/to/wordpress/wp-content/plugins/
-git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-teamvault
+git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamvault
 ```
 
 For local plugin development outside a live WordPress install, a separate source checkout name is recommended:
 
 ```bash
-git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-teamvault-src
+git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamvault-src
 ```
 
 ## Distribution
 
-- GitHub repository and source of truth: `https://github.com/mikesoft-codex/mikesoft-teamvault`
+- GitHub repository and source of truth: `https://github.com/TheStreamCode/mikesoft-teamvault`
 - WordPress.org can be used as the public distribution channel for stable releases and auto-updates
 - Recommended workflow: develop on GitHub, release stable versions to WordPress.org SVN
 - Release packages should always install as `mikesoft-teamvault/` with `mikesoft-teamvault.php` as the main plugin file
