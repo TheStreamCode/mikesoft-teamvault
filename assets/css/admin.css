@@ -1410,19 +1410,24 @@
 
 @media (max-width: 768px) {
     .pdm-toolbar {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 8px;
         padding: 10px;
+        align-items: center;
+        overflow: hidden;
     }
 
     .pdm-toolbar-left {
-        flex: 1;
-        min-width: 0;
+        flex: 0 0 auto;
+        min-width: auto;
     }
 
     .pdm-toolbar-right {
-        flex-wrap: wrap;
-        gap: 6px;
+        flex: 1 1 auto;
+        min-width: 0;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        gap: 4px;
     }
 
     .pdm-page-size-control,
@@ -1434,8 +1439,9 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        width: 100%;
-        justify-content: flex-start;
+        width: auto;
+        flex: 0 1 auto;
+        justify-content: flex-end;
     }
 
     .pdm-filters-toggle {
@@ -1453,7 +1459,8 @@
         border: none;
         min-width: auto;
         background: transparent;
-        width: 100%;
+        width: auto;
+        flex: 0 1 auto;
     }
 
     .pdm-toolbar-filters-row {
@@ -1461,6 +1468,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
+        flex: 0 0 auto;
     }
 
     .pdm-toolbar-filters-label {
@@ -1472,7 +1480,7 @@
         font-size: 11px;
         min-height: 36px;
         min-width: 0;
-        flex: 1;
+        flex: 0 0 auto;
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
@@ -1480,6 +1488,34 @@
         background-size: 12px;
         border-radius: 6px;
         cursor: pointer;
+    }
+
+    .pdm-filters-sort {
+        width: 76px;
+    }
+
+    .pdm-filters-per-page {
+        width: 58px;
+    }
+
+    .pdm-view-toggle {
+        flex: 0 0 auto;
+    }
+
+    #pdm-export-btn,
+    #pdm-upload-btn {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        gap: 4px;
+        min-height: 36px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    #pdm-export-btn svg,
+    #pdm-upload-btn svg {
+        width: 16px;
+        height: 16px;
     }
 
     .pdm-toolbar-filters-select:focus {
@@ -1508,26 +1544,40 @@
 }
 
 @media (max-width: 600px) {
-    /* Extra small: hide export button */
+    /* Keep secondary toolbar actions compact */
     .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
         display: none;
     }
 
-    /* But keep Upload visible */
-    .pdm-btn-primary {
-        flex: 1;
-        min-width: auto;
+    /* Keep Upload visible without stretching the row */
+    #pdm-upload-btn {
+        flex: 0 0 auto;
+        min-width: 0;
     }
 }
 
 @media (max-width: 480px) {
     .pdm-toolbar-right {
-        width: 100%;
+        width: auto;
         justify-content: flex-end;
+        flex-wrap: nowrap;
     }
 
     .pdm-view-toggle {
         display: none;
+    }
+
+    #pdm-export-btn {
+        padding: 6px 8px;
+        min-width: 36px;
+    }
+
+    #pdm-export-btn span {
+        display: none;
+    }
+
+    #pdm-upload-btn {
+        padding: 6px 9px;
     }
 }
 
@@ -2221,15 +2271,16 @@ body.pdm-no-scroll {
     .pdm-toolbar {
         padding: 10px 12px;
         gap: 8px;
+        flex-wrap: nowrap;
     }
 
     .pdm-toolbar-left {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 8px;
     }
 
     .pdm-toolbar-right {
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 6px;
     }
 
