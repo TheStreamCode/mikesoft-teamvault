@@ -72,10 +72,18 @@ git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-team
 - Release packages should always install as `mikesoft-teamvault/` with `mikesoft-teamvault.php` as the main plugin file
 - Keep source and release folders separate locally: `mikesoft-teamvault-src/` for development, `mikesoft-teamvault/` only as a generated packaging artifact
 
+## Repository Policy
+
+- This repository is public for transparency, code visibility, and release distribution
+- The plugin is maintained internally by Mikesoft; external contributions are not part of the current development workflow
+- Pull requests may be closed without review if they are outside the planned roadmap or maintenance priorities
+- GitHub is not the primary support channel for end users
+
 ## Support
 
-- GitHub Issues: bug reports, development discussion, roadmap work
 - WordPress.org support forum: installation help and end-user support after directory publication
+- Mikesoft website: official product and business communication channel
+- GitHub repository: public code reference and release visibility, not a collaborative support queue
 
 ## Configuration
 

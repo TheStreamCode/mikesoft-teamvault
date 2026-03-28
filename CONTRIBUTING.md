@@ -2,9 +2,21 @@
 
 Thank you for your interest in contributing!
 
-## Bug Reports
+## Contribution Policy
 
-Please use [GitHub Issues](https://github.com/mikesoft-codex/mikesoft-teamvault/issues) and include:
+This repository is public for transparency and distribution, but the plugin is currently maintained internally.
+
+- External pull requests are not part of the normal development workflow
+- GitHub Issues and Discussions are not the primary support channels
+- Support for end users should go through the official WordPress.org plugin page and/or the Mikesoft website
+
+You are welcome to read the code, learn from it, and reference the public releases, but please do not assume that community submissions will be reviewed or merged.
+
+## Internal Development Setup
+
+This section is mainly for the project maintainer or trusted collaborators working directly on the codebase.
+
+If you need to reproduce a bug locally, collect at least:
 
 - WordPress version
 - PHP version
@@ -13,10 +25,6 @@ Please use [GitHub Issues](https://github.com/mikesoft-codex/mikesoft-teamvault/
 - Expected vs actual behavior
 - Screenshots (if applicable)
 - Error logs (from `wp-content/debug.log` if available)
-
-## Feature Requests
-
-Open a [GitHub Discussion](https://github.com/mikesoft-codex/mikesoft-teamvault/discussions) with the `ideas` label.
 
 ## Development Setup
 
@@ -116,9 +124,9 @@ private const ITALIAN_MAP = [
 ],
 ```
 
-### 3. Submit a Pull Request with both files updated
+### 3. Update both files in the same change when adding translations
 
-## Pull Request Process
+## Internal Change Process
 
 1. Create a feature branch
 ```bash
@@ -138,13 +146,12 @@ git commit -m "Fix: description of the bug fix"
 git commit -m "Refactor: description of the refactoring"
 ```
 
-6. Push and open a Pull Request
+6. Push your branch to the canonical repository
 
-### PR Guidelines
+### Commit Guidelines
 
-- One feature or fix per PR
+- One feature or fix per commit/branch when practical
 - Clear description of changes
-- Reference related issues: `Fixes #123` or `Closes #456`
 - Keep commits atomic and well-described
 
 ## Project Structure
@@ -181,8 +188,8 @@ mikesoft-teamvault/
 
 ## Contact
 
-- **Issues**: [GitHub Issues](https://github.com/mikesoft-codex/mikesoft-teamvault/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/mikesoft-codex/mikesoft-teamvault/discussions)
+- **WordPress.org**: plugin support forum for public support after publication
+- **Website**: https://mikesoft.it
 - **Email**: info@mikesoft.it
 
 Thank you for contributing!
