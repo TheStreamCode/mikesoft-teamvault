@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-define('ABSPATH', __DIR__ . '/../');
+if ( ! defined( 'ABSPATH' ) ) {
+    define( 'ABSPATH', __DIR__ . '/../' );
+}
 define('MINUTE_IN_SECONDS', 60);
 
 $GLOBALS['pdm_test_options'] = [];
@@ -27,7 +29,7 @@ function sanitize_text_field($text)
     $text = is_scalar($text) ? (string) $text : '';
     $text = preg_replace('/[\r\n\t\0]+/', '', $text);
 
-    return trim(strip_tags($text));
+    return trim(wp_strip_all_tags($text));
 }
 
 function absint($value)
