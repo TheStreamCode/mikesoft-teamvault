@@ -1,6 +1,6 @@
 {
-  "name": "mikesoft/private-document-manager",
-  "description": "Development tooling for Private Document Manager",
+  "name": "mikesoft/mikesoft-teamvault",
+  "description": "Development tooling for Mikesoft TeamVault",
   "type": "project",
   "require-dev": {
     "phpunit/phpunit": "^11.5"
