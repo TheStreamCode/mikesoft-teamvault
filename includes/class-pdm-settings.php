@@ -6,11 +6,12 @@ class PDM_Settings
 {
     private const OPTION_GROUP = 'pdm_settings';
     private const OPTION_PAGE = 'pdm-settings';
+    private const DISALLOWED_UPLOAD_EXTENSIONS = ['svg'];
 
     private $defaults = [
         'pdm_interface_language' => 'en',
         'pdm_storage_path' => '',
-        'pdm_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,svg,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
+        'pdm_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
         'pdm_max_file_size' => 52428800,
         'pdm_log_enabled' => true,
         'pdm_pdf_preview_enabled' => true,
@@ -92,7 +93,8 @@ class PDM_Settings
         $extensions = array_map('trim', explode(',', $value));
         $extensions = array_map('strtolower', $extensions);
         $extensions = array_filter($extensions, fn($ext) => preg_match('/^[a-z0-9]+$/i', $ext));
-        $extensions = array_unique($extensions);
+        $extensions = array_filter($extensions, fn($ext) => !in_array($ext, self::DISALLOWED_UPLOAD_EXTENSIONS, true));
+        $extensions = array_values(array_unique($extensions));
 
         return implode(',', $extensions);
     }
@@ -141,6 +143,7 @@ class PDM_Settings
     {
         $extensions = $this->get('pdm_allowed_extensions');
         $extensions = array_map('trim', explode(',', $extensions));
+        $extensions = array_values(array_filter($extensions, fn($ext) => !in_array(strtolower($ext), self::DISALLOWED_UPLOAD_EXTENSIONS, true)));
 
         return class_exists('PDM_Hooks') ? PDM_Hooks::filter_allowed_extensions($extensions) : $extensions;
     }

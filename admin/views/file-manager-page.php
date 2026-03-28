@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-$allowed_extensions = array_filter(array_map('trim', explode(',', (string) get_option('pdm_allowed_extensions', ''))));
+$allowed_extensions = (new PDM_Settings())->get_allowed_extensions();
 $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allowed_extensions));
 ?>
 <div class="pdm-wrapper">
@@ -10,7 +10,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
         <div class="pdm-sidebar" id="pdm-sidebar">
             <div class="pdm-sidebar-header">
                 <h2 class="pdm-sidebar-title"><?php esc_html_e('Folders', 'mikesoft-teamvault'); ?></h2>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-new-folder-btn" title="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-new-folder-btn" title="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>
                     </svg>
@@ -50,7 +50,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
         <div class="pdm-main">
             <div class="pdm-toolbar">
                 <div class="pdm-toolbar-left">
-                    <button type="button" class="pdm-btn pdm-btn-ghost pdm-sidebar-toggle" id="pdm-sidebar-toggle">
+                    <button type="button" class="pdm-btn pdm-btn-ghost pdm-sidebar-toggle" id="pdm-sidebar-toggle" aria-label="<?php echo esc_attr__('Folders', 'mikesoft-teamvault'); ?>">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 12h18M3 6h18M3 18h18"/>
                         </svg>
@@ -66,7 +66,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                 </div>
                 <div class="pdm-toolbar-right">
                     <div class="pdm-toolbar-filters">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
@@ -95,7 +95,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                             <option value="created_at"><?php esc_html_e('Date', 'mikesoft-teamvault'); ?></option>
                             <option value="file_size"><?php esc_html_e('Size', 'mikesoft-teamvault'); ?></option>
                         </select>
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-sort-order" title="<?php echo esc_attr__('Order', 'mikesoft-teamvault'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-sort-order" title="<?php echo esc_attr__('Order', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Order', 'mikesoft-teamvault'); ?>">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M11 5h10M11 9h7M11 13h4M3 17l4 4 4-4M7 3v18"/>
                             </svg>
@@ -111,7 +111,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                         </select>
                     </div>
                     <div class="pdm-view-toggle">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost active" id="pdm-view-grid" title="<?php echo esc_attr__('Grid view', 'mikesoft-teamvault'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost active" id="pdm-view-grid" title="<?php echo esc_attr__('Grid view', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Grid view', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect x="3" y="3" width="7" height="7"/>
                                 <rect x="14" y="3" width="7" height="7"/>
@@ -119,7 +119,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
                                 <rect x="14" y="14" width="7" height="7"/>
                             </svg>
                         </button>
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-view-list" title="<?php echo esc_attr__('List view', 'mikesoft-teamvault'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-view-list" title="<?php echo esc_attr__('List view', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('List view', 'mikesoft-teamvault'); ?>">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
                             </svg>
@@ -150,13 +150,13 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
             </div>
         </div>
 
-        <div class="pdm-details" id="pdm-details">
+        <div class="pdm-details" id="pdm-details" aria-live="polite">
             <div class="pdm-details-empty">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35"/>
                 </svg>
-                <p><?php esc_html_e('Select a file to view details', 'mikesoft-teamvault'); ?></p>
+                <p><?php esc_html_e('Select a file or folder to view details', 'mikesoft-teamvault'); ?></p>
             </div>
         </div>
     </div>
@@ -175,12 +175,12 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
         </div>
     </div>
 
-    <div class="pdm-modal" id="pdm-modal">
+    <div class="pdm-modal" id="pdm-modal" role="dialog" aria-modal="true" aria-labelledby="pdm-modal-title">
         <div class="pdm-modal-backdrop"></div>
         <div class="pdm-modal-content">
             <div class="pdm-modal-header">
                 <h3 class="pdm-modal-title" id="pdm-modal-title"></h3>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close" aria-label="<?php echo esc_attr__('Close', 'mikesoft-teamvault'); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12"/>
                     </svg>
@@ -193,10 +193,10 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
 
     <div class="pdm-toast-container" id="pdm-toast-container"></div>
 
-    <div class="pdm-preview-modal" id="pdm-preview-modal">
+    <div class="pdm-preview-modal" id="pdm-preview-modal" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr__('Preview', 'mikesoft-teamvault'); ?>">
         <div class="pdm-preview-backdrop"></div>
         <div class="pdm-preview-content">
-            <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-preview-close">
+            <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-preview-close" aria-label="<?php echo esc_attr__('Close', 'mikesoft-teamvault'); ?>">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M18 6L6 18M6 6l12 12"/>
                 </svg>

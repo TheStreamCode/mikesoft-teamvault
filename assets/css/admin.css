@@ -533,6 +533,16 @@
     border-bottom: 1px solid var(--pdm-color-border);
 }
 
+.pdm-details-header-top {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.pdm-details-close {
+    display: none;
+}
+
 .pdm-details-preview {
     width: 100%;
     aspect-ratio: 1;
@@ -1215,6 +1225,10 @@
 
     .pdm-toolbar .pdm-breadcrumb {
         display: none;
+    }
+
+    .pdm-details-close {
+        display: inline-flex;
     }
 }
 

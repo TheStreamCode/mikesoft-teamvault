@@ -38,10 +38,19 @@
         init() {
             this.state.pagination.perPage = this.getStoredBrowserPerPage();
             this.cacheElements();
+
+            if (!this.elements.content || !this.elements.folderTree || !this.elements.details) {
+                return;
+            }
+
             this.syncPerPageSelect();
             this.syncSortOrderButton();
             this.bindEvents();
             this.loadBrowser();
+        },
+
+        isMobileViewport() {
+            return window.innerWidth <= 992;
         },
 
         cacheElements() {
@@ -102,6 +111,7 @@
             const sidebarHeader = this.elements.sidebar?.querySelector('.pdm-sidebar-header');
             sidebarHeader?.addEventListener('click', (e) => {
                 if (e.target.closest('.pdm-btn')) return;
+                if (!this.isMobileViewport()) return;
                 this.toggleSidebar();
             });
 
@@ -805,6 +815,13 @@
             const isAvailable = this.isFileAvailable(files);
             const html = `
                 <div class="pdm-details-header">
+                    <div class="pdm-details-header-top">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${pdmConfig.i18n.close}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="pdm-details-preview">
                         ${isAvailable && files.is_previewable && files.icon === 'image'
                             ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}">`
@@ -821,7 +838,7 @@
                         </div>
                     `}
                     <div class="pdm-details-section">
-                        <div class="pdm-details-section-title">${pdmConfig.i18n.files}</div>
+                        <div class="pdm-details-section-title">${pdmConfig.i18n.file}</div>
                         <div class="pdm-details-row">
                             <span class="pdm-details-row-label">${pdmConfig.i18n.name}</span>
                             <span class="pdm-details-row-value">${this.escapeHtml(files.display_name)}</span>
@@ -912,12 +929,23 @@
                 this.deleteFile(files.id);
             });
 
+            this.elements.details.querySelector('.pdm-details-close')?.addEventListener('click', () => {
+                this.closeDetails();
+            });
+
             this.openMobileDetails();
         },
 
         renderFolderDetails(folder) {
             const html = `
                 <div class="pdm-details-header">
+                    <div class="pdm-details-header-top">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${pdmConfig.i18n.close}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="pdm-details-preview">
                         ${this.getFileIconSvg('folder', 64)}
                     </div>
@@ -980,6 +1008,10 @@
 
             this.elements.details.querySelector('.pdm-details-delete-folder-btn')?.addEventListener('click', () => {
                 this.deleteFolder(folder.id);
+            });
+
+            this.elements.details.querySelector('.pdm-details-close')?.addEventListener('click', () => {
+                this.closeDetails();
             });
 
             this.openMobileDetails();
@@ -1478,6 +1510,10 @@
         },
 
         toggleSidebar() {
+            if (!this.isMobileViewport()) {
+                return;
+            }
+
             this.state.sidebarOpen = !this.state.sidebarOpen;
             this.elements.sidebar?.classList.toggle('open', this.state.sidebarOpen);
             
@@ -2118,17 +2154,7 @@
                     userResults.innerHTML = '';
                 });
 
-                this.elements.filtersToggle?.addEventListener('click', () => this.toggleFiltersDropdown());
-            this.elements.filtersSort?.addEventListener('change', (e) => {
-                this.updateSort(e.target.value);
-                this.elements.sortSelect.value = e.target.value;
-            });
-            this.elements.filtersPerPage?.addEventListener('change', (e) => {
-                this.updatePerPage(e.target.value);
-                this.elements.perPageSelect.value = e.target.value;
-            });
-
-            document.addEventListener('click', (e) => {
+                document.addEventListener('click', (e) => {
                     if (!e.target.closest('.pdm-user-search')) {
                         userResults.classList.remove('active');
                     }
@@ -2160,7 +2186,7 @@
             tag.dataset.userId = userId;
             tag.innerHTML = `
                 <span class="pdm-user-name">${this.escapeHtml(userName)} (${this.escapeHtml(userLogin)})</span>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${pdmConfig.i18n.remove}">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${pdmConfig.i18n.remove}" aria-label="${pdmConfig.i18n.remove}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -2336,8 +2362,13 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        PDM.init();
-        PDM.initSettingsPage();
+        if (document.getElementById('pdm-app')) {
+            PDM.init();
+        }
+
+        if (document.querySelector('.pdm-settings-wrapper')) {
+            PDM.initSettingsPage();
+        }
     });
 
     window.PDM = PDM;

@@ -24,6 +24,11 @@ function esc_html__($text, $domain = null)
     return $text;
 }
 
+function wp_strip_all_tags($text)
+{
+    return trim(strip_tags((string) $text));
+}
+
 function sanitize_text_field($text)
 {
     $text = is_scalar($text) ? (string) $text : '';
@@ -153,6 +158,42 @@ function wp_verify_nonce($nonce, $action)
     return $nonce === 'valid-nonce';
 }
 
+function wp_upload_dir()
+{
+    return [
+        'basedir' => sys_get_temp_dir(),
+    ];
+}
+
+function admin_url($path = '')
+{
+    return 'https://example.test/wp-admin/' . ltrim($path, '/');
+}
+
+function add_query_arg(array $args, string $url)
+{
+    return $url . '?' . http_build_query($args);
+}
+
+function wp_create_nonce($action)
+{
+    return 'valid-nonce';
+}
+
+function nocache_headers()
+{
+}
+
+function human_time_diff($from, $to = 0)
+{
+    return '1 hour';
+}
+
+function wp_die($message = '', $title = '', $args = [])
+{
+    throw new RuntimeException(is_string($message) ? $message : 'wp_die');
+}
+
 class WP_Error
 {
     public string $code;
@@ -194,6 +235,18 @@ class WP_REST_Request
     }
 }
 
+class WP_REST_Response
+{
+    public array $data;
+    public int $status;
+
+    public function __construct(array $data = [], int $status = 200)
+    {
+        $this->data = $data;
+        $this->status = $status;
+    }
+}
+
 class FakePDMUser
 {
     public int $ID;
@@ -225,5 +278,13 @@ require_once __DIR__ . '/../includes/class-pdm-capabilities.php';
 require_once __DIR__ . '/../includes/class-pdm-settings.php';
 require_once __DIR__ . '/../includes/class-pdm-auth.php';
 require_once __DIR__ . '/../includes/class-pdm-helpers.php';
+require_once __DIR__ . '/../includes/class-pdm-filesystem.php';
+require_once __DIR__ . '/../includes/class-pdm-storage.php';
+require_once __DIR__ . '/../includes/class-pdm-validator.php';
+require_once __DIR__ . '/../includes/class-pdm-repository-files.php';
+require_once __DIR__ . '/../includes/class-pdm-repository-folders.php';
+require_once __DIR__ . '/../includes/class-pdm-download.php';
+require_once __DIR__ . '/../includes/class-pdm-preview.php';
+require_once __DIR__ . '/../includes/class-pdm-rest-controller.php';
 require_once __DIR__ . '/../includes/class-pdm-logger.php';
 require_once __DIR__ . '/../includes/class-pdm-activator.php';

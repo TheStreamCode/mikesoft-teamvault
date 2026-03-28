@@ -308,7 +308,7 @@ class PDM_Admin
             'files_repo' => $filesRepo,
             'folder_repo' => $folderRepo,
             'download' => new PDM_Download($storage, $filesRepo, $auth, $logger),
-            'preview' => new PDM_Preview($storage, $filesRepo, $auth),
+            'preview' => new PDM_Preview($storage, $filesRepo, $auth, $this->settings),
         ];
     }
 

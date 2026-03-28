@@ -12,6 +12,7 @@ class PDM_Assets
     public function enqueue_assets(string $hook): void
     {
         $screen = get_current_screen();
+        $settings = new PDM_Settings();
         
         if (!$screen || strpos($screen->id, 'mikesoft-teamvault') === false) {
             return;
@@ -40,7 +41,7 @@ class PDM_Assets
             'streamNonce' => wp_create_nonce('pdm_stream_action'),
             'browserPerPage' => 50,
             'maxFileSize' => (int) get_option('pdm_max_file_size', 52428800),
-            'allowedExtensions' => explode(',', get_option('pdm_allowed_extensions', '')),
+            'allowedExtensions' => $settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),
                 'confirmDeleteFolder' => __('Are you sure you want to delete this folder? It must be empty.', 'mikesoft-teamvault'),
@@ -94,7 +95,7 @@ class PDM_Assets
                 'page' => __('Page', 'mikesoft-teamvault'),
                 'of' => __('of', 'mikesoft-teamvault'),
                 'results' => __('results', 'mikesoft-teamvault'),
-                'rootFolder' => __('Root folder', 'mikesoft-teamvault'),
+                'rootFolder' => __('Home', 'mikesoft-teamvault'),
                 'open' => __('Open', 'mikesoft-teamvault'),
                 'status' => __('Status', 'mikesoft-teamvault'),
                 'folderHasChildren' => __('Contains subfolders', 'mikesoft-teamvault'),

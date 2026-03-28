@@ -130,7 +130,7 @@ final class PDM_Bootstrap
         $logRepo = new PDM_Repository_Logs();
         $logger = new PDM_Logger($logRepo);
         $download = new PDM_Download($storage, $filesRepo, $auth, $logger);
-        $preview = new PDM_Preview($storage, $filesRepo, $auth);
+        $preview = new PDM_Preview($storage, $filesRepo, $auth, $settings);
 
         $controller = new PDM_REST_Controller(
             $settings,

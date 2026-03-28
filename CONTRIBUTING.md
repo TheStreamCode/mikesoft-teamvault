@@ -30,8 +30,8 @@ Open a [GitHub Discussion](https://github.com/mikesoft-codex/mikesoft-teamvault/
 
 1. Fork and clone the repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/mikesoft-teamvault.git
-cd mikesoft-teamvault
+git clone https://github.com/YOUR_USERNAME/mikesoft-teamvault.git mikesoft-teamvault-src
+cd mikesoft-teamvault-src
 ```
 
 2. Link to your WordPress plugins directory
@@ -42,6 +42,14 @@ ln -s $(pwd) /path/to/wordpress/wp-content/plugins/mikesoft-teamvault
 # Windows (PowerShell, run as Admin)
 New-Item -ItemType Junction -Path "C:\path\to\wordpress\wp-content\plugins\mikesoft-teamvault" -Target "$(pwd)"
 ```
+
+Recommended local naming:
+
+- source checkout: `mikesoft-teamvault-src`
+- runtime/install slug: `mikesoft-teamvault`
+- generated release artifact folder: `mikesoft-teamvault`
+
+Keep the source checkout and the generated release folder separate. Install or symlink the plugin into WordPress using the runtime slug `mikesoft-teamvault`.
 
 3. Activate in WordPress admin (Plugins menu)
 

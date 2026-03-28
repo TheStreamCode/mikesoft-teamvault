@@ -22,12 +22,12 @@ if (!function_exists('pdm_get_action_label')) {
     function pdm_get_action_label(string $action): string
     {
         $labels = [
-            'upload' => __('Upload action', 'mikesoft-teamvault'),
-            'download' => __('Download action', 'mikesoft-teamvault'),
-            'delete' => __('Deletion', 'mikesoft-teamvault'),
-            'rename' => __('Rename action', 'mikesoft-teamvault'),
-            'move' => __('Move action', 'mikesoft-teamvault'),
-            'create' => __('Creation', 'mikesoft-teamvault'),
+            'upload' => __('Upload', 'mikesoft-teamvault'),
+            'download' => __('Download', 'mikesoft-teamvault'),
+            'delete' => __('Delete', 'mikesoft-teamvault'),
+            'rename' => __('Rename', 'mikesoft-teamvault'),
+            'move' => __('Move', 'mikesoft-teamvault'),
+            'create' => __('Create', 'mikesoft-teamvault'),
         ];
 
         return $labels[$action] ?? $action;

@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 $interface_language = (string) get_option('pdm_interface_language', 'en');
 $use_user_whitelist = (bool) get_option('pdm_use_user_whitelist', false);
 $allowed_users = get_option('pdm_allowed_users', []);
-$allowed_extensions = (string) get_option('pdm_allowed_extensions', '');
+$allowed_extensions = implode(',', (new PDM_Settings())->get_allowed_extensions());
 $max_file_size = (int) get_option('pdm_max_file_size', 52428800);
 $pdf_preview_enabled = (bool) get_option('pdm_pdf_preview_enabled', true);
 $log_enabled = (bool) get_option('pdm_log_enabled', true);
@@ -75,7 +75,7 @@ $max_server_upload_size = (int) wp_max_upload_size();
     <?php endif; ?>
 
     <div class="pdm-settings-header">
-        <h1 class="pdm-settings-title"><?php esc_html_e('Private Document Manager Settings', 'mikesoft-teamvault'); ?></h1>
+        <h1 class="pdm-settings-title"><?php esc_html_e('TeamVault Settings', 'mikesoft-teamvault'); ?></h1>
         <p class="pdm-settings-desc"><?php esc_html_e('Configure the plugin options for private document management.', 'mikesoft-teamvault'); ?></p>
     </div>
 
@@ -135,7 +135,7 @@ $max_server_upload_size = (int) wp_max_upload_size();
                         <?php if ($user) : ?>
                             <div class="pdm-user-tag" data-user-id="<?php echo esc_attr($user_id); ?>">
                                 <span class="pdm-user-name"><?php echo esc_html($user->display_name . ' (' . $user->user_login . ')'); ?></span>
-                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="<?php echo esc_attr__('Remove', 'mikesoft-teamvault'); ?>">
+                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="<?php echo esc_attr__('Remove', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Remove', 'mikesoft-teamvault'); ?>">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                                 </button>
                                 <input type="hidden" name="pdm_allowed_users[]" value="<?php echo esc_attr($user_id); ?>">

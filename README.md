@@ -36,6 +36,14 @@
 
 ## Installation
 
+Recommended local layout:
+
+- source checkout: `mikesoft-teamvault-src/`
+- generated release folder: `mikesoft-teamvault/`
+- final package: `mikesoft-teamvault.zip`
+
+The supported plugin release slug and installed folder name are always `mikesoft-teamvault`.
+
 ### Manual Installation
 
 1. Download the [latest release](https://github.com/mikesoft-codex/mikesoft-teamvault/releases)
@@ -50,11 +58,19 @@ cd /path/to/wordpress/wp-content/plugins/
 git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-teamvault
 ```
 
+For local plugin development outside a live WordPress install, a separate source checkout name is recommended:
+
+```bash
+git clone https://github.com/mikesoft-codex/mikesoft-teamvault.git mikesoft-teamvault-src
+```
+
 ## Distribution
 
 - GitHub repository and source of truth: `https://github.com/mikesoft-codex/mikesoft-teamvault`
 - WordPress.org can be used as the public distribution channel for stable releases and auto-updates
 - Recommended workflow: develop on GitHub, release stable versions to WordPress.org SVN
+- Release packages should always install as `mikesoft-teamvault/` with `mikesoft-teamvault.php` as the main plugin file
+- Keep source and release folders separate locally: `mikesoft-teamvault-src/` for development, `mikesoft-teamvault/` only as a generated packaging artifact
 
 ## Support
 
@@ -157,7 +173,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## Changelog
 
-See [readme.txt](readme.txt) for full changelog.
+See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
 
