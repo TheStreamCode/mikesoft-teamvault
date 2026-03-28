@@ -1397,8 +1397,8 @@
 @media (max-width: 768px) {
     .pdm-toolbar {
         flex-wrap: wrap;
-        gap: 10px;
-        padding: 12px;
+        gap: 8px;
+        padding: 10px;
     }
 
     .pdm-toolbar-left {
@@ -1411,17 +1411,17 @@
         gap: 6px;
     }
 
-    /* Hide secondary controls on mobile */
     .pdm-page-size-control,
     .pdm-sort-dropdown {
         display: none;
     }
 
-    /* Show filter inline, hide toggle button */
     .pdm-toolbar-filters {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        width: 100%;
+        justify-content: flex-start;
     }
 
     .pdm-filters-toggle {
@@ -1432,17 +1432,21 @@
         position: static;
         display: flex !important;
         flex-direction: row;
-        gap: 8px;
+        gap: 6px;
         padding: 0;
         margin-top: 0;
         box-shadow: none;
         border: none;
         min-width: auto;
         background: transparent;
+        width: 100%;
     }
 
     .pdm-toolbar-filters-row {
         margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
 
     .pdm-toolbar-filters-label {
@@ -1450,9 +1454,23 @@
     }
 
     .pdm-toolbar-filters-select {
-        padding: 6px 8px;
-        font-size: 12px;
+        padding: 6px 28px 6px 8px;
+        font-size: 11px;
         min-height: 36px;
+        min-width: 0;
+        flex: 1;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 6px center;
+        background-size: 12px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .pdm-toolbar-filters-select:focus {
+        outline: 2px solid var(--pdm-color-primary, #2271b1);
+        outline-offset: 1px;
     }
 
     .pdm-btn-primary {
