@@ -2,23 +2,23 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Export
+class MSTV_Export
 {
     private const MAX_EXPORT_FILES = 5000;
 
-    private PDM_Storage $storage;
-    private PDM_Repository_Files $filesRepo;
-    private PDM_Repository_Folders $folderRepo;
-    private PDM_Auth $auth;
+    private MSTV_Storage $storage;
+    private MSTV_Repository_Files $filesRepo;
+    private MSTV_Repository_Folders $folderRepo;
+    private MSTV_Auth $auth;
     private string $currentZipPath = '';
     private int $currentFileCount = 0;
     private array $reservedArchivePaths = [];
 
     public function __construct(
-        PDM_Storage $storage,
-        PDM_Repository_Files $filesRepo,
-        PDM_Repository_Folders $folderRepo,
-        PDM_Auth $auth
+        MSTV_Storage $storage,
+        MSTV_Repository_Files $filesRepo,
+        MSTV_Repository_Folders $folderRepo,
+        MSTV_Auth $auth
     ) {
         $this->storage = $storage;
         $this->filesRepo = $filesRepo;
@@ -67,8 +67,8 @@ class PDM_Export
         $this->reservedArchivePaths = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_export_started(null, $zipPath);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_export_started(null, $zipPath);
         }
 
         $zip = new ZipArchive();
@@ -103,8 +103,8 @@ class PDM_Export
             );
         }
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_export_completed(null, $zipPath, $this->currentFileCount);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_export_completed(null, $zipPath, $this->currentFileCount);
         }
 
         $this->stream_zip($zipPath, $zipName);
@@ -146,8 +146,8 @@ class PDM_Export
         $this->reservedArchivePaths = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_export_started($folderId, $zipPath);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_export_started($folderId, $zipPath);
         }
 
         $zip = new ZipArchive();
@@ -175,8 +175,8 @@ class PDM_Export
             );
         }
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_export_completed($folderId, $zipPath, $this->currentFileCount);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_export_completed($folderId, $zipPath, $this->currentFileCount);
         }
 
         $this->stream_zip($zipPath, $zipName);
@@ -218,12 +218,12 @@ class PDM_Export
 
     private function get_filename_with_extension(object $files): string
     {
-        return PDM_Helpers::build_safe_download_filename((string) $files->display_name, (string) $files->extension);
+        return MSTV_Helpers::build_safe_download_filename((string) $files->display_name, (string) $files->extension);
     }
 
     private function sanitize_zip_name(string $name): string
     {
-        return PDM_Helpers::sanitize_archive_entry_segment($name, 'export');
+        return MSTV_Helpers::sanitize_archive_entry_segment($name, 'export');
     }
 
     private function get_selected_export_folders(array $folderIds): array
@@ -286,7 +286,7 @@ class PDM_Export
 
     private function build_unique_folder_archive_path(string $basePath, string $folderName): string
     {
-        $baseName = PDM_Helpers::sanitize_archive_entry_segment($folderName, 'folder');
+        $baseName = MSTV_Helpers::sanitize_archive_entry_segment($folderName, 'folder');
         $candidate = $basePath . $baseName . '/';
         $suffix = 2;
 

@@ -2,25 +2,25 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Settings
+class MSTV_Settings
 {
-    private const OPTION_GROUP = 'pdm_settings';
-    private const OPTION_PAGE = 'pdm-settings';
+    private const OPTION_GROUP = 'mstv_settings';
+    private const OPTION_PAGE = 'mstv-settings';
     private const DISALLOWED_UPLOAD_EXTENSIONS = ['svg'];
 
     private $defaults = [
-        'pdm_interface_language' => 'en',
-        'pdm_storage_path' => '',
-        'pdm_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
-        'pdm_max_file_size' => 52428800,
-        'pdm_log_enabled' => true,
-        'pdm_pdf_preview_enabled' => true,
-        'pdm_remove_data_on_uninstall' => false,
-        'pdm_use_user_whitelist' => false,
-        'pdm_allowed_users' => [],
+        'mstv_interface_language' => 'en',
+        'mstv_storage_path' => '',
+        'mstv_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
+        'mstv_max_file_size' => 52428800,
+        'mstv_log_enabled' => true,
+        'mstv_pdf_preview_enabled' => true,
+        'mstv_remove_data_on_uninstall' => false,
+        'mstv_use_user_whitelist' => false,
+        'mstv_allowed_users' => [],
     ];
 
-    private const LEGACY_GRANTED_CAPABILITY_META = 'pdm_granted_capability';
+    private const LEGACY_GRANTED_CAPABILITY_META = 'mstv_granted_capability';
 
     public function init(): void
     {
@@ -29,55 +29,55 @@ class PDM_Settings
 
     public function register_settings(): void
     {
-        register_setting(self::OPTION_GROUP, 'pdm_interface_language', [
+        register_setting(self::OPTION_GROUP, 'mstv_interface_language', [
             'type' => 'string',
-            'sanitize_callback' => ['PDM_I18n', 'sanitize_language'],
+            'sanitize_callback' => ['MSTV_I18n', 'sanitize_language'],
             'default' => 'en',
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_storage_path', [
+        register_setting(self::OPTION_GROUP, 'mstv_storage_path', [
             'type' => 'string',
             'sanitize_callback' => 'sanitize_text_field',
             'default' => '',
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_allowed_extensions', [
+        register_setting(self::OPTION_GROUP, 'mstv_allowed_extensions', [
             'type' => 'string',
             'sanitize_callback' => [$this, 'sanitize_extensions'],
-            'default' => $this->defaults['pdm_allowed_extensions'],
+            'default' => $this->defaults['mstv_allowed_extensions'],
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_max_file_size', [
+        register_setting(self::OPTION_GROUP, 'mstv_max_file_size', [
             'type' => 'integer',
             'sanitize_callback' => 'absint',
-            'default' => $this->defaults['pdm_max_file_size'],
+            'default' => $this->defaults['mstv_max_file_size'],
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_log_enabled', [
+        register_setting(self::OPTION_GROUP, 'mstv_log_enabled', [
             'type' => 'boolean',
             'sanitize_callback' => [$this, 'sanitize_bool'],
             'default' => true,
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_pdf_preview_enabled', [
+        register_setting(self::OPTION_GROUP, 'mstv_pdf_preview_enabled', [
             'type' => 'boolean',
             'sanitize_callback' => [$this, 'sanitize_bool'],
             'default' => true,
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_remove_data_on_uninstall', [
+        register_setting(self::OPTION_GROUP, 'mstv_remove_data_on_uninstall', [
             'type' => 'boolean',
             'sanitize_callback' => [$this, 'sanitize_bool'],
             'default' => false,
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_use_user_whitelist', [
+        register_setting(self::OPTION_GROUP, 'mstv_use_user_whitelist', [
             'type' => 'boolean',
             'sanitize_callback' => [$this, 'sanitize_bool'],
             'default' => false,
         ]);
 
-        register_setting(self::OPTION_GROUP, 'pdm_allowed_users', [
+        register_setting(self::OPTION_GROUP, 'mstv_allowed_users', [
             'type' => 'array',
             'sanitize_callback' => [$this, 'sanitize_user_ids'],
             'default' => [],
@@ -87,7 +87,7 @@ class PDM_Settings
     public function sanitize_extensions(?string $value): string
     {
         if (empty($value)) {
-            return $this->defaults['pdm_allowed_extensions'];
+            return $this->defaults['mstv_allowed_extensions'];
         }
 
         $extensions = array_map('trim', explode(',', $value));
@@ -125,70 +125,76 @@ class PDM_Settings
 
     public function get_storage_path(): string
     {
-        $customPath = $this->get('pdm_storage_path');
+        $customPath = $this->get('mstv_storage_path');
 
         if (!empty($customPath) && $this->is_valid_storage_path($customPath)) {
             $path = rtrim($customPath, '/\\');
 
-            return class_exists('PDM_Hooks') ? PDM_Hooks::filter_storage_path($path) : $path;
+            if (class_exists('MSTV_Hooks')) {
+                return MSTV_Hooks::filter_storage_path($path);
+            }
+            return $path;
         }
 
         $uploadDir = wp_upload_dir();
         $path = $uploadDir['basedir'] . '/private-documents';
 
-        return class_exists('PDM_Hooks') ? PDM_Hooks::filter_storage_path($path) : $path;
+        if (class_exists('MSTV_Hooks')) {
+            return MSTV_Hooks::filter_storage_path($path);
+        }
+        return $path;
     }
 
     public function get_allowed_extensions(): array
     {
-        $extensions = $this->get('pdm_allowed_extensions');
+        $extensions = $this->get('mstv_allowed_extensions');
         $extensions = array_map('trim', explode(',', $extensions));
         $extensions = array_values(array_filter($extensions, fn($ext) => !in_array(strtolower($ext), self::DISALLOWED_UPLOAD_EXTENSIONS, true)));
 
-        return class_exists('PDM_Hooks') ? PDM_Hooks::filter_allowed_extensions($extensions) : $extensions;
+        return class_exists('MSTV_Hooks') ? MSTV_Hooks::filter_allowed_extensions($extensions) : $extensions;
     }
 
     public function get_interface_language(): string
     {
-        return (string) $this->get('pdm_interface_language', 'en');
+        return (string) $this->get('mstv_interface_language', 'en');
     }
 
     public function get_max_file_size(): int
     {
-        $size = (int) $this->get('pdm_max_file_size');
+        $size = (int) $this->get('mstv_max_file_size');
 
-        return class_exists('PDM_Hooks') ? PDM_Hooks::filter_max_file_size($size) : $size;
+        return class_exists('MSTV_Hooks') ? MSTV_Hooks::filter_max_file_size($size) : $size;
     }
 
     public function is_log_enabled(): bool
     {
-        return (bool) $this->get('pdm_log_enabled', true);
+        return (bool) $this->get('mstv_log_enabled', true);
     }
 
     public function is_pdf_preview_enabled(): bool
     {
-        return (bool) $this->get('pdm_pdf_preview_enabled', true);
+        return (bool) $this->get('mstv_pdf_preview_enabled', true);
     }
 
     public function should_remove_data_on_uninstall(): bool
     {
-        return (bool) $this->get('pdm_remove_data_on_uninstall', false);
+        return (bool) $this->get('mstv_remove_data_on_uninstall', false);
     }
 
     public function use_user_whitelist(): bool
     {
-        return (bool) $this->get('pdm_use_user_whitelist', false);
+        return (bool) $this->get('mstv_use_user_whitelist', false);
     }
 
     public function get_allowed_users(): array
     {
-        $users = $this->get('pdm_allowed_users', []);
+        $users = $this->get('mstv_allowed_users', []);
         return is_array($users) ? $users : [];
     }
 
     public function set_allowed_users(array $userIds): bool
     {
-        return $this->update('pdm_allowed_users', $this->sanitize_user_ids($userIds));
+        return $this->update('mstv_allowed_users', $this->sanitize_user_ids($userIds));
     }
 
     public function is_user_allowed(int $userId): bool
@@ -214,8 +220,8 @@ class PDM_Settings
             $this->revoke_all_granted_capabilities();
         }
 
-        $this->update('pdm_allowed_users', $newUserIds);
-        $this->update('pdm_use_user_whitelist', $whitelistEnabled);
+        $this->update('mstv_allowed_users', $newUserIds);
+        $this->update('mstv_use_user_whitelist', $whitelistEnabled);
     }
 
     public function validate_whitelist_selection(array $userIds, int $currentUserId): bool|\WP_Error
@@ -224,14 +230,14 @@ class PDM_Settings
 
         if (empty($userIds)) {
             return new \WP_Error(
-                'pdm_invalid_whitelist',
+                'mstv_invalid_whitelist',
                 __('Select at least one authorized user before enabling the whitelist.', 'mikesoft-teamvault')
             );
         }
 
         if (!in_array($currentUserId, $userIds, true)) {
             return new \WP_Error(
-                'pdm_whitelist_lockout',
+                'mstv_whitelist_lockout',
                 __('Add your current account to the whitelist before enabling it, otherwise you will lock yourself out.', 'mikesoft-teamvault')
             );
         }
@@ -252,8 +258,8 @@ class PDM_Settings
         foreach ($newUserIds as $userId) {
             $user = get_user_by('id', $userId);
             if ($user) {
-                if (!$user->has_cap(PDM_Capabilities::CAP_MANAGE)) {
-                    $user->add_cap(PDM_Capabilities::CAP_MANAGE);
+                if (!$user->has_cap(MSTV_Capabilities::CAP_MANAGE)) {
+                    $user->add_cap(MSTV_Capabilities::CAP_MANAGE);
                 }
 
                 if (!get_user_meta($userId, $metaKey, true)) {
@@ -266,7 +272,7 @@ class PDM_Settings
             if (get_user_meta($userId, $metaKey, true)) {
                 $user = get_user_by('id', $userId);
                 if ($user) {
-                    $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
+                    $user->remove_cap(MSTV_Capabilities::CAP_MANAGE);
                 }
                 delete_user_meta($userId, $metaKey);
             }
@@ -280,7 +286,7 @@ class PDM_Settings
         $users = get_users(['meta_key' => $metaKey, 'meta_value' => true]);
 
         foreach ($users as $user) {
-            $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
+            $user->remove_cap(MSTV_Capabilities::CAP_MANAGE);
             delete_user_meta($user->ID, $metaKey);
         }
     }
@@ -298,8 +304,8 @@ class PDM_Settings
 
         foreach ($userIds as $userId) {
             $user = get_user_by('id', $userId);
-            if ($user && !$user->has_cap(PDM_Capabilities::CAP_MANAGE)) {
-                $user->add_cap(PDM_Capabilities::CAP_MANAGE);
+            if ($user && !$user->has_cap(MSTV_Capabilities::CAP_MANAGE)) {
+                $user->add_cap(MSTV_Capabilities::CAP_MANAGE);
                 update_user_meta($userId, $metaKey, true);
             }
         }
@@ -333,7 +339,7 @@ class PDM_Settings
             }
         }
 
-        return file_exists($realpath . DIRECTORY_SEPARATOR . '.pdm-storage');
+        return file_exists($realpath . DIRECTORY_SEPARATOR . '.mstv-storage');
     }
 
     private function cleanup_legacy_granted_capabilities(): void
@@ -347,7 +353,7 @@ class PDM_Settings
             if ($this->use_user_whitelist() && in_array((int) $user->ID, $allowedUsers, true)) {
                 update_user_meta($user->ID, $metaKey, true);
             } else {
-                $user->remove_cap(PDM_Capabilities::CAP_MANAGE);
+                $user->remove_cap(MSTV_Capabilities::CAP_MANAGE);
             }
 
             delete_user_meta($user->ID, self::LEGACY_GRANTED_CAPABILITY_META);

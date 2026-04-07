@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Assets
+class MSTV_Assets
 {
     public function __construct()
     {
@@ -12,35 +12,35 @@ class PDM_Assets
     public function enqueue_assets(string $hook): void
     {
         $screen = get_current_screen();
-        $settings = new PDM_Settings();
+        $settings = new MSTV_Settings();
         
         if (!$screen || strpos($screen->id, 'mikesoft-teamvault') === false) {
             return;
         }
 
         wp_enqueue_style(
-            'pdm-admin',
-            PDM_PLUGIN_URL . 'assets/css/admin.css',
+            'mstv-admin',
+            MSTV_PLUGIN_URL . 'assets/css/admin.css',
             [],
-            PDM_VERSION
+            MSTV_VERSION
         );
 
         wp_enqueue_script(
-            'pdm-admin',
-            PDM_PLUGIN_URL . 'assets/js/admin-app.js',
+            'mstv-admin',
+            MSTV_PLUGIN_URL . 'assets/js/admin-app.js',
             [],
-            PDM_VERSION,
+            MSTV_VERSION,
             true
         );
 
-        wp_localize_script('pdm-admin', 'pdmConfig', [
-            'restUrl' => trailingslashit(rest_url('pdm/v1')),
+        wp_localize_script('mstv-admin', 'mstvConfig', [
+            'restUrl' => trailingslashit(rest_url('mstv/v1')),
             'restNonce' => wp_create_nonce('wp_rest'),
             'adminUrl' => admin_url('admin.php'),
             'actionUrl' => admin_url('admin-post.php'),
-            'streamNonce' => wp_create_nonce('pdm_stream_action'),
+            'streamNonce' => wp_create_nonce('mstv_stream_action'),
             'browserPerPage' => 50,
-            'maxFileSize' => (int) get_option('pdm_max_file_size', 52428800),
+            'maxFileSize' => (int) get_option('mstv_max_file_size', 52428800),
             'allowedExtensions' => $settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),

@@ -2,11 +2,11 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Auth
+class MSTV_Auth
 {
-    private PDM_Settings $settings;
+    private MSTV_Settings $settings;
 
-    public function __construct(PDM_Settings $settings)
+    public function __construct(MSTV_Settings $settings)
     {
         $this->settings = $settings;
     }
@@ -35,7 +35,7 @@ class PDM_Auth
     {
         if (!is_user_logged_in()) {
             return new \WP_Error(
-                'pdm_unauthorized',
+                'mstv_unauthorized',
                 __('Unauthorized access. Please log in.', 'mikesoft-teamvault'),
                 ['status' => 401]
             );
@@ -43,7 +43,7 @@ class PDM_Auth
 
         if (!$this->has_effective_access()) {
             return new \WP_Error(
-                'pdm_forbidden',
+                'mstv_forbidden',
                 __('You do not have permission to access this resource.', 'mikesoft-teamvault'),
                 ['status' => 403]
             );
@@ -68,7 +68,7 @@ class PDM_Auth
         
         if (empty($nonce)) {
             return new \WP_Error(
-                'pdm_missing_nonce',
+                'mstv_missing_nonce',
                 __('Missing security token.', 'mikesoft-teamvault'),
                 ['status' => 403]
             );
@@ -76,7 +76,7 @@ class PDM_Auth
 
         if (!wp_verify_nonce($nonce, 'wp_rest')) {
             return new \WP_Error(
-                'pdm_invalid_nonce',
+                'mstv_invalid_nonce',
                 __('Invalid security token.', 'mikesoft-teamvault'),
                 ['status' => 403]
             );
@@ -87,7 +87,7 @@ class PDM_Auth
 
     public function has_effective_access(): bool
     {
-        if (!is_user_logged_in() || !PDM_Capabilities::can_manage()) {
+        if (!is_user_logged_in() || !MSTV_Capabilities::can_manage()) {
             return false;
         }
 

@@ -4,21 +4,21 @@ defined('ABSPATH') || exit;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom plugin tables require direct queries.
 
-class PDM_Repository_Logs
+class MSTV_Repository_Logs
 {
     private string $table;
 
     public function __construct()
     {
         global $wpdb;
-        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'pdm_logs';
+        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'mstv_logs';
     }
 
     public function create(array $data): int
     {
         global $wpdb;
 
-        $targetType = PDM_Logger::normalize_target_type((string) ($data['target_type'] ?? 'file'));
+        $targetType = MSTV_Logger::normalize_target_type((string) ($data['target_type'] ?? 'file'));
 
         $wpdb->insert($this->table, [
             'user_id' => $data['user_id'],
@@ -50,7 +50,7 @@ class PDM_Repository_Logs
     {
         global $wpdb;
 
-        $targetType = PDM_Logger::normalize_target_type($targetType);
+        $targetType = MSTV_Logger::normalize_target_type($targetType);
 
         if ($targetType === 'file') {
             return $wpdb->get_results(

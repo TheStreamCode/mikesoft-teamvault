@@ -2,33 +2,33 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_REST_Controller
+class MSTV_REST_Controller
 {
-    private const NAMESPACE = 'pdm/v1';
+    private const NAMESPACE = 'mstv/v1';
     private const DEFAULT_PER_PAGE = 50;
     private const MAX_PER_PAGE = 200;
     private const AUTO_REINDEX_TTL = 300;
 
-    private PDM_Settings $settings;
-    private PDM_Auth $auth;
-    private PDM_Storage $storage;
-    private PDM_Validator $validator;
-    private PDM_Repository_Folders $folderRepo;
-    private PDM_Repository_Files $filesRepo;
-    private PDM_Download $download;
-    private PDM_Preview $preview;
-    private PDM_Logger $logger;
+    private MSTV_Settings $settings;
+    private MSTV_Auth $auth;
+    private MSTV_Storage $storage;
+    private MSTV_Validator $validator;
+    private MSTV_Repository_Folders $folderRepo;
+    private MSTV_Repository_Files $filesRepo;
+    private MSTV_Download $download;
+    private MSTV_Preview $preview;
+    private MSTV_Logger $logger;
 
     public function __construct(
-        PDM_Settings $settings,
-        PDM_Auth $auth,
-        PDM_Storage $storage,
-        PDM_Validator $validator,
-        PDM_Repository_Folders $folderRepo,
-        PDM_Repository_Files $filesRepo,
-        PDM_Download $download,
-        PDM_Preview $preview,
-        PDM_Logger $logger
+        MSTV_Settings $settings,
+        MSTV_Auth $auth,
+        MSTV_Storage $storage,
+        MSTV_Validator $validator,
+        MSTV_Repository_Folders $folderRepo,
+        MSTV_Repository_Files $filesRepo,
+        MSTV_Download $download,
+        MSTV_Preview $preview,
+        MSTV_Logger $logger
     ) {
         $this->settings = $settings;
         $this->auth = $auth;
@@ -331,8 +331,8 @@ class PDM_REST_Controller
 
         $this->logger->log_folder_create($folderId, $name);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_folder_created($folderId, [
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_folder_created($folderId, [
                 'name' => $name,
                 'parent_id' => $parentId,
                 'relative_path' => $result['relative_path'],
@@ -375,8 +375,8 @@ class PDM_REST_Controller
         $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
         $this->logger->log_rename('folder', $id, $folder->name, $name);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_folder_renamed($id, $folder->name, $name);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_folder_renamed($id, $folder->name, $name);
         }
 
         return new \WP_REST_Response([
@@ -402,11 +402,28 @@ class PDM_REST_Controller
         $this->folderRepo->delete($id);
         $this->logger->log_delete('folder', $id, $folder->name);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_folder_deleted($id, $folder->name);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_folder_deleted($id, $folder->name);
         }
 
         return new \WP_REST_Response(['success' => true]);
+    }
+
+    /**
+     * Sanitize uploaded file array
+     *
+     * @param array $files The $_FILES array element
+     * @return array Sanitized file array
+     */
+    private function sanitize_files_array(array $files): array
+    {
+        return [
+            'name' => isset($files['name']) ? sanitize_file_name($files['name']) : '',
+            'type' => isset($files['type']) ? sanitize_mime_type($files['type']) : '',
+            'tmp_name' => isset($files['tmp_name']) ? sanitize_text_field($files['tmp_name']) : '',
+            'error' => isset($files['error']) ? absint($files['error']) : UPLOAD_ERR_NO_FILE,
+            'size' => isset($files['size']) ? absint($files['size']) : 0,
+        ];
     }
 
     public function upload_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -424,8 +441,9 @@ class PDM_REST_Controller
             return new \WP_Error('storage_error', __('Unable to initialize the storage directory.', 'mikesoft-teamvault'), ['status' => 500]);
         }
 
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- $_FILES is validated by validate_upload_full().
-        $files = $_FILES['file'];
+        // Sanitize uploaded files array using WordPress sanitization functions.
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.NonceVerification.Missing -- REST nonce enforced in permission callback, files sanitized via sanitize_files_array().
+        $files = $this->sanitize_files_array($_FILES['file']);
         $folderId = $this->resolve_folder_id($request->get_param('folder_id'));
 
         if ($folderId instanceof \WP_Error) {
@@ -450,10 +468,10 @@ class PDM_REST_Controller
             return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
         }
 
-        $displayName = PDM_Helpers::resolve_file_display_name((string) $rawDisplayName, (string) $files['name']);
+        $displayName = MSTV_Helpers::resolve_file_display_name((string) $rawDisplayName, (string) $files['name']);
 
-        if (class_exists('PDM_Hooks')) {
-            $displayName = PDM_Helpers::resolve_file_display_name((string) PDM_Hooks::filter_file_name($displayName, (string) $files['name']), (string) $files['name']);
+        if (class_exists('MSTV_Hooks')) {
+            $displayName = MSTV_Helpers::resolve_file_display_name((string) MSTV_Hooks::filter_file_name($displayName, (string) $files['name']), (string) $files['name']);
         }
 
         if ($displayName === '') {
@@ -482,8 +500,8 @@ class PDM_REST_Controller
 
         $this->logger->log_upload($fileId, $displayName);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_file_uploaded($fileId, [
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_file_uploaded($fileId, [
                 'display_name' => $displayName,
                 'folder_id' => $folderId,
                 'extension' => $validation['extension'],
@@ -510,7 +528,7 @@ class PDM_REST_Controller
             return new \WP_Error('validation_error', implode(' ', $fileNameValidation['errors']), ['status' => 400]);
         }
 
-        $displayName = PDM_Helpers::sanitize_file_display_name($rawDisplayName);
+        $displayName = MSTV_Helpers::sanitize_file_display_name($rawDisplayName);
 
         $files = $this->filesRepo->find($id);
         if (!$files) {
@@ -525,8 +543,8 @@ class PDM_REST_Controller
         $this->filesRepo->rename($id, $displayName);
         $this->logger->log_rename('file', $id, $oldName, $displayName);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_file_renamed($id, $oldName, $displayName);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_file_renamed($id, $oldName, $displayName);
         }
 
         return new \WP_REST_Response([
@@ -552,8 +570,8 @@ class PDM_REST_Controller
         $this->filesRepo->delete($id);
         $this->logger->log_delete('file', $id, $files->display_name);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_file_deleted($id, [
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_file_deleted($id, [
                 'display_name' => $files->display_name,
                 'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
                 'relative_path' => $files->relative_path,
@@ -586,8 +604,8 @@ class PDM_REST_Controller
         $this->filesRepo->move_to_folder($id, $targetFolderId, $result['new_relative_path']);
         $this->logger->log_move($id, $files->display_name, $oldFolderId, $targetFolderId);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_file_moved($id, $oldFolderId ? (int) $oldFolderId : null, $targetFolderId);
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_file_moved($id, $oldFolderId ? (int) $oldFolderId : null, $targetFolderId);
         }
 
         return new \WP_REST_Response([
@@ -693,7 +711,7 @@ class PDM_REST_Controller
 
     private function maybe_auto_restore_storage_index(): void
     {
-        $transientKey = 'pdm_auto_reindex_' . get_current_blog_id();
+        $transientKey = 'mstv_auto_reindex_' . get_current_blog_id();
 
         if (get_transient($transientKey)) {
             return;
@@ -722,7 +740,7 @@ class PDM_REST_Controller
             'data' => [
                 'allowed_extensions' => $this->settings->get_allowed_extensions(),
                 'max_file_size' => $this->settings->get_max_file_size(),
-                'max_file_size_formatted' => PDM_Helpers::format_filesize($this->settings->get_max_file_size()),
+                'max_file_size_formatted' => MSTV_Helpers::format_filesize($this->settings->get_max_file_size()),
                 'log_enabled' => $this->settings->is_log_enabled(),
                 'pdf_preview_enabled' => $this->settings->is_pdf_preview_enabled(),
                 'remove_data_on_uninstall' => $this->settings->should_remove_data_on_uninstall(),
@@ -735,23 +753,23 @@ class PDM_REST_Controller
         $settings = $request->get_json_params();
 
         if (isset($settings['allowed_extensions'])) {
-            $this->settings->update('pdm_allowed_extensions', $this->settings->sanitize_extensions((string) $settings['allowed_extensions']));
+            $this->settings->update('mstv_allowed_extensions', $this->settings->sanitize_extensions((string) $settings['allowed_extensions']));
         }
 
         if (isset($settings['max_file_size'])) {
-            $this->settings->update('pdm_max_file_size', absint($settings['max_file_size']));
+            $this->settings->update('mstv_max_file_size', absint($settings['max_file_size']));
         }
 
         if (isset($settings['log_enabled'])) {
-            $this->settings->update('pdm_log_enabled', (bool) $settings['log_enabled']);
+            $this->settings->update('mstv_log_enabled', (bool) $settings['log_enabled']);
         }
 
         if (isset($settings['pdf_preview_enabled'])) {
-            $this->settings->update('pdm_pdf_preview_enabled', (bool) $settings['pdf_preview_enabled']);
+            $this->settings->update('mstv_pdf_preview_enabled', (bool) $settings['pdf_preview_enabled']);
         }
 
         if (isset($settings['remove_data_on_uninstall'])) {
-            $this->settings->update('pdm_remove_data_on_uninstall', (bool) $settings['remove_data_on_uninstall']);
+            $this->settings->update('mstv_remove_data_on_uninstall', (bool) $settings['remove_data_on_uninstall']);
         }
 
         return new \WP_REST_Response(['success' => true]);
@@ -759,7 +777,7 @@ class PDM_REST_Controller
 
     public function get_logs(\WP_REST_Request $request): \WP_REST_Response
     {
-        $repo = new PDM_Repository_Logs();
+        $repo = new MSTV_Repository_Logs();
         $page = $this->get_page_param($request);
         $perPage = $this->get_per_page_param($request);
         $logsPage = $repo->find_recent_paginated($page, $perPage);
@@ -810,7 +828,7 @@ class PDM_REST_Controller
 
     public function export_all(\WP_REST_Request $request): void
     {
-        $export = new PDM_Export(
+        $export = new MSTV_Export(
             $this->storage,
             $this->filesRepo,
             $this->folderRepo,
@@ -824,7 +842,7 @@ class PDM_REST_Controller
     {
         $folderId = (int) $request->get_param('id');
 
-        $export = new PDM_Export(
+        $export = new MSTV_Export(
             $this->storage,
             $this->filesRepo,
             $this->folderRepo,
@@ -842,7 +860,7 @@ class PDM_REST_Controller
             'name' => $folder->name,
             'slug' => $folder->slug,
             'created_at' => $folder->created_at,
-            'created_at_human' => PDM_Helpers::human_time_diff_mysql($folder->created_at),
+            'created_at_human' => MSTV_Helpers::human_time_diff_mysql($folder->created_at),
             'has_children' => $this->folderRepo->count_children((int) $folder->id) > 0,
         ];
     }
@@ -860,19 +878,19 @@ class PDM_REST_Controller
             'id' => (int) $files->id,
             'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
             'original_name' => $files->original_name,
-            'display_name' => PDM_Helpers::resolve_file_display_name((string) $files->display_name, (string) $files->original_name),
+            'display_name' => MSTV_Helpers::resolve_file_display_name((string) $files->display_name, (string) $files->original_name),
             'extension' => $files->extension,
             'mime_type' => $runtime['mime_type'],
             'file_size' => $runtime['file_size'],
-            'file_size_formatted' => PDM_Helpers::format_filesize($runtime['file_size']),
-            'icon' => PDM_Helpers::get_file_icon($files->extension),
+            'file_size_formatted' => MSTV_Helpers::format_filesize($runtime['file_size']),
+            'icon' => MSTV_Helpers::get_file_icon($files->extension),
             'exists_on_disk' => $runtime['exists_on_disk'],
             'is_previewable' => $previewable,
             'is_image' => $runtime['exists_on_disk'] && strpos($runtime['mime_type'], 'image/') === 0,
             'preview_url' => $previewable ? $this->preview->get_preview_url((int) $files->id) : null,
             'download_url' => $runtime['exists_on_disk'] ? $this->download->get_download_url((int) $files->id) : null,
             'created_at' => $files->created_at,
-            'created_at_human' => PDM_Helpers::human_time_diff_mysql($files->created_at),
+            'created_at_human' => MSTV_Helpers::human_time_diff_mysql($files->created_at),
             'created_by' => (int) $files->created_by,
         ];
     }
@@ -917,7 +935,7 @@ class PDM_REST_Controller
             'context' => json_decode($log->context ?? '{}', true),
             'ip_address' => $log->ip_address,
             'created_at' => $log->created_at,
-            'created_at_human' => PDM_Helpers::human_time_diff_mysql($log->created_at),
+            'created_at_human' => MSTV_Helpers::human_time_diff_mysql($log->created_at),
         ];
     }
 }

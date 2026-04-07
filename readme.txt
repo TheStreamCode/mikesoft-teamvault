@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.26
+Stable tag: 1.1.27
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,17 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.27 =
+* Security: added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)
+* Security: replaced FILTER_DEFAULT with proper sanitization for folder_ids array
+* Security: added detailed PHPCS ignore comments explaining nonce verification patterns
+* Compliance: prefixed all global variables in templates with "mstv_"
+* Compliance: prefixed all dynamic hook names with "mstv_" via class constants
+* Compliance: changed all prefixes from "pdm" to "mstv" (4+ character requirement)
+* Compliance: updated all WordPress options from "pdm_*" to "mstv_*" for uniqueness
+* Fix: corrected JavaScript config variable from "pdmConfig" to "mstvConfig"
+* Fix: resolved syntax error in settings class (ternary operator compatibility)
 
 = 1.1.26 =
 * Kept the mobile header toolbar on a single row by compacting filters and action controls

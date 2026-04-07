@@ -2,8 +2,8 @@
 
 defined('ABSPATH') || exit;
 
-$allowed_extensions = (new PDM_Settings())->get_allowed_extensions();
-$accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allowed_extensions));
+$mstv_allowed_extensions = (new MSTV_Settings())->get_allowed_extensions();
+$mstv_accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $mstv_allowed_extensions));
 ?>
 <div class="pdm-wrapper">
     <div class="pdm-app" id="pdm-app">
@@ -171,7 +171,7 @@ $accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $allow
             <p class="pdm-upload-text"><?php esc_html_e('Drag files here to upload them', 'mikesoft-teamvault'); ?></p>
             <p class="pdm-upload-subtext"><?php esc_html_e('or', 'mikesoft-teamvault'); ?></p>
             <button type="button" class="pdm-btn pdm-btn-primary"><?php esc_html_e('Browse files', 'mikesoft-teamvault'); ?></button>
-            <input type="file" id="pdm-file-input" multiple accept="<?php echo esc_attr($accept_attribute); ?>">
+            <input type="file" id="pdm-file-input" multiple accept="<?php echo esc_attr($mstv_accept_attribute); ?>">
         </div>
     </div>
 

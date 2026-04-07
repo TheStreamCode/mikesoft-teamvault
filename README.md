@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.26-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.27-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -184,6 +184,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.27**
+- Security: added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)
+- Security: replaced FILTER_DEFAULT with proper array sanitization
+- Security: added detailed PHPCS documentation for nonce verification patterns
+- Compliance: prefixed all global variables in templates with "mstv_"
+- Compliance: prefixed all hook names with "mstv_" via class constants
+- Compliance: changed all prefixes from "pdm" to "mstv" per WordPress.org guidelines
+- Fix: corrected JavaScript config variable from "pdmConfig" to "mstvConfig"
+- Fix: resolved syntax error in settings class (ternary operator compatibility)
 
 **v1.1.26**
 - Kept the mobile header toolbar on a single row by compacting filters and action controls

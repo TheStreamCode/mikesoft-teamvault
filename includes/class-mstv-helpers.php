@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Helpers
+class MSTV_Helpers
 {
     private const FALLBACK_ARCHIVE_NAME = 'document';
 

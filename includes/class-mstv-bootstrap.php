@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-final class PDM_Bootstrap
+final class MSTV_Bootstrap
 {
     private static $instance = null;
 
@@ -29,38 +29,38 @@ final class PDM_Bootstrap
     private function load_dependencies(): void
     {
         $includes = [
-            'class-pdm-helpers',
-            'class-pdm-i18n',
-            'class-pdm-activator',
-            'class-pdm-deactivator',
-            'class-pdm-capabilities',
-            'class-pdm-settings',
-            'class-pdm-filesystem',
-            'class-pdm-validator',
-            'class-pdm-storage',
-            'class-pdm-auth',
-            'class-pdm-repository-folders',
-            'class-pdm-repository-files',
-            'class-pdm-repository-logs',
-            'class-pdm-download',
-            'class-pdm-preview',
-            'class-pdm-export',
-            'class-pdm-hooks',
-            'class-pdm-rest-controller',
-            'class-pdm-admin',
-            'class-pdm-assets',
-            'class-pdm-logger',
+            'class-mstv-helpers',
+            'class-mstv-i18n',
+            'class-mstv-activator',
+            'class-mstv-deactivator',
+            'class-mstv-capabilities',
+            'class-mstv-settings',
+            'class-mstv-filesystem',
+            'class-mstv-validator',
+            'class-mstv-storage',
+            'class-mstv-auth',
+            'class-mstv-repository-folders',
+            'class-mstv-repository-files',
+            'class-mstv-repository-logs',
+            'class-mstv-download',
+            'class-mstv-preview',
+            'class-mstv-export',
+            'class-mstv-hooks',
+            'class-mstv-rest-controller',
+            'class-mstv-admin',
+            'class-mstv-assets',
+            'class-mstv-logger',
         ];
 
         foreach ($includes as $files) {
-            require_once PDM_PLUGIN_DIR . 'includes/' . $files . '.php';
+            require_once MSTV_PLUGIN_DIR . 'includes/' . $files . '.php';
         }
     }
 
     private function init_hooks(): void
     {
-        register_activation_hook(PDM_PLUGIN_FILE, [$this, 'activate']);
-        register_deactivation_hook(PDM_PLUGIN_FILE, [$this, 'deactivate']);
+        register_activation_hook(MSTV_PLUGIN_FILE, [$this, 'activate']);
+        register_deactivation_hook(MSTV_PLUGIN_FILE, [$this, 'deactivate']);
 
         add_action('init', [$this, 'maybe_upgrade'], 1);
         add_action('init', [$this, 'init_services'], 5);
@@ -70,38 +70,38 @@ final class PDM_Bootstrap
 
     public function activate(bool $networkWide = false): void
     {
-        PDM_Activator::activate($networkWide);
+        MSTV_Activator::activate($networkWide);
     }
 
     public function deactivate(): void
     {
-        PDM_Deactivator::deactivate();
+        MSTV_Deactivator::deactivate();
     }
 
     public function init_services(): void
     {
         if (!isset($this->services['settings'])) {
-            $this->services['settings'] = new PDM_Settings();
+            $this->services['settings'] = new MSTV_Settings();
         }
 
         if (!isset($this->services['i18n'])) {
-            $this->services['i18n'] = new PDM_I18n();
+            $this->services['i18n'] = new MSTV_I18n();
             $this->services['i18n']->init();
         }
 
         if (!isset($this->services['logger'])) {
-            $this->services['logger'] = new PDM_Logger();
+            $this->services['logger'] = new MSTV_Logger();
         }
 
         if (is_admin()) {
-            $this->services['admin'] = new PDM_Admin($this->services['settings']);
-            $this->services['assets'] = new PDM_Assets();
+            $this->services['admin'] = new MSTV_Admin($this->services['settings']);
+            $this->services['assets'] = new MSTV_Assets();
         }
     }
 
     public function maybe_upgrade(): void
     {
-        PDM_Activator::maybe_upgrade();
+        MSTV_Activator::maybe_upgrade();
     }
 
     public function initialize_site(\WP_Site $newSite): void
@@ -110,29 +110,29 @@ final class PDM_Bootstrap
             return;
         }
 
-        PDM_Activator::initialize_site((int) $newSite->blog_id);
+        MSTV_Activator::initialize_site((int) $newSite->blog_id);
     }
 
     public function init_rest_api(): void
     {
         $settings = $this->service('settings');
 
-        if (!$settings instanceof PDM_Settings) {
-            $settings = new PDM_Settings();
+        if (!$settings instanceof MSTV_Settings) {
+            $settings = new MSTV_Settings();
             $this->services['settings'] = $settings;
         }
 
-        $auth = new PDM_Auth($settings);
-        $storage = new PDM_Storage($settings);
-        $validator = new PDM_Validator($settings);
-        $folderRepo = new PDM_Repository_Folders();
-        $filesRepo = new PDM_Repository_Files();
-        $logRepo = new PDM_Repository_Logs();
-        $logger = new PDM_Logger($logRepo);
-        $download = new PDM_Download($storage, $filesRepo, $auth, $logger);
-        $preview = new PDM_Preview($storage, $filesRepo, $auth, $settings);
+        $auth = new MSTV_Auth($settings);
+        $storage = new MSTV_Storage($settings);
+        $validator = new MSTV_Validator($settings);
+        $folderRepo = new MSTV_Repository_Folders();
+        $filesRepo = new MSTV_Repository_Files();
+        $logRepo = new MSTV_Repository_Logs();
+        $logger = new MSTV_Logger($logRepo);
+        $download = new MSTV_Download($storage, $filesRepo, $auth, $logger);
+        $preview = new MSTV_Preview($storage, $filesRepo, $auth, $settings);
 
-        $controller = new PDM_REST_Controller(
+        $controller = new MSTV_REST_Controller(
             $settings,
             $auth,
             $storage,

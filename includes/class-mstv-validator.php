@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Validator
+class MSTV_Validator
 {
     private const DANGEROUS_EXTENSIONS = [
         'php', 'phtml', 'php3', 'php4', 'php5', 'php7', 'php8', 'phar',
@@ -51,9 +51,9 @@ class PDM_Validator
         '/<foreignObject\b/i',
     ];
 
-    private PDM_Settings $settings;
+    private MSTV_Settings $settings;
 
-    public function __construct(PDM_Settings $settings)
+    public function __construct(MSTV_Settings $settings)
     {
         $this->settings = $settings;
     }
@@ -209,7 +209,7 @@ class PDM_Validator
         }
 
         if (!$this->validate_file_size($files['size'])) {
-            $maxSize = PDM_Helpers::format_filesize($this->settings->get_max_file_size());
+            $maxSize = MSTV_Helpers::format_filesize($this->settings->get_max_file_size());
             $errors[] = sprintf(
                 /* translators: %s: maximum allowed file size. */
                 __('The file size exceeds the allowed limit (%s).', 'mikesoft-teamvault'),
@@ -308,8 +308,8 @@ class PDM_Validator
             }
         }
 
-        if (class_exists('PDM_Hooks')) {
-            $result = PDM_Hooks::filter_upload_validation($result, $files);
+        if (class_exists('MSTV_Hooks')) {
+            $result = MSTV_Hooks::filter_upload_validation($result, $files);
         }
 
         return $result;

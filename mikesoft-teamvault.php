@@ -3,7 +3,7 @@
  * Plugin Name: Mikesoft TeamVault
  * Plugin URI: https://github.com/TheStreamCode/mikesoft-teamvault
  * Description: Private shared document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
- * Version: 1.1.26
+ * Version: 1.1.27
  * Author: Michael Gasperini
  * Author URI: https://mikesoft.it
  * License: GPL v2 or later
@@ -16,12 +16,12 @@
 
 defined('ABSPATH') || exit;
 
-define('PDM_VERSION', '1.1.26');
-define('PDM_PLUGIN_FILE', __FILE__);
-define('PDM_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('PDM_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('PDM_PLUGIN_BASENAME', plugin_basename(__FILE__));
+define('MSTV_VERSION', '1.1.27');
+define('MSTV_PLUGIN_FILE', __FILE__);
+define('MSTV_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('MSTV_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('MSTV_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-require_once PDM_PLUGIN_DIR . 'includes/class-pdm-bootstrap.php';
+require_once MSTV_PLUGIN_DIR . 'includes/class-mstv-bootstrap.php';
 
-PDM_Bootstrap::instance()->init();
+MSTV_Bootstrap::instance()->init();

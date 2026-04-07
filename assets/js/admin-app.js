@@ -23,7 +23,7 @@
             storageStats: null,
             pagination: {
                 page: 1,
-                perPage: Number(pdmConfig.browserPerPage || 50),
+                perPage: Number(mstvConfig.browserPerPage || 50),
                 totalItems: 0,
                 totalPages: 0,
                 hasPrev: false,
@@ -266,7 +266,7 @@
                     this.renderStorageIndicator();
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.errorGeneric, 'error');
+                this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 console.error('Load browser error:', error);
             } finally {
                 this.state.isLoading = false;
@@ -281,7 +281,7 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     </svg>
-                    <span class="pdm-folder-name">${pdmConfig.i18n.rootFolder}</span>
+                    <span class="pdm-folder-name">${mstvConfig.i18n.rootFolder}</span>
                 </div>
                 ${this.buildFolderTreeHtml(this.state.folderTree)}
             `;
@@ -348,7 +348,7 @@
                 let html = `
                     <div class="pdm-folder-item ${isActive ? 'active' : ''} ${isDeep && hasChildren ? 'collapsed' : ''}" data-folder-id="${folder.id}" data-depth="${level}">
                         ${hasChildren ? `
-                            <span class="pdm-folder-toggle" title="${isDeep ? pdmConfig.i18n.expand : pdmConfig.i18n.collapse}">
+                            <span class="pdm-folder-toggle" title="${isDeep ? mstvConfig.i18n.expand : mstvConfig.i18n.collapse}">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M6 9l6 6 6-6"/>
                                 </svg>
@@ -391,7 +391,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                     </svg>
-                    <span>${pdmConfig.i18n.rootFolder}</span>
+                    <span>${mstvConfig.i18n.rootFolder}</span>
                 </a>
             `;
 
@@ -452,7 +452,7 @@
                 this.elements.content.innerHTML = `
                     <div class="pdm-loading">
                         <div class="pdm-spinner"></div>
-                        <span>${pdmConfig.i18n.loading}</span>
+                        <span>${mstvConfig.i18n.loading}</span>
                     </div>
                 `;
                 return;
@@ -461,8 +461,8 @@
             const totalItems = this.state.folders.length + this.state.files.length;
 
             if (totalItems === 0) {
-                const emptyTitle = this.state.isSearchMode ? pdmConfig.i18n.noResults : pdmConfig.i18n.emptyState;
-                const emptyDescription = this.state.isSearchMode ? pdmConfig.i18n.searchNoResultsDesc : pdmConfig.i18n.emptyStateDesc;
+                const emptyTitle = this.state.isSearchMode ? mstvConfig.i18n.noResults : mstvConfig.i18n.emptyState;
+                const emptyDescription = this.state.isSearchMode ? mstvConfig.i18n.searchNoResultsDesc : mstvConfig.i18n.emptyStateDesc;
 
                 this.elements.content.innerHTML = `
                     <div class="pdm-empty-state">
@@ -509,7 +509,7 @@
                     : this.getFileIconSvg(files.icon);
                 const availabilityBadge = files.exists_on_disk
                     ? ''
-                    : `<div class="pdm-item-status pdm-item-status--missing">${pdmConfig.i18n.fileMissingShort}</div>`;
+                    : `<div class="pdm-item-status pdm-item-status--missing">${mstvConfig.i18n.fileMissingShort}</div>`;
                 
                 html += `
                     <div class="pdm-item pdm-item--files" data-type="files" data-id="${files.id}" draggable="true">
@@ -541,7 +541,7 @@
                         </div>
                         <div class="pdm-list-item-info">
                             <div class="pdm-list-item-name">${this.escapeHtml(folder.name)}</div>
-                            <div class="pdm-list-item-meta">${pdmConfig.i18n.folder}</div>
+                            <div class="pdm-list-item-meta">${mstvConfig.i18n.folder}</div>
                         </div>
                     </div>
                 `;
@@ -551,7 +551,7 @@
                 const iconContent = files.exists_on_disk && files.is_image
                     ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
                     : this.getFileIconSvg(files.icon, 32);
-                const statusText = files.exists_on_disk ? '' : ` · ${pdmConfig.i18n.fileMissingShort}`;
+                const statusText = files.exists_on_disk ? '' : ` · ${mstvConfig.i18n.fileMissingShort}`;
                 
                 html += `
                     <div class="pdm-list-item pdm-list-item--files" data-type="files" data-id="${files.id}" draggable="true">
@@ -577,22 +577,22 @@
             }
 
             const pager = document.createElement('div');
-            const rangeLabel = this.state.isSearchMode ? pdmConfig.i18n.results : pdmConfig.i18n.files;
+            const rangeLabel = this.state.isSearchMode ? mstvConfig.i18n.results : mstvConfig.i18n.files;
 
             pager.className = 'pdm-pagination';
             pager.innerHTML = `
                 <div class="pdm-pagination-summary">
-                    ${this.state.pagination.fromItem}-${this.state.pagination.toItem} ${pdmConfig.i18n.of} ${this.state.pagination.totalItems} ${rangeLabel}
+                    ${this.state.pagination.fromItem}-${this.state.pagination.toItem} ${mstvConfig.i18n.of} ${this.state.pagination.totalItems} ${rangeLabel}
                 </div>
                 <div class="pdm-pagination-controls">
                     <button type="button" class="pdm-btn pdm-btn-ghost pdm-pagination-btn" data-page="${this.state.pagination.page - 1}" ${this.state.pagination.hasPrev ? '' : 'disabled'}>
-                        ${pdmConfig.i18n.previous}
+                        ${mstvConfig.i18n.previous}
                     </button>
                     <span class="pdm-pagination-status">
-                        ${pdmConfig.i18n.page} ${this.state.pagination.page} ${pdmConfig.i18n.of} ${this.state.pagination.totalPages}
+                        ${mstvConfig.i18n.page} ${this.state.pagination.page} ${mstvConfig.i18n.of} ${this.state.pagination.totalPages}
                     </span>
                     <button type="button" class="pdm-btn pdm-btn-ghost pdm-pagination-btn" data-page="${this.state.pagination.page + 1}" ${this.state.pagination.hasNext ? '' : 'disabled'}>
-                        ${pdmConfig.i18n.next}
+                        ${mstvConfig.i18n.next}
                     </button>
                 </div>
             `;
@@ -816,7 +816,7 @@
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-header-top">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${pdmConfig.i18n.close}">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${mstvConfig.i18n.close}">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
@@ -833,31 +833,31 @@
                 <div class="pdm-details-body">
                     ${isAvailable ? '' : `
                         <div class="pdm-details-notice pdm-details-notice--warning">
-                            <strong>${pdmConfig.i18n.fileMissing}</strong>
-                            <span>${pdmConfig.i18n.fileMissingDesc}</span>
+                            <strong>${mstvConfig.i18n.fileMissing}</strong>
+                            <span>${mstvConfig.i18n.fileMissingDesc}</span>
                         </div>
                     `}
                     <div class="pdm-details-section">
-                        <div class="pdm-details-section-title">${pdmConfig.i18n.file}</div>
+                        <div class="pdm-details-section-title">${mstvConfig.i18n.file}</div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.name}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.name}</span>
                             <span class="pdm-details-row-value">${this.escapeHtml(files.display_name)}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.type}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.type}</span>
                             <span class="pdm-details-row-value">.${files.extension.toUpperCase()}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.size}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.size}</span>
                             <span class="pdm-details-row-value">${files.file_size_formatted}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.created}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.created}</span>
                             <span class="pdm-details-row-value">${files.created_at_human}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.availability}</span>
-                            <span class="pdm-details-row-value ${isAvailable ? '' : 'pdm-details-row-value--danger'}">${isAvailable ? pdmConfig.i18n.available : pdmConfig.i18n.missing}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.availability}</span>
+                            <span class="pdm-details-row-value ${isAvailable ? '' : 'pdm-details-row-value--danger'}">${isAvailable ? mstvConfig.i18n.available : mstvConfig.i18n.missing}</span>
                         </div>
                     </div>
                 </div>
@@ -868,7 +868,7 @@
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
-                            ${pdmConfig.i18n.preview}
+                            ${mstvConfig.i18n.preview}
                         </button>
                     ` : ''}
                     <button type="button" class="pdm-btn pdm-btn-primary pdm-details-download-btn" ${isAvailable ? '' : 'disabled'}>
@@ -877,14 +877,14 @@
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        ${pdmConfig.i18n.download}
+                        ${mstvConfig.i18n.download}
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-rename-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
-                        ${pdmConfig.i18n.rename}
+                        ${mstvConfig.i18n.rename}
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-move-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -895,14 +895,14 @@
                             <line x1="2" y1="12" x2="22" y2="12"/>
                             <line x1="12" y1="2" x2="12" y2="22"/>
                         </svg>
-                        ${pdmConfig.i18n.move}
+                        ${mstvConfig.i18n.move}
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-danger pdm-details-delete-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                         </svg>
-                        ${pdmConfig.i18n.delete}
+                        ${mstvConfig.i18n.delete}
                     </button>
                 </div>
             `;
@@ -940,7 +940,7 @@
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-header-top">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${pdmConfig.i18n.close}">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${mstvConfig.i18n.close}">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
@@ -953,22 +953,22 @@
                 </div>
                 <div class="pdm-details-body">
                     <div class="pdm-details-section">
-                        <div class="pdm-details-section-title">${pdmConfig.i18n.folder}</div>
+                        <div class="pdm-details-section-title">${mstvConfig.i18n.folder}</div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.name}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.name}</span>
                             <span class="pdm-details-row-value">${this.escapeHtml(folder.name)}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.type}</span>
-                            <span class="pdm-details-row-value">${pdmConfig.i18n.folder}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.type}</span>
+                            <span class="pdm-details-row-value">${mstvConfig.i18n.folder}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.created}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.created}</span>
                             <span class="pdm-details-row-value">${folder.created_at_human}</span>
                         </div>
                         <div class="pdm-details-row">
-                            <span class="pdm-details-row-label">${pdmConfig.i18n.status}</span>
-                            <span class="pdm-details-row-value">${folder.has_children ? pdmConfig.i18n.folderHasChildren : pdmConfig.i18n.folderEmpty}</span>
+                            <span class="pdm-details-row-label">${mstvConfig.i18n.status}</span>
+                            <span class="pdm-details-row-value">${folder.has_children ? mstvConfig.i18n.folderHasChildren : mstvConfig.i18n.folderEmpty}</span>
                         </div>
                     </div>
                 </div>
@@ -977,21 +977,21 @@
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                         </svg>
-                        ${pdmConfig.i18n.open}
+                        ${mstvConfig.i18n.open}
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-rename-folder-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
-                        ${pdmConfig.i18n.rename}
+                        ${mstvConfig.i18n.rename}
                     </button>
                     <button type="button" class="pdm-btn pdm-btn-danger pdm-details-delete-folder-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3 6 5 6 21 6"/>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                         </svg>
-                        ${pdmConfig.i18n.delete}
+                        ${mstvConfig.i18n.delete}
                     </button>
                 </div>
             `;
@@ -1020,17 +1020,17 @@
         showNewFolderModal() {
             const html = `
                 <div class="pdm-field">
-                    <label class="pdm-field-label">${pdmConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${pdmConfig.i18n.untitledFolder}" autofocus>
+                    <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
+                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${mstvConfig.i18n.untitledFolder}" autofocus>
                 </div>
             `;
 
             const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${pdmConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${pdmConfig.i18n.confirm}</button>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
             `;
 
-            this.showModal(pdmConfig.i18n.newFolder, html, footer);
+            this.showModal(mstvConfig.i18n.newFolder, html, footer);
 
             const nameInput = document.getElementById('pdm-folder-name');
             nameInput?.select();
@@ -1050,17 +1050,17 @@
 
             const html = `
                 <div class="pdm-field">
-                    <label class="pdm-field-label">${pdmConfig.i18n.name}</label>
+                    <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
                     <input type="text" class="pdm-input" id="pdm-folder-name" value="${this.escapeHtml(folder.name)}" autofocus>
                 </div>
             `;
 
             const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${pdmConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${pdmConfig.i18n.confirm}</button>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
             `;
 
-            this.showModal(pdmConfig.i18n.rename, html, footer);
+            this.showModal(mstvConfig.i18n.rename, html, footer);
 
             const nameInput = document.getElementById('pdm-folder-name');
             nameInput?.select();
@@ -1085,17 +1085,17 @@
 
             const html = `
                 <div class="pdm-field">
-                    <label class="pdm-field-label">${pdmConfig.i18n.name}</label>
+                    <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
                     <input type="text" class="pdm-input" id="pdm-files-name" value="${this.escapeHtml(initialName)}" autofocus>
                 </div>
             `;
 
             const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${pdmConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${pdmConfig.i18n.confirm}</button>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
             `;
 
-            this.showModal(pdmConfig.i18n.rename, html, footer);
+            this.showModal(mstvConfig.i18n.rename, html, footer);
 
             const nameInput = document.getElementById('pdm-files-name');
             nameInput?.select();
@@ -1117,13 +1117,13 @@
 
             const html = `
                 <div class="pdm-field">
-                    <label class="pdm-field-label">${pdmConfig.i18n.moveTo}</label>
+                    <label class="pdm-field-label">${mstvConfig.i18n.moveTo}</label>
                     <div class="pdm-move-tree">
                         <div class="pdm-move-item ${files.folder_id === null ? 'current' : ''}" data-folder-id="">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                             </svg>
-                            <span>${pdmConfig.i18n.rootFolder}</span>
+                            <span>${mstvConfig.i18n.rootFolder}</span>
                         </div>
                         ${folderTreeHtml}
                     </div>
@@ -1131,11 +1131,11 @@
             `;
 
             const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${pdmConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm" disabled>${pdmConfig.i18n.confirm}</button>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm" disabled>${mstvConfig.i18n.confirm}</button>
             `;
 
-            this.showModal(pdmConfig.i18n.move, html, footer);
+            this.showModal(mstvConfig.i18n.move, html, footer);
 
             let selectedFolderId = null;
 
@@ -1192,14 +1192,14 @@
                 const response = await this.apiPost('folders', payload);
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.folderCreateSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.folderCreateSuccess, 'success');
                     this.hideModal();
                     this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.folderCreateError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.folderCreateError, 'error');
                 }
             } catch (error) {
-                this.showToast(error.message || pdmConfig.i18n.folderCreateError, 'error');
+                this.showToast(error.message || mstvConfig.i18n.folderCreateError, 'error');
                 console.error('Create folder error:', error);
             }
         },
@@ -1209,32 +1209,32 @@
                 const response = await this.apiPatch(`folders/${folderId}`, { name });
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.renameSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
                     this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.renameError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.renameError, 'error');
+                this.showToast(mstvConfig.i18n.renameError, 'error');
                 console.error('Rename folder error:', error);
             }
         },
 
         async deleteFolder(folderId) {
-            if (!confirm(pdmConfig.i18n.confirmDeleteFolder)) return;
+            if (!confirm(mstvConfig.i18n.confirmDeleteFolder)) return;
 
             try {
                 const response = await this.apiDelete(`folders/${folderId}`);
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.deleteSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.deleteSuccess, 'success');
                     this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.deleteError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.deleteError, 'error');
+                this.showToast(mstvConfig.i18n.deleteError, 'error');
                 console.error('Delete folder error:', error);
             }
         },
@@ -1244,33 +1244,33 @@
                 const response = await this.apiPatch(`files/${fileId}`, { display_name: name });
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.renameSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
                     this.reloadCurrentView();
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.renameError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.renameError, 'error');
+                this.showToast(mstvConfig.i18n.renameError, 'error');
                 console.error('Rename files error:', error);
             }
         },
 
         async deleteFile(fileId) {
-            if (!confirm(pdmConfig.i18n.confirmDelete)) return;
+            if (!confirm(mstvConfig.i18n.confirmDelete)) return;
 
             try {
                 const response = await this.apiDelete(`files/${fileId}`);
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.deleteSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.deleteSuccess, 'success');
                     this.reloadCurrentView();
                     this.clearDetails();
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.deleteError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.deleteError, 'error');
+                this.showToast(mstvConfig.i18n.deleteError, 'error');
                 console.error('Delete files error:', error);
             }
         },
@@ -1286,15 +1286,15 @@
                 const response = await this.apiPost(`files/${fileId}/move`, payload);
 
                 if (response.success) {
-                    this.showToast(pdmConfig.i18n.moveSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.moveSuccess, 'success');
                     this.hideModal();
                     this.reloadCurrentView();
                     this.clearDetails();
                 } else {
-                    this.showToast(response.message || pdmConfig.i18n.moveError, 'error');
+                    this.showToast(response.message || mstvConfig.i18n.moveError, 'error');
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.moveError, 'error');
+                this.showToast(mstvConfig.i18n.moveError, 'error');
                 console.error('Move files error:', error);
             }
         },
@@ -1316,7 +1316,7 @@
             if (!files) return;
 
             if (!this.isFileAvailable(files) || !files.download_url) {
-                this.showToast(pdmConfig.i18n.fileMissingDesc, 'warning');
+                this.showToast(mstvConfig.i18n.fileMissingDesc, 'warning');
                 return;
             }
 
@@ -1334,7 +1334,7 @@
             if (!files || !files.is_previewable) return;
 
             if (!this.isFileAvailable(files) || !files.preview_url) {
-                this.showToast(pdmConfig.i18n.fileMissingDesc, 'warning');
+                this.showToast(mstvConfig.i18n.fileMissingDesc, 'warning');
                 return;
             }
 
@@ -1398,7 +1398,7 @@
                     this.syncPerPageSelect();
                 }
             } catch (error) {
-                this.showToast(pdmConfig.i18n.errorGeneric, 'error');
+                this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 console.error('Search error:', error);
             } finally {
                 this.state.isLoading = false;
@@ -1438,7 +1438,7 @@
                 const response = await fetch(this.buildApiUrl('files/upload'), {
                     method: 'POST',
                     headers: {
-                        'X-WP-Nonce': pdmConfig.restNonce,
+                        'X-WP-Nonce': mstvConfig.restNonce,
                     },
                     body: formData,
                 });
@@ -1446,13 +1446,13 @@
                 const data = await this.parseApiResponse(response);
 
                 if (data.success) {
-                    this.showToast(pdmConfig.i18n.uploadSuccess, 'success');
+                    this.showToast(mstvConfig.i18n.uploadSuccess, 'success');
                     this.reloadCurrentView();
                 } else {
-                    this.showToast(data.message || pdmConfig.i18n.uploadError, 'error');
+                    this.showToast(data.message || mstvConfig.i18n.uploadError, 'error');
                 }
             } catch (error) {
-                this.showToast(error.message || pdmConfig.i18n.uploadError, 'error');
+                this.showToast(error.message || mstvConfig.i18n.uploadError, 'error');
                 console.error('Upload error:', error);
             }
         },
@@ -1603,7 +1603,7 @@
                         <circle cx="11" cy="11" r="8"/>
                         <path d="m21 21-4.35-4.35"/>
                     </svg>
-                    <p>${pdmConfig.i18n.selectItem}</p>
+                    <p>${mstvConfig.i18n.selectItem}</p>
                 </div>
             `;
         },
@@ -1673,14 +1673,14 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                     </svg>
-                    ${pdmConfig.i18n.folder}
+                    ${mstvConfig.i18n.folder}
                 </div>
                 <div class="context-menu-item pdm-context-rename">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
-                    ${pdmConfig.i18n.rename}
+                    ${mstvConfig.i18n.rename}
                 </div>
                 <div class="context-menu-divider"></div>
                 <div class="context-menu-item context-menu-item--danger pdm-context-delete">
@@ -1688,7 +1688,7 @@
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                     </svg>
-                    ${pdmConfig.i18n.delete}
+                    ${mstvConfig.i18n.delete}
                 </div>
             `;
 
@@ -1738,7 +1738,7 @@
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                             <circle cx="12" cy="12" r="3"/>
                         </svg>
-                        ${pdmConfig.i18n.preview}
+                        ${mstvConfig.i18n.preview}
                     </div>
                 ` : ''}
                 <div class="context-menu-item pdm-context-download ${isAvailable ? '' : 'context-menu-item--disabled'}">
@@ -1747,14 +1747,14 @@
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    ${pdmConfig.i18n.download}
+                    ${mstvConfig.i18n.download}
                 </div>
                 <div class="context-menu-item pdm-context-rename">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
-                    ${pdmConfig.i18n.rename}
+                    ${mstvConfig.i18n.rename}
                 </div>
                 <div class="context-menu-item pdm-context-move">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1765,7 +1765,7 @@
                         <line x1="2" y1="12" x2="22" y2="12"/>
                         <line x1="12" y1="2" x2="12" y2="22"/>
                     </svg>
-                    ${pdmConfig.i18n.move}
+                    ${mstvConfig.i18n.move}
                 </div>
                 <div class="context-menu-divider"></div>
                 <div class="context-menu-item context-menu-item--danger pdm-context-delete">
@@ -1773,7 +1773,7 @@
                         <polyline points="3 6 5 6 21 6"/>
                         <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                     </svg>
-                    ${pdmConfig.i18n.delete}
+                    ${mstvConfig.i18n.delete}
                 </div>
             `;
 
@@ -1960,7 +1960,7 @@
 
         getStoredBrowserPerPage() {
             const storage = this.getLocalStorage();
-            const defaultPerPage = Number(pdmConfig.browserPerPage || 50);
+            const defaultPerPage = Number(mstvConfig.browserPerPage || 50);
 
             if (!storage) {
                 return defaultPerPage;
@@ -2002,7 +2002,7 @@
             const response = await fetch(this.buildApiUrl(endpoint), {
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': pdmConfig.restNonce,
+                    'X-WP-Nonce': mstvConfig.restNonce,
                 },
             });
             return this.parseApiResponse(response);
@@ -2013,7 +2013,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': pdmConfig.restNonce,
+                    'X-WP-Nonce': mstvConfig.restNonce,
                 },
                 body: JSON.stringify(data),
             });
@@ -2025,7 +2025,7 @@
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': pdmConfig.restNonce,
+                    'X-WP-Nonce': mstvConfig.restNonce,
                 },
                 body: JSON.stringify(data),
             });
@@ -2037,7 +2037,7 @@
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-WP-Nonce': pdmConfig.restNonce,
+                    'X-WP-Nonce': mstvConfig.restNonce,
                 },
             });
             return this.parseApiResponse(response);
@@ -2060,7 +2060,7 @@
         },
 
         buildApiUrl(endpoint) {
-            const base = String(pdmConfig.restUrl || '').replace(/\/+$/, '');
+            const base = String(mstvConfig.restUrl || '').replace(/\/+$/, '');
             const path = String(endpoint || '').replace(/^\/+/, '');
             return `${base}/${path}`;
         },
@@ -2132,7 +2132,7 @@
                             `).join('');
                             userResults.classList.add('active');
                         } else {
-                            userResults.innerHTML = `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${pdmConfig.i18n.userNotFound}</div>`;
+                            userResults.innerHTML = `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${mstvConfig.i18n.userNotFound}</div>`;
                             userResults.classList.add('active');
                         }
                     } catch (error) {
@@ -2149,7 +2149,7 @@
                     const userName = result.dataset.userName;
 
                     if (allowedUsersContainer.querySelector(`[data-user-id="${userId}"]`)) {
-                        alert(pdmConfig.i18n.userAlreadyInList);
+                        alert(mstvConfig.i18n.userAlreadyInList);
                         return;
                     }
 
@@ -2191,7 +2191,7 @@
             tag.dataset.userId = userId;
             tag.innerHTML = `
                 <span class="pdm-user-name">${this.escapeHtml(userName)} (${this.escapeHtml(userLogin)})</span>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${pdmConfig.i18n.remove}" aria-label="${pdmConfig.i18n.remove}">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${mstvConfig.i18n.remove}" aria-label="${mstvConfig.i18n.remove}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -2223,22 +2223,22 @@
             const preselectedFolders = this.state.currentFolder === null ? [] : [this.state.currentFolder];
             const exportTreeHtml = hasFolders
                 ? this.buildExportFolderTreeHtml(this.state.folderTree, new Set(preselectedFolders))
-                : `<p class="pdm-export-empty">${pdmConfig.i18n.noFoldersAvailable}</p>`;
+                : `<p class="pdm-export-empty">${mstvConfig.i18n.noFoldersAvailable}</p>`;
 
             const body = `
                 <div class="pdm-export-options">
                     <label class="pdm-export-choice">
                         <input type="radio" name="pdm-export-mode" value="all" ${defaultMode === 'all' ? 'checked' : ''}>
                         <span>
-                            <strong>${pdmConfig.i18n.exportAll}</strong>
-                            <small>${pdmConfig.i18n.exportAllDesc}</small>
+                            <strong>${mstvConfig.i18n.exportAll}</strong>
+                            <small>${mstvConfig.i18n.exportAllDesc}</small>
                         </span>
                     </label>
                     <label class="pdm-export-choice ${hasFolders ? '' : 'pdm-export-choice--disabled'}">
                         <input type="radio" name="pdm-export-mode" value="selection" ${hasFolders ? '' : 'disabled'}>
                         <span>
-                            <strong>${pdmConfig.i18n.exportSelectedFolders}</strong>
-                            <small>${pdmConfig.i18n.exportSelectedFoldersDesc}</small>
+                            <strong>${mstvConfig.i18n.exportSelectedFolders}</strong>
+                            <small>${mstvConfig.i18n.exportSelectedFoldersDesc}</small>
                         </span>
                     </label>
                     <div class="pdm-export-folder-tree" ${defaultMode === 'selection' ? '' : 'hidden'}>
@@ -2250,18 +2250,18 @@
             `;
 
             const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${pdmConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
                 <button type="button" class="pdm-btn pdm-btn-primary pdm-export-confirm">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    <span>${pdmConfig.i18n.export}</span>
+                    <span>${mstvConfig.i18n.export}</span>
                 </button>
             `;
 
-            this.showModal(pdmConfig.i18n.export, body, footer);
+            this.showModal(mstvConfig.i18n.export, body, footer);
 
             const confirmBtn = this.elements.modal.querySelector('.pdm-export-confirm');
             const cancelBtn = this.elements.modal.querySelector('.pdm-modal-cancel');
@@ -2285,7 +2285,7 @@
                     : [];
 
                 if (selectedMode === 'selection' && selectedFolderIds.length === 0) {
-                    this.showToast(pdmConfig.i18n.exportNoFoldersSelected, 'warning');
+                    this.showToast(mstvConfig.i18n.exportNoFoldersSelected, 'warning');
                     return;
                 }
 
@@ -2326,11 +2326,11 @@
             const mode = options.mode || 'all';
             const folderIds = Array.isArray(options.folderIds) ? options.folderIds : [];
 
-            this.showToast(pdmConfig.i18n.exporting, 'info');
+            this.showToast(mstvConfig.i18n.exporting, 'info');
 
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = pdmConfig.actionUrl;
+            form.action = mstvConfig.actionUrl;
             form.target = '_blank';
             form.style.display = 'none';
 
@@ -2343,7 +2343,7 @@
             const nonceInput = document.createElement('input');
             nonceInput.type = 'hidden';
             nonceInput.name = 'pdm_stream_nonce';
-            nonceInput.value = pdmConfig.streamNonce;
+            nonceInput.value = mstvConfig.streamNonce;
             form.appendChild(nonceInput);
 
             if (mode === 'selection') {
@@ -2361,7 +2361,7 @@
 
             setTimeout(() => {
                 document.body.removeChild(form);
-                this.showToast(pdmConfig.i18n.exportSuccess, 'success');
+                this.showToast(mstvConfig.i18n.exportSuccess, 'success');
             }, 2000);
         },
     };

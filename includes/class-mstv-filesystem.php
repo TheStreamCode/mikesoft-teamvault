@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Filesystem
+class MSTV_Filesystem
 {
     private string $basePath;
 

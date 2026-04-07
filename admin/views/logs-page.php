@@ -2,24 +2,24 @@
 
 defined('ABSPATH') || exit;
 
-$repo = new PDM_Repository_Logs();
-$allowed_per_page = [25, 50, 100, 200];
-$current_page = filter_input(INPUT_GET, 'paged', FILTER_VALIDATE_INT);
-$selected_per_page = filter_input(INPUT_GET, 'per_page', FILTER_VALIDATE_INT);
+$mstv_repo = new MSTV_Repository_Logs();
+$mstv_allowed_per_page = [25, 50, 100, 200];
+$mstv_current_page = filter_input(INPUT_GET, 'paged', FILTER_VALIDATE_INT);
+$mstv_selected_per_page = filter_input(INPUT_GET, 'per_page', FILTER_VALIDATE_INT);
 
-$current_page = $current_page ? max(1, $current_page) : 1;
-$selected_per_page = $selected_per_page ?: 50;
+$mstv_current_page = $mstv_current_page ? max(1, $mstv_current_page) : 1;
+$mstv_selected_per_page = $mstv_selected_per_page ?: 50;
 
-if (!in_array($selected_per_page, $allowed_per_page, true)) {
-    $selected_per_page = 50;
+if (!in_array($mstv_selected_per_page, $mstv_allowed_per_page, true)) {
+    $mstv_selected_per_page = 50;
 }
 
-$logs_page = $repo->find_recent_paginated($current_page, $selected_per_page);
-$logs = $logs_page['items'];
-$pagination = $logs_page['pagination'];
+$mstv_logs_page = $mstv_repo->find_recent_paginated($mstv_current_page, $mstv_selected_per_page);
+$mstv_logs = $mstv_logs_page['items'];
+$mstv_pagination = $mstv_logs_page['pagination'];
 
-if (!function_exists('pdm_get_action_label')) {
-    function pdm_get_action_label(string $action): string
+if (!function_exists('mstv_get_action_label')) {
+    function mstv_get_action_label(string $action): string
     {
         $labels = [
             'upload' => __('Upload', 'mikesoft-teamvault'),
@@ -34,8 +34,8 @@ if (!function_exists('pdm_get_action_label')) {
     }
 }
 
-if (!function_exists('pdm_get_logs_page_url')) {
-    function pdm_get_logs_page_url(int $page, int $perPage): string
+if (!function_exists('mstv_get_logs_page_url')) {
+    function mstv_get_logs_page_url(int $page, int $perPage): string
     {
         return add_query_arg([
             'page' => 'mikesoft-teamvault-logs',
@@ -45,8 +45,8 @@ if (!function_exists('pdm_get_logs_page_url')) {
     }
 }
 
-if (!function_exists('pdm_get_log_target_label')) {
-    function pdm_get_log_target_label(string $targetType): string
+if (!function_exists('mstv_get_log_target_label')) {
+    function mstv_get_log_target_label(string $targetType): string
     {
         return in_array($targetType, ['file', 'files'], true)
             ? __('File', 'mikesoft-teamvault')
@@ -62,8 +62,8 @@ if (!function_exists('pdm_get_log_target_label')) {
 
     <div class="pdm-logs-toolbar">
         <div class="pdm-pagination-summary">
-            <?php if ($pagination['total_items'] > 0) : ?>
-                <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
+            <?php if ($mstv_pagination['total_items'] > 0) : ?>
+                <?php echo esc_html($mstv_pagination['from_item'] . '-' . $mstv_pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
             <?php else : ?>
                 <?php echo esc_html('0 ' . __('Entries', 'mikesoft-teamvault')); ?>
             <?php endif; ?>
@@ -74,9 +74,9 @@ if (!function_exists('pdm_get_log_target_label')) {
             <input type="hidden" name="paged" value="1">
             <label class="pdm-toolbar-label" for="pdm-logs-per-page"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></label>
             <select class="pdm-select" name="per_page" id="pdm-logs-per-page">
-                <?php foreach ($allowed_per_page as $per_page_option) : ?>
-                    <option value="<?php echo esc_attr((string) $per_page_option); ?>" <?php selected($selected_per_page, $per_page_option); ?>>
-                        <?php echo esc_html((string) $per_page_option); ?>
+                <?php foreach ($mstv_allowed_per_page as $mstv_per_page_option) : ?>
+                    <option value="<?php echo esc_attr((string) $mstv_per_page_option); ?>" <?php selected($mstv_selected_per_page, $mstv_per_page_option); ?>>
+                        <?php echo esc_html((string) $mstv_per_page_option); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -85,7 +85,7 @@ if (!function_exists('pdm_get_log_target_label')) {
     </div>
 
     <div class="pdm-logs-content">
-        <?php if (empty($logs)) : ?>
+        <?php if (empty($mstv_logs)) : ?>
             <div class="pdm-empty-state">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -111,34 +111,34 @@ if (!function_exists('pdm_get_log_target_label')) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($logs as $log) : ?>
-                            <?php $context = json_decode($log->context ?? '{}', true); ?>
+                        <?php foreach ($mstv_logs as $mstv_log) : ?>
+                            <?php $mstv_context = json_decode($mstv_log->context ?? '{}', true); ?>
                             <tr>
                                 <td>
-                                    <span class="pdm-log-date"><?php echo esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $log->created_at)); ?></span>
+                                    <span class="pdm-log-date"><?php echo esc_html(mysql2date(get_option('date_format') . ' ' . get_option('time_format'), $mstv_log->created_at)); ?></span>
                                 </td>
                                 <td>
-                                    <span class="pdm-log-user"><?php echo esc_html($log->user_login ?: 'N/A'); ?></span>
+                                    <span class="pdm-log-user"><?php echo esc_html($mstv_log->user_login ?: 'N/A'); ?></span>
                                 </td>
                                 <td>
-                                    <span class="pdm-log-action pdm-log-action--<?php echo esc_attr($log->action); ?>">
-                                        <?php echo esc_html(pdm_get_action_label($log->action)); ?>
+                                    <span class="pdm-log-action pdm-log-action--<?php echo esc_attr($mstv_log->action); ?>">
+                                        <?php echo esc_html(mstv_get_action_label($mstv_log->action)); ?>
                                     </span>
                                 </td>
                                 <td>
                                     <span class="pdm-log-type">
-                                        <?php echo esc_html(pdm_get_log_target_label((string) $log->target_type)); ?>
+                                        <?php echo esc_html(mstv_get_log_target_label((string) $mstv_log->target_type)); ?>
                                     </span>
                                 </td>
                                 <td>
-                                    <?php if (!empty($context)) : ?>
-                                        <span class="pdm-log-context"><?php echo esc_html(wp_json_encode($context, JSON_UNESCAPED_UNICODE)); ?></span>
+                                    <?php if (!empty($mstv_context)) : ?>
+                                        <span class="pdm-log-context"><?php echo esc_html(wp_json_encode($mstv_context, JSON_UNESCAPED_UNICODE)); ?></span>
                                     <?php else : ?>
                                         <span class="pdm-log-context">-</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="pdm-log-ip"><?php echo esc_html($log->ip_address ?: '-'); ?></span>
+                                    <span class="pdm-log-ip"><?php echo esc_html($mstv_log->ip_address ?: '-'); ?></span>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -146,14 +146,14 @@ if (!function_exists('pdm_get_log_target_label')) {
                 </table>
             </div>
 
-            <?php if ($pagination['total_pages'] > 1) : ?>
+            <?php if ($mstv_pagination['total_pages'] > 1) : ?>
                 <div class="pdm-pagination">
                     <div class="pdm-pagination-summary">
-                        <?php echo esc_html($pagination['from_item'] . '-' . $pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
+                        <?php echo esc_html($mstv_pagination['from_item'] . '-' . $mstv_pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
                     </div>
                     <div class="pdm-pagination-controls">
-                        <?php if ($pagination['has_prev']) : ?>
-                            <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(pdm_get_logs_page_url($pagination['page'] - 1, $pagination['per_page'])); ?>">
+                        <?php if ($mstv_pagination['has_prev']) : ?>
+                            <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(mstv_get_logs_page_url($mstv_pagination['page'] - 1, $mstv_pagination['per_page'])); ?>">
                                 <?php esc_html_e('Previous', 'mikesoft-teamvault'); ?>
                             </a>
                         <?php else : ?>
@@ -161,11 +161,11 @@ if (!function_exists('pdm_get_log_target_label')) {
                         <?php endif; ?>
 
                         <span class="pdm-pagination-status">
-                            <?php echo esc_html(__('Page', 'mikesoft-teamvault') . ' ' . $pagination['page'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $pagination['total_pages']); ?>
+                            <?php echo esc_html(__('Page', 'mikesoft-teamvault') . ' ' . $mstv_pagination['page'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_pages']); ?>
                         </span>
 
-                        <?php if ($pagination['has_next']) : ?>
-                            <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(pdm_get_logs_page_url($pagination['page'] + 1, $pagination['per_page'])); ?>">
+                        <?php if ($mstv_pagination['has_next']) : ?>
+                            <a class="pdm-btn pdm-btn-ghost pdm-pagination-link" href="<?php echo esc_url(mstv_get_logs_page_url($mstv_pagination['page'] + 1, $mstv_pagination['per_page'])); ?>">
                                 <?php esc_html_e('Next', 'mikesoft-teamvault'); ?>
                             </a>
                         <?php else : ?>
