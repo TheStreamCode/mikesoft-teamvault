@@ -2,9 +2,9 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_I18n
+class MSTV_I18n
 {
-    public const OPTION_LANGUAGE = 'pdm_interface_language';
+    public const OPTION_LANGUAGE = 'mstv_interface_language';
 
     private const ITALIAN_MAP = [
         'A folder with this name already exists.' => 'Esiste già una cartella con questo nome.',

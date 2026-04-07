@@ -2,10 +2,10 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Activator
+class MSTV_Activator
 {
-    private const VERSION_OPTION = 'pdm_plugin_version';
-    private const STORAGE_MARKER_FILE = '.pdm-storage';
+    private const VERSION_OPTION = 'mstv_plugin_version';
+    private const STORAGE_MARKER_FILE = '.mstv-storage';
 
     public static function activate(bool $networkWide = false): void
     {
@@ -26,7 +26,7 @@ class PDM_Activator
     {
         $installedVersion = get_option(self::VERSION_OPTION, '0.0.0');
 
-        if (version_compare((string) $installedVersion, PDM_VERSION, '>=')) {
+        if (version_compare((string) $installedVersion, MSTV_VERSION, '>=')) {
             return;
         }
 
@@ -46,7 +46,7 @@ class PDM_Activator
 
     private static function sync_user_whitelist_capabilities(): void
     {
-        $settings = new PDM_Settings();
+        $settings = new MSTV_Settings();
         $settings->sync_existing_whitelist();
     }
 
@@ -57,7 +57,7 @@ class PDM_Activator
         self::register_capabilities();
         self::set_default_options();
         self::sync_user_whitelist_capabilities();
-        update_option(self::VERSION_OPTION, PDM_VERSION);
+        update_option(self::VERSION_OPTION, MSTV_VERSION);
     }
 
     private static function create_tables(): void
@@ -67,9 +67,9 @@ class PDM_Activator
         $charset_collate = $wpdb->get_charset_collate();
         $blog_prefix = $wpdb->get_blog_prefix(get_current_blog_id());
 
-        $folders_table = $blog_prefix . 'pdm_folders';
-        $files_table = $blog_prefix . 'pdm_files';
-        $logs_table = $blog_prefix . 'pdm_logs';
+        $folders_table = $blog_prefix . 'mstv_folders';
+        $files_table = $blog_prefix . 'mstv_files';
+        $logs_table = $blog_prefix . 'mstv_logs';
 
         $sql = [];
 
@@ -157,7 +157,7 @@ class PDM_Activator
 
     public static function normalize_logs_table_name_for_upgrade(string $logsTable, string $blogPrefix): string
     {
-        $expectedTable = $blogPrefix . 'pdm_logs';
+        $expectedTable = $blogPrefix . 'mstv_logs';
 
         if (!preg_match('/^[A-Za-z0-9_]+$/', $expectedTable)) {
             return '';
@@ -254,9 +254,9 @@ class PDM_Activator
     private static function set_default_options(): void
     {
         $defaults = [
-            'pdm_interface_language' => 'en',
-            'pdm_storage_path' => '',
-            'pdm_allowed_extensions' => implode(',', [
+            'mstv_interface_language' => 'en',
+            'mstv_storage_path' => '',
+            'mstv_allowed_extensions' => implode(',', [
                 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
                 'jpg', 'jpeg', 'png', 'gif', 'webp',
                 'zip', 'rar', '7z',
@@ -264,11 +264,11 @@ class PDM_Activator
                 'mp3', 'wav', 'ogg',
                 'mp4', 'avi', 'mov', 'mkv',
             ]),
-            'pdm_max_file_size' => 50 * 1024 * 1024,
-            'pdm_log_enabled' => true,
-            'pdm_pdf_preview_enabled' => true,
-            'pdm_remove_data_on_uninstall' => false,
-            self::VERSION_OPTION => PDM_VERSION,
+            'mstv_max_file_size' => 50 * 1024 * 1024,
+            'mstv_log_enabled' => true,
+            'mstv_pdf_preview_enabled' => true,
+            'mstv_remove_data_on_uninstall' => false,
+            self::VERSION_OPTION => MSTV_VERSION,
         ];
 
         foreach ($defaults as $option => $value) {

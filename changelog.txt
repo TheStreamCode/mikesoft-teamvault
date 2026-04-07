@@ -1,5 +1,18 @@
 Mikesoft TeamVault Changelog
 
+1.1.27
+- Fixed WordPress.org Plugin Check warnings and security review issues:
+  * Added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)
+  * Removed FILTER_DEFAULT usage, replaced with isset() + array_map sanitization
+  * Added PHPCS ignore comments with detailed explanations for nonce verification patterns
+  * Prefixed all global variables in template files with "mstv_" (compliance requirement)
+  * Prefixed all hook names with "mstv_" for uniqueness compliance
+  * Fixed JavaScript config variable from "pdmConfig" to "mstvConfig" for consistency
+- Changed all prefixes from "pdm" (3 chars) to "mstv" (4+ chars) per WordPress.org naming guidelines
+- Updated all WordPress options from "pdm_*" to "mstv_*" for uniqueness compliance
+- All classes, constants, hooks, transients and global variables now use MSTV_/mstv_ prefix
+- Fixed syntax error in class-mstv-settings.php (ternary operator issues)
+
 1.1.26
 - Refined the mobile header toolbar so filters, actions, and controls stay on a single row
 - Reduced the mobile width of the Upload and Export actions for a tighter toolbar layout

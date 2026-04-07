@@ -2,11 +2,11 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Logger
+class MSTV_Logger
 {
-    private ?PDM_Repository_Logs $repo = null;
+    private ?MSTV_Repository_Logs $repo = null;
 
-    public function __construct(?PDM_Repository_Logs $repo = null)
+    public function __construct(?MSTV_Repository_Logs $repo = null)
     {
         $this->repo = $repo;
     }
@@ -18,10 +18,10 @@ class PDM_Logger
         array $context = []
     ): int {
         if (!$this->repo) {
-            $this->repo = new PDM_Repository_Logs();
+            $this->repo = new MSTV_Repository_Logs();
         }
 
-        $settings = new PDM_Settings();
+        $settings = new MSTV_Settings();
         if (!$settings->is_log_enabled()) {
             return 0;
         }

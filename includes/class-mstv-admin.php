@@ -2,11 +2,11 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Admin
+class MSTV_Admin
 {
-    private PDM_Settings $settings;
+    private MSTV_Settings $settings;
 
-    public function __construct(PDM_Settings $settings)
+    public function __construct(MSTV_Settings $settings)
     {
         $this->settings = $settings;
         $this->init_hooks();
@@ -16,14 +16,14 @@ class PDM_Admin
     {
         add_action('admin_menu', [$this, 'add_menu']);
         add_action('admin_init', [$this, 'register_settings']);
-        add_action('admin_post_pdm_save_settings', [$this, 'handle_save_settings']);
-        add_action('admin_post_pdm_cleanup_orphans', [$this, 'handle_cleanup_orphans']);
-        add_action('admin_post_pdm_reindex_storage', [$this, 'handle_reindex_storage']);
-        add_action('admin_post_pdm_download_file', [$this, 'handle_download_file']);
-        add_action('admin_post_pdm_preview_file', [$this, 'handle_preview_file']);
-        add_action('admin_post_pdm_export_all', [$this, 'handle_export_all']);
-        add_action('admin_post_pdm_export_folder', [$this, 'handle_export_folder']);
-        add_action('admin_post_pdm_export_selection', [$this, 'handle_export_selection']);
+        add_action('admin_post_mstv_save_settings', [$this, 'handle_save_settings']);
+        add_action('admin_post_mstv_cleanup_orphans', [$this, 'handle_cleanup_orphans']);
+        add_action('admin_post_mstv_reindex_storage', [$this, 'handle_reindex_storage']);
+        add_action('admin_post_mstv_download_file', [$this, 'handle_download_file']);
+        add_action('admin_post_mstv_preview_file', [$this, 'handle_preview_file']);
+        add_action('admin_post_mstv_export_all', [$this, 'handle_export_all']);
+        add_action('admin_post_mstv_export_folder', [$this, 'handle_export_folder']);
+        add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);
     }
 
     public function add_menu(): void
@@ -39,7 +39,7 @@ class PDM_Admin
         add_menu_page(
             __('TeamVault', 'mikesoft-teamvault'),
             __('TeamVault', 'mikesoft-teamvault'),
-            PDM_Capabilities::CAP_MANAGE,
+            MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault',
             [$this, 'render_file_manager_page'],
             $menu_icon,
@@ -50,7 +50,7 @@ class PDM_Admin
             'mikesoft-teamvault',
             __('File Manager', 'mikesoft-teamvault'),
             __('File Manager', 'mikesoft-teamvault'),
-            PDM_Capabilities::CAP_MANAGE,
+            MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault',
             [$this, 'render_file_manager_page']
         );
@@ -59,7 +59,7 @@ class PDM_Admin
             'mikesoft-teamvault',
             __('Settings', 'mikesoft-teamvault'),
             __('Settings', 'mikesoft-teamvault'),
-            PDM_Capabilities::CAP_MANAGE,
+            MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault-settings',
             [$this, 'render_settings_page']
         );
@@ -68,7 +68,7 @@ class PDM_Admin
             'mikesoft-teamvault',
             __('Activity Log', 'mikesoft-teamvault'),
             __('Activity Log', 'mikesoft-teamvault'),
-            PDM_Capabilities::CAP_MANAGE,
+            MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault-logs',
             [$this, 'render_logs_page']
         );
@@ -85,7 +85,7 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
-        include PDM_PLUGIN_DIR . 'admin/views/file-manager-page.php';
+        include MSTV_PLUGIN_DIR . 'admin/views/file-manager-page.php';
     }
 
     public function render_settings_page(): void
@@ -95,18 +95,18 @@ class PDM_Admin
         }
 
         $orphaned_files_count = $this->count_orphaned_files();
-        $cleanup_result = get_transient('pdm_cleanup_orphans_' . get_current_user_id());
-        $reindex_result = get_transient('pdm_reindex_storage_' . get_current_user_id());
+        $cleanup_result = get_transient('mstv_cleanup_orphans_' . get_current_user_id());
+        $reindex_result = get_transient('mstv_reindex_storage_' . get_current_user_id());
 
         if ($cleanup_result !== false) {
-            delete_transient('pdm_cleanup_orphans_' . get_current_user_id());
+            delete_transient('mstv_cleanup_orphans_' . get_current_user_id());
         }
 
         if ($reindex_result !== false) {
-            delete_transient('pdm_reindex_storage_' . get_current_user_id());
+            delete_transient('mstv_reindex_storage_' . get_current_user_id());
         }
 
-        include PDM_PLUGIN_DIR . 'admin/views/settings-page.php';
+        include MSTV_PLUGIN_DIR . 'admin/views/settings-page.php';
     }
 
     public function render_logs_page(): void
@@ -115,7 +115,7 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
-        include PDM_PLUGIN_DIR . 'admin/views/logs-page.php';
+        include MSTV_PLUGIN_DIR . 'admin/views/logs-page.php';
     }
 
     public function handle_save_settings(): void
@@ -124,37 +124,37 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
-        $nonce = isset($_POST['pdm_settings_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_settings_nonce'])) : '';
-        if (!$nonce || !wp_verify_nonce($nonce, 'pdm_settings_nonce')) {
+        $nonce = isset($_POST['mstv_settings_nonce']) ? sanitize_text_field(wp_unslash($_POST['mstv_settings_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'mstv_settings_nonce')) {
             wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
-        $whitelistEnabled = !empty($_POST['pdm_use_user_whitelist']);
-        $userIds = isset($_POST['pdm_allowed_users']) && is_array($_POST['pdm_allowed_users'])
-            ? array_map('absint', wp_unslash($_POST['pdm_allowed_users']))
+        $whitelistEnabled = !empty($_POST['mstv_use_user_whitelist']);
+        $userIds = isset($_POST['mstv_allowed_users']) && is_array($_POST['mstv_allowed_users'])
+            ? array_map('absint', wp_unslash($_POST['mstv_allowed_users']))
             : [];
 
-        $interfaceLanguage = isset($_POST['pdm_interface_language'])
-            ? sanitize_text_field(wp_unslash($_POST['pdm_interface_language']))
+        $interfaceLanguage = isset($_POST['mstv_interface_language'])
+            ? sanitize_text_field(wp_unslash($_POST['mstv_interface_language']))
             : 'en';
 
-        $rawAllowedExtensions = isset($_POST['pdm_allowed_extensions'])
-            ? sanitize_text_field(wp_unslash($_POST['pdm_allowed_extensions']))
+        $rawAllowedExtensions = isset($_POST['mstv_allowed_extensions'])
+            ? sanitize_text_field(wp_unslash($_POST['mstv_allowed_extensions']))
             : '';
 
         $allowedExtensions = is_string($rawAllowedExtensions)
             ? $this->settings->sanitize_extensions($rawAllowedExtensions)
             : '';
 
-        $maxFileSize = isset($_POST['pdm_max_file_size'])
-            ? absint(wp_unslash($_POST['pdm_max_file_size']))
+        $maxFileSize = isset($_POST['mstv_max_file_size'])
+            ? absint(wp_unslash($_POST['mstv_max_file_size']))
             : 52428800;
 
         if ($whitelistEnabled) {
             $whitelistCheck = $this->settings->validate_whitelist_selection($userIds, get_current_user_id());
 
             if ($whitelistCheck instanceof \WP_Error) {
-                set_transient('pdm_settings_error_' . get_current_user_id(), $whitelistCheck->get_error_message(), MINUTE_IN_SECONDS);
+                set_transient('mstv_settings_error_' . get_current_user_id(), $whitelistCheck->get_error_message(), MINUTE_IN_SECONDS);
                 wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
                 exit;
             }
@@ -162,14 +162,14 @@ class PDM_Admin
 
         $this->settings->sync_capabilities_on_whitelist_change($userIds, $whitelistEnabled);
 
-        update_option('pdm_interface_language', $interfaceLanguage);
-        update_option('pdm_allowed_extensions', $allowedExtensions);
-        update_option('pdm_max_file_size', $maxFileSize);
-        update_option('pdm_pdf_preview_enabled', !empty($_POST['pdm_pdf_preview_enabled']));
-        update_option('pdm_log_enabled', !empty($_POST['pdm_log_enabled']));
-        update_option('pdm_remove_data_on_uninstall', !empty($_POST['pdm_remove_data_on_uninstall']));
+        update_option('mstv_interface_language', $interfaceLanguage);
+        update_option('mstv_allowed_extensions', $allowedExtensions);
+        update_option('mstv_max_file_size', $maxFileSize);
+        update_option('mstv_pdf_preview_enabled', !empty($_POST['mstv_pdf_preview_enabled']));
+        update_option('mstv_log_enabled', !empty($_POST['mstv_log_enabled']));
+        update_option('mstv_remove_data_on_uninstall', !empty($_POST['mstv_remove_data_on_uninstall']));
 
-        set_transient('pdm_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
+        set_transient('mstv_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
 
         wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
@@ -181,14 +181,14 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
-        $nonce = isset($_POST['pdm_cleanup_orphans_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_cleanup_orphans_nonce'])) : '';
-        if (!$nonce || !wp_verify_nonce($nonce, 'pdm_cleanup_orphans')) {
+        $nonce = isset($_POST['mstv_cleanup_orphans_nonce']) ? sanitize_text_field(wp_unslash($_POST['mstv_cleanup_orphans_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'mstv_cleanup_orphans')) {
             wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
         $deletedCount = $this->cleanup_orphaned_files();
 
-        set_transient('pdm_cleanup_orphans_' . get_current_user_id(), [
+        set_transient('mstv_cleanup_orphans_' . get_current_user_id(), [
             'deleted_count' => $deletedCount,
         ], MINUTE_IN_SECONDS);
 
@@ -202,14 +202,14 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
-        $nonce = isset($_POST['pdm_reindex_storage_nonce']) ? sanitize_text_field(wp_unslash($_POST['pdm_reindex_storage_nonce'])) : '';
-        if (!$nonce || !wp_verify_nonce($nonce, 'pdm_reindex_storage')) {
+        $nonce = isset($_POST['mstv_reindex_storage_nonce']) ? sanitize_text_field(wp_unslash($_POST['mstv_reindex_storage_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'mstv_reindex_storage')) {
             wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
         $result = $this->reindex_storage_records();
 
-        set_transient('pdm_reindex_storage_' . get_current_user_id(), $result, MINUTE_IN_SECONDS);
+        set_transient('mstv_reindex_storage_' . get_current_user_id(), $result, MINUTE_IN_SECONDS);
 
         wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
@@ -248,7 +248,7 @@ class PDM_Admin
         $this->guard_stream_request();
 
         $services = $this->build_files_services();
-        $export = new PDM_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
         $export->export_all();
     }
 
@@ -259,7 +259,7 @@ class PDM_Admin
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in guard_stream_request().
         $folderId = isset($_REQUEST['folder_id']) ? absint(wp_unslash($_REQUEST['folder_id'])) : 0;
         $services = $this->build_files_services();
-        $export = new PDM_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
         $export->export_folder($folderId > 0 ? $folderId : null);
     }
 
@@ -269,17 +269,16 @@ class PDM_Admin
 
         $folderIds = [];
 
-        $rawFolderIds = filter_input(INPUT_POST, 'folder_ids', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
-
-        if (is_array($rawFolderIds)) {
-            $folderIds = array_map(
-                'absint',
-                array_map('sanitize_text_field', $rawFolderIds)
-            );
+        // Sanitize folder_ids array with proper nonce verification already done in guard_stream_request().
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified via check_admin_referer in guard_stream_request().
+        if (isset($_POST['folder_ids']) && is_array($_POST['folder_ids'])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Each element sanitized via array_map with sanitize_text_field and absint; nonce already verified.
+            $rawFolderIds = wp_unslash($_POST['folder_ids']);
+            $folderIds = array_map('absint', array_map('sanitize_text_field', $rawFolderIds));
         }
 
         $services = $this->build_files_services();
-        $export = new PDM_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
         $export->export_selection($folderIds);
     }
 
@@ -289,26 +288,26 @@ class PDM_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'), esc_html__('Error', 'mikesoft-teamvault'), ['response' => 403]);
         }
 
-        check_admin_referer('pdm_stream_action', 'pdm_stream_nonce');
+        check_admin_referer('mstv_stream_action', 'mstv_stream_nonce');
     }
 
     private function build_files_services(): array
     {
-        $auth = new PDM_Auth($this->settings);
-        $storage = new PDM_Storage($this->settings);
+        $auth = new MSTV_Auth($this->settings);
+        $storage = new MSTV_Storage($this->settings);
         $storage->ensure_storage_directory();
-        $filesRepo = new PDM_Repository_Files();
-        $folderRepo = new PDM_Repository_Folders();
-        $logRepo = new PDM_Repository_Logs();
-        $logger = new PDM_Logger($logRepo);
+        $filesRepo = new MSTV_Repository_Files();
+        $folderRepo = new MSTV_Repository_Folders();
+        $logRepo = new MSTV_Repository_Logs();
+        $logger = new MSTV_Logger($logRepo);
 
         return [
             'auth' => $auth,
             'storage' => $storage,
             'files_repo' => $filesRepo,
             'folder_repo' => $folderRepo,
-            'download' => new PDM_Download($storage, $filesRepo, $auth, $logger),
-            'preview' => new PDM_Preview($storage, $filesRepo, $auth, $this->settings),
+            'download' => new MSTV_Download($storage, $filesRepo, $auth, $logger),
+            'preview' => new MSTV_Preview($storage, $filesRepo, $auth, $this->settings),
         ];
     }
 
@@ -359,7 +358,7 @@ class PDM_Admin
 
     private function current_user_can_manage(): bool
     {
-        $auth = new PDM_Auth($this->settings);
+        $auth = new MSTV_Auth($this->settings);
 
         return $auth->can_access();
     }

@@ -4,7 +4,7 @@ defined('ABSPATH') || exit;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom plugin tables require direct queries.
 
-class PDM_Repository_Folders
+class MSTV_Repository_Folders
 {
     private string $table;
     private ?array $allFoldersCache = null;
@@ -13,7 +13,7 @@ class PDM_Repository_Folders
     public function __construct()
     {
         global $wpdb;
-        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'pdm_folders';
+        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'mstv_folders';
     }
 
     public function find(int $id): ?object
@@ -158,7 +158,7 @@ class PDM_Repository_Folders
     public function get_breadcrumb_data(int $folderId): array
     {
         $folders = $this->find_all();
-        return PDM_Helpers::build_breadcrumb($folders, $folderId);
+        return MSTV_Helpers::build_breadcrumb($folders, $folderId);
     }
 
     private function build_tree(array $folders, ?int $parentId = null): array

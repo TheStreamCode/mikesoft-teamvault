@@ -2,23 +2,23 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Download
+class MSTV_Preview
 {
-    private PDM_Storage $storage;
-    private PDM_Repository_Files $filesRepo;
-    private PDM_Auth $auth;
-    private PDM_Logger $logger;
+    private MSTV_Storage $storage;
+    private MSTV_Repository_Files $filesRepo;
+    private MSTV_Auth $auth;
+    private MSTV_Settings $settings;
 
     public function __construct(
-        PDM_Storage $storage,
-        PDM_Repository_Files $filesRepo,
-        PDM_Auth $auth,
-        PDM_Logger $logger
+        MSTV_Storage $storage,
+        MSTV_Repository_Files $filesRepo,
+        MSTV_Auth $auth,
+        MSTV_Settings $settings
     ) {
         $this->storage = $storage;
         $this->filesRepo = $filesRepo;
         $this->auth = $auth;
-        $this->logger = $logger;
+        $this->settings = $settings;
     }
 
     public function serve(int $fileId): void
@@ -59,48 +59,51 @@ class PDM_Download
             );
         }
 
-        $this->logger->log('download', 'file', $fileId, [
-            'filename' => $files->display_name,
-        ]);
+        $mimeType = $filesystem->get_mime_type($files->relative_path);
+        $fileSize = $filesystem->get_file_size($files->relative_path);
 
-        if (class_exists('PDM_Hooks')) {
-            PDM_Hooks::do_file_downloaded($fileId, [
+        if (!$this->can_preview((object) [
+            'extension' => $files->extension,
+            'mime_type' => $mimeType ?: (string) $files->mime_type,
+        ])) {
+            wp_die(
+                esc_html__('Preview is not available for this file type.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 400]
+            );
+        }
+
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_file_previewed($fileId, [
                 'display_name' => $files->display_name,
                 'extension' => $files->extension,
                 'mime_type' => $files->mime_type,
             ]);
         }
 
-        $downloadFilename = $this->build_download_filename($files->display_name, $files->extension);
-        $mimeType = $filesystem->get_mime_type($files->relative_path);
-        $fileSize = $filesystem->get_file_size($files->relative_path);
-
-        $this->stream_file(
+        $this->stream_preview(
             $fullPath,
-            $downloadFilename,
+            $files->display_name,
             $mimeType ?: (string) $files->mime_type,
             $fileSize > 0 ? $fileSize : (int) $files->file_size
         );
     }
 
-    private function build_download_filename(string $displayName, string $extension): string
-    {
-        return PDM_Helpers::build_safe_download_filename($displayName, $extension);
-    }
-
-    private function stream_file(string $path, string $filename, string $mimeType, int $fileSize): void
+    private function stream_preview(string $path, string $filename, string $mimeType, int $fileSize): void
     {
         nocache_headers();
 
         header('Content-Type: ' . $mimeType);
-        header('Content-Disposition: attachment; filename="' . $this->sanitize_filename($filename) . '"');
         header('Content-Length: ' . $fileSize);
-        header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Content-Disposition: inline; filename="' . $this->sanitize_filename($filename) . '"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
         header('Pragma: public');
-        header('Expires: 0');
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
+
+        if ($mimeType === 'application/pdf') {
+            header('Content-Security-Policy: default-src \'self\'; style-src \'self\' \'unsafe-inline\';');
+        }
 
         if (!is_readable($path)) {
             wp_die(
@@ -120,7 +123,7 @@ class PDM_Download
             );
         }
 
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary files stream output must not be escaped.
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary preview stream output must not be escaped.
         echo $contents;
 
         exit;
@@ -128,15 +131,24 @@ class PDM_Download
 
     private function sanitize_filename(string $filename): string
     {
-        return PDM_Helpers::sanitize_archive_entry_segment($filename);
+        return MSTV_Helpers::sanitize_archive_entry_segment($filename);
     }
 
-    public function get_download_url(int $fileId): string
+    public function get_preview_url(int $fileId): string
     {
         return add_query_arg([
-            'action' => 'pdm_download_file',
+            'action' => 'mstv_preview_file',
             'file_id' => $fileId,
-            'pdm_stream_nonce' => wp_create_nonce('pdm_stream_action'),
+            'mstv_stream_nonce' => wp_create_nonce('mstv_stream_action'),
         ], admin_url('admin-post.php'));
+    }
+
+    public function can_preview(object $files): bool
+    {
+        if (strtolower((string) $files->extension) === 'pdf' && !$this->settings->is_pdf_preview_enabled()) {
+            return false;
+        }
+
+        return MSTV_Helpers::is_previewable($files->extension, $files->mime_type);
     }
 }

@@ -2,19 +2,19 @@
 
 defined('ABSPATH') || exit;
 
-class PDM_Storage
+class MSTV_Storage
 {
-    private PDM_Settings $settings;
-    private PDM_Filesystem $filesystem;
+    private MSTV_Settings $settings;
+    private MSTV_Filesystem $filesystem;
 
-    public function __construct(PDM_Settings $settings)
+    public function __construct(MSTV_Settings $settings)
     {
         $this->settings = $settings;
-        $this->filesystem = new PDM_Filesystem($settings->get_storage_path());
+        $this->filesystem = new MSTV_Filesystem($settings->get_storage_path());
         $this->ensure_storage_directory();
     }
 
-    public function get_filesystem(): PDM_Filesystem
+    public function get_filesystem(): MSTV_Filesystem
     {
         return $this->filesystem;
     }
@@ -24,7 +24,7 @@ class PDM_Storage
         return $this->filesystem->get_base_path();
     }
 
-    public function get_storage_stats(PDM_Repository_Files $filesRepo): array
+    public function get_storage_stats(MSTV_Repository_Files $filesRepo): array
     {
         $diskStats = $this->filesystem->get_disk_stats();
         $pluginUsedBytes = $filesRepo->get_total_size();
@@ -32,16 +32,16 @@ class PDM_Storage
         return [
             'disk' => $diskStats,
             'plugin_used_bytes' => $pluginUsedBytes,
-            'plugin_used_formatted' => PDM_Helpers::format_filesize($pluginUsedBytes),
-            'disk_total_formatted' => PDM_Helpers::format_filesize($diskStats['total_bytes']),
-            'disk_free_formatted' => PDM_Helpers::format_filesize($diskStats['free_bytes']),
-            'disk_used_formatted' => PDM_Helpers::format_filesize($diskStats['used_bytes']),
+            'plugin_used_formatted' => MSTV_Helpers::format_filesize($pluginUsedBytes),
+            'disk_total_formatted' => MSTV_Helpers::format_filesize($diskStats['total_bytes']),
+            'disk_free_formatted' => MSTV_Helpers::format_filesize($diskStats['free_bytes']),
+            'disk_used_formatted' => MSTV_Helpers::format_filesize($diskStats['used_bytes']),
         ];
     }
 
     public function reindex_storage_records(
-        PDM_Repository_Folders $folderRepo,
-        PDM_Repository_Files $filesRepo,
+        MSTV_Repository_Folders $folderRepo,
+        MSTV_Repository_Files $filesRepo,
         int $createdBy
     ): array {
         if (!$this->ensure_storage_directory()) {
@@ -86,7 +86,7 @@ class PDM_Storage
         return false;
     }
 
-    public function get_folder_path(?int $folderId, PDM_Repository_Folders $folderRepo): string
+    public function get_folder_path(?int $folderId, MSTV_Repository_Folders $folderRepo): string
     {
         if (null === $folderId) {
             return '';
@@ -103,7 +103,7 @@ class PDM_Storage
     public function store_uploaded_file(
         array $uploadedFile,
         ?int $folderId,
-        PDM_Repository_Folders $folderRepo
+        MSTV_Repository_Folders $folderRepo
     ): array {
         if (!$this->ensure_storage_directory()) {
             return [
@@ -113,7 +113,7 @@ class PDM_Storage
         }
 
         $extension = strtolower(pathinfo($uploadedFile['name'], PATHINFO_EXTENSION));
-        $storedName = PDM_Helpers::generate_secure_filename($extension);
+        $storedName = MSTV_Helpers::generate_secure_filename($extension);
         
         $folderPath = $this->get_folder_path($folderId, $folderRepo);
         $relativePath = $this->build_file_path($folderPath, $storedName);
@@ -153,7 +153,7 @@ class PDM_Storage
         ];
     }
 
-    public function create_folder(string $name, ?int $parentId, PDM_Repository_Folders $folderRepo): array
+    public function create_folder(string $name, ?int $parentId, MSTV_Repository_Folders $folderRepo): array
     {
         if (!$this->ensure_storage_directory()) {
             return [
@@ -162,7 +162,7 @@ class PDM_Storage
             ];
         }
 
-        $slug = PDM_Helpers::sanitize_folder_name($name);
+        $slug = MSTV_Helpers::sanitize_folder_name($name);
         
         if (empty($slug)) {
             return [
@@ -222,7 +222,7 @@ class PDM_Storage
         ];
     }
 
-    public function delete_folder(int $folderId, PDM_Repository_Folders $folderRepo, PDM_Repository_Files $filesRepo): array
+    public function delete_folder(int $folderId, MSTV_Repository_Folders $folderRepo, MSTV_Repository_Files $filesRepo): array
     {
         $folder = $folderRepo->find($folderId);
         if (!$folder) {
@@ -259,7 +259,7 @@ class PDM_Storage
         return ['success' => true];
     }
 
-    public function delete_file(int $fileId, PDM_Repository_Files $filesRepo): array
+    public function delete_file(int $fileId, MSTV_Repository_Files $filesRepo): array
     {
         $files = $filesRepo->find($fileId);
         if (!$files) {
@@ -283,8 +283,8 @@ class PDM_Storage
     public function move_file(
         int $fileId,
         ?int $targetFolderId,
-        PDM_Repository_Files $filesRepo,
-        PDM_Repository_Folders $folderRepo
+        MSTV_Repository_Files $filesRepo,
+        MSTV_Repository_Folders $folderRepo
     ): array {
         $files = $filesRepo->find($fileId);
         if (!$files) {
@@ -321,7 +321,7 @@ class PDM_Storage
     public function rename_folder(
         int $folderId,
         string $newName,
-        PDM_Repository_Folders $folderRepo
+        MSTV_Repository_Folders $folderRepo
     ): array {
         $folder = $folderRepo->find($folderId);
         if (!$folder) {
@@ -331,7 +331,7 @@ class PDM_Storage
             ];
         }
 
-        $newSlug = PDM_Helpers::sanitize_folder_name($newName);
+        $newSlug = MSTV_Helpers::sanitize_folder_name($newName);
         if (empty($newSlug)) {
             return [
                 'success' => false,
@@ -427,7 +427,7 @@ class PDM_Storage
             @file_put_contents($index, "<?php // Silence is golden");
         }
 
-        $marker = $path . '/.pdm-storage';
+        $marker = $path . '/.mstv-storage';
         if (!file_exists($marker)) {
             @file_put_contents($marker, "Mikesoft TeamVault storage marker\n");
         }
@@ -435,8 +435,8 @@ class PDM_Storage
 
     private function reindex_directory(
         string $relativePath,
-        PDM_Repository_Folders $folderRepo,
-        PDM_Repository_Files $filesRepo,
+        MSTV_Repository_Folders $folderRepo,
+        MSTV_Repository_Files $filesRepo,
         array &$folderMap,
         array &$fileMap,
         int $createdBy,
@@ -457,7 +457,7 @@ class PDM_Storage
                     $folderId = $folderRepo->create([
                         'parent_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
                         'name' => $item,
-                        'slug' => PDM_Helpers::sanitize_folder_name($item),
+                        'slug' => MSTV_Helpers::sanitize_folder_name($item),
                         'relative_path' => $itemRelativePath,
                         'created_by' => $createdBy,
                     ]);
@@ -474,7 +474,7 @@ class PDM_Storage
             }
 
             $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
-            $displayName = PDM_Helpers::resolve_file_display_name('', (string) $item);
+            $displayName = MSTV_Helpers::resolve_file_display_name('', (string) $item);
             $parentPath = $this->get_parent_relative_path($itemRelativePath);
 
             $filesRepo->create([
@@ -501,7 +501,7 @@ class PDM_Storage
             return false;
         }
 
-        return in_array($item, ['.htaccess', 'web.config', 'index.php', '.pdm-storage'], true);
+        return in_array($item, ['.htaccess', 'web.config', 'index.php', '.mstv-storage'], true);
     }
 
     private function join_relative_paths(string $base, string $item): string

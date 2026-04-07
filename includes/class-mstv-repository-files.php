@@ -4,14 +4,14 @@ defined('ABSPATH') || exit;
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Custom plugin tables require direct queries.
 
-class PDM_Repository_Files
+class MSTV_Repository_Files
 {
     private string $table;
 
     public function __construct()
     {
         global $wpdb;
-        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'pdm_files';
+        $this->table = $wpdb->get_blog_prefix(get_current_blog_id()) . 'mstv_files';
     }
 
     public function find(int $id): ?object
