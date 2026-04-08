@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.28-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.29-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -186,6 +186,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.29**
+- Enhancement: added TeamVault logo SVG to sidebar header (desktop and mobile off-canvas menu)
+- Enhancement: enlarged logo display size for better visibility
 
 **v1.1.28**
 - Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling

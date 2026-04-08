@@ -64,7 +64,7 @@
 }
 
 .pdm-sidebar-logo {
-    height: 28px;
+    height: 40px;
     width: auto;
     display: block;
 }
@@ -1174,6 +1174,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .pdm-sidebar-logo {
+        height: 32px;
     }
 
     .pdm-sidebar-search {
