@@ -63,13 +63,10 @@
     flex-shrink: 0;
 }
 
-.pdm-sidebar-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--pdm-color-text);
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.pdm-sidebar-logo {
+    height: 28px;
+    width: auto;
+    display: block;
 }
 
 .pdm-sidebar-search {

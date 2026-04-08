@@ -8,7 +8,7 @@ This repository is public for transparency and distribution, but the plugin is c
 
 - External pull requests are not part of the normal development workflow
 - GitHub Issues and Discussions are not the primary support channels
-- Support for end users should go through the official WordPress.org plugin page and/or the Mikesoft website
+- Support for end users should go through the official [WordPress.org plugin page](https://wordpress.org/plugins/mikesoft-teamvault/)
 
 You are welcome to read the code, learn from it, and reference the public releases, but please do not assume that community submissions will be reviewed or merged.
 
@@ -75,15 +75,13 @@ Keep the source checkout and the generated release folder separate. Install or s
 /**
  * Store an uploaded file in the private storage.
  *
- * @param array       $file       The uploaded file array from $_FILES.
- * @param int|null    $folderId  Optional target folder ID.
- * @param PDM_Repository_Folders $folderRepo Folder repository instance.
+ * @param array  $file       The uploaded file array from $_FILES.
+ * @param int|null $folderId Optional target folder ID.
  * @return array Result with 'success' bool and 'error' string or file data.
  */
 public function store_uploaded_file(
     array $uploadedFile,
-    ?int $folderId,
-    PDM_Repository_Folders $folderRepo
+    ?int $folderId
 ): array {
     // Implementation
 }
@@ -104,7 +102,7 @@ public function store_uploaded_file(
 
 The plugin currently uses a lightweight runtime translation layer. To add a new language:
 
-### 1. Add PHP strings (`includes/class-pdm-i18n.php`)
+### 1. Add PHP strings (`includes/class-mstv-i18n.php`)
 
 ```php
 private const ITALIAN_MAP = [
@@ -114,7 +112,7 @@ private const ITALIAN_MAP = [
 ];
 ```
 
-### 2. Add JS strings (`includes/class-pdm-assets.php`)
+### 2. Add JS strings (`includes/class-mstv-assets.php`)
 
 ```php
 'i18n' => [
@@ -166,14 +164,15 @@ mikesoft-teamvault/
 ├── LICENSE                      # GPL v2+
 ├── changelog.txt                # Extended release history
 ├── includes/                    # PHP classes
-│   ├── class-pdm-bootstrap.php     # Service container
-│   ├── class-pdm-activator.php    # Activation hooks
-│   ├── class-pdm-settings.php     # Settings management
-│   ├── class-pdm-auth.php         # Authentication
-│   ├── class-pdm-storage.php      # File storage
-│   ├── class-pdm-filesystem.php   # File operations
-│   ├── class-pdm-rest-controller.php
-│   ├── class-pdm-i18n.php        # Translations
+│   ├── class-mstv-bootstrap.php     # Service container
+│   ├── class-mstv-activator.php    # Activation hooks
+│   ├── class-mstv-settings.php     # Settings management
+│   ├── class-mstv-admin.php        # Admin handlers
+│   ├── class-mstv-auth.php         # Authentication
+│   ├── class-mstv-storage.php      # File storage
+│   ├── class-mstv-filesystem.php   # File operations
+│   ├── class-mstv-rest-controller.php
+│   ├── class-mstv-i18n.php        # Translations
 │   └── ...
 ├── languages/                   # Translation loading path
 │   └── index.php
@@ -183,12 +182,62 @@ mikesoft-teamvault/
 │   └── logs-page.php
 └── assets/                     # Frontend assets
     ├── css/admin.css
-    └── js/admin-app.js
+    ├── js/admin-app.js
+    └── logo-teamvault.svg
+```
+
+## Developer Hooks Reference
+
+### Action Hooks
+
+```php
+// After file upload
+do_action('mstv_file_uploaded', $file_id, $file_data);
+
+// After file deletion
+do_action('mstv_file_deleted', $file_id, $file_data);
+
+// After folder creation
+do_action('mstv_folder_created', $folder_id, $folder_data);
+
+// After file preview
+do_action('mstv_file_previewed', $file_id, $file_data);
+
+// After file download
+do_action('mstv_file_downloaded', $file_id, $file_data);
+
+// After ZIP export completion
+do_action('mstv_export_completed', $folder_id, $zip_path, $file_count);
+```
+
+### Filter Hooks
+
+```php
+// Modify allowed file extensions
+add_filter('mstv_allowed_extensions', function($extensions) {
+    $extensions[] = 'psd';
+    return $extensions;
+});
+
+// Modify maximum file size
+add_filter('mstv_max_file_size', function($bytes) {
+    return 100 * 1024 * 1024; // 100MB
+});
+
+// Modify storage path
+add_filter('mstv_storage_path', function($path) {
+    return '/custom/path/to/documents';
+});
+
+// Final upload validation
+add_filter('mstv_upload_validation', function($result, $file) {
+    return $result;
+}, 10, 2);
 ```
 
 ## Contact
 
-- **WordPress.org**: plugin support forum for public support after publication
+- **WordPress.org**: [plugin support forum](https://wordpress.org/plugins/mikesoft-teamvault/) for public support after publication
 - **Website**: https://mikesoft.it
 - **Email**: info@mikesoft.it
 

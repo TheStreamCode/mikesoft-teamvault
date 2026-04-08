@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.27
+Stable tag: 1.1.28
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -77,6 +77,20 @@ Yes. The plugin uses English by default and includes an Italian interface option
 4. Logs page for document activity and administrative review.
 
 == Changelog ==
+
+= 1.1.28 =
+* Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
+* Security: replaced (bool) cast with wp_validate_boolean() in REST API settings updates
+* Security: added dedicated nonce verification for export selection with explicit check
+* Compliance: added wp_unslash() to all $_POST handling and PHPCS ignore comments for wp_validate_boolean
+* Compliance: added PHPCS ignore comments for orderClause in repository files (whitelist-sanitized values)
+* Enhancement: added TeamVault logo SVG to sidebar header in file manager
+* Refactor: extracted create_protection_files() to MSTV_Helpers to eliminate code duplication
+* Refactor: simplified repository files queries with build_order_clause() method
+* Refactor: removed side-effect from MSTV_Storage constructor, explicit directory creation
+* Refactor: injected MSTV_Settings into MSTV_Logger and MSTV_Assets via constructor
+* Refactor: moved data access logic from logs-page view to admin controller
+* Compliance: eliminated redundant MSTV_Settings instantiations in view templates
 
 = 1.1.27 =
 * Security: added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)

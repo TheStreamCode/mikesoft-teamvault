@@ -4,15 +4,17 @@ defined('ABSPATH') || exit;
 
 class MSTV_Assets
 {
-    public function __construct()
+    private MSTV_Settings $settings;
+
+    public function __construct(MSTV_Settings $settings)
     {
+        $this->settings = $settings;
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
     }
 
     public function enqueue_assets(string $hook): void
     {
         $screen = get_current_screen();
-        $settings = new MSTV_Settings();
         
         if (!$screen || strpos($screen->id, 'mikesoft-teamvault') === false) {
             return;
@@ -39,9 +41,10 @@ class MSTV_Assets
             'adminUrl' => admin_url('admin.php'),
             'actionUrl' => admin_url('admin-post.php'),
             'streamNonce' => wp_create_nonce('mstv_stream_action'),
+            'exportSelectionNonce' => wp_create_nonce('mstv_export_selection'),
             'browserPerPage' => 50,
             'maxFileSize' => (int) get_option('mstv_max_file_size', 52428800),
-            'allowedExtensions' => $settings->get_allowed_extensions(),
+            'allowedExtensions' => $this->settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),
                 'confirmDeleteFolder' => __('Are you sure you want to delete this folder? It must be empty.', 'mikesoft-teamvault'),

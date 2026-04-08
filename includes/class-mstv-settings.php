@@ -55,25 +55,25 @@ class MSTV_Settings
 
         register_setting(self::OPTION_GROUP, 'mstv_log_enabled', [
             'type' => 'boolean',
-            'sanitize_callback' => [$this, 'sanitize_bool'],
+            'sanitize_callback' => 'wp_validate_boolean',
             'default' => true,
         ]);
 
         register_setting(self::OPTION_GROUP, 'mstv_pdf_preview_enabled', [
             'type' => 'boolean',
-            'sanitize_callback' => [$this, 'sanitize_bool'],
+            'sanitize_callback' => 'wp_validate_boolean',
             'default' => true,
         ]);
 
         register_setting(self::OPTION_GROUP, 'mstv_remove_data_on_uninstall', [
             'type' => 'boolean',
-            'sanitize_callback' => [$this, 'sanitize_bool'],
+            'sanitize_callback' => 'wp_validate_boolean',
             'default' => false,
         ]);
 
         register_setting(self::OPTION_GROUP, 'mstv_use_user_whitelist', [
             'type' => 'boolean',
-            'sanitize_callback' => [$this, 'sanitize_bool'],
+            'sanitize_callback' => 'wp_validate_boolean',
             'default' => false,
         ]);
 
@@ -97,11 +97,6 @@ class MSTV_Settings
         $extensions = array_values(array_unique($extensions));
 
         return implode(',', $extensions);
-    }
-
-    public function sanitize_bool($value): bool
-    {
-        return !empty($value);
     }
 
     public function sanitize_user_ids($value): array

@@ -90,12 +90,12 @@ final class MSTV_Bootstrap
         }
 
         if (!isset($this->services['logger'])) {
-            $this->services['logger'] = new MSTV_Logger();
+            $this->services['logger'] = new MSTV_Logger(null, $this->services['settings']);
         }
 
         if (is_admin()) {
             $this->services['admin'] = new MSTV_Admin($this->services['settings']);
-            $this->services['assets'] = new MSTV_Assets();
+            $this->services['assets'] = new MSTV_Assets($this->services['settings']);
         }
     }
 
@@ -124,11 +124,12 @@ final class MSTV_Bootstrap
 
         $auth = new MSTV_Auth($settings);
         $storage = new MSTV_Storage($settings);
+        $storage->ensure_storage_directory();
         $validator = new MSTV_Validator($settings);
         $folderRepo = new MSTV_Repository_Folders();
         $filesRepo = new MSTV_Repository_Files();
         $logRepo = new MSTV_Repository_Logs();
-        $logger = new MSTV_Logger($logRepo);
+        $logger = new MSTV_Logger($logRepo, $settings);
         $download = new MSTV_Download($storage, $filesRepo, $auth, $logger);
         $preview = new MSTV_Preview($storage, $filesRepo, $auth, $settings);
 
