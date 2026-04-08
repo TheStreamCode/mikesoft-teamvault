@@ -2,22 +2,6 @@
 
 defined('ABSPATH') || exit;
 
-$mstv_repo = new MSTV_Repository_Logs();
-$mstv_allowed_per_page = [25, 50, 100, 200];
-$mstv_current_page = filter_input(INPUT_GET, 'paged', FILTER_VALIDATE_INT);
-$mstv_selected_per_page = filter_input(INPUT_GET, 'per_page', FILTER_VALIDATE_INT);
-
-$mstv_current_page = $mstv_current_page ? max(1, $mstv_current_page) : 1;
-$mstv_selected_per_page = $mstv_selected_per_page ?: 50;
-
-if (!in_array($mstv_selected_per_page, $mstv_allowed_per_page, true)) {
-    $mstv_selected_per_page = 50;
-}
-
-$mstv_logs_page = $mstv_repo->find_recent_paginated($mstv_current_page, $mstv_selected_per_page);
-$mstv_logs = $mstv_logs_page['items'];
-$mstv_pagination = $mstv_logs_page['pagination'];
-
 if (!function_exists('mstv_get_action_label')) {
     function mstv_get_action_label(string $action): string
     {

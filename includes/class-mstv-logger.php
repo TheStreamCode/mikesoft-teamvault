@@ -5,10 +5,12 @@ defined('ABSPATH') || exit;
 class MSTV_Logger
 {
     private ?MSTV_Repository_Logs $repo = null;
+    private ?MSTV_Settings $settings = null;
 
-    public function __construct(?MSTV_Repository_Logs $repo = null)
+    public function __construct(?MSTV_Repository_Logs $repo = null, ?MSTV_Settings $settings = null)
     {
         $this->repo = $repo;
+        $this->settings = $settings;
     }
 
     public function log(
@@ -21,8 +23,11 @@ class MSTV_Logger
             $this->repo = new MSTV_Repository_Logs();
         }
 
-        $settings = new MSTV_Settings();
-        if (!$settings->is_log_enabled()) {
+        if (!$this->settings) {
+            $this->settings = new MSTV_Settings();
+        }
+
+        if (!$this->settings->is_log_enabled()) {
             return 0;
         }
 

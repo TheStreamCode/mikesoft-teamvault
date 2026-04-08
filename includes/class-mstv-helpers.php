@@ -166,4 +166,47 @@ class MSTV_Helpers
     {
         wp_send_json_success($data, $statusCode);
     }
+
+    public static function create_protection_files(string $path): void
+    {
+        $htaccess = $path . '/.htaccess';
+        if (!file_exists($htaccess)) {
+            $content = "# Mikesoft TeamVault - Access Denied\n";
+            $content .= "Order deny,allow\n";
+            $content .= "Deny from all\n";
+            $content .= "<IfModule mod_rewrite.c>\n";
+            $content .= "RewriteEngine On\n";
+            $content .= "RewriteRule .* - [F]\n";
+            $content .= "</IfModule>\n";
+            @file_put_contents($htaccess, $content);
+        }
+
+        $webconfig = $path . '/web.config';
+        if (!file_exists($webconfig)) {
+            $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+            $content .= "<configuration>\n";
+            $content .= "  <system.webServer>\n";
+            $content .= "    <handlers>\n";
+            $content .= "      <clear />\n";
+            $content .= "    </handlers>\n";
+            $content .= "    <httpProtocol>\n";
+            $content .= "      <customHeaders>\n";
+            $content .= "        <add name=\"X-Content-Type-Options\" value=\"nosniff\" />\n";
+            $content .= "      </customHeaders>\n";
+            $content .= "    </httpProtocol>\n";
+            $content .= "  </system.webServer>\n";
+            $content .= "</configuration>";
+            @file_put_contents($webconfig, $content);
+        }
+
+        $index = $path . '/index.php';
+        if (!file_exists($index)) {
+            @file_put_contents($index, "<?php // Silence is golden");
+        }
+
+        $marker = $path . '/.mstv-storage';
+        if (!file_exists($marker)) {
+            @file_put_contents($marker, "Mikesoft TeamVault storage marker\n");
+        }
+    }
 }

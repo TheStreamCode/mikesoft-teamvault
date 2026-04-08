@@ -2337,13 +2337,13 @@
             const actionInput = document.createElement('input');
             actionInput.type = 'hidden';
             actionInput.name = 'action';
-            actionInput.value = mode === 'selection' ? 'pdm_export_selection' : 'pdm_export_all';
+            actionInput.value = mode === 'selection' ? 'mstv_export_selection' : 'mstv_export_all';
             form.appendChild(actionInput);
 
             const nonceInput = document.createElement('input');
             nonceInput.type = 'hidden';
-            nonceInput.name = 'pdm_stream_nonce';
-            nonceInput.value = mstvConfig.streamNonce;
+            nonceInput.name = mode === 'selection' ? 'mstv_export_selection_nonce' : 'mstv_stream_nonce';
+            nonceInput.value = mode === 'selection' ? mstvConfig.exportSelectionNonce : mstvConfig.streamNonce;
             form.appendChild(nonceInput);
 
             if (mode === 'selection') {

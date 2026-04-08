@@ -23,8 +23,7 @@ class MSTV_Admin
         add_action('admin_post_mstv_preview_file', [$this, 'handle_preview_file']);
         add_action('admin_post_mstv_export_all', [$this, 'handle_export_all']);
         add_action('admin_post_mstv_export_folder', [$this, 'handle_export_folder']);
-        add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);
-    }
+        add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);    }
 
     public function add_menu(): void
     {
@@ -85,6 +84,7 @@ class MSTV_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
+        $settings = $this->settings;
         include MSTV_PLUGIN_DIR . 'admin/views/file-manager-page.php';
     }
 
@@ -94,6 +94,7 @@ class MSTV_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
+        $settings = $this->settings;
         $orphaned_files_count = $this->count_orphaned_files();
         $cleanup_result = get_transient('mstv_cleanup_orphans_' . get_current_user_id());
         $reindex_result = get_transient('mstv_reindex_storage_' . get_current_user_id());
@@ -115,6 +116,23 @@ class MSTV_Admin
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
+        $mstv_repo = new MSTV_Repository_Logs();
+        $mstv_allowed_per_page = [25, 50, 100, 200];
+        $mstv_allowed_per_page = [25, 50, 100, 200];
+        $mstv_current_page = filter_input(INPUT_GET, 'paged', FILTER_VALIDATE_INT);
+        $mstv_selected_per_page = filter_input(INPUT_GET, 'per_page', FILTER_VALIDATE_INT);
+
+        $mstv_current_page = $mstv_current_page ? max(1, $mstv_current_page) : 1;
+        $mstv_selected_per_page = $mstv_selected_per_page ?: 50;
+
+        if (!in_array($mstv_selected_per_page, $mstv_allowed_per_page, true)) {
+            $mstv_selected_per_page = 50;
+        }
+
+        $mstv_logs_page = $mstv_repo->find_recent_paginated($mstv_current_page, $mstv_selected_per_page);
+        $mstv_logs = $mstv_logs_page['items'];
+        $mstv_pagination = $mstv_logs_page['pagination'];
+
         include MSTV_PLUGIN_DIR . 'admin/views/logs-page.php';
     }
 
@@ -129,7 +147,8 @@ class MSTV_Admin
             wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
         }
 
-        $whitelistEnabled = !empty($_POST['mstv_use_user_whitelist']);
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
+        $whitelistEnabled = wp_validate_boolean(wp_unslash($_POST['mstv_use_user_whitelist'] ?? false));
         $userIds = isset($_POST['mstv_allowed_users']) && is_array($_POST['mstv_allowed_users'])
             ? array_map('absint', wp_unslash($_POST['mstv_allowed_users']))
             : [];
@@ -165,9 +184,12 @@ class MSTV_Admin
         update_option('mstv_interface_language', $interfaceLanguage);
         update_option('mstv_allowed_extensions', $allowedExtensions);
         update_option('mstv_max_file_size', $maxFileSize);
-        update_option('mstv_pdf_preview_enabled', !empty($_POST['mstv_pdf_preview_enabled']));
-        update_option('mstv_log_enabled', !empty($_POST['mstv_log_enabled']));
-        update_option('mstv_remove_data_on_uninstall', !empty($_POST['mstv_remove_data_on_uninstall']));
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
+        update_option('mstv_pdf_preview_enabled', wp_validate_boolean(wp_unslash($_POST['mstv_pdf_preview_enabled'] ?? false)));
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
+        update_option('mstv_log_enabled', wp_validate_boolean(wp_unslash($_POST['mstv_log_enabled'] ?? false)));
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
+        update_option('mstv_remove_data_on_uninstall', wp_validate_boolean(wp_unslash($_POST['mstv_remove_data_on_uninstall'] ?? false)));
 
         set_transient('mstv_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
 
@@ -265,16 +287,20 @@ class MSTV_Admin
 
     public function handle_export_selection(): void
     {
-        $this->guard_stream_request();
+        if (!$this->current_user_can_manage()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
+        }
+
+        $nonce = isset($_POST['mstv_export_selection_nonce']) ? sanitize_text_field(wp_unslash($_POST['mstv_export_selection_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'mstv_export_selection')) {
+            wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
+        }
 
         $folderIds = [];
 
-        // Sanitize folder_ids array with proper nonce verification already done in guard_stream_request().
-        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified via check_admin_referer in guard_stream_request().
         if (isset($_POST['folder_ids']) && is_array($_POST['folder_ids'])) {
-            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized,WordPress.Security.NonceVerification.Missing -- Each element sanitized via array_map with sanitize_text_field and absint; nonce already verified.
-            $rawFolderIds = wp_unslash($_POST['folder_ids']);
-            $folderIds = array_map('absint', array_map('sanitize_text_field', $rawFolderIds));
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Each element is sanitized with sanitize_text_field and then cast to int with absint.
+            $folderIds = array_map('absint', array_map('sanitize_text_field', wp_unslash($_POST['folder_ids'])));
         }
 
         $services = $this->build_files_services();
@@ -299,7 +325,7 @@ class MSTV_Admin
         $filesRepo = new MSTV_Repository_Files();
         $folderRepo = new MSTV_Repository_Folders();
         $logRepo = new MSTV_Repository_Logs();
-        $logger = new MSTV_Logger($logRepo);
+        $logger = new MSTV_Logger($logRepo, $this->settings);
 
         return [
             'auth' => $auth,

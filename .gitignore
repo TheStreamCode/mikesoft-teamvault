@@ -1,0 +1,30 @@
+# Build artifacts (generated from source)
+mikesoft-teamvault/
+mikesoft-teamvault.zip
+mikesoft-teamvault-*.zip
+
+# SVN checkout (local development)
+/mikesoft-teamvault-svn/
+
+# Dependencies
+/vendor/
+/node_modules/
+/composer.lock
+
+# Tests
+/phpunit.xml*
+/tests/
+
+# IDE
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+/debug.log
+/wp-content/debug.log

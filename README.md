@@ -1,11 +1,13 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.27-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.28-blue.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/releases)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
 
 **Secure shared document management for WordPress**, fully separated from the Media Library. Perfect for teams, partners, and clients who need a private space to collaborate on documents within your own hosting environment.
+
+> **Distribution:** The primary distribution channel is [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/). GitHub serves as a public code reference and release visibility. Stable versions are released to WordPress.org SVN.
 
 ## Features
 
@@ -66,8 +68,8 @@ git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamv
 
 ## Distribution
 
-- GitHub repository and source of truth: `https://github.com/TheStreamCode/mikesoft-teamvault`
-- WordPress.org can be used as the public distribution channel for stable releases and auto-updates
+- **WordPress.org Plugin Directory**: https://wordpress.org/plugins/mikesoft-teamvault/ — primary distribution channel for stable releases and auto-updates
+- **GitHub repository**: https://github.com/TheStreamCode/mikesoft-teamvault — public code reference and release visibility
 - Recommended workflow: develop on GitHub, release stable versions to WordPress.org SVN
 - Release packages should always install as `mikesoft-teamvault/` with `mikesoft-teamvault.php` as the main plugin file
 - Keep source and release folders separate locally: `mikesoft-teamvault-src/` for development, `mikesoft-teamvault/` only as a generated packaging artifact
@@ -81,9 +83,9 @@ git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamv
 
 ## Support
 
-- WordPress.org support forum: installation help and end-user support after directory publication
-- Mikesoft website: official product and business communication channel
-- GitHub repository: public code reference and release visibility, not a collaborative support queue
+- **WordPress.org support forum**: installation help and end-user support through the plugin directory
+- **Mikesoft website**: official product and business communication channel
+- **GitHub repository**: public code reference and release visibility, not a collaborative support queue
 
 ## Configuration
 
@@ -132,48 +134,48 @@ Configure extensions in Settings. Default: PDF, Office documents, images, archiv
 
 ```php
 // After file upload
-do_action('pdm_file_uploaded', $file_id, $file_data);
+do_action('mstv_file_uploaded', $file_id, $file_data);
 
 // After file deletion
-do_action('pdm_file_deleted', $file_id, $file_data);
+do_action('mstv_file_deleted', $file_id, $file_data);
 
 // After folder creation
-do_action('pdm_folder_created', $folder_id, $folder_data);
+do_action('mstv_folder_created', $folder_id, $folder_data);
 
 // After file preview/download/export
-do_action('pdm_file_previewed', $file_id, $file_data);
-do_action('pdm_file_downloaded', $file_id, $file_data);
-do_action('pdm_export_completed', $folder_id, $zip_path, $file_count);
+do_action('mstv_file_previewed', $file_id, $file_data);
+do_action('mstv_file_downloaded', $file_id, $file_data);
+do_action('mstv_export_completed', $folder_id, $zip_path, $file_count);
 ```
 
 ### Filters
 
 ```php
 // Modify allowed extensions
-add_filter('pdm_allowed_extensions', function($extensions) {
+add_filter('mstv_allowed_extensions', function($extensions) {
     $extensions[] = 'psd';
     return $extensions;
 });
 
 // Modify max file size
-add_filter('pdm_max_file_size', function($bytes) {
+add_filter('mstv_max_file_size', function($bytes) {
     return 100 * 1024 * 1024; // 100MB
 });
 
 // Modify storage path
-add_filter('pdm_storage_path', function($path) {
+add_filter('mstv_storage_path', function($path) {
     return '/custom/path/to/documents';
 });
 
 // Final upload validation hook
-add_filter('pdm_upload_validation', function($result, $file) {
+add_filter('mstv_upload_validation', function($result, $file) {
     return $result;
 }, 10, 2);
 ```
 
 ## Screenshots
 
-Screenshots for the public directory listing should be maintained through the WordPress.org `assets/` repository. GitHub documentation can be updated with in-repository screenshots once stable image assets are added to the project.
+Screenshots for the public directory listing are maintained through the WordPress.org `assets/` repository. See the plugin page for the official screenshot gallery.
 
 ## Contributing
 
@@ -184,6 +186,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.28**
+- Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
+- Security: replaced (bool) cast with wp_validate_boolean() in REST API settings updates
+- Security: added dedicated nonce verification for export selection with explicit check
+- Compliance: added wp_unslash() to all $_POST handling and PHPCS ignore comments for wp_validate_boolean
+- Compliance: added PHPCS ignore comments for orderClause in repository files (whitelist-sanitized values)
+- Enhancement: added TeamVault logo SVG to sidebar header in file manager
+- Refactor: extracted create_protection_files() to MSTV_Helpers to eliminate code duplication
+- Refactor: simplified repository files queries with build_order_clause() method
+- Refactor: removed side-effect from MSTV_Storage constructor, explicit directory creation
+- Refactor: injected MSTV_Settings into MSTV_Logger and MSTV_Assets via constructor
+- Refactor: moved data access logic from logs-page view to admin controller
+- Compliance: eliminated redundant MSTV_Settings instantiations in view templates
 
 **v1.1.27**
 - Security: added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)
@@ -198,31 +214,6 @@ See [changelog.txt](changelog.txt) for the complete release history and [readme.
 **v1.1.26**
 - Kept the mobile header toolbar on a single row by compacting filters and action controls
 - Reduced the mobile footprint of the Upload and Export actions for a cleaner responsive header
-
-**v1.1.25**
-- Fixed the file rename flow for legacy records with empty display names
-- Added safer display-name fallback resolution across upload, reindex, browser payload formatting, and rename flows
-
-**v1.1.24**
-- Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" for WordPress.org compliance
-- Updated textdomain to "mikesoft-teamvault"
-- Sorted folder tree alphabetically
-- Added scrollable sidebar with fixed header/footer
-- Implemented collapsible tree for deep folder hierarchies
-- Reverted mobile sidebar to off-canvas drawer pattern
-
-**v1.1.23**
-- Fixed critical CSS typos (invalid background color, font-family misspellings)
-- Added mobile backdrop overlay for sidebar/details panels with click-to-close
-- Implemented ESC key handler for closing mobile panels
-- Added body scroll lock when sidebar/details panels are open on mobile
-- Increased touch targets to minimum 44x44px for better mobile interaction
-- Improved modal responsiveness with adaptive sizing for small screens
-- Added focus-visible states for better keyboard navigation and accessibility
-- Added prefers-reduced-motion support for users who prefer reduced animations
-- Added prefers-contrast support for high contrast mode
-- Added safe area insets support for notched devices
-- Fixed file rename sanitization issue where names with dots could become empty
 
 See `changelog.txt` for the complete release history.
 

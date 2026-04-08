@@ -761,15 +761,15 @@ class MSTV_REST_Controller
         }
 
         if (isset($settings['log_enabled'])) {
-            $this->settings->update('mstv_log_enabled', (bool) $settings['log_enabled']);
+            $this->settings->update('mstv_log_enabled', wp_validate_boolean($settings['log_enabled']));
         }
 
         if (isset($settings['pdf_preview_enabled'])) {
-            $this->settings->update('mstv_pdf_preview_enabled', (bool) $settings['pdf_preview_enabled']);
+            $this->settings->update('mstv_pdf_preview_enabled', wp_validate_boolean($settings['pdf_preview_enabled']));
         }
 
         if (isset($settings['remove_data_on_uninstall'])) {
-            $this->settings->update('mstv_remove_data_on_uninstall', (bool) $settings['remove_data_on_uninstall']);
+            $this->settings->update('mstv_remove_data_on_uninstall', wp_validate_boolean($settings['remove_data_on_uninstall']));
         }
 
         return new \WP_REST_Response(['success' => true]);

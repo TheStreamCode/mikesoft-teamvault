@@ -5,7 +5,7 @@ defined('ABSPATH') || exit;
 $mstv_interface_language = (string) get_option('mstv_interface_language', 'en');
 $mstv_use_user_whitelist = (bool) get_option('mstv_use_user_whitelist', false);
 $mstv_allowed_users = get_option('mstv_allowed_users', []);
-$mstv_allowed_extensions = implode(',', (new MSTV_Settings())->get_allowed_extensions());
+$mstv_allowed_extensions = implode(',', $settings->get_allowed_extensions());
 $mstv_max_file_size = (int) get_option('mstv_max_file_size', 52428800);
 $mstv_pdf_preview_enabled = (bool) get_option('mstv_pdf_preview_enabled', true);
 $mstv_log_enabled = (bool) get_option('mstv_log_enabled', true);
@@ -22,7 +22,7 @@ if ($mstv_settings_error !== false) {
 }
 
 $mstv_allowed_users = is_array($mstv_allowed_users) ? $mstv_allowed_users : [];
-$mstv_current_storage_path = (new MSTV_Settings())->get_storage_path();
+$mstv_current_storage_path = $settings->get_storage_path();
 $mstv_roles_with_capability = MSTV_Capabilities::get_roles_with_capability();
 $mstv_max_server_upload_size = (int) wp_max_upload_size();
 ?>
