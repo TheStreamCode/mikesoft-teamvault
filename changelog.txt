@@ -1,5 +1,9 @@
 Mikesoft TeamVault Changelog
 
+1.1.29
+- Enhancement: added TeamVault logo SVG to sidebar header (desktop and mobile off-canvas menu)
+- Enhancement: enlarged logo display size for better visibility
+
 1.1.28
 - Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
 - Security: replaced (bool) cast with wp_validate_boolean() in REST API settings updates
