@@ -8,7 +8,8 @@
 
 **Secure shared document management for WordPress**, fully separated from the Media Library. Perfect for teams, partners, and clients who need a private space to collaborate on documents within your own hosting environment.
 
-> **Distribution:** The primary distribution channel is [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/). GitHub serves as a public code reference and release visibility. Stable versions are released to WordPress.org SVN.
+> **Distribution:** The primary distribution channel is [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/).  
+> **GitHub Repository:** This repository serves as a public code portfolio and reference only. The plugin is already published on WordPress.org — do not attempt to submit it to WordPress.org yourself. Stable releases are maintained by the author through WordPress.org SVN.
 
 ## Features
 
@@ -79,7 +80,8 @@ git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamv
 
 ## Repository Policy
 
-- This repository is public for transparency, code visibility, and release distribution
+- This repository is public for transparency, code visibility, and portfolio purposes
+- **Important:** This plugin is already published on WordPress.org. Do not attempt to submit it to WordPress.org yourself
 - The plugin is maintained internally by Mikesoft; external contributions are not part of the current development workflow
 - Pull requests may be closed without review if they are outside the planned roadmap or maintenance priorities
 - GitHub is not the primary support channel for end users
