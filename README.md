@@ -4,6 +4,7 @@
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
+[![WordPress.org](https://img.shields.io/badge/WordPress.org-Published-green.svg)](https://wordpress.org/plugins/mikesoft-teamvault/)
 
 **Secure shared document management for WordPress**, fully separated from the Media Library. Perfect for teams, partners, and clients who need a private space to collaborate on documents within your own hosting environment.
 
@@ -38,13 +39,15 @@
 
 ## Installation
 
-Recommended local layout:
+### From WordPress.org (Recommended)
 
-- source checkout: `mikesoft-teamvault-src/`
-- generated release folder: `mikesoft-teamvault/`
-- final package: `mikesoft-teamvault.zip`
+The easiest way to install:
 
-The supported plugin release slug and installed folder name are always `mikesoft-teamvault`.
+1. Go to **Plugins > Add New** in your WordPress admin
+2. Search for "Mikesoft TeamVault"
+3. Click **Install Now**
+4. Activate the plugin
+5. Configure in **TeamVault > Settings**
 
 ### Manual Installation
 
