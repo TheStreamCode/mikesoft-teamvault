@@ -8,9 +8,6 @@
 
 **Secure shared document management for WordPress**, fully separated from the Media Library. Perfect for teams, partners, and clients who need a private space to collaborate on documents within your own hosting environment.
 
-> **Distribution:** The primary distribution channel is [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/).  
-> **GitHub Repository:** This repository serves as a public code portfolio and reference only. The plugin is already published on WordPress.org — do not attempt to submit it to WordPress.org yourself. Stable releases are maintained by the author through WordPress.org SVN.
-
 ## Features
 
 - **Shared Team Storage** - Files stored in protected directory, accessible only to authorized users
@@ -70,27 +67,13 @@ For local plugin development outside a live WordPress install, a separate source
 git clone https://github.com/TheStreamCode/mikesoft-teamvault.git mikesoft-teamvault-src
 ```
 
-## Distribution
+## Repository & Support
 
-- **WordPress.org Plugin Directory**: https://wordpress.org/plugins/mikesoft-teamvault/ — primary distribution channel for stable releases and auto-updates
-- **GitHub repository**: https://github.com/TheStreamCode/mikesoft-teamvault — public code reference and release visibility
-- Recommended workflow: develop on GitHub, release stable versions to WordPress.org SVN
-- Release packages should always install as `mikesoft-teamvault/` with `mikesoft-teamvault.php` as the main plugin file
-- Keep source and release folders separate locally: `mikesoft-teamvault-src/` for development, `mikesoft-teamvault/` only as a generated packaging artifact
+This repository serves as a public code portfolio and reference for the Mikesoft TeamVault plugin.
 
-## Repository Policy
-
-- This repository is public for transparency, code visibility, and portfolio purposes
-- **Important:** This plugin is already published on WordPress.org. Do not attempt to submit it to WordPress.org yourself
-- The plugin is maintained internally by Mikesoft; external contributions are not part of the current development workflow
-- Pull requests may be closed without review if they are outside the planned roadmap or maintenance priorities
-- GitHub is not the primary support channel for end users
-
-## Support
-
-- **WordPress.org support forum**: installation help and end-user support through the plugin directory
-- **Mikesoft website**: official product and business communication channel
-- **GitHub repository**: public code reference and release visibility, not a collaborative support queue
+- **Installation & Updates:** The official distribution channel is the [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/). Please install the plugin from there to ensure you receive automatic updates.
+- **Support:** For end-user support, bug reports, and feature requests, please use the [official WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
+- **Contributions:** This plugin is maintained internally by Mikesoft. While the source code is public for transparency, we do not accept external pull requests or issues on GitHub.
 
 ## Configuration
 
