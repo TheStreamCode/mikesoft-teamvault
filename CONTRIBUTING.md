@@ -4,13 +4,13 @@ Thank you for your interest in contributing!
 
 ## Contribution Policy
 
-This repository is public for transparency and distribution, but the plugin is currently maintained internally.
+This repository is a read-only public mirror used for portfolio and transparency purposes. The plugin is maintained internally by Mikesoft.
 
-- External pull requests are not part of the normal development workflow
-- GitHub Issues and Discussions are not the primary support channels
-- Support for end users should go through the official [WordPress.org plugin page](https://wordpress.org/plugins/mikesoft-teamvault/)
+- **Pull Requests:** We do not accept external pull requests. Any PR submitted will be automatically closed.
+- **Issues:** GitHub Issues are disabled or unmonitored. 
+- **Support:** For bug reports or support, please use the [official WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-You are welcome to read the code, learn from it, and reference the public releases, but please do not assume that community submissions will be reviewed or merged.
+If you are setting up the project locally for review or learning purposes, please follow the internal development setup below.
 
 ## Internal Development Setup
 
