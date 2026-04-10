@@ -149,9 +149,14 @@ class MSTV_Admin
 
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
         $whitelistEnabled = wp_validate_boolean(wp_unslash($_POST['mstv_use_user_whitelist'] ?? false));
-        $userIds = isset($_POST['mstv_allowed_users']) && is_array($_POST['mstv_allowed_users'])
-            ? array_map('absint', wp_unslash($_POST['mstv_allowed_users']))
-            : [];
+        $rawAllowedUsers = [];
+        if (isset($_POST['mstv_allowed_users']) && is_array($_POST['mstv_allowed_users'])) {
+            $rawAllowedUsers = $_POST['mstv_allowed_users'];
+        } elseif (isset($_POST['pdm_allowed_users']) && is_array($_POST['pdm_allowed_users'])) {
+            $rawAllowedUsers = $_POST['pdm_allowed_users'];
+        }
+
+        $userIds = array_map('absint', wp_unslash($rawAllowedUsers));
 
         $interfaceLanguage = isset($_POST['mstv_interface_language'])
             ? sanitize_text_field(wp_unslash($_POST['mstv_interface_language']))

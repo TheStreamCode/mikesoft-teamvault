@@ -2094,7 +2094,7 @@
         },
 
         initSettingsPage() {
-            const whitelistCheckbox = document.getElementById('pdm_use_user_whitelist');
+            const whitelistCheckbox = document.getElementById('mstv_use_user_whitelist');
             const whitelistField = document.querySelector('.pdm-user-whitelist-field');
             const userSearch = document.getElementById('pdm-user-search');
             const userResults = document.getElementById('pdm-user-results');
@@ -2197,7 +2197,7 @@
                         <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>
                 </button>
-                <input type="hidden" name="pdm_allowed_users[]" value="${userId}">
+                <input type="hidden" name="mstv_allowed_users[]" value="${userId}">
             `;
 
             allowedUsersContainer.appendChild(tag);

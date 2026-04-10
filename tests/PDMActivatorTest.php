@@ -9,8 +9,8 @@ final class PDMActivatorTest extends TestCase
     public function test_normalize_logs_table_name_accepts_expected_table_only(): void
     {
         self::assertSame(
-            'wp_7_pdm_logs',
-            PDM_Activator::normalize_logs_table_name_for_upgrade('wp_7_pdm_logs', 'wp_7_')
+            'wp_7_mstv_logs',
+            MSTV_Activator::normalize_logs_table_name_for_upgrade('wp_7_mstv_logs', 'wp_7_')
         );
     }
 
@@ -18,7 +18,7 @@ final class PDMActivatorTest extends TestCase
     {
         self::assertSame(
             '',
-            PDM_Activator::normalize_logs_table_name_for_upgrade('wp_7_pdm_logs;DROP TABLE wp_users', 'wp_7_')
+            MSTV_Activator::normalize_logs_table_name_for_upgrade('wp_7_mstv_logs;DROP TABLE wp_users', 'wp_7_')
         );
     }
 
@@ -39,12 +39,12 @@ final class PDMActivatorTest extends TestCase
             }
         };
 
-        $result = PDM_Activator::migrate_legacy_log_target_types($wpdb, 'wp_7_pdm_logs');
+        $result = MSTV_Activator::migrate_legacy_log_target_types($wpdb, 'wp_7_mstv_logs');
 
         self::assertTrue($result);
         self::assertSame([
             [
-                'table' => 'wp_7_pdm_logs',
+                'table' => 'wp_7_mstv_logs',
                 'data' => ['target_type' => 'file'],
                 'where' => ['target_type' => 'files'],
             ],

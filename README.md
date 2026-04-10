@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.29-blue.svg)](https://wordpress.org/plugins/mikesoft-teamvault/)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.30-blue.svg)](https://wordpress.org/plugins/mikesoft-teamvault/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -180,6 +180,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.30 (2026-04-10)**
+- Fixed the User Access whitelist checkbox wiring so the authorized users selector opens correctly
+- Fixed selected whitelist users saving by aligning hidden field names with the backend settings handler
+- Added a temporary compatibility fallback for older cached admin JS that may still submit legacy field names
+- Completed staging validation for whitelist permissions, rename/move flows, maintenance tools, and selected-folder export
 
 **v1.1.29**
 - Enhancement: added TeamVault logo SVG to sidebar header (desktop and mobile off-canvas menu)

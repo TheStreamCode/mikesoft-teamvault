@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, file-manager, privacy
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.29
+Stable tag: 1.1.30
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,12 @@ Yes. The plugin uses English by default and includes an Italian interface option
 = 1.1.29 =
 * Added the TeamVault logo to the admin sidebar header on desktop and mobile
 * Finalized the first WordPress.org release packaging and distribution flow
+
+= 1.1.30 =
+* Fixed User Access whitelist toggle wiring so the Authorized users selector appears correctly
+* Fixed whitelist selected-user save flow by aligning hidden field names with backend processing
+* Added compatibility fallback for legacy cached admin JS posting `pdm_allowed_users[]`
+* Completed staging QA validation across whitelist access control, file operations, maintenance actions, export, and uninstall setting persistence
 
 = 1.1.28 =
 * Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
@@ -237,6 +243,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.30 =
+
+Recommended bugfix update for User Access whitelist selection and persistence.
 
 = 1.1.29 =
 
