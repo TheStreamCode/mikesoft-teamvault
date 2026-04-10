@@ -75,6 +75,12 @@ This repository serves as a public code portfolio and reference for the Mikesoft
 - **Support:** For end-user support, bug reports, and feature requests, please use the [official WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 - **Contributions:** This plugin is maintained internally by Mikesoft. While the source code is public for transparency, we do not accept external pull requests or issues on GitHub.
 
+## Release Workflow
+
+- Stable releases are built from `mikesoft-teamvault-src/` and published to WordPress.org via SVN.
+- WordPress.org directory assets live in `.wordpress-org/assets/` and are deployed to the repository-level `/assets/` folder, not inside the plugin package.
+- Development-only files such as `.git/`, `.worktrees/`, `tests/`, `composer.lock`, and GitHub-only documentation are intentionally excluded from SVN releases.
+
 ## Configuration
 
 ### Storage Directory

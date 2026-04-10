@@ -78,6 +78,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 
 == Changelog ==
 
+= 1.1.29 =
+* Added the TeamVault logo to the admin sidebar header on desktop and mobile
+* Finalized the first WordPress.org release packaging and distribution flow
+
 = 1.1.28 =
 * Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
 * Security: replaced (bool) cast with wp_validate_boolean() in REST API settings updates
@@ -233,6 +237,10 @@ Yes. The plugin uses English by default and includes an Italian interface option
 For older release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.29 =
+
+Initial public WordPress.org release. Installs and updates should now come directly from the plugin directory.
 
 = 1.1.26 =
 
