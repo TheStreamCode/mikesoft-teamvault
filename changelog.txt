@@ -1,5 +1,9 @@
 Mikesoft TeamVault Changelog
 
+1.1.31 - 2026-04-10
+- Security/compliance: normalized whitelist POST arrays with immediate `wp_unslash()` + `absint()` casting for both `mstv_allowed_users` and legacy `pdm_allowed_users`
+- Validation: re-ran Plugin Check and confirmed no remaining warnings for whitelist input sanitization
+
 1.1.30 - 2026-04-10
 - Fixed whitelist settings toggle wiring so the authorized users selector appears when "Limit access to specific users" is enabled
 - Fixed whitelist user tag submission field names so selected users are correctly saved
