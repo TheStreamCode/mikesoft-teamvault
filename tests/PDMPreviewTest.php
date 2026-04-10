@@ -13,13 +13,13 @@ final class PDMPreviewTest extends TestCase
 
     public function test_can_preview_blocks_pdf_when_pdf_preview_setting_is_disabled(): void
     {
-        update_option('pdm_pdf_preview_enabled', false);
+        update_option('mstv_pdf_preview_enabled', false);
 
-        $settings = new PDM_Settings();
-        $storage = $this->getMockBuilder(PDM_Storage::class)->disableOriginalConstructor()->getMock();
-        $filesRepo = $this->getMockBuilder(PDM_Repository_Files::class)->disableOriginalConstructor()->getMock();
-        $auth = $this->createMock(PDM_Auth::class);
-        $preview = new PDM_Preview($storage, $filesRepo, $auth, $settings);
+        $settings = new MSTV_Settings();
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $auth = $this->createMock(MSTV_Auth::class);
+        $preview = new MSTV_Preview($storage, $filesRepo, $auth, $settings);
 
         $file = (object) [
             'extension' => 'pdf',

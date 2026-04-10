@@ -148,7 +148,7 @@ git commit -m "Refactor: description of the refactoring"
 
 ### WordPress.org Release Deploy
 
-For WordPress.org releases, use the root-level `deploy-to-wordpress.ps1` script from the workspace root instead of copying files manually.
+For WordPress.org releases, use the workspace script `deployment/deploy-to-wordpress.ps1` instead of copying files manually.
 
 - Source of truth: `mikesoft-teamvault-src/`
 - WordPress.org assets: `.wordpress-org/assets/`
@@ -157,7 +157,7 @@ For WordPress.org releases, use the root-level `deploy-to-wordpress.ps1` script 
 Example:
 
 ```powershell
-.\deploy-to-wordpress.ps1 -Version 1.1.29 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 1.1.30 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
 ```
 
 The deploy script builds a clean release payload, excludes development-only files, syncs `trunk/` plus `tags/<version>/`, and uploads WordPress.org assets separately.

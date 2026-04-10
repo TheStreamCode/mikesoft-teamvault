@@ -43,18 +43,18 @@ final class PDMRepositoryFilesTest extends TestCase
 
         $GLOBALS['wpdb'] = $wpdb;
 
-        $repo = new PDM_Repository_Files();
+        $repo = new MSTV_Repository_Files();
         $updated = $repo->update_relative_paths_for_folder_rename('clients/acme', 'clients/team-acme');
 
         self::assertSame(2, $updated);
         self::assertSame([
             [
-                'table' => 'wp_pdm_files',
+                'table' => 'wp_mstv_files',
                 'data' => ['relative_path' => 'clients/team-acme/quote.pdf'],
                 'where' => ['id' => 10],
             ],
             [
-                'table' => 'wp_pdm_files',
+                'table' => 'wp_mstv_files',
                 'data' => ['relative_path' => 'clients/team-acme/contracts/master.pdf'],
                 'where' => ['id' => 11],
             ],

@@ -274,17 +274,17 @@ class FakePDMUser
     }
 }
 
-require_once __DIR__ . '/../includes/class-pdm-capabilities.php';
-require_once __DIR__ . '/../includes/class-pdm-settings.php';
-require_once __DIR__ . '/../includes/class-pdm-auth.php';
-require_once __DIR__ . '/../includes/class-pdm-helpers.php';
-require_once __DIR__ . '/../includes/class-pdm-filesystem.php';
-require_once __DIR__ . '/../includes/class-pdm-storage.php';
-require_once __DIR__ . '/../includes/class-pdm-validator.php';
-require_once __DIR__ . '/../includes/class-pdm-repository-files.php';
-require_once __DIR__ . '/../includes/class-pdm-repository-folders.php';
-require_once __DIR__ . '/../includes/class-pdm-download.php';
-require_once __DIR__ . '/../includes/class-pdm-preview.php';
-require_once __DIR__ . '/../includes/class-pdm-rest-controller.php';
-require_once __DIR__ . '/../includes/class-pdm-logger.php';
-require_once __DIR__ . '/../includes/class-pdm-activator.php';
+require_once __DIR__ . '/../includes/class-mstv-capabilities.php';
+require_once __DIR__ . '/../includes/class-mstv-settings.php';
+require_once __DIR__ . '/../includes/class-mstv-auth.php';
+require_once __DIR__ . '/../includes/class-mstv-helpers.php';
+require_once __DIR__ . '/../includes/class-mstv-filesystem.php';
+require_once __DIR__ . '/../includes/class-mstv-storage.php';
+require_once __DIR__ . '/../includes/class-mstv-validator.php';
+require_once __DIR__ . '/../includes/class-mstv-repository-files.php';
+require_once __DIR__ . '/../includes/class-mstv-repository-folders.php';
+require_once __DIR__ . '/../includes/class-mstv-download.php';
+require_once __DIR__ . '/../includes/class-mstv-preview.php';
+require_once __DIR__ . '/../includes/class-mstv-rest-controller.php';
+require_once __DIR__ . '/../includes/class-mstv-logger.php';
+require_once __DIR__ . '/../includes/class-mstv-activator.php';

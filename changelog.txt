@@ -1,5 +1,11 @@
 Mikesoft TeamVault Changelog
 
+1.1.30 - 2026-04-10
+- Fixed whitelist settings toggle wiring so the authorized users selector appears when "Limit access to specific users" is enabled
+- Fixed whitelist user tag submission field names so selected users are correctly saved
+- Added compatibility fallback in settings save handling for legacy `pdm_allowed_users[]` submissions
+- Completed end-to-end staging QA for whitelist access, file operations, maintenance actions, export flows, and uninstall setting persistence
+
 1.1.29 - 2025-04-08
 - Enhancement: added TeamVault logo SVG to sidebar header (desktop and mobile off-canvas menu)
 - Enhancement: enlarged logo display size for better visibility

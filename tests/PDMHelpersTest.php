@@ -10,7 +10,7 @@ final class PDMHelpersTest extends TestCase
     {
         self::assertSame(
             'Quarterly-Report',
-            PDM_Helpers::sanitize_archive_entry_segment("../Quarterly\\Report\r\n")
+            MSTV_Helpers::sanitize_archive_entry_segment("../Quarterly\\Report\r\n")
         );
     }
 
@@ -18,7 +18,7 @@ final class PDMHelpersTest extends TestCase
     {
         self::assertSame(
             'budget-summary.pdf',
-            PDM_Helpers::build_safe_download_filename('budget/summary', 'pdf')
+            MSTV_Helpers::build_safe_download_filename('budget/summary', 'pdf')
         );
     }
 
@@ -26,7 +26,7 @@ final class PDMHelpersTest extends TestCase
     {
         self::assertSame(
             'photo_01',
-            PDM_Helpers::resolve_file_display_name('', 'photo_01.jpg')
+            MSTV_Helpers::resolve_file_display_name('', 'photo_01.jpg')
         );
     }
 
@@ -34,7 +34,7 @@ final class PDMHelpersTest extends TestCase
     {
         self::assertSame(
             'immagine',
-            PDM_Helpers::resolve_file_display_name('immagine', 'photo_01.jpg')
+            MSTV_Helpers::resolve_file_display_name('immagine', 'photo_01.jpg')
         );
     }
 }
