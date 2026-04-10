@@ -146,6 +146,22 @@ git commit -m "Refactor: description of the refactoring"
 
 6. Push your branch to the canonical repository
 
+### WordPress.org Release Deploy
+
+For WordPress.org releases, use the root-level `deploy-to-wordpress.ps1` script from the workspace root instead of copying files manually.
+
+- Source of truth: `mikesoft-teamvault-src/`
+- WordPress.org assets: `.wordpress-org/assets/`
+- SVN staging checkout: generated locally by the deploy script
+
+Example:
+
+```powershell
+.\deploy-to-wordpress.ps1 -Version 1.1.29 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+```
+
+The deploy script builds a clean release payload, excludes development-only files, syncs `trunk/` plus `tags/<version>/`, and uploads WordPress.org assets separately.
+
 ### Commit Guidelines
 
 - One feature or fix per commit/branch when practical
@@ -163,6 +179,12 @@ mikesoft-teamvault/
 ├── CONTRIBUTING.md             # This file
 ├── LICENSE                      # GPL v2+
 ├── changelog.txt                # Extended release history
+├── .wordpress-org/              # WordPress.org-specific assets
+│   └── assets/
+│       ├── banner-772x250.png
+│       ├── icon-128x128.png
+│       ├── icon-256x256.png
+│       └── icon.svg
 ├── includes/                    # PHP classes
 │   ├── class-mstv-bootstrap.php     # Service container
 │   ├── class-mstv-activator.php    # Activation hooks
