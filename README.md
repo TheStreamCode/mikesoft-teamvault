@@ -1,6 +1,6 @@
 # Mikesoft TeamVault
 
-[![Plugin Version](https://img.shields.io/badge/version-1.1.30-blue.svg)](https://wordpress.org/plugins/mikesoft-teamvault/)
+[![Plugin Version](https://img.shields.io/badge/version-1.1.31-blue.svg)](https://wordpress.org/plugins/mikesoft-teamvault/)
 [![License](https://img.shields.io/badge/license-GPL%20v2%2B-green.svg)](LICENSE)
 [![WordPress](https://img.shields.io/badge/WordPress-6.9-blue.svg)](https://wordpress.org)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple.svg)](https://php.net)
@@ -180,6 +180,10 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 See [changelog.txt](changelog.txt) for the complete release history and [readme.txt](readme.txt) for the WordPress.org release summary.
 
 ### Recent Changes
+
+**v1.1.31 (2026-04-10)**
+- Security/compliance: normalized whitelist POST arrays with immediate `wp_unslash()` + `absint()` casting for both `mstv_allowed_users` and legacy `pdm_allowed_users`
+- Validation: re-ran Plugin Check and confirmed no remaining warnings for whitelist input sanitization
 
 **v1.1.30 (2026-04-10)**
 - Fixed the User Access whitelist checkbox wiring so the authorized users selector opens correctly
