@@ -1,19 +1,18 @@
 Mikesoft TeamVault Changelog
 
 1.1.31 - 2026-04-10
-- Security/compliance: normalized whitelist POST arrays with immediate `wp_unslash()` + `absint()` casting for both `mstv_allowed_users` and legacy `pdm_allowed_users`
-- Validation: re-ran Plugin Check and confirmed no remaining warnings for whitelist input sanitization
+- Improved whitelist settings handling so allowed users are processed more safely during save operations
+- Finalized the maintenance release for the latest WordPress.org package
 
 1.1.30 - 2026-04-10
-- Fixed whitelist settings toggle wiring so the authorized users selector appears when "Limit access to specific users" is enabled
-- Fixed whitelist user tag submission field names so selected users are correctly saved
-- Added compatibility fallback in settings save handling for legacy `pdm_allowed_users[]` submissions
-- Completed end-to-end staging QA for whitelist access, file operations, maintenance actions, export flows, and uninstall setting persistence
+- Fixed whitelist settings wiring so the authorized users selector appears when user-specific access is enabled
+- Fixed persistence of selected whitelist users during settings save
+- Added temporary compatibility handling for legacy cached admin submissions using `pdm_allowed_users[]`
 
 1.1.29 - 2025-04-08
-- Enhancement: added TeamVault logo SVG to sidebar header (desktop and mobile off-canvas menu)
-- Enhancement: enlarged logo display size for better visibility
-- Published: plugin approved and published on WordPress.org Plugin Directory
+- Added the TeamVault logo to the admin sidebar header on desktop and mobile
+- Increased logo size for better visibility in the file manager
+- Published the plugin on the WordPress.org Plugin Directory
 
 1.1.28
 - Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
