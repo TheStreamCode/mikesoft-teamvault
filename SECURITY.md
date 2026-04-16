@@ -2,30 +2,35 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.1.28  | :white_check_mark: |
-| < 1.1.28 | :x:              |
+Security fixes are provided for the latest public release published on WordPress.org.
 
-## Reporting Security Issues
+If you are running an older version, update to the current release before requesting support or reporting a vulnerability.
 
-Since this plugin is distributed through the [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/), security issues should be reported through the official channels:
+## Reporting a Vulnerability
 
-**WordPress.org Support Forum**: https://wordpress.org/support/plugin/mikesoft-teamvault/
+Do not disclose security issues in public support forums or public issue trackers.
 
-For urgent security concerns or private disclosures, contact the maintainer directly through the [Mikesoft website](https://mikesoft.it).
+Report vulnerabilities privately to:
 
-## Security Practices
+- `info@mikesoft.it`
 
-This plugin follows WordPress security best practices:
+Include the following details when possible:
 
-- **Capability-based access control** - All operations require the `manage_private_documents` capability
-- **Nonce verification** - All form submissions and AJAX requests verify WordPress nonces
-- **Input sanitization** - All user input is sanitized before processing
-- **Output escaping** - All output is escaped appropriately
-- **Prepared SQL queries** - Database operations use `$wpdb->prepare()` to prevent SQL injection
-- **Protected storage** - Files are stored outside the web root and served through authenticated handlers only
+- affected plugin version
+- WordPress version
+- PHP version
+- clear reproduction steps
+- proof of concept or request details
+- impact assessment
 
-## Scope
+## Response Expectations
 
-This security policy applies to the Mikesoft TeamVault plugin code only. The private storage directory and any custom storage paths configured by administrators are outside the scope of this policy and should be protected at the server level.
+- Reports are reviewed privately.
+- Confirmed issues are prioritized for a maintenance release.
+- Public disclosure should wait until a fix is available to users.
+
+## Security Scope
+
+This policy applies to the Mikesoft TeamVault plugin code distributed through WordPress.org.
+
+Server configuration, third-party plugins, themes, and custom hosting environments remain outside the plugin's direct control and should be reviewed separately.
