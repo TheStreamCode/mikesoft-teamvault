@@ -15,6 +15,7 @@ Before releasing, confirm these values match:
 - plugin header version in `mikesoft-teamvault.php`
 - `MSTV_VERSION` constant in `mikesoft-teamvault.php`
 - `Stable tag` in `readme.txt`
+- current release entry in `changelog.txt`
 
 The deploy script already validates plugin version and stable tag alignment.
 
@@ -32,7 +33,7 @@ The deploy script already validates plugin version and stable tag alignment.
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 1.1.31 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 1.1.32 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
 ```
 
 Useful switches:
@@ -46,7 +47,7 @@ The deployment script:
 
 - builds a clean release payload from `mikesoft-teamvault-src/`
 - excludes development and repository-only files
-- stages `trunk/` and `tags/<version>/` in the SVN checkout
+- stages `trunk/` and `tags/<version>` in the SVN checkout
 - syncs WordPress.org assets separately
 - refuses to overwrite an already published tag
 
@@ -59,5 +60,13 @@ Repository-only material must stay out of the WordPress.org package, including:
 - `SECURITY.md`
 - `docs/`
 - tests, vendor source control artifacts, and other development-only files
+
+## Branding Asset Rules
+
+- Keep `.wordpress-org/assets/icon-256x256.png` as the primary full-color icon for the WordPress.org listing.
+- Keep `.wordpress-org/assets/icon.svg` aligned with the public listing brand.
+- Keep `assets/logo-teamvault.svg` reserved for the plugin admin experience.
+
+The deploy script copies runtime plugin files and WordPress.org listing assets from separate source locations.
 
 In the full maintainer workspace, the filter logic lives in the sibling `deployment/DeployWordPressOrg.psm1` module and is covered by `deployment/DeployWordPressOrg.Tests.ps1`.

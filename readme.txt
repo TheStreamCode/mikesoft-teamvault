@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.31
+Stable tag: 1.1.32
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +63,9 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 1.1.32 =
+* Clarified release metadata and WordPress.org asset documentation for the latest maintenance release.
+
 = 1.1.31 =
 * Improved whitelist input handling for safer user access settings processing.
 
@@ -76,6 +79,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.32 =
+
+Maintenance release that aligns version metadata and WordPress.org asset documentation.
 
 = 1.1.31 =
 

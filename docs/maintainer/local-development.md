@@ -8,7 +8,7 @@ This guide describes the local repository workflow for maintaining Mikesoft Team
 
 - WordPress local environment
 - PHP 8.0 or later
-- Composer dependencies installed
+- Composer dependencies installed from the tracked lockfile
 - Git
 - PowerShell on Windows for the release tooling in this repository
 
@@ -78,3 +78,9 @@ Before release, validate at least:
 - `readme.txt` is WordPress.org-facing.
 - `changelog.txt` contains the full release history.
 - `docs/` contains maintainer and developer notes and must stay out of the plugin package.
+
+## Branding Asset Roles
+
+- `assets/logo-teamvault.svg` is the runtime logo shown inside the plugin admin UI.
+- `.wordpress-org/assets/icon-256x256.png` is the full-color directory icon for WordPress.org.
+- `.wordpress-org/assets/icon.svg` is the scalable WordPress.org companion asset.
