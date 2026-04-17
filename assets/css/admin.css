@@ -1935,6 +1935,7 @@
 .pdm-storage-bar {
     width: 100%;
     height: 8px;
+    display: flex;
     background: var(--pdm-color-bg);
     border-radius: 4px;
     overflow: hidden;
@@ -1943,17 +1944,53 @@
 
 .pdm-storage-bar-fill {
     height: 100%;
-    background: var(--pdm-color-primary);
-    border-radius: 4px;
     transition: width 0.3s ease;
 }
 
-.pdm-storage-bar-fill--warning {
+.pdm-storage-bar-fill--teamvault {
+    background: var(--pdm-color-primary);
+}
+
+.pdm-storage-bar-fill--other {
     background: var(--pdm-color-warning);
 }
 
-.pdm-storage-bar-fill--danger {
-    background: var(--pdm-color-danger);
+.pdm-storage-bar-fill--free {
+    background: var(--pdm-color-success);
+}
+
+.pdm-storage-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--pdm-color-text-muted);
+}
+
+.pdm-storage-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.pdm-storage-legend-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.pdm-storage-legend-swatch--teamvault {
+    background: var(--pdm-color-primary);
+}
+
+.pdm-storage-legend-swatch--other {
+    background: var(--pdm-color-warning);
+}
+
+.pdm-storage-legend-swatch--free {
+    background: var(--pdm-color-success);
 }
 
 .pdm-storage-stats {
@@ -1968,6 +2005,7 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    text-align: center;
 }
 
 .pdm-storage-stat-value {

@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.32
+Stable tag: 1.1.33
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,7 @@ Key features:
 * ZIP export for folders or the full library
 * Activity logging for uploads, downloads, moves, and deletions
 * Maintenance tools for orphan cleanup and storage reindex
+* Storage widget with separate TeamVault usage, other disk usage, and available capacity
 * English interface with optional Italian translation
 
 == Installation ==
@@ -57,11 +58,19 @@ The database records can remain visible even if the original binaries are missin
 
 Yes. Inline PDF preview can be enabled or disabled in the settings.
 
+= What does the storage widget show? =
+
+The sidebar widget shows the total capacity of the storage volume, the currently available space, and the portion used by TeamVault files. Any remaining used space belongs to WordPress or other server content on the same volume.
+
 = What happens on uninstall? =
 
 By default, TeamVault keeps its data for safety. You can enable full data removal before uninstall if you want the plugin to delete its files, folders, logs, and settings.
 
 == Changelog ==
+
+= 1.1.33 =
+* Clarified storage usage in the sidebar with separate TeamVault, available, and total capacity metrics.
+* Fixed TeamVault storage totals so they reflect the real filesystem size of stored files.
 
 = 1.1.32 =
 * Clarified release metadata and WordPress.org asset documentation for the latest maintenance release.
@@ -79,6 +88,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.33 =
+
+Recommended update for clearer storage reporting and more accurate TeamVault usage totals.
 
 = 1.1.32 =
 

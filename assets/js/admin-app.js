@@ -1827,35 +1827,47 @@
             if (!stats || !stats.disk) return;
 
             const disk = stats.disk;
-            const barFill = document.getElementById('pdm-storage-bar-fill');
-            const usedEl = document.getElementById('pdm-storage-used');
+            const teamVaultBar = document.getElementById('pdm-storage-bar-teamvault');
+            const otherBar = document.getElementById('pdm-storage-bar-other');
+            const freeBar = document.getElementById('pdm-storage-bar-free');
+            const teamVaultEl = document.getElementById('pdm-storage-teamvault');
             const freeEl = document.getElementById('pdm-storage-free');
             const totalEl = document.getElementById('pdm-storage-total');
+            const summaryEl = document.getElementById('pdm-storage-summary');
 
             if (!disk.available) {
-                if (barFill) barFill.style.width = '0%';
-                if (usedEl) usedEl.textContent = '--';
+                if (teamVaultBar) teamVaultBar.style.width = '0%';
+                if (otherBar) otherBar.style.width = '0%';
+                if (freeBar) freeBar.style.width = '0%';
+                if (teamVaultEl) teamVaultEl.textContent = stats.plugin_used_formatted || '--';
                 if (freeEl) freeEl.textContent = '--';
                 if (totalEl) totalEl.textContent = '--';
+                if (summaryEl) {
+                    summaryEl.textContent = `${mstvConfig.i18n.teamVault}: ${stats.plugin_used_formatted || '--'}. ${mstvConfig.i18n.otherUsage}: --. ${mstvConfig.i18n.available}: --. ${mstvConfig.i18n.capacity}: --.`;
+                }
                 return;
             }
 
-            const usedPercentage = Math.min(100, Math.max(0, ((disk.used_bytes / disk.total_bytes) * 100)));
+            const totalBytes = Math.max(0, Number(disk.total_bytes) || 0);
+            const freeBytes = Math.min(totalBytes, Math.max(0, Number(disk.free_bytes) || 0));
+            const usedBytes = Math.max(0, totalBytes - freeBytes);
+            const teamVaultBytes = Math.max(0, Number(stats.plugin_used_bytes) || 0);
+            const teamVaultBarBytes = Math.min(teamVaultBytes, usedBytes);
+            const otherBarBytes = Math.max(0, usedBytes - teamVaultBarBytes);
+            const teamVaultPercentage = totalBytes > 0 ? (teamVaultBarBytes / totalBytes) * 100 : 0;
+            const otherPercentage = totalBytes > 0 ? (otherBarBytes / totalBytes) * 100 : 0;
+            const freePercentage = totalBytes > 0 ? (freeBytes / totalBytes) * 100 : 0;
 
-            if (barFill) {
-                barFill.style.width = `${usedPercentage}%`;
-                barFill.classList.remove('pdm-storage-bar-fill--warning', 'pdm-storage-bar-fill--danger');
-                
-                if (usedPercentage >= 90) {
-                    barFill.classList.add('pdm-storage-bar-fill--danger');
-                } else if (usedPercentage >= 75) {
-                    barFill.classList.add('pdm-storage-bar-fill--warning');
-                }
-            }
+            if (teamVaultBar) teamVaultBar.style.width = `${teamVaultPercentage}%`;
+            if (otherBar) otherBar.style.width = `${otherPercentage}%`;
+            if (freeBar) freeBar.style.width = `${freePercentage}%`;
 
-            if (usedEl) usedEl.textContent = stats.disk_used_formatted;
+            if (teamVaultEl) teamVaultEl.textContent = stats.plugin_used_formatted;
             if (freeEl) freeEl.textContent = stats.disk_free_formatted;
             if (totalEl) totalEl.textContent = stats.disk_total_formatted;
+            if (summaryEl) {
+                summaryEl.textContent = `${mstvConfig.i18n.teamVault}: ${stats.plugin_used_formatted}. ${mstvConfig.i18n.otherUsage}: ${stats.other_used_formatted}. ${mstvConfig.i18n.available}: ${stats.disk_free_formatted}. ${mstvConfig.i18n.capacity}: ${stats.disk_total_formatted}.`;
+            }
         },
 
         isFileAvailable(files) {

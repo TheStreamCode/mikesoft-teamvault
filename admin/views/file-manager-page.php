@@ -26,22 +26,39 @@ $mstv_accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $
                 </div>
             </div>
             <div class="pdm-storage-indicator" id="pdm-storage-indicator">
-                <div class="pdm-storage-title"><?php esc_html_e('Disk Space', 'mikesoft-teamvault'); ?></div>
+                <div class="pdm-storage-title"><?php esc_html_e('Storage', 'mikesoft-teamvault'); ?></div>
                 <div class="pdm-storage-bar">
-                    <div class="pdm-storage-bar-fill" id="pdm-storage-bar-fill" style="width: 0%;"></div>
+                    <div class="pdm-storage-bar-fill pdm-storage-bar-fill--teamvault" id="pdm-storage-bar-teamvault" style="width: 0%;"></div>
+                    <div class="pdm-storage-bar-fill pdm-storage-bar-fill--other" id="pdm-storage-bar-other" style="width: 0%;"></div>
+                    <div class="pdm-storage-bar-fill pdm-storage-bar-fill--free" id="pdm-storage-bar-free" style="width: 0%;"></div>
                 </div>
+                <div class="pdm-storage-legend" aria-hidden="true">
+                    <div class="pdm-storage-legend-item">
+                        <span class="pdm-storage-legend-swatch pdm-storage-legend-swatch--teamvault"></span>
+                        <span><?php esc_html_e('TeamVault', 'mikesoft-teamvault'); ?></span>
+                    </div>
+                    <div class="pdm-storage-legend-item">
+                        <span class="pdm-storage-legend-swatch pdm-storage-legend-swatch--other"></span>
+                        <span><?php esc_html_e('Other usage', 'mikesoft-teamvault'); ?></span>
+                    </div>
+                    <div class="pdm-storage-legend-item">
+                        <span class="pdm-storage-legend-swatch pdm-storage-legend-swatch--free"></span>
+                        <span><?php esc_html_e('Available', 'mikesoft-teamvault'); ?></span>
+                    </div>
+                </div>
+                <span class="screen-reader-text" id="pdm-storage-summary" aria-live="polite"></span>
                 <div class="pdm-storage-stats">
                     <div class="pdm-storage-stat">
-                        <span class="pdm-storage-stat-value" id="pdm-storage-used">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Used', 'mikesoft-teamvault'); ?></span>
+                        <span class="pdm-storage-stat-value" id="pdm-storage-teamvault">--</span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('TeamVault', 'mikesoft-teamvault'); ?></span>
                     </div>
                     <div class="pdm-storage-stat">
                         <span class="pdm-storage-stat-value" id="pdm-storage-free">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Free', 'mikesoft-teamvault'); ?></span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('Available', 'mikesoft-teamvault'); ?></span>
                     </div>
                     <div class="pdm-storage-stat">
                         <span class="pdm-storage-stat-value" id="pdm-storage-total">--</span>
-                        <span class="pdm-storage-stat-label"><?php esc_html_e('Total', 'mikesoft-teamvault'); ?></span>
+                        <span class="pdm-storage-stat-label"><?php esc_html_e('Capacity', 'mikesoft-teamvault'); ?></span>
                     </div>
                 </div>
             </div>

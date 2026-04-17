@@ -218,6 +218,89 @@ final class PDMRestControllerTest extends TestCase
         self::assertSame('immagine', $response->data['data']['display_name']);
     }
 
+    public function test_upload_file_persists_detected_storage_file_size(): void
+    {
+        $_FILES['file'] = [
+            'name' => 'spec.pdf',
+            'type' => 'application/pdf',
+            'tmp_name' => __FILE__,
+            'error' => UPLOAD_ERR_OK,
+            'size' => 9999,
+        ];
+
+        $validator = $this->createMock(MSTV_Validator::class);
+        $validator->method('validate_file_name')->willReturn([
+            'valid' => true,
+            'errors' => [],
+        ]);
+        $validator->method('validate_upload_full')->willReturn([
+            'valid' => true,
+            'errors' => [],
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 9999,
+        ]);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('ensure_storage_directory')->willReturn(true);
+        $storage->method('store_uploaded_file')->willReturn([
+            'success' => true,
+            'stored_name' => 'stored.pdf',
+            'relative_path' => 'stored.pdf',
+            'extension' => 'pdf',
+            'file_size' => 1234,
+            'checksum' => 'checksum',
+        ]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->expects(self::once())
+            ->method('create')
+            ->with(self::callback(function (array $data): bool {
+                self::assertSame(1234, $data['file_size']);
+
+                return true;
+            }))
+            ->willReturn(42);
+        $filesRepo->method('find')->willReturn((object) [
+            'id' => 42,
+            'folder_id' => null,
+            'original_name' => 'spec.pdf',
+            'display_name' => 'spec',
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => 1234,
+            'relative_path' => 'stored.pdf',
+            'created_at' => '2026-04-17 10:00:00',
+            'created_by' => 1,
+        ]);
+
+        $filesystem = $this->createMock(MSTV_Filesystem::class);
+        $filesystem->method('is_file')->willReturn(false);
+        $storage->method('get_filesystem')->willReturn($filesystem);
+
+        $logger = $this->createMock(MSTV_Logger::class);
+        $logger->expects(self::once())->method('log_upload')->with(42, 'spec');
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $storage,
+            $validator,
+            $this->createMock(MSTV_Repository_Folders::class),
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $logger
+        );
+
+        $response = $controller->upload_file(new WP_REST_Request());
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertTrue($response->data['success']);
+
+        unset($_FILES['file']);
+    }
+
     private function buildController(MSTV_Repository_Folders $folderRepo): MSTV_REST_Controller
     {
         $settings = new MSTV_Settings();
