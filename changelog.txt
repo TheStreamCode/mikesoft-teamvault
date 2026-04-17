@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+1.1.34 - 2026-04-17
+- Simplified the storage widget to show only the space used by TeamVault files on shared hosting
+- Switched TeamVault storage totals to sum registered files that still exist on disk, avoiding brittle directory scans
+- Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size
+
 1.1.33 - 2026-04-17
 - Reworked the storage widget so it shows TeamVault usage, other disk usage, and available capacity separately
 - Switched TeamVault storage totals to a real filesystem scan so the reported usage matches the stored binaries more closely

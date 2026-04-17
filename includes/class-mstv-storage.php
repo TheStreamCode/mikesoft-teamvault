@@ -27,52 +27,37 @@ class MSTV_Storage
 
     public function get_storage_stats(MSTV_Repository_Files $filesRepo): array
     {
-        $diskStats = $this->filesystem->get_disk_stats();
-        $pluginUsedBytes = $this->get_plugin_used_bytes();
-        $otherUsedBytes = max(0, (int) $diskStats['used_bytes'] - $pluginUsedBytes);
+        $pluginUsedBytes = $this->get_plugin_used_bytes($filesRepo);
 
         return [
-            'disk' => $diskStats,
             'plugin_used_bytes' => $pluginUsedBytes,
             'plugin_used_formatted' => MSTV_Helpers::format_filesize($pluginUsedBytes),
-            'other_used_bytes' => $otherUsedBytes,
-            'other_used_formatted' => MSTV_Helpers::format_filesize($otherUsedBytes),
-            'disk_total_formatted' => MSTV_Helpers::format_filesize($diskStats['total_bytes']),
-            'disk_free_formatted' => MSTV_Helpers::format_filesize($diskStats['free_bytes']),
-            'disk_used_formatted' => MSTV_Helpers::format_filesize($diskStats['used_bytes']),
         ];
     }
 
-    private function get_plugin_used_bytes(string $relativePath = ''): int
+    private function get_plugin_used_bytes(MSTV_Repository_Files $filesRepo): int
     {
-        if ($relativePath === '') {
-            $cachedValue = get_transient($this->get_storage_usage_cache_key());
+        $cachedValue = get_transient($this->get_storage_usage_cache_key());
 
-            if (is_numeric($cachedValue)) {
-                return max(0, (int) $cachedValue);
-            }
+        if (is_numeric($cachedValue)) {
+            return max(0, (int) $cachedValue);
         }
 
         $total = 0;
+        $processedPaths = [];
 
-        foreach ($this->filesystem->list_directory($relativePath) as $item) {
-            if ($this->should_skip_reindex_item($relativePath, $item)) {
+        foreach ($filesRepo->find_all('created_at', 'DESC') as $fileRecord) {
+            $relativePath = isset($fileRecord->relative_path) ? (string) $fileRecord->relative_path : '';
+
+            if ($relativePath === '' || isset($processedPaths[$relativePath]) || !$this->filesystem->is_file($relativePath)) {
                 continue;
             }
 
-            $itemRelativePath = $this->join_relative_paths($relativePath, $item);
-
-            if ($this->filesystem->is_dir($itemRelativePath)) {
-                $total += $this->get_plugin_used_bytes($itemRelativePath);
-                continue;
-            }
-
-            $total += $this->filesystem->get_file_size($itemRelativePath);
+            $processedPaths[$relativePath] = true;
+            $total += $this->filesystem->get_file_size($relativePath);
         }
 
-        if ($relativePath === '') {
-            set_transient($this->get_storage_usage_cache_key(), $total, self::STORAGE_USAGE_CACHE_TTL);
-        }
+        set_transient($this->get_storage_usage_cache_key(), $total, self::STORAGE_USAGE_CACHE_TTL);
 
         return $total;
     }

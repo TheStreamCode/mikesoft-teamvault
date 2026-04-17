@@ -166,6 +166,7 @@ class MSTV_I18n
         'Storage directory:' => 'Directory storage:',
         'Storage' => 'Archiviazione',
         'Server limit:' => 'Limite server:',
+        'Used by TeamVault' => 'Usato da TeamVault',
         'Other usage' => 'Altro utilizzo',
         'Capacity' => 'Capacità',
         'This record exists in the database, but the binary file is missing from the private storage directory.' => 'Questo record esiste nel database, ma il file binario manca nella directory di storage privata.',
