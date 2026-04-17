@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+1.1.32 - 2026-04-17
+- Refined release metadata and maintainer documentation for the next WordPress.org maintenance release
+- Clarified WordPress.org icon assets versus the in-plugin TeamVault logo in repository and maintainer documentation
+- Confirmed the WordPress.org release payload stays limited to runtime plugin files and public listing assets
+
 1.1.31 - 2026-04-10
 - Improved whitelist settings handling so allowed users are processed more safely during save operations
 - Finalized the maintenance release for the latest WordPress.org package

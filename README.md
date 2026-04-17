@@ -73,6 +73,14 @@ This repository is the public source mirror for the plugin.
 - Repository policies live in [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 - Maintainer and developer notes live in [`docs/`](docs/).
 
+## Branding Assets
+
+- `.wordpress-org/assets/icon-256x256.png` is the primary full-color icon for the WordPress.org listing.
+- `.wordpress-org/assets/icon.svg` is the scalable companion asset for the WordPress.org listing.
+- `assets/logo-teamvault.svg` is the in-plugin admin logo used inside the TeamVault interface.
+
+These assets serve different surfaces and should stay aligned to the same brand without forcing the runtime plugin UI to match WordPress.org packaging constraints.
+
 ## Documentation Map
 
 - [`docs/developer/hooks.md`](docs/developer/hooks.md) - developer hooks and filters
