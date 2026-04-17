@@ -67,7 +67,7 @@ If you are working from a standalone clone of `mikesoft-teamvault-src`, these wo
 Before release, validate at least:
 
 - access control and whitelist mode
-- storage widget values for TeamVault usage, other disk usage, and available capacity
+- storage widget value for TeamVault used space only
 - upload, rename, move, delete, preview, and download flows
 - ZIP export
 - cleanup and reindex maintenance tools

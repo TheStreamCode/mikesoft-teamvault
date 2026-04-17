@@ -1824,49 +1824,14 @@
 
         renderStorageIndicator() {
             const stats = this.state.storageStats;
-            if (!stats || !stats.disk) return;
+            if (!stats) return;
 
-            const disk = stats.disk;
-            const teamVaultBar = document.getElementById('pdm-storage-bar-teamvault');
-            const otherBar = document.getElementById('pdm-storage-bar-other');
-            const freeBar = document.getElementById('pdm-storage-bar-free');
             const teamVaultEl = document.getElementById('pdm-storage-teamvault');
-            const freeEl = document.getElementById('pdm-storage-free');
-            const totalEl = document.getElementById('pdm-storage-total');
             const summaryEl = document.getElementById('pdm-storage-summary');
 
-            if (!disk.available) {
-                if (teamVaultBar) teamVaultBar.style.width = '0%';
-                if (otherBar) otherBar.style.width = '0%';
-                if (freeBar) freeBar.style.width = '0%';
-                if (teamVaultEl) teamVaultEl.textContent = stats.plugin_used_formatted || '--';
-                if (freeEl) freeEl.textContent = '--';
-                if (totalEl) totalEl.textContent = '--';
-                if (summaryEl) {
-                    summaryEl.textContent = `${mstvConfig.i18n.teamVault}: ${stats.plugin_used_formatted || '--'}. ${mstvConfig.i18n.otherUsage}: --. ${mstvConfig.i18n.available}: --. ${mstvConfig.i18n.capacity}: --.`;
-                }
-                return;
-            }
-
-            const totalBytes = Math.max(0, Number(disk.total_bytes) || 0);
-            const freeBytes = Math.min(totalBytes, Math.max(0, Number(disk.free_bytes) || 0));
-            const usedBytes = Math.max(0, totalBytes - freeBytes);
-            const teamVaultBytes = Math.max(0, Number(stats.plugin_used_bytes) || 0);
-            const teamVaultBarBytes = Math.min(teamVaultBytes, usedBytes);
-            const otherBarBytes = Math.max(0, usedBytes - teamVaultBarBytes);
-            const teamVaultPercentage = totalBytes > 0 ? (teamVaultBarBytes / totalBytes) * 100 : 0;
-            const otherPercentage = totalBytes > 0 ? (otherBarBytes / totalBytes) * 100 : 0;
-            const freePercentage = totalBytes > 0 ? (freeBytes / totalBytes) * 100 : 0;
-
-            if (teamVaultBar) teamVaultBar.style.width = `${teamVaultPercentage}%`;
-            if (otherBar) otherBar.style.width = `${otherPercentage}%`;
-            if (freeBar) freeBar.style.width = `${freePercentage}%`;
-
-            if (teamVaultEl) teamVaultEl.textContent = stats.plugin_used_formatted;
-            if (freeEl) freeEl.textContent = stats.disk_free_formatted;
-            if (totalEl) totalEl.textContent = stats.disk_total_formatted;
+            if (teamVaultEl) teamVaultEl.textContent = stats.plugin_used_formatted || '--';
             if (summaryEl) {
-                summaryEl.textContent = `${mstvConfig.i18n.teamVault}: ${stats.plugin_used_formatted}. ${mstvConfig.i18n.otherUsage}: ${stats.other_used_formatted}. ${mstvConfig.i18n.available}: ${stats.disk_free_formatted}. ${mstvConfig.i18n.capacity}: ${stats.disk_total_formatted}.`;
+                summaryEl.textContent = `${mstvConfig.i18n.usedByTeamVault}: ${stats.plugin_used_formatted || '--'}.`;
             }
         },
 

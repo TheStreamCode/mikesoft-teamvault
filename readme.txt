@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.33
+Stable tag: 1.1.34
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,7 +26,7 @@ Key features:
 * ZIP export for folders or the full library
 * Activity logging for uploads, downloads, moves, and deletions
 * Maintenance tools for orphan cleanup and storage reindex
-* Storage widget with separate TeamVault usage, other disk usage, and available capacity
+* Storage widget focused on the space used by TeamVault files
 * English interface with optional Italian translation
 
 == Installation ==
@@ -60,13 +60,18 @@ Yes. Inline PDF preview can be enabled or disabled in the settings.
 
 = What does the storage widget show? =
 
-The sidebar widget shows the total capacity of the storage volume, the currently available space, and the portion used by TeamVault files. Any remaining used space belongs to WordPress or other server content on the same volume.
+The sidebar widget shows only the space used by TeamVault files. On many shared hosting platforms, PHP cannot reliably read the account quota shown by the hosting panel, so the plugin avoids showing misleading total or available values.
 
 = What happens on uninstall? =
 
 By default, TeamVault keeps its data for safety. You can enable full data removal before uninstall if you want the plugin to delete its files, folders, logs, and settings.
 
 == Changelog ==
+
+= 1.1.34 =
+* Simplified the storage widget to show only the space used by TeamVault files.
+* Fixed TeamVault storage totals so they are calculated from the registered files that still exist on disk.
+* Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size.
 
 = 1.1.33 =
 * Clarified storage usage in the sidebar with separate TeamVault, available, and total capacity metrics.
@@ -88,6 +93,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 1.1.34 =
+
+Recommended update for more accurate TeamVault usage totals and less misleading storage information on shared hosting.
 
 = 1.1.33 =
 

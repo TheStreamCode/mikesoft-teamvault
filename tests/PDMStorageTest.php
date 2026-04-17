@@ -38,18 +38,84 @@ final class PDMStorageTest extends TestCase
     public function test_get_storage_stats_uses_real_teamvault_storage_usage(): void
     {
         $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
-        $filesRepo->method('get_total_size')->willReturn(999);
+        $filesRepo->method('find_all')->willReturn([
+            (object) ['relative_path' => 'contract.pdf', 'file_size' => 999],
+            (object) ['relative_path' => 'nested/brief.txt', 'file_size' => 999],
+        ]);
 
         $storage = new MSTV_Storage(new MSTV_Settings());
         $stats = $storage->get_storage_stats($filesRepo);
 
         self::assertSame(17, $stats['plugin_used_bytes']);
         self::assertSame(MSTV_Helpers::format_filesize(17), $stats['plugin_used_formatted']);
-        self::assertArrayHasKey('other_used_bytes', $stats);
-        self::assertSame(
-            max(0, $stats['disk']['used_bytes'] - 17),
-            $stats['other_used_bytes']
-        );
+        self::assertArrayNotHasKey('disk', $stats);
+        self::assertArrayNotHasKey('other_used_bytes', $stats);
+    }
+
+    public function test_get_storage_stats_uses_registered_files_when_directory_listing_is_unavailable(): void
+    {
+        $filesystem = $this->createMock(MSTV_Filesystem::class);
+        $filesystem->method('get_base_path')->willReturn('/home/example/private-documents');
+        $filesystem->method('get_disk_stats')->willReturn([
+            'available' => false,
+            'total_bytes' => 0,
+            'free_bytes' => 0,
+            'used_bytes' => 0,
+            'free_percentage' => 0,
+        ]);
+        $filesystem->expects(self::never())->method('list_directory');
+        $filesystem->method('is_file')->willReturnMap([
+            ['contracts/quote.pdf', true],
+            ['contracts/spec.txt', true],
+            ['contracts/missing.pdf', false],
+        ]);
+        $filesystem->method('get_file_size')->willReturnMap([
+            ['contracts/quote.pdf', 12],
+            ['contracts/spec.txt', 5],
+        ]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_all')->willReturn([
+            (object) ['relative_path' => 'contracts/quote.pdf', 'file_size' => 999],
+            (object) ['relative_path' => 'contracts/spec.txt', 'file_size' => 999],
+            (object) ['relative_path' => 'contracts/missing.pdf', 'file_size' => 999],
+        ]);
+
+        $storage = new MSTV_Storage(new MSTV_Settings());
+        $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
+        $filesystemProperty->setAccessible(true);
+        $filesystemProperty->setValue($storage, $filesystem);
+
+        $stats = $storage->get_storage_stats($filesRepo);
+
+        self::assertSame(17, $stats['plugin_used_bytes']);
+        self::assertSame(MSTV_Helpers::format_filesize(17), $stats['plugin_used_formatted']);
+    }
+
+    public function test_get_storage_stats_deduplicates_same_relative_path(): void
+    {
+        $filesystem = $this->createMock(MSTV_Filesystem::class);
+        $filesystem->method('get_base_path')->willReturn('/home/example/private-documents');
+        $filesystem->method('is_file')->willReturnMap([
+            ['contracts/quote.pdf', true],
+        ]);
+        $filesystem->expects(self::once())->method('get_file_size')->with('contracts/quote.pdf')->willReturn(12);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_all')->willReturn([
+            (object) ['relative_path' => 'contracts/quote.pdf'],
+            (object) ['relative_path' => 'contracts/quote.pdf'],
+        ]);
+
+        $storage = new MSTV_Storage(new MSTV_Settings());
+        $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
+        $filesystemProperty->setAccessible(true);
+        $filesystemProperty->setValue($storage, $filesystem);
+
+        $stats = $storage->get_storage_stats($filesRepo);
+
+        self::assertSame(12, $stats['plugin_used_bytes']);
+        self::assertSame(MSTV_Helpers::format_filesize(12), $stats['plugin_used_formatted']);
     }
 
     private function deleteDirectory(string $path): void

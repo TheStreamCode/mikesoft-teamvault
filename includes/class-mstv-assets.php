@@ -122,6 +122,7 @@ class MSTV_Assets
                 'total' => __('Total', 'mikesoft-teamvault'),
                 'storage' => __('Storage', 'mikesoft-teamvault'),
                 'teamVault' => __('TeamVault', 'mikesoft-teamvault'),
+                'usedByTeamVault' => __('Used by TeamVault', 'mikesoft-teamvault'),
                 'otherUsage' => __('Other usage', 'mikesoft-teamvault'),
                 'available' => __('Available', 'mikesoft-teamvault'),
                 'capacity' => __('Capacity', 'mikesoft-teamvault'),
