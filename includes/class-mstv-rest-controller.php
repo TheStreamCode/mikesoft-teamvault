@@ -485,6 +485,8 @@ class MSTV_REST_Controller
             return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
         }
 
+        $storedFileSize = !empty($result['file_size']) ? (int) $result['file_size'] : (int) $validation['size'];
+
         $fileId = $this->filesRepo->create([
             'folder_id' => $folderId,
             'original_name' => $files['name'],
@@ -493,7 +495,7 @@ class MSTV_REST_Controller
             'relative_path' => $result['relative_path'],
             'extension' => $validation['extension'],
             'mime_type' => $validation['mime_type'],
-            'file_size' => $validation['size'],
+            'file_size' => $storedFileSize,
             'checksum' => $result['checksum'],
             'created_by' => $this->auth->get_current_user_id(),
         ]);
@@ -506,7 +508,7 @@ class MSTV_REST_Controller
                 'folder_id' => $folderId,
                 'extension' => $validation['extension'],
                 'mime_type' => $validation['mime_type'],
-                'file_size' => $validation['size'],
+                'file_size' => $storedFileSize,
             ]);
         }
 

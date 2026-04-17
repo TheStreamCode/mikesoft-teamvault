@@ -13,6 +13,7 @@ $GLOBALS['pdm_test_is_user_logged_in'] = false;
 $GLOBALS['pdm_test_current_user_id'] = 0;
 $GLOBALS['pdm_test_users'] = [];
 $GLOBALS['pdm_test_user_meta'] = [];
+$GLOBALS['pdm_test_transients'] = [];
 
 function __($text, $domain = null)
 {
@@ -51,6 +52,31 @@ function sanitize_file_name($name)
     $name = preg_replace('/-+/', '-', $name);
 
     return trim($name, '-. ');
+}
+
+function sanitize_mime_type($mime)
+{
+    return sanitize_text_field($mime);
+}
+
+function wp_is_writable($path)
+{
+    return is_writable($path);
+}
+
+function wp_normalize_path($path)
+{
+    return str_replace('\\', '/', (string) $path);
+}
+
+function trailingslashit($value)
+{
+    return rtrim((string) $value, '/\\') . '/';
+}
+
+function untrailingslashit($value)
+{
+    return rtrim((string) $value, '/\\');
 }
 
 function wp_unslash($value)
@@ -104,6 +130,25 @@ function add_option($key, $value)
 function delete_option($key)
 {
     unset($GLOBALS['pdm_test_options'][$key]);
+
+    return true;
+}
+
+function get_transient($key)
+{
+    return $GLOBALS['pdm_test_transients'][$key] ?? false;
+}
+
+function set_transient($key, $value, $expiration = 0)
+{
+    $GLOBALS['pdm_test_transients'][$key] = $value;
+
+    return true;
+}
+
+function delete_transient($key)
+{
+    unset($GLOBALS['pdm_test_transients'][$key]);
 
     return true;
 }

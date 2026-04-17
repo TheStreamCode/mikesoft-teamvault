@@ -55,6 +55,7 @@ When whitelist mode is enabled, keep the current administrator account in the al
 - Default storage path: `wp-content/uploads/private-documents/`
 - The plugin can use a custom writable path configured in settings.
 - Storage is protected with server-level deny files where supported.
+- The sidebar storage widget separates TeamVault usage, other disk usage, and currently available capacity.
 
 If a site is migrated without copying the private storage folder, TeamVault records may remain in the database while the original binaries are missing. The settings screen includes cleanup and reindex tools for those scenarios.
 

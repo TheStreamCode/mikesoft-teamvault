@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+1.1.33 - 2026-04-17
+- Reworked the storage widget so it shows TeamVault usage, other disk usage, and available capacity separately
+- Switched TeamVault storage totals to a real filesystem scan so the reported usage matches the stored binaries more closely
+- Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size
+
 1.1.32 - 2026-04-17
 - Refined release metadata and maintainer documentation for the next WordPress.org maintenance release
 - Clarified WordPress.org icon assets versus the in-plugin TeamVault logo in repository and maintainer documentation
