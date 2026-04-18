@@ -1,11 +1,20 @@
 # Mikesoft TeamVault
 
-Secure shared document management for WordPress, separated from the Media Library and designed for private team, partner, and client files.
+Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
 ## Overview
 
 Mikesoft TeamVault adds a private document workspace inside the WordPress admin.
+It is designed for teams that need to organize, preview, export, and share sensitive files without exposing them through normal Media Library URLs.
+
 Files are stored in protected storage and delivered through authenticated WordPress handlers instead of public media URLs.
+
+Typical use cases include:
+
+- internal company documents
+- agency-to-client document delivery from WordPress admin
+- partner or vendor file exchanges
+- back-office archives that should stay out of the public Media Library
 
 Core capabilities include:
 
@@ -17,6 +26,12 @@ Core capabilities include:
 - ZIP export for folders or the full document library
 - activity logging for operational traceability
 - maintenance tools for orphan cleanup and storage reindex
+
+Why teams adopt TeamVault:
+
+- it creates a dedicated private document area instead of overloading the Media Library
+- it adds capability-based access control with an optional whitelist layer
+- it keeps export, maintenance, and recovery workflows focused on operational files
 
 ## Requirements
 
