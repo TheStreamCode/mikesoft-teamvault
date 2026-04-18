@@ -1,5 +1,9 @@
 Mikesoft TeamVault Changelog
 
+1.1.35 - 2026-04-18
+- Improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging
+- Expanded FAQ content to better explain private access, Media Library differences, and user access control
+
 1.1.34 - 2026-04-17
 - Simplified the storage widget to show only the space used by TeamVault files on shared hosting
 - Switched TeamVault storage totals to sum registered files that still exist on disk, avoiding brittle directory scans
