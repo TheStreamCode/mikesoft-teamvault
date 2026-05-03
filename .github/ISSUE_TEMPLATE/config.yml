@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: WordPress.org support forum
+    url: https://wordpress.org/support/plugin/mikesoft-teamvault/
+    about: Use the official support forum for user support and bug reports.
+  - name: Private security report
+    url: https://github.com/TheStreamCode/mikesoft-teamvault/security/policy
+    about: Report suspected vulnerabilities privately.

@@ -2,6 +2,15 @@
   "name": "mikesoft/mikesoft-teamvault",
   "description": "Development tooling for Mikesoft TeamVault",
   "type": "project",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "ci": [
+      "@lint",
+      "@test"
+    ],
+    "lint": "@php tools/lint-php.php",
+    "test": "phpunit --bootstrap tests/bootstrap.php tests"
+  },
   "require-dev": {
     "phpunit/phpunit": "^11.5"
   }
