@@ -93,9 +93,10 @@ Install development dependencies with Composer, then run the standard validation
 composer install
 composer lint
 composer test
+composer ci
 ```
 
-`composer lint` checks all repository PHP files outside generated dependencies. `composer test` runs the lightweight PHPUnit suite with the repository bootstrap.
+`composer lint` checks all repository PHP files outside generated dependencies. `composer test` runs the lightweight PHPUnit suite with the repository bootstrap. GitHub Actions also runs WordPress Plugin Check against a clean runtime build of the plugin.
 
 ## Repository Guide
 
