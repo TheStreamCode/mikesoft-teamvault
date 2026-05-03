@@ -131,17 +131,9 @@ class MSTV_Repository_Logs
 
     private function get_client_ip(): string
     {
-        $ip = '';
-
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CLIENT_IP']));
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
-        } elseif (!empty($_SERVER['REMOTE_ADDR'])) {
-            $ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
-        }
-
-        return $ip;
+        return !empty($_SERVER['REMOTE_ADDR'])
+            ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']))
+            : '';
     }
 
     private function get_user_agent(): string

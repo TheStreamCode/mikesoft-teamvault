@@ -64,17 +64,21 @@ Install the plugin from the [WordPress.org Plugin Directory](https://wordpress.o
 ## Access Model
 
 - File workspace access uses the `manage_private_documents` capability.
-- Administrators and Editors receive that capability on activation.
+- New activations grant that capability to Administrators only.
+- The `manage_private_documents` capability grants full TeamVault workspace access, including upload, rename, move, download, export, and delete actions.
 - Optional whitelist mode adds a second authorization layer for selected users.
 - Settings, activity logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
 
 When whitelist mode is enabled, keep the current administrator account in the allowed users list before saving settings.
+On sites upgraded from older releases, review existing role capabilities and whitelist settings if Editors previously had TeamVault access.
 
 ## Storage
 
 - Default storage path: `wp-content/uploads/private-documents/`
 - The plugin can use a custom writable path configured in settings.
 - Storage is protected with server-level deny files where supported.
+- Apache/LiteSpeed can enforce the generated `.htaccess`; IIS can enforce `web.config`; Nginx requires an equivalent server rule that denies direct requests to `/wp-content/uploads/private-documents/`.
+- For high-sensitivity deployments, prefer a custom storage path outside the public webroot.
 - The sidebar storage widget shows only the space used by TeamVault files, to avoid exposing misleading hosting quota values on shared environments.
 
 If a site is migrated without copying the private storage folder, TeamVault records may remain in the database while the original binaries are missing. The settings screen includes cleanup and reindex tools for those scenarios.

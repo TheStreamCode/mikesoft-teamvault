@@ -206,9 +206,9 @@ class MSTV_Export
                 throw new \RuntimeException('Export limit exceeded');
             }
 
-            $filesPath = $this->storage->get_filesystem()->resolve($files->relative_path);
+            $filesPath = $this->storage->get_filesystem()->get_verified_path((string) $files->relative_path);
 
-            if (file_exists($filesPath) && is_readable($filesPath)) {
+            if ($filesPath !== false && file_exists($filesPath) && is_readable($filesPath)) {
                 $zipPath = $this->build_unique_file_archive_path($basePath, $files);
                 $zip->addFile($filesPath, $zipPath);
                 $this->currentFileCount++;

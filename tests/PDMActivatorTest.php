@@ -6,6 +6,27 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMActivatorTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $GLOBALS['pdm_test_roles'] = [];
+    }
+
+    public function test_register_capabilities_grants_document_access_only_to_administrators_by_default(): void
+    {
+        $GLOBALS['pdm_test_roles'] = [
+            'administrator' => new FakePDMRole('Administrator'),
+            'editor' => new FakePDMRole('Editor'),
+        ];
+
+        $method = new ReflectionMethod(MSTV_Activator::class, 'register_capabilities');
+        $method->invoke(null);
+
+        self::assertTrue($GLOBALS['pdm_test_roles']['administrator']->has_cap('manage_private_documents'));
+        self::assertFalse($GLOBALS['pdm_test_roles']['editor']->has_cap('manage_private_documents'));
+    }
+
     public function test_normalize_logs_table_name_accepts_expected_table_only(): void
     {
         self::assertSame(

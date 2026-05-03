@@ -201,11 +201,6 @@ class MSTV_Activator
         if ($administrator) {
             $administrator->add_cap('manage_private_documents');
         }
-
-        $editor = get_role('editor');
-        if ($editor) {
-            $editor->add_cap('manage_private_documents');
-        }
     }
 
     private static function set_default_options(): void

@@ -43,4 +43,35 @@ final class PDMSettingsTest extends TestCase
         self::assertTrue($GLOBALS['pdm_test_user_meta'][5]['mstv_granted_capability_1']);
         self::assertArrayNotHasKey('mstv_granted_capability', $GLOBALS['pdm_test_user_meta'][5]);
     }
+
+    public function test_detects_storage_path_inside_wordpress_uploads(): void
+    {
+        $GLOBALS['pdm_test_options'] = [
+            'mstv_storage_path' => sys_get_temp_dir() . '/private-documents',
+        ];
+
+        $settings = new MSTV_Settings();
+
+        self::assertTrue($settings->is_storage_path_inside_uploads());
+    }
+
+    public function test_detects_storage_path_outside_wordpress_uploads(): void
+    {
+        $externalPath = dirname(sys_get_temp_dir()) . '/mstv-private-documents';
+        if (!is_dir($externalPath)) {
+            mkdir($externalPath, 0777, true);
+        }
+        file_put_contents($externalPath . '/.mstv-storage', 'marker');
+
+        $GLOBALS['pdm_test_options'] = [
+            'mstv_storage_path' => $externalPath,
+        ];
+
+        $settings = new MSTV_Settings();
+
+        self::assertFalse($settings->is_storage_path_inside_uploads());
+
+        @unlink($externalPath . '/.mstv-storage');
+        @rmdir($externalPath);
+    }
 }

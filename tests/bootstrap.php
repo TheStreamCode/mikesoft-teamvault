@@ -15,6 +15,7 @@ $GLOBALS['pdm_test_current_user_id'] = 0;
 $GLOBALS['pdm_test_users'] = [];
 $GLOBALS['pdm_test_user_meta'] = [];
 $GLOBALS['pdm_test_transients'] = [];
+$GLOBALS['pdm_test_roles'] = [];
 
 function __($text, $domain = null)
 {
@@ -24,6 +25,22 @@ function __($text, $domain = null)
 function esc_html__($text, $domain = null)
 {
     return $text;
+}
+
+function esc_html($text)
+{
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+}
+
+function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
+{
+    $GLOBALS['pdm_test_actions'][$hook][] = [
+        'callback' => $callback,
+        'priority' => $priority,
+        'accepted_args' => $accepted_args,
+    ];
+
+    return true;
 }
 
 function wp_strip_all_tags($text)
@@ -203,6 +220,25 @@ function get_users(array $args = [])
     }));
 }
 
+function get_role($roleName)
+{
+    return $GLOBALS['pdm_test_roles'][(string) $roleName] ?? null;
+}
+
+function wp_roles()
+{
+    $roles = [];
+
+    foreach ($GLOBALS['pdm_test_roles'] as $roleName => $role) {
+        $roles[$roleName] = [
+            'name' => $role->name,
+            'capabilities' => $role->capabilities(),
+        ];
+    }
+
+    return (object) ['roles' => $roles];
+}
+
 function get_avatar_url($userId, array $args = [])
 {
     return 'https://example.test/avatar/' . (int) $userId;
@@ -329,6 +365,38 @@ class FakePDMUser
     }
 }
 
+class FakePDMRole
+{
+    public string $name;
+    private array $caps = [];
+
+    public function __construct(string $name, array $caps = [])
+    {
+        $this->name = $name;
+        $this->caps = $caps;
+    }
+
+    public function add_cap(string $cap): void
+    {
+        $this->caps[$cap] = true;
+    }
+
+    public function remove_cap(string $cap): void
+    {
+        unset($this->caps[$cap]);
+    }
+
+    public function has_cap(string $cap): bool
+    {
+        return !empty($this->caps[$cap]);
+    }
+
+    public function capabilities(): array
+    {
+        return $this->caps;
+    }
+}
+
 require_once __DIR__ . '/../includes/class-mstv-capabilities.php';
 require_once __DIR__ . '/../includes/class-mstv-i18n.php';
 require_once __DIR__ . '/../includes/class-mstv-settings.php';
@@ -339,8 +407,10 @@ require_once __DIR__ . '/../includes/class-mstv-storage.php';
 require_once __DIR__ . '/../includes/class-mstv-validator.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-files.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-folders.php';
+require_once __DIR__ . '/../includes/class-mstv-repository-logs.php';
 require_once __DIR__ . '/../includes/class-mstv-download.php';
 require_once __DIR__ . '/../includes/class-mstv-preview.php';
 require_once __DIR__ . '/../includes/class-mstv-rest-controller.php';
 require_once __DIR__ . '/../includes/class-mstv-logger.php';
 require_once __DIR__ . '/../includes/class-mstv-activator.php';
+require_once __DIR__ . '/../includes/class-mstv-admin.php';
