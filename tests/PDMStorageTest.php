@@ -26,10 +26,17 @@ final class PDMStorageTest extends TestCase
             'mstv_storage_path' => $this->storagePath,
         ];
         $GLOBALS['pdm_test_transients'] = [];
+        $GLOBALS['wp_filesystem'] = new class {
+            public function is_writable($path): bool
+            {
+                return is_writable($path);
+            }
+        };
     }
 
     protected function tearDown(): void
     {
+        unset($GLOBALS['wp_filesystem']);
         $this->deleteDirectory($this->storagePath);
         $GLOBALS['pdm_test_options'] = [];
         $GLOBALS['pdm_test_transients'] = [];
@@ -116,6 +123,32 @@ final class PDMStorageTest extends TestCase
 
         self::assertSame(12, $stats['plugin_used_bytes']);
         self::assertSame(MSTV_Helpers::format_filesize(12), $stats['plugin_used_formatted']);
+    }
+
+    public function test_reindex_skips_files_that_violate_upload_policy(): void
+    {
+        file_put_contents($this->storagePath . '/shell.php', '<?php echo "bad";');
+
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_all')->willReturn([]);
+        $folderRepo->method('create')->willReturn(1);
+
+        $createdFiles = [];
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_all')->willReturn([]);
+        $filesRepo->method('create')->willReturnCallback(static function (array $data) use (&$createdFiles): int {
+            $createdFiles[] = $data;
+
+            return count($createdFiles);
+        });
+
+        $storage = new MSTV_Storage(new MSTV_Settings());
+        $result = $storage->reindex_storage_records($folderRepo, $filesRepo, 7);
+
+        self::assertTrue($result['success']);
+        self::assertSame(2, $result['files_created']);
+        self::assertSame(1, $result['files_skipped']);
+        self::assertSame(['contract.pdf', 'nested/brief.txt'], array_column($createdFiles, 'relative_path'));
     }
 
     private function deleteDirectory(string $path): void

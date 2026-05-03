@@ -64,6 +64,16 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                     (int) ($reindex_result['files_created'] ?? 0)
                 )
             );
+            if (!empty($reindex_result['files_skipped'])) {
+                echo ' ';
+                echo esc_html(
+                    sprintf(
+                        /* translators: %d: skipped file count. */
+                        __('Skipped %d unsafe or disallowed files.', 'mikesoft-teamvault'),
+                        (int) $reindex_result['files_skipped']
+                    )
+                );
+            }
             ?>
         </div>
     <?php endif; ?>

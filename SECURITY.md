@@ -34,3 +34,10 @@ Include the following details when possible:
 This policy applies to the Mikesoft TeamVault plugin code distributed through WordPress.org.
 
 Server configuration, third-party plugins, themes, and custom hosting environments remain outside the plugin's direct control and should be reviewed separately.
+
+## Operational Security Notes
+
+- The `manage_private_documents` capability grants full TeamVault workspace access, including upload, download, export, rename, move, and delete actions.
+- New activations grant `manage_private_documents` to Administrators only. Sites upgraded from older releases should review role capabilities if Editors previously had TeamVault access.
+- Default storage uses `wp-content/uploads/private-documents/` and creates deny files for webservers that support them.
+- Nginx does not read `.htaccess`; configure an equivalent deny rule or use a custom storage path outside the public webroot for sensitive deployments.

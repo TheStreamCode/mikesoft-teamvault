@@ -18,17 +18,23 @@ class MSTV_Filesystem
 
     public function exists(string $relativePath): bool
     {
-        return file_exists($this->resolve($relativePath));
+        $fullPath = $this->get_verified_path($relativePath);
+
+        return $fullPath !== false && file_exists($fullPath);
     }
 
     public function is_file(string $relativePath): bool
     {
-        return is_file($this->resolve($relativePath));
+        $fullPath = $this->get_verified_path($relativePath);
+
+        return $fullPath !== false && is_file($fullPath);
     }
 
     public function is_dir(string $relativePath): bool
     {
-        return is_dir($this->resolve($relativePath));
+        $fullPath = $this->get_verified_path($relativePath);
+
+        return $fullPath !== false && is_dir($fullPath);
     }
 
     public function resolve(string $relativePath): string
@@ -69,6 +75,25 @@ class MSTV_Filesystem
             || strpos(trailingslashit($normalizedPath), $normalizedBase) === 0;
     }
 
+    public function get_verified_path(string $relativePath, bool $allowMissing = false): string|false
+    {
+        $fullPath = $this->resolve($relativePath);
+
+        if (!$this->verify_path($fullPath)) {
+            return false;
+        }
+
+        if (!$allowMissing && !file_exists($fullPath)) {
+            return false;
+        }
+
+        if ($this->path_has_symlink($fullPath)) {
+            return false;
+        }
+
+        return $fullPath;
+    }
+
     public function is_path_within_base(string $path): bool
     {
         $realBase = realpath($this->basePath);
@@ -90,7 +115,11 @@ class MSTV_Filesystem
 
     public function create_directory(string $relativePath): bool
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath, true);
+
+        if ($fullPath === false) {
+            return false;
+        }
 
         if ($this->exists($relativePath)) {
             return true;
@@ -111,7 +140,11 @@ class MSTV_Filesystem
 
     public function delete_directory(string $relativePath): bool
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+
+        if ($fullPath === false) {
+            return false;
+        }
 
         if (!$this->is_dir($relativePath)) {
             return false;
@@ -122,7 +155,11 @@ class MSTV_Filesystem
 
     public function delete_file(string $relativePath): bool
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+
+        if ($fullPath === false) {
+            return false;
+        }
 
         if (!$this->is_file($relativePath)) {
             return false;
@@ -148,8 +185,12 @@ class MSTV_Filesystem
 
     public function move_file(string $fromRelative, string $toRelative): bool
     {
-        $from = $this->resolve($fromRelative);
-        $to = $this->resolve($toRelative);
+        $from = $this->get_verified_path($fromRelative);
+        $to = $this->get_verified_path($toRelative, true);
+
+        if ($from === false || $to === false) {
+            return false;
+        }
 
         if (!$this->is_file($fromRelative)) {
             return false;
@@ -174,8 +215,12 @@ class MSTV_Filesystem
 
     public function rename_directory(string $oldRelative, string $newRelative): bool
     {
-        $oldPath = $this->resolve($oldRelative);
-        $newPath = $this->resolve($newRelative);
+        $oldPath = $this->get_verified_path($oldRelative);
+        $newPath = $this->get_verified_path($newRelative, true);
+
+        if ($oldPath === false || $newPath === false) {
+            return false;
+        }
 
         if (!$this->is_dir($oldRelative)) {
             return false;
@@ -199,7 +244,12 @@ class MSTV_Filesystem
 
     public function write_file(string $relativePath, string $content): bool
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath, true);
+
+        if ($fullPath === false) {
+            return false;
+        }
+
         $dir = dirname($fullPath);
 
         if (!is_dir($dir)) {
@@ -224,11 +274,17 @@ class MSTV_Filesystem
 
     public function read_files(string $relativePath): string|false
     {
-        return $this->read_absolute_file($this->resolve($relativePath));
+        $fullPath = $this->get_verified_path($relativePath);
+
+        return $fullPath === false ? false : $this->read_absolute_file($fullPath);
     }
 
     public function read_absolute_file(string $path): string|false
     {
+        if (!$this->verify_path($path) || $this->path_has_symlink($path)) {
+            return false;
+        }
+
         $wpFilesystem = $this->get_wp_filesystem();
 
         if ($wpFilesystem) {
@@ -244,20 +300,31 @@ class MSTV_Filesystem
 
     public function get_file_size(string $relativePath): int
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+        if ($fullPath === false) {
+            return 0;
+        }
+
         $size = @filesize($fullPath);
         return $size !== false ? $size : 0;
     }
 
     public function get_file_checksum(string $relativePath): string
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+        if ($fullPath === false) {
+            return '';
+        }
+
         return @md5_file($fullPath) ?: '';
     }
 
     public function get_mime_type(string $relativePath): string
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+        if ($fullPath === false) {
+            return 'application/octet-stream';
+        }
         
         if (function_exists('mime_content_type')) {
             $mime = @mime_content_type($fullPath);
@@ -315,7 +382,11 @@ class MSTV_Filesystem
 
     public function list_directory(string $relativePath = ''): array
     {
-        $fullPath = $this->resolve($relativePath);
+        $fullPath = $this->get_verified_path($relativePath);
+
+        if ($fullPath === false) {
+            return [];
+        }
 
         if (!$this->is_dir($relativePath)) {
             return [];
@@ -326,11 +397,21 @@ class MSTV_Filesystem
             return [];
         }
 
-        return array_values(array_filter($items, fn($item) => !in_array($item, ['.', '..'])));
+        return array_values(array_filter($items, function ($item) use ($fullPath) {
+            if (in_array($item, ['.', '..'], true)) {
+                return false;
+            }
+
+            return !is_link($fullPath . DIRECTORY_SEPARATOR . $item);
+        }));
     }
 
     private function recursive_delete(string $path): bool
     {
+        if (!$this->verify_path($path) || $this->path_has_symlink($path)) {
+            return false;
+        }
+
         if (!file_exists($path)) {
             return true;
         }
@@ -447,5 +528,44 @@ class MSTV_Filesystem
             'used_bytes' => $used,
             'free_percentage' => round(((int) $free / (int) $total) * 100, 2),
         ];
+    }
+
+    private function path_has_symlink(string $path): bool
+    {
+        $realBase = realpath($this->basePath);
+
+        if (false === $realBase) {
+            return true;
+        }
+
+        $normalizedBase = wp_normalize_path($realBase);
+        $normalizedPath = wp_normalize_path($path);
+
+        if ($normalizedPath === $normalizedBase) {
+            return is_link($realBase);
+        }
+
+        if (strpos(trailingslashit($normalizedPath), trailingslashit($normalizedBase)) !== 0) {
+            return true;
+        }
+
+        $relative = ltrim(substr($normalizedPath, strlen($normalizedBase)), '/');
+        if ($relative === '') {
+            return false;
+        }
+
+        $current = $realBase;
+        foreach (explode('/', $relative) as $segment) {
+            if ($segment === '') {
+                continue;
+            }
+
+            $current .= DIRECTORY_SEPARATOR . $segment;
+            if (is_link($current)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

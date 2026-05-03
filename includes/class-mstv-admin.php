@@ -23,7 +23,23 @@ class MSTV_Admin
         add_action('admin_post_mstv_preview_file', [$this, 'handle_preview_file']);
         add_action('admin_post_mstv_export_all', [$this, 'handle_export_all']);
         add_action('admin_post_mstv_export_folder', [$this, 'handle_export_folder']);
-        add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);    }
+        add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);
+        add_action('admin_notices', [$this, 'render_storage_security_notice']);
+    }
+
+    public function render_storage_security_notice(): void
+    {
+        if (!$this->current_user_can_admin() || !$this->settings->is_storage_path_inside_uploads()) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning"><p>';
+        echo esc_html__(
+            'TeamVault stores private files under WordPress uploads. Confirm your web server blocks direct access to the private-documents directory, especially on Nginx.',
+            'mikesoft-teamvault'
+        );
+        echo '</p></div>';
+    }
 
     public function add_menu(): void
     {

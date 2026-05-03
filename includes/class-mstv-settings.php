@@ -140,6 +140,21 @@ class MSTV_Settings
         return $path;
     }
 
+    public function is_storage_path_inside_uploads(): bool
+    {
+        $uploadDir = wp_upload_dir();
+        $uploadBase = isset($uploadDir['basedir']) ? $this->normalize_path_for_comparison((string) $uploadDir['basedir']) : '';
+
+        if ($uploadBase === '') {
+            return false;
+        }
+
+        $storagePath = $this->normalize_path_for_comparison($this->get_storage_path());
+
+        return $storagePath === untrailingslashit($uploadBase)
+            || strpos(trailingslashit($storagePath), trailingslashit($uploadBase)) === 0;
+    }
+
     public function get_allowed_extensions(): array
     {
         $extensions = $this->get('mstv_allowed_extensions');
@@ -335,6 +350,14 @@ class MSTV_Settings
         }
 
         return file_exists($realpath . DIRECTORY_SEPARATOR . '.mstv-storage');
+    }
+
+    private function normalize_path_for_comparison(string $path): string
+    {
+        $path = rtrim($path, '/\\');
+        $realpath = $path !== '' ? realpath($path) : false;
+
+        return wp_normalize_path($realpath !== false ? $realpath : $path);
     }
 
     private function cleanup_legacy_granted_capabilities(): void

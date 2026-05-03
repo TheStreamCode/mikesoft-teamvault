@@ -1,5 +1,13 @@
 Mikesoft TeamVault Changelog
 
+2.0.3 - 2026-05-03
+- Hardened filesystem path verification for private storage operations, including traversal and symlink rejection
+- Added safer storage reindex validation so unsafe or disallowed files are skipped and reported to administrators
+- Switched activity log IP capture to `REMOTE_ADDR` only instead of trusting spoofable forwarding headers
+- Added an administrator notice when the TeamVault storage path is inside the public uploads tree
+- Changed new activations so only Administrators receive `manage_private_documents` by default
+- Added regression coverage for filesystem boundary checks, reindex validation, log IP handling, storage warnings, and activation capabilities
+
 2.0.2 - 2026-05-03
 - Fixed TeamVault REST request URLs on sites that use plain permalinks, preventing 404 errors while loading folders and files
 - Improved upload feedback when PHP rejects an oversized request before a file reaches TeamVault validation

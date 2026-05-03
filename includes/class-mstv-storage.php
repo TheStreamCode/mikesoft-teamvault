@@ -97,6 +97,7 @@ class MSTV_Storage
         $stats = [
             'folders_created' => 0,
             'files_created' => 0,
+            'files_skipped' => 0,
         ];
 
         $this->reindex_directory('', $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
@@ -106,6 +107,7 @@ class MSTV_Storage
             'success' => true,
             'folders_created' => $stats['folders_created'],
             'files_created' => $stats['files_created'],
+            'files_skipped' => $stats['files_skipped'],
         ];
     }
 
@@ -473,6 +475,12 @@ class MSTV_Storage
             $extension = strtolower(pathinfo($item, PATHINFO_EXTENSION));
             $displayName = MSTV_Helpers::resolve_file_display_name('', (string) $item);
             $parentPath = $this->get_parent_relative_path($itemRelativePath);
+            $mimeType = $this->filesystem->get_mime_type($itemRelativePath);
+
+            if (!$this->is_reindexable_file($itemRelativePath, $extension, $mimeType)) {
+                $stats['files_skipped']++;
+                continue;
+            }
 
             $filesRepo->create([
                 'folder_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
@@ -481,7 +489,7 @@ class MSTV_Storage
                 'display_name' => $displayName,
                 'relative_path' => $itemRelativePath,
                 'extension' => $extension,
-                'mime_type' => $this->filesystem->get_mime_type($itemRelativePath),
+                'mime_type' => $mimeType,
                 'file_size' => $this->filesystem->get_file_size($itemRelativePath),
                 'checksum' => $this->filesystem->get_file_checksum($itemRelativePath),
                 'created_by' => $createdBy,
@@ -499,6 +507,23 @@ class MSTV_Storage
         }
 
         return in_array($item, ['.htaccess', 'web.config', 'index.php', '.mstv-storage'], true);
+    }
+
+    private function is_reindexable_file(string $relativePath, string $extension, string $mimeType): bool
+    {
+        $absolutePath = $this->filesystem->get_verified_path($relativePath);
+        if ($absolutePath === false) {
+            return false;
+        }
+
+        $validator = new MSTV_Validator($this->settings);
+        if (!$validator->validate_extension($extension) || !$validator->validate_mime_type($mimeType)) {
+            return false;
+        }
+
+        $scanResult = $validator->scan_file_content($absolutePath, $extension, $mimeType);
+
+        return !empty($scanResult['valid']);
     }
 
     private function join_relative_paths(string $base, string $item): string

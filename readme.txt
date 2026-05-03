@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,7 +40,7 @@ Why use TeamVault instead of the Media Library?
 Privacy and access control:
 
 * Files are stored outside the normal Media Library workflow
-* Access is controlled by the `manage_private_documents` capability
+* Access is controlled by the `manage_private_documents` capability, which allows full workspace actions including upload, download, export, rename, move, and delete
 * Settings, activity logs, whitelist management, and maintenance tools require administrator-level `manage_options` access
 * Optional whitelist mode adds a second authorization layer for selected users
 * Cleanup and reindex tools help recover from migrations with missing binaries
@@ -78,11 +78,15 @@ No. TeamVault is designed for private operational documents that should stay sep
 
 = Who can access TeamVault by default? =
 
-Administrators and Editors receive the `manage_private_documents` capability on activation. You can also enable whitelist mode to limit access to selected users.
+New activations grant the `manage_private_documents` capability to Administrators only. You can enable whitelist mode to limit workspace access to selected users.
+
+Sites upgraded from older releases should review existing role capabilities and whitelist settings if Editors previously had TeamVault access.
 
 = Are file URLs public? =
 
 TeamVault is designed to avoid normal public Media Library URLs by routing access through authenticated WordPress workflows. The exact storage protection still depends on the server environment and the generated storage rules.
+
+Apache/LiteSpeed can enforce the generated `.htaccess`, IIS can enforce `web.config`, and Nginx requires an equivalent deny rule for `/wp-content/uploads/private-documents/`. For high-sensitivity deployments, use a custom storage path outside the public webroot.
 
 = Can non-admin users access TeamVault? =
 
@@ -113,6 +117,13 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 2.0.3 =
+* Hardened TeamVault filesystem boundary checks and rejected symlink traversal inside private storage operations.
+* Added safer reindex validation so unsafe or disallowed files are skipped and reported.
+* Switched activity log IP capture to the direct server address instead of spoofable forwarding headers.
+* Added an administrator storage notice when the private document path is inside the public uploads tree.
+* Changed new activations so only Administrators receive TeamVault document access by default.
 
 = 2.0.2 =
 * Fixed TeamVault REST requests on sites that use plain permalinks instead of pretty permalinks.
@@ -165,6 +176,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.3 =
+
+Security hardening update. Review role capabilities and whitelist settings if Editors previously had TeamVault access.
 
 = 2.0.2 =
 
