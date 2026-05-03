@@ -38,6 +38,18 @@ ln -s /path/to/mikesoft-teamvault-src /path/to/wordpress/wp-content/plugins/mike
 
 ## Local Validation
 
+### Standard Commands
+
+From `mikesoft-teamvault-src/`:
+
+```powershell
+composer install
+composer lint
+composer test
+```
+
+Use `composer ci` to run lint and PHPUnit together.
+
 ### PHPUnit
 
 The repository includes lightweight PHPUnit tests with a custom bootstrap.
@@ -45,7 +57,7 @@ The repository includes lightweight PHPUnit tests with a custom bootstrap.
 From `mikesoft-teamvault-src/`:
 
 ```powershell
-.\vendor\bin\phpunit.bat --bootstrap tests/bootstrap.php tests
+composer test
 ```
 
 ### Packaging Filter Tests

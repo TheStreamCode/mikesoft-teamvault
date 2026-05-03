@@ -1,5 +1,7 @@
 # Mikesoft TeamVault
 
+[![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
+
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
 ## Overview
@@ -80,6 +82,18 @@ If a site is migrated without copying the private storage folder, TeamVault reco
 - End-user support: [WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
 - Website: [mikesoft.it](https://mikesoft.it)
 - Security reports: see [SECURITY.md](SECURITY.md)
+
+## Development Quick Check
+
+Install development dependencies with Composer, then run the standard validation commands:
+
+```bash
+composer install
+composer lint
+composer test
+```
+
+`composer lint` checks all repository PHP files outside generated dependencies. `composer test` runs the lightweight PHPUnit suite with the repository bootstrap.
 
 ## Repository Guide
 

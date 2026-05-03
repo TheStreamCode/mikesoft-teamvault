@@ -9,11 +9,9 @@ mikesoft-teamvault-*.zip
 # Dependencies
 /vendor/
 /node_modules/
-/composer.lock
 
 # Tests
 /phpunit.xml*
-/tests/
 /.phpunit.cache/
 /.phpunit.result.cache
 

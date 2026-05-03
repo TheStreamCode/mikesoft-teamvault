@@ -24,9 +24,10 @@ The deploy script already validates plugin version and stable tag alignment.
 1. Update the version in `mikesoft-teamvault.php`.
 2. Update `Stable tag` and the current release entry in `readme.txt`.
 3. Add the full release entry to `changelog.txt`.
-4. Run the relevant validation steps.
+4. Run `composer ci` from `mikesoft-teamvault-src/`.
 5. Confirm `.wordpress-org/assets/` contains the expected public assets.
 6. Run the deployment script from the workspace root.
+7. Publish the matching GitHub release with the release ZIP attached.
 
 ## Deployment Command
 
