@@ -70,3 +70,39 @@ jobs:
 
       - name: Run PHPUnit
         run: composer test
+
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build runtime plugin directory
+        run: |
+          mkdir -p plugin-check-build/mikesoft-teamvault
+          rsync -a ./ plugin-check-build/mikesoft-teamvault/ \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.gitignore' \
+            --exclude='.phpunit.cache' \
+            --exclude='.wordpress-org' \
+            --exclude='AGENTS.md' \
+            --exclude='CONTRIBUTING.md' \
+            --exclude='README.md' \
+            --exclude='SECURITY.md' \
+            --exclude='composer.json' \
+            --exclude='composer.lock' \
+            --exclude='docs' \
+            --exclude='plugin-check-build' \
+            --exclude='tests' \
+            --exclude='tools' \
+            --exclude='vendor'
+
+      - name: Run WordPress Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: plugin-check-build/mikesoft-teamvault
+          slug: mikesoft-teamvault
+          include-experimental: false

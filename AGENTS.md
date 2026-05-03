@@ -17,6 +17,8 @@ composer ci
 
 `composer lint` checks PHP syntax across repository PHP files outside generated dependencies. `composer test` runs the PHPUnit suite with `tests/bootstrap.php`. `composer ci` runs lint and tests together, matching the local verification flow used before releases.
 
+GitHub Actions also runs WordPress Plugin Check against a clean runtime build. Keep repository-only files out of that build.
+
 Release packaging and WordPress.org deployment tooling lives in the sibling workspace `deployment/`, not inside this public plugin package.
 
 ## Coding Style & Naming Conventions
