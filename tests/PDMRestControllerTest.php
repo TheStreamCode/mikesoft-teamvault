@@ -301,6 +301,27 @@ final class PDMRestControllerTest extends TestCase
         unset($_FILES['file']);
     }
 
+    public function test_search_users_does_not_expose_email_addresses(): void
+    {
+        $GLOBALS['pdm_test_users'] = [
+            7 => (object) [
+                'ID' => 7,
+                'user_login' => 'editor',
+                'user_email' => 'editor@example.test',
+                'display_name' => 'Editorial User',
+            ],
+        ];
+
+        $controller = $this->buildController($this->createMock(MSTV_Repository_Folders::class));
+        $response = $controller->search_users(new WP_REST_Request(['q' => 'edi']));
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertSame(7, $response->data['data'][0]['id']);
+        self::assertArrayNotHasKey('email', $response->data['data'][0]);
+
+        $GLOBALS['pdm_test_users'] = [];
+    }
+
     private function buildController(MSTV_Repository_Folders $folderRepo): MSTV_REST_Controller
     {
         $settings = new MSTV_Settings();

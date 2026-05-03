@@ -113,9 +113,7 @@ class MSTV_Preview
             );
         }
 
-        $contents = $this->storage->get_filesystem()->read_absolute_file($path);
-
-        if ($contents === false) {
+        if (!$this->stream_absolute_file($path)) {
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -123,10 +121,36 @@ class MSTV_Preview
             );
         }
 
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary preview stream output must not be escaped.
-        echo $contents;
-
         exit;
+    }
+
+    private function stream_absolute_file(string $path): bool
+    {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Authenticated binary previews need chunked streaming; WP_Filesystem::get_contents() loads full files into memory.
+        $handle = @fopen($path, 'rb');
+
+        if ($handle === false) {
+            return false;
+        }
+
+        while (!feof($handle)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Authenticated binary previews need chunked streaming; WP_Filesystem::get_contents() loads full files into memory.
+            $chunk = fread($handle, 1048576);
+            if ($chunk === false) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
+                fclose($handle);
+                return false;
+            }
+
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary preview stream output must not be escaped.
+            echo $chunk;
+            flush();
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
+        fclose($handle);
+
+        return true;
     }
 
     private function sanitize_filename(string $filename): string

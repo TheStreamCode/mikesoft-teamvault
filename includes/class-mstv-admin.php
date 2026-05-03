@@ -58,7 +58,7 @@ class MSTV_Admin
             'mikesoft-teamvault',
             __('Settings', 'mikesoft-teamvault'),
             __('Settings', 'mikesoft-teamvault'),
-            MSTV_Capabilities::CAP_MANAGE,
+            'manage_options',
             'mikesoft-teamvault-settings',
             [$this, 'render_settings_page']
         );
@@ -67,7 +67,7 @@ class MSTV_Admin
             'mikesoft-teamvault',
             __('Activity Log', 'mikesoft-teamvault'),
             __('Activity Log', 'mikesoft-teamvault'),
-            MSTV_Capabilities::CAP_MANAGE,
+            'manage_options',
             'mikesoft-teamvault-logs',
             [$this, 'render_logs_page']
         );
@@ -90,7 +90,7 @@ class MSTV_Admin
 
     public function render_settings_page(): void
     {
-        if (!$this->current_user_can_manage()) {
+        if (!$this->current_user_can_admin()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
@@ -112,12 +112,11 @@ class MSTV_Admin
 
     public function render_logs_page(): void
     {
-        if (!$this->current_user_can_manage()) {
+        if (!$this->current_user_can_admin()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
         $mstv_repo = new MSTV_Repository_Logs();
-        $mstv_allowed_per_page = [25, 50, 100, 200];
         $mstv_allowed_per_page = [25, 50, 100, 200];
         $mstv_current_page = filter_input(INPUT_GET, 'paged', FILTER_VALIDATE_INT);
         $mstv_selected_per_page = filter_input(INPUT_GET, 'per_page', FILTER_VALIDATE_INT);
@@ -138,7 +137,7 @@ class MSTV_Admin
 
     public function handle_save_settings(): void
     {
-        if (!$this->current_user_can_manage()) {
+        if (!$this->current_user_can_admin()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
@@ -202,7 +201,7 @@ class MSTV_Admin
 
     public function handle_cleanup_orphans(): void
     {
-        if (!$this->current_user_can_manage()) {
+        if (!$this->current_user_can_admin()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
@@ -223,7 +222,7 @@ class MSTV_Admin
 
     public function handle_reindex_storage(): void
     {
-        if (!$this->current_user_can_manage()) {
+        if (!$this->current_user_can_admin()) {
             wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
         }
 
@@ -390,5 +389,12 @@ class MSTV_Admin
         $auth = new MSTV_Auth($this->settings);
 
         return $auth->can_access();
+    }
+
+    private function current_user_can_admin(): bool
+    {
+        $auth = new MSTV_Auth($this->settings);
+
+        return $auth->can_admin();
     }
 }

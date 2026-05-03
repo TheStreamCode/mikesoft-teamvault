@@ -165,9 +165,7 @@ class MSTV_Storage
             wp_mkdir_p($targetDir);
         }
 
-        $contents = @file_get_contents($uploadedFile['tmp_name']);
-
-        if ($contents === false || !$this->filesystem->write_file($relativePath, $contents)) {
+        if (!$this->copy_uploaded_file((string) $uploadedFile['tmp_name'], $fullPath)) {
             return [
                 'success' => false,
                 'error' => __('Unable to save the file.', 'mikesoft-teamvault'),
@@ -525,6 +523,52 @@ class MSTV_Storage
             return $filename;
         }
         return rtrim($folderPath, '/\\') . '/' . $filename;
+    }
+
+    private function copy_uploaded_file(string $sourcePath, string $destinationPath): bool
+    {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Uploads are already validated with is_uploaded_file(); chunked copy avoids loading the full upload into memory.
+        $source = @fopen($sourcePath, 'rb');
+        if ($source === false) {
+            return false;
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Destination is a verified plugin storage path; chunked copy avoids loading the full upload into memory.
+        $destination = @fopen($destinationPath, 'wb');
+        if ($destination === false) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked upload storage.
+            fclose($source);
+            return false;
+        }
+
+        $success = true;
+
+        while (!feof($source)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Chunked upload storage avoids loading the full upload into memory.
+            $chunk = fread($source, 1048576);
+            if ($chunk === false) {
+                $success = false;
+                break;
+            }
+
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Chunked upload storage writes to a verified plugin storage path.
+            $written = fwrite($destination, $chunk);
+            if ($written === false || $written !== strlen($chunk)) {
+                $success = false;
+                break;
+            }
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked upload storage.
+        fclose($source);
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked upload storage.
+        fclose($destination);
+
+        if (!$success) {
+            wp_delete_file($destinationPath);
+        }
+
+        return $success;
     }
 
     private function build_folder_path(string $parentPath, string $slug): string

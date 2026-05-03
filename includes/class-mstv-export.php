@@ -369,9 +369,7 @@ class MSTV_Export
             );
         }
 
-        $contents = $this->storage->get_filesystem()->read_absolute_file($zipPath);
-
-        if ($contents === false) {
+        if (!$this->stream_zip_file($zipPath)) {
             wp_delete_file($zipPath);
 
             wp_die(
@@ -381,11 +379,37 @@ class MSTV_Export
             );
         }
 
-        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary ZIP stream output must not be escaped.
-        echo $contents;
-
         wp_delete_file($zipPath);
 
         exit;
+    }
+
+    private function stream_zip_file(string $zipPath): bool
+    {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- ZIP exports need chunked streaming; WP_Filesystem::get_contents() loads full archives into memory.
+        $handle = @fopen($zipPath, 'rb');
+
+        if ($handle === false) {
+            return false;
+        }
+
+        while (!feof($handle)) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- ZIP exports need chunked streaming; WP_Filesystem::get_contents() loads full archives into memory.
+            $chunk = fread($handle, 1048576);
+            if ($chunk === false) {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
+                fclose($handle);
+                return false;
+            }
+
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary ZIP stream output must not be escaped.
+            echo $chunk;
+            flush();
+        }
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
+        fclose($handle);
+
+        return true;
     }
 }

@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 1.1.35
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,6 +41,7 @@ Privacy and access control:
 
 * Files are stored outside the normal Media Library workflow
 * Access is controlled by the `manage_private_documents` capability
+* Settings, activity logs, whitelist management, and maintenance tools require administrator-level `manage_options` access
 * Optional whitelist mode adds a second authorization layer for selected users
 * Cleanup and reindex tools help recover from migrations with missing binaries
 
@@ -109,6 +110,19 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.0.0 =
+* Major security and reliability release for stricter administrator-only controls.
+* Settings, activity logs, whitelist management, maintenance tools, and uninstall data controls now require administrator-level access.
+* Reduced user data exposure by removing email search and email fields from the user search REST response.
+* Improved large-file handling for uploads, downloads, previews, and ZIP exports while keeping Plugin Checker compatibility annotations in place.
+* Added regression coverage for administrator-only controls and user search privacy.
+
+= 1.3.6 =
+* Restricted TeamVault settings, activity logs, whitelist management, and maintenance tools to administrator-level access.
+* Reduced user search exposure by removing email search and email data from the REST response.
+* Improved large-file handling by streaming uploads, downloads, previews, and ZIP exports in chunks instead of loading full files into memory.
+* Added regression coverage for administrator-only controls and user search privacy.
+
 = 1.1.35 =
 * Improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging.
 * Expanded FAQs to better explain private access, Media Library differences, and user access control.
@@ -138,6 +152,14 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+
+Major security and reliability update. Recommended for all installations that use delegated document access or large private file transfers.
+
+= 1.3.6 =
+
+Recommended security and reliability update for stricter admin-only settings access, reduced user data exposure, and safer large-file streaming.
 
 = 1.1.35 =
 

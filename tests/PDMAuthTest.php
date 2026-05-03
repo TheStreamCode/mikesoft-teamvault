@@ -12,6 +12,7 @@ final class PDMAuthTest extends TestCase
             'mstv_use_user_whitelist' => false,
             'mstv_allowed_users' => [],
         ];
+        $GLOBALS['pdm_test_current_user_caps'] = [];
         $GLOBALS['pdm_test_is_user_logged_in'] = true;
         $GLOBALS['pdm_test_current_user_can'] = true;
         $GLOBALS['pdm_test_current_user_id'] = 5;
@@ -45,5 +46,21 @@ final class PDMAuthTest extends TestCase
 
         self::assertInstanceOf(WP_Error::class, $result);
         self::assertSame('mstv_forbidden', $result->code);
+    }
+
+    public function test_can_admin_requires_manage_options(): void
+    {
+        $GLOBALS['pdm_test_current_user_caps'] = [
+            MSTV_Capabilities::CAP_MANAGE => true,
+            'manage_options' => false,
+        ];
+
+        $auth = new MSTV_Auth(new MSTV_Settings());
+
+        self::assertFalse($auth->can_admin());
+
+        $GLOBALS['pdm_test_current_user_caps']['manage_options'] = true;
+
+        self::assertTrue($auth->can_admin());
     }
 }

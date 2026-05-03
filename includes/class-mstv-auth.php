@@ -31,6 +31,11 @@ class MSTV_Auth
         return $this->can_access();
     }
 
+    public function can_admin(): bool
+    {
+        return is_user_logged_in() && current_user_can('manage_options');
+    }
+
     public function verify_request(\WP_REST_Request $request): bool|\WP_Error
     {
         if (!is_user_logged_in()) {
@@ -42,6 +47,32 @@ class MSTV_Auth
         }
 
         if (!$this->has_effective_access()) {
+            return new \WP_Error(
+                'mstv_forbidden',
+                __('You do not have permission to access this resource.', 'mikesoft-teamvault'),
+                ['status' => 403]
+            );
+        }
+
+        $nonceCheck = $this->verify_nonce($request);
+        if ($nonceCheck instanceof \WP_Error) {
+            return $nonceCheck;
+        }
+
+        return true;
+    }
+
+    public function verify_admin_request(\WP_REST_Request $request): bool|\WP_Error
+    {
+        if (!is_user_logged_in()) {
+            return new \WP_Error(
+                'mstv_unauthorized',
+                __('Unauthorized access. Please log in.', 'mikesoft-teamvault'),
+                ['status' => 401]
+            );
+        }
+
+        if (!$this->can_admin()) {
             return new \WP_Error(
                 'mstv_forbidden',
                 __('You do not have permission to access this resource.', 'mikesoft-teamvault'),

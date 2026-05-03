@@ -33,7 +33,7 @@ The deploy script already validates plugin version and stable tag alignment.
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 1.1.35 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 2.0.0 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
 ```
 
 Useful switches:
