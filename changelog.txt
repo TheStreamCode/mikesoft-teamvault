@@ -1,5 +1,11 @@
 Mikesoft TeamVault Changelog
 
+2.0.1 - 2026-05-03
+- Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation
+- Completed Italian interface translation coverage and removed stale translation entries
+- Fixed the move-file validation message shown when a file is already in the destination folder
+- Added automated PHPUnit coverage to keep the Italian translation map aligned with plugin UI strings
+
 2.0.0 - 2026-05-03
 - Major security and reliability release for stricter administrator-only plugin controls
 - Restricted settings, activity logs, whitelist management, maintenance tools, and uninstall data controls to administrator-level access

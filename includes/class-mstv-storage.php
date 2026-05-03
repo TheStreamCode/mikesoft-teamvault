@@ -335,7 +335,7 @@ class MSTV_Storage
         if ($files->folder_id === $targetFolderId) {
             return [
                 'success' => false,
-                'error' => __('The files is already in the destination folder.', 'mikesoft-teamvault'),
+                'error' => __('The file is already in the destination folder.', 'mikesoft-teamvault'),
             ];
         }
 
