@@ -66,6 +66,7 @@ Repository-only material must stay out of the WordPress.org package, including:
 
 - Keep `.wordpress-org/assets/icon-256x256.png` as the primary full-color icon for the WordPress.org listing.
 - Keep `.wordpress-org/assets/icon.svg` aligned with the public listing brand.
+- Keep `.wordpress-org/assets/screenshot-1.jpg` aligned with the current TeamVault file manager interface.
 - Keep `assets/logo-teamvault.svg` reserved for the plugin admin experience.
 
 The deploy script copies runtime plugin files and WordPress.org listing assets from separate source locations.

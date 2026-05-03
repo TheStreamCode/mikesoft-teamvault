@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -108,7 +108,16 @@ The sidebar widget shows only the space used by TeamVault files. On many shared 
 
 By default, TeamVault keeps its data for safety. You can enable full data removal before uninstall if you want the plugin to delete its files, folders, logs, and settings.
 
+== Screenshots ==
+
+1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
+
 == Changelog ==
+
+= 2.0.1 =
+* Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation.
+* Completed Italian interface translation coverage and removed stale translation entries.
+* Fixed the move-file validation message shown when a file is already in the destination folder.
 
 = 2.0.0 =
 * Major security and reliability release for stricter administrator-only controls.
@@ -152,6 +161,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.1 =
+
+Recommended maintenance update for complete Italian interface coverage, clearer file move messaging, and updated plugin screenshots.
 
 = 2.0.0 =
 

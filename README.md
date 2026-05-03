@@ -11,6 +11,8 @@ It is designed for teams that need to organize, preview, export, and share sensi
 
 Files are stored in protected storage and delivered through authenticated WordPress handlers instead of public media URLs.
 
+![TeamVault file manager interface](.wordpress-org/assets/screenshot-1.jpg)
+
 Typical use cases include:
 
 - internal company documents
@@ -108,6 +110,7 @@ This repository is the public source mirror for the plugin.
 
 - `.wordpress-org/assets/icon-256x256.png` is the primary full-color icon for the WordPress.org listing.
 - `.wordpress-org/assets/icon.svg` is the scalable companion asset for the WordPress.org listing.
+- `.wordpress-org/assets/screenshot-1.jpg` is the primary file manager screenshot used by the WordPress.org listing and this README.
 - `assets/logo-teamvault.svg` is the in-plugin admin logo used inside the TeamVault interface.
 
 These assets serve different surfaces and should stay aligned to the same brand without forcing the runtime plugin UI to match WordPress.org packaging constraints.

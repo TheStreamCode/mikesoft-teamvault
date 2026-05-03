@@ -330,6 +330,7 @@ class FakePDMUser
 }
 
 require_once __DIR__ . '/../includes/class-mstv-capabilities.php';
+require_once __DIR__ . '/../includes/class-mstv-i18n.php';
 require_once __DIR__ . '/../includes/class-mstv-settings.php';
 require_once __DIR__ . '/../includes/class-mstv-auth.php';
 require_once __DIR__ . '/../includes/class-mstv-helpers.php';
