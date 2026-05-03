@@ -31,7 +31,7 @@ Tests use PHPUnit 11 with lightweight WordPress stubs in `tests/bootstrap.php`. 
 
 ## Commit & Pull Request Guidelines
 
-Keep commit messages short and imperative, for example `Release version 2.0.1` or `Improve GitHub project setup`. Pull requests should include a concise summary, verification commands, screenshots for UI changes, and notes about version/readme alignment when release metadata changes. `main` is protected; changes should pass all required CI checks before merge.
+Keep commit messages short and imperative, for example `Release version 2.0.2` or `Improve GitHub project setup`. Pull requests should include a concise summary, verification commands, screenshots for UI changes, and notes about version/readme alignment when release metadata changes. `main` is protected; changes should pass all required CI checks before merge.
 
 ## Security & Release Notes
 

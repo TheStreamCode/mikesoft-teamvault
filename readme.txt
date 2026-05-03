@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -114,6 +114,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.0.2 =
+* Fixed TeamVault REST requests on sites that use plain permalinks instead of pretty permalinks.
+* Improved upload feedback when PHP rejects an oversized request before a file reaches TeamVault validation.
+
 = 2.0.1 =
 * Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation.
 * Completed Italian interface translation coverage and removed stale translation entries.
@@ -161,6 +165,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.2 =
+
+Recommended maintenance update for sites using plain permalinks and for clearer oversized upload errors.
 
 = 2.0.1 =
 

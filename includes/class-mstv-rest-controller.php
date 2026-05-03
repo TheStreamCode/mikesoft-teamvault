@@ -426,6 +426,62 @@ class MSTV_REST_Controller
         ];
     }
 
+    private function is_missing_upload_likely_size_limit(): bool
+    {
+        $contentLength = $this->get_request_content_length();
+
+        if ($contentLength <= 0) {
+            return false;
+        }
+
+        $limits = array_filter([
+            $this->parse_php_size((string) ini_get('post_max_size')),
+            $this->parse_php_size((string) ini_get('upload_max_filesize')),
+            (int) $this->settings->get_max_file_size(),
+        ]);
+
+        if (empty($limits)) {
+            return false;
+        }
+
+        return $contentLength > min($limits);
+    }
+
+    private function get_request_content_length(): int
+    {
+        if (!isset($_SERVER['CONTENT_LENGTH']) || is_array($_SERVER['CONTENT_LENGTH'])) {
+            return 0;
+        }
+
+        return absint(wp_unslash($_SERVER['CONTENT_LENGTH']));
+    }
+
+    private function parse_php_size(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $number = (float) $value;
+
+        switch ($unit) {
+            case 'g':
+                $number *= 1024;
+                // no break
+            case 'm':
+                $number *= 1024;
+                // no break
+            case 'k':
+                $number *= 1024;
+                break;
+        }
+
+        return max(0, (int) $number);
+    }
+
     public function upload_file(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         ob_start();
@@ -433,6 +489,10 @@ class MSTV_REST_Controller
         // phpcs:ignore WordPress.Security.NonceVerification.Missing -- REST nonce is enforced in the permission callback.
         if (empty($_FILES['file'])) {
             ob_end_clean();
+            if ($this->is_missing_upload_likely_size_limit()) {
+                return new \WP_Error('upload_too_large', __('The file exceeds the maximum size configured on the server.', 'mikesoft-teamvault'), ['status' => 400]);
+            }
+
             return new \WP_Error('no_files', __('No file uploaded.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
