@@ -57,6 +57,7 @@ The deployment script:
 Repository-only material must stay out of the WordPress.org package, including:
 
 - `README.md`
+- `AGENTS.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
 - `docs/`
