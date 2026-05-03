@@ -206,19 +206,19 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/settings', [
             'methods' => 'GET',
             'callback' => [$this, 'get_settings'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_admin_request'],
         ]);
 
         register_rest_route(self::NAMESPACE, '/settings', [
             'methods' => 'POST',
             'callback' => [$this, 'update_settings'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_admin_request'],
         ]);
 
         register_rest_route(self::NAMESPACE, '/logs', [
             'methods' => 'GET',
             'callback' => [$this, 'get_logs'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_admin_request'],
             'args' => [
                 'page' => [
                     'required' => false,
@@ -244,7 +244,7 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/users/search', [
             'methods' => 'GET',
             'callback' => [$this, 'search_users'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_admin_request'],
             'args' => [
                 'q' => ['required' => true, 'type' => 'string'],
             ],
@@ -806,7 +806,7 @@ class MSTV_REST_Controller
 
         $users = get_users([
             'search' => "*{$query}*",
-            'search_columns' => ['user_login', 'user_email', 'display_name'],
+            'search_columns' => ['user_login', 'display_name'],
             'number' => 10,
             'orderby' => 'display_name',
             'order' => 'ASC',
@@ -817,7 +817,6 @@ class MSTV_REST_Controller
                 'id' => $user->ID,
                 'login' => $user->user_login,
                 'display_name' => $user->display_name,
-                'email' => $user->user_email,
                 'avatar' => get_avatar_url($user->ID, ['size' => 32]),
             ];
         }, $users);

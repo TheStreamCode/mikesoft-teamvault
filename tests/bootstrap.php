@@ -9,6 +9,7 @@ define('MINUTE_IN_SECONDS', 60);
 
 $GLOBALS['pdm_test_options'] = [];
 $GLOBALS['pdm_test_current_user_can'] = false;
+$GLOBALS['pdm_test_current_user_caps'] = [];
 $GLOBALS['pdm_test_is_user_logged_in'] = false;
 $GLOBALS['pdm_test_current_user_id'] = 0;
 $GLOBALS['pdm_test_users'] = [];
@@ -95,6 +96,10 @@ function is_user_logged_in()
 
 function current_user_can($capability)
 {
+    if (!empty($GLOBALS['pdm_test_current_user_caps'])) {
+        return !empty($GLOBALS['pdm_test_current_user_caps'][$capability]);
+    }
+
     return (bool) $GLOBALS['pdm_test_current_user_can'];
 }
 
@@ -196,6 +201,11 @@ function get_users(array $args = [])
     return array_values(array_filter($users, static function ($user) use ($metaKey, $metaValue) {
         return (($GLOBALS['pdm_test_user_meta'][$user->ID][$metaKey] ?? null) === $metaValue);
     }));
+}
+
+function get_avatar_url($userId, array $args = [])
+{
+    return 'https://example.test/avatar/' . (int) $userId;
 }
 
 function wp_verify_nonce($nonce, $action)

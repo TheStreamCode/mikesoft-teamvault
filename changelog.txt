@@ -1,5 +1,20 @@
 Mikesoft TeamVault Changelog
 
+2.0.0 - 2026-05-03
+- Major security and reliability release for stricter administrator-only plugin controls
+- Restricted settings, activity logs, whitelist management, maintenance tools, and uninstall data controls to administrator-level access
+- Kept document workspace access on `manage_private_documents` so authorized editors can continue managing files without controlling plugin settings
+- Removed email search and email fields from the user search REST response to reduce unnecessary user data exposure
+- Improved large-file upload, download, preview, and ZIP export handling while keeping Plugin Checker compatibility annotations in place
+- Added regression tests for administrator-only controls and user search privacy
+
+1.3.6 - 2026-05-03
+- Restricted settings, activity logs, whitelist management, and maintenance tools to administrator-level `manage_options` access
+- Kept document workspace access on `manage_private_documents` so authorized editors can continue managing files without controlling plugin settings
+- Removed email search and email fields from the user search REST response to reduce unnecessary user data exposure
+- Streamed uploads, downloads, previews, and ZIP exports in chunks to avoid loading large files fully into PHP memory
+- Added regression tests for administrator-only controls and user search privacy
+
 1.1.35 - 2026-04-18
 - Improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging
 - Expanded FAQ content to better explain private access, Media Library differences, and user access control

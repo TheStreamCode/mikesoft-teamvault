@@ -59,9 +59,10 @@ Install the plugin from the [WordPress.org Plugin Directory](https://wordpress.o
 
 ## Access Model
 
-- The required capability is `manage_private_documents`.
+- File workspace access uses the `manage_private_documents` capability.
 - Administrators and Editors receive that capability on activation.
 - Optional whitelist mode adds a second authorization layer for selected users.
+- Settings, activity logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
 
 When whitelist mode is enabled, keep the current administrator account in the allowed users list before saving settings.
 
