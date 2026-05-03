@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+2.0.2 - 2026-05-03
+- Fixed TeamVault REST request URLs on sites that use plain permalinks, preventing 404 errors while loading folders and files
+- Improved upload feedback when PHP rejects an oversized request before a file reaches TeamVault validation
+- Added regression coverage for query-style REST bases and oversized empty upload requests
+
 2.0.1 - 2026-05-03
 - Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation
 - Completed Italian interface translation coverage and removed stale translation entries

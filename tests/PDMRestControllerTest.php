@@ -301,6 +301,20 @@ final class PDMRestControllerTest extends TestCase
         unset($_FILES['file']);
     }
 
+    public function test_upload_file_reports_size_limit_when_php_drops_oversized_request(): void
+    {
+        unset($_FILES['file']);
+        $_SERVER['CONTENT_LENGTH'] = (string) (1024 * 1024 * 1024);
+
+        $controller = $this->buildController($this->createMock(MSTV_Repository_Folders::class));
+        $response = $controller->upload_file(new WP_REST_Request());
+
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('The file exceeds the maximum size configured on the server.', $response->get_error_message());
+
+        unset($_SERVER['CONTENT_LENGTH']);
+    }
+
     public function test_search_users_does_not_expose_email_addresses(): void
     {
         $GLOBALS['pdm_test_users'] = [

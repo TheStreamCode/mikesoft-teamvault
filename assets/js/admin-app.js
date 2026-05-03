@@ -2039,6 +2039,17 @@
         buildApiUrl(endpoint) {
             const base = String(mstvConfig.restUrl || '').replace(/\/+$/, '');
             const path = String(endpoint || '').replace(/^\/+/, '');
+
+            if (base.includes('?')) {
+                const qIdx = path.indexOf('?');
+
+                if (qIdx === -1) {
+                    return `${base}/${path}`;
+                }
+
+                return `${base}/${path.substring(0, qIdx)}&${path.substring(qIdx + 1)}`;
+            }
+
             return `${base}/${path}`;
         },
 
