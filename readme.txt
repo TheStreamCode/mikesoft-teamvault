@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 2.0.4 =
+* Improved the upload error message when a file exceeds the size limit so it now shows the file name, its actual size, and the configured maximum.
+* Added a client-side size check before upload so users get immediate feedback without waiting for a server round-trip.
 
 = 2.0.3 =
 * Hardened TeamVault filesystem boundary checks and rejected symlink traversal inside private storage operations.

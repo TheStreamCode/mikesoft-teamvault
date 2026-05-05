@@ -1,5 +1,8 @@
 Mikesoft TeamVault Changelog
 
+2.0.4 - 2026-05-05
+- Improved upload error message when a file exceeds the size limit: the notice now shows the file name, its actual size, and the configured maximum, with a client-side check that gives immediate feedback before the request is sent to the server
+
 2.0.3 - 2026-05-03
 - Hardened filesystem path verification for private storage operations, including traversal and symlink rejection
 - Added safer storage reindex validation so unsafe or disallowed files are skipped and reported to administrators

@@ -1426,6 +1426,15 @@
         },
 
         async uploadFile(file) {
+            if (mstvConfig.maxFileSize > 0 && file.size > mstvConfig.maxFileSize) {
+                const msg = mstvConfig.i18n.fileTooLarge
+                    .replace('{fileName}', file.name)
+                    .replace('{fileSize}', this.formatBytes(file.size))
+                    .replace('{maxSize}', this.formatBytes(mstvConfig.maxFileSize));
+                this.showToast(msg, 'error');
+                return;
+            }
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('display_name', file.name.replace(/\.[^/.]+$/, ''));
@@ -2057,6 +2066,14 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        },
+
+        formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
         },
 
         debounce(func, wait) {
