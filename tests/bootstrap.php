@@ -252,7 +252,7 @@ function wp_verify_nonce($nonce, $action)
 function wp_upload_dir()
 {
     return [
-        'basedir' => sys_get_temp_dir(),
+        'basedir' => sys_get_temp_dir() . '/mstv-test-uploads',
     ];
 }
 
