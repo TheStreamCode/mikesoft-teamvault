@@ -426,6 +426,17 @@ class MSTV_REST_Controller
         ];
     }
 
+    private function get_effective_upload_limit(): int
+    {
+        $limits = array_filter([
+            $this->parse_php_size((string) ini_get('post_max_size')),
+            $this->parse_php_size((string) ini_get('upload_max_filesize')),
+            (int) $this->settings->get_max_file_size(),
+        ]);
+
+        return !empty($limits) ? min($limits) : (int) $this->settings->get_max_file_size();
+    }
+
     private function is_missing_upload_likely_size_limit(): bool
     {
         $contentLength = $this->get_request_content_length();
@@ -434,17 +445,7 @@ class MSTV_REST_Controller
             return false;
         }
 
-        $limits = array_filter([
-            $this->parse_php_size((string) ini_get('post_max_size')),
-            $this->parse_php_size((string) ini_get('upload_max_filesize')),
-            (int) $this->settings->get_max_file_size(),
-        ]);
-
-        if (empty($limits)) {
-            return false;
-        }
-
-        return $contentLength > min($limits);
+        return $contentLength > $this->get_effective_upload_limit();
     }
 
     private function get_request_content_length(): int
@@ -490,7 +491,12 @@ class MSTV_REST_Controller
         if (empty($_FILES['file'])) {
             ob_end_clean();
             if ($this->is_missing_upload_likely_size_limit()) {
-                return new \WP_Error('upload_too_large', __('The file exceeds the maximum size configured on the server.', 'mikesoft-teamvault'), ['status' => 400]);
+                $limitFormatted = MSTV_Helpers::format_filesize($this->get_effective_upload_limit());
+                return new \WP_Error('upload_too_large', sprintf(
+                    /* translators: %s: maximum allowed file size (e.g. "50 MB"). */
+                    __('The file exceeds the maximum allowed size (%s). Please upload a smaller file.', 'mikesoft-teamvault'),
+                    $limitFormatted
+                ), ['status' => 400]);
             }
 
             return new \WP_Error('no_files', __('No file uploaded.', 'mikesoft-teamvault'), ['status' => 400]);

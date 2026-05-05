@@ -302,6 +302,11 @@ class WP_Error
     {
         return $this->message;
     }
+
+    public function get_error_code(): string
+    {
+        return $this->code;
+    }
 }
 
 class WP_REST_Request

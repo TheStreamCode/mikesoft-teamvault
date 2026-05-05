@@ -310,7 +310,8 @@ final class PDMRestControllerTest extends TestCase
         $response = $controller->upload_file(new WP_REST_Request());
 
         self::assertInstanceOf(WP_Error::class, $response);
-        self::assertSame('The file exceeds the maximum size configured on the server.', $response->get_error_message());
+        self::assertSame('upload_too_large', $response->get_error_code());
+        self::assertStringContainsString('exceeds the maximum allowed size', $response->get_error_message());
 
         unset($_SERVER['CONTENT_LENGTH']);
     }

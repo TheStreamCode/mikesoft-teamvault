@@ -50,6 +50,7 @@ class MSTV_Assets
                 'confirmDeleteFolder' => __('Are you sure you want to delete this folder? It must be empty.', 'mikesoft-teamvault'),
                 'uploadSuccess' => __('File uploaded successfully.', 'mikesoft-teamvault'),
                 'uploadError' => __('Error while uploading the file.', 'mikesoft-teamvault'),
+                'fileTooLarge' => __('"{fileName}" ({fileSize}) exceeds the maximum allowed size of {maxSize}.', 'mikesoft-teamvault'),
                 'deleteSuccess' => __('Item deleted successfully.', 'mikesoft-teamvault'),
                 'deleteError' => __('Error while deleting.', 'mikesoft-teamvault'),
                 'renameSuccess' => __('Renamed successfully.', 'mikesoft-teamvault'),

@@ -172,6 +172,8 @@ class MSTV_I18n
         'The file contains potentially dangerous content.' => 'Il file contiene contenuto potenzialmente pericoloso.',
         'The file exceeds the maximum size configured in the form.' => 'Il file supera la dimensione massima configurata nel form.',
         'The file exceeds the maximum size configured on the server.' => 'Il file supera la dimensione massima configurata nel server.',
+        'The file exceeds the maximum allowed size (%s). Please upload a smaller file.' => 'Il file supera la dimensione massima consentita (%s). Carica un file più piccolo.',
+        '"{fileName}" ({fileSize}) exceeds the maximum allowed size of {maxSize}.' => '"{fileName}" ({fileSize}) supera la dimensione massima consentita di {maxSize}.',
         'The file is already in the destination folder.' => 'Il file è già nella cartella di destinazione.',
         'The file name cannot be empty.' => 'Il nome del file non può essere vuoto.',
         'The file name contains invalid characters.' => 'Il nome del file contiene caratteri non validi.',
