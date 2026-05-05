@@ -57,7 +57,7 @@ final class PDMSettingsTest extends TestCase
 
     public function test_detects_storage_path_outside_wordpress_uploads(): void
     {
-        $externalPath = dirname(sys_get_temp_dir()) . '/mstv-private-documents';
+        $externalPath = sys_get_temp_dir() . '/mstv-private-documents';
         if (!is_dir($externalPath)) {
             mkdir($externalPath, 0777, true);
         }
