@@ -92,6 +92,31 @@ function wp_delete_file($path)
     return file_exists($path) ? unlink($path) : true;
 }
 
+function is_multisite()
+{
+    return false;
+}
+
+function get_sites(array $args = [])
+{
+    return [];
+}
+
+function switch_to_blog($blogId)
+{
+    return true;
+}
+
+function restore_current_blog()
+{
+    return true;
+}
+
+function esc_sql($data)
+{
+    return is_scalar($data) ? addslashes((string) $data) : '';
+}
+
 function wp_tempnam($filename = '', $dir = '')
 {
     $dir = $dir !== '' ? (string) $dir : sys_get_temp_dir();

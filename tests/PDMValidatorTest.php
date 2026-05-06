@@ -27,6 +27,20 @@ final class PDMValidatorTest extends TestCase
         self::assertSame(['pdf', 'jpg', 'txt'], $settings->get_allowed_extensions());
     }
 
+    public function test_validator_rejects_svg_even_if_extensions_are_filtered_back_in(): void
+    {
+        $settings = new class extends MSTV_Settings {
+            public function get_allowed_extensions(): array
+            {
+                return ['svg'];
+            }
+        };
+
+        $validator = new MSTV_Validator($settings);
+
+        self::assertFalse($validator->validate_extension('svg'));
+    }
+
     public function test_scan_file_content_rejects_svg_event_handlers(): void
     {
         $settings = new MSTV_Settings();

@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.7
+Stable tag: 2.0.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,11 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.0.8 =
+* Hardened uninstall data removal so recursive storage cleanup refuses paths outside the storage root and does not follow symlinks.
+* Hardened upload validation so SVG remains blocked even if another extension filter tries to re-add it.
+* Confirmed WordPress.org listing translations should be handled through translate.wordpress.org instead of shipping locale-specific readme files.
+
 = 2.0.7 =
 * Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests.
 * Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions.
@@ -203,6 +208,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.8 =
+
+Recommended security hardening update. Strengthens uninstall cleanup boundaries and keeps SVG uploads blocked even if extension filters are customized.
 
 = 2.0.7 =
 

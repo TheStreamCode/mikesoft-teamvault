@@ -32,12 +32,18 @@ The deploy script already validates plugin version and stable tag alignment.
 8. Run the deployment script from the workspace root.
 9. Publish the matching GitHub release with the release ZIP attached.
 
+## WordPress.org Listing Translations
+
+Keep the shipped `readme.txt` in English. WordPress.org localizes plugin listing content through translate.wordpress.org, not through locale-specific files such as `readme-it_IT.txt` in the plugin package.
+
+For Italian listing copy, translate the plugin readme strings in the plugin's Development Readme project on translate.wordpress.org and wait for locale validation.
+
 ## Deployment Command
 
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 2.0.7 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 2.0.8 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
 ```
 
 Useful switches:

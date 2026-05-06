@@ -64,7 +64,7 @@ function mstv_uninstall_site(array $storage_path_usage = []) {
 
     foreach ($storage_paths as $storage_path) {
         if (mstv_is_safe_storage_path($storage_path, $default_storage_path, $storage_path_usage) && is_dir($storage_path)) {
-            mstv_recursive_delete($storage_path);
+            mstv_recursive_delete($storage_path, $storage_path);
         }
     }
 
@@ -153,7 +153,27 @@ function mstv_remove_granted_capabilities_for_site($blog_id) {
     }
 }
 
-function mstv_recursive_delete($path) {
+function mstv_recursive_delete($path, $root_path = null) {
+    $root_path = mstv_normalize_uninstall_path($root_path ?: $path);
+    $path = mstv_normalize_uninstall_path($path);
+
+    if ($path === '') {
+        return;
+    }
+
+    if (is_link($path)) {
+        if (!mstv_uninstall_entry_within_root($path, $root_path)) {
+            return;
+        }
+
+        wp_delete_file($path);
+        return;
+    }
+
+    if (!mstv_uninstall_path_within_root($path, $root_path)) {
+        return;
+    }
+
     if (!is_dir($path)) {
         wp_delete_file($path);
         return;
@@ -171,24 +191,94 @@ function mstv_recursive_delete($path) {
 
         $item_path = $path . DIRECTORY_SEPARATOR . $item;
 
+        if (is_link($item_path)) {
+            if (!mstv_uninstall_entry_within_root($item_path, $root_path)) {
+                continue;
+            }
+
+            wp_delete_file($item_path);
+            continue;
+        }
+
+        if (!mstv_uninstall_path_within_root($item_path, $root_path)) {
+            continue;
+        }
+
         if (is_dir($item_path)) {
-            mstv_recursive_delete($item_path);
+            mstv_recursive_delete($item_path, $root_path);
         } else {
             wp_delete_file($item_path);
         }
     }
 
-    require_once ABSPATH . 'wp-admin/includes/file.php';
+    $file_api = ABSPATH . 'wp-admin/includes/file.php';
+    if (file_exists($file_api)) {
+        require_once $file_api;
+    }
 
     global $wp_filesystem;
 
-    if (!$wp_filesystem) {
+    if (!$wp_filesystem && function_exists('WP_Filesystem')) {
         WP_Filesystem();
     }
 
     if ($wp_filesystem) {
         $wp_filesystem->rmdir($path, false);
+    } elseif (is_dir($path) && !is_link($path)) {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Uninstall fallback when WP_Filesystem is unavailable.
+        @rmdir($path);
     }
+}
+
+function mstv_uninstall_path_within_root($path, $root_path) {
+    $path = mstv_normalize_uninstall_path($path);
+    $root_path = mstv_normalize_uninstall_path($root_path);
+
+    if ($path === '' || $root_path === '') {
+        return false;
+    }
+
+    $real_root = realpath($root_path);
+    if ($real_root === false) {
+        return false;
+    }
+
+    $real_path = realpath($path);
+    if ($real_path === false) {
+        $parent = realpath(dirname($path));
+        if ($parent === false) {
+            return false;
+        }
+        $real_path = $parent . DIRECTORY_SEPARATOR . basename($path);
+    }
+
+    $normalized_root = trailingslashit(wp_normalize_path($real_root));
+    $normalized_path = wp_normalize_path($real_path);
+
+    return $normalized_path === untrailingslashit($normalized_root)
+        || strpos(trailingslashit($normalized_path), $normalized_root) === 0;
+}
+
+function mstv_uninstall_entry_within_root($path, $root_path) {
+    $path = mstv_normalize_uninstall_path($path);
+    $root_path = mstv_normalize_uninstall_path($root_path);
+
+    if ($path === '' || $root_path === '') {
+        return false;
+    }
+
+    $real_root = realpath($root_path);
+    $real_parent = realpath(dirname($path));
+
+    if ($real_root === false || $real_parent === false) {
+        return false;
+    }
+
+    $normalized_root = trailingslashit(wp_normalize_path($real_root));
+    $normalized_path = wp_normalize_path($real_parent . DIRECTORY_SEPARATOR . basename($path));
+
+    return $normalized_path === untrailingslashit($normalized_root)
+        || strpos(trailingslashit($normalized_path), $normalized_root) === 0;
 }
 
 function mstv_normalize_uninstall_path($path) {
