@@ -119,91 +119,34 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 == Changelog ==
 
 = 2.0.8 =
-* Hardened uninstall data removal so recursive storage cleanup refuses paths outside the storage root and does not follow symlinks.
-* Hardened upload validation so SVG remains blocked even if another extension filter tries to re-add it.
-* Confirmed WordPress.org listing translations should be handled through translate.wordpress.org instead of shipping locale-specific readme files.
+* Security hardening for uninstall data removal so storage cleanup stays inside the TeamVault storage root and does not follow symlinks.
+* Security hardening for upload validation so SVG remains blocked even if custom extension filters try to re-enable it.
+* Documentation update confirming that WordPress.org listing translations are handled through translate.wordpress.org.
 
 = 2.0.7 =
-* Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests.
-* Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions.
-* Improved client-side upload size validation so it also respects the effective PHP upload and post limits before sending oversized files.
-* Split REST permission callbacks into explicit read, write, and delete guards while preserving the current capability model.
-* Hardened ZIP export temporary file generation and readability checks.
+* Improved file browser refresh reliability in local and proxy-backed environments.
+* Improved oversized upload feedback before the browser sends files that exceed effective PHP limits.
+* Split REST permission callbacks into clearer read, write, and delete guards.
+* Hardened ZIP export temporary file handling.
 * Updated the in-plugin admin logo color to TeamVault blue.
 
-= 2.0.6 =
-* Fixed file list not refreshing immediately after delete file, delete folder, rename file, rename folder, and move file operations.
-* Disabled HTTP caching for browser/search REST responses so local environments show changes immediately.
-* Fixed ZIP export temporary file collisions and readability checks.
-
 = 2.0.5 =
-* Fixed new files and folders not appearing immediately after upload or folder creation.
-* Fixed storage security notice reappearing on every page load with no way to dismiss it.
-* Fixed JavaScript event listener accumulation on context menu and folder tree toggle.
-* Fixed concurrent navigation requests corrupting the file list with stale data.
-* Hardened download and preview streams: readable check before headers, MIME type sanitized against response splitting.
-* Fixed several PHP correctness issues: wp_mkdir_p return value, finfo resource leak, tmp_name path handling, strtotime false guard.
-* Fixed XSS vector in user search autocomplete via unescaped username attribute.
-* Added sanitize_callback to REST API string parameters for WordPress.org compliance.
-
-= 2.0.4 =
-* Improved the upload error message when a file exceeds the size limit so it now shows the file name, its actual size, and the configured maximum.
-* Added a client-side size check before upload so users get immediate feedback without waiting for a server round-trip.
+* Fixed immediate visibility for newly uploaded files and newly created folders.
+* Fixed persistent storage notice dismissal and JavaScript listener accumulation.
+* Hardened download and preview streams before response headers are sent.
+* Fixed user search autocomplete escaping and REST parameter sanitization.
 
 = 2.0.3 =
-* Hardened TeamVault filesystem boundary checks and rejected symlink traversal inside private storage operations.
-* Added safer reindex validation so unsafe or disallowed files are skipped and reported.
-* Switched activity log IP capture to the direct server address instead of spoofable forwarding headers.
-* Added an administrator storage notice when the private document path is inside the public uploads tree.
+* Hardened private storage boundary checks and symlink traversal protection.
+* Added safer storage reindex validation and clearer administrator storage notices.
 * Changed new activations so only Administrators receive TeamVault document access by default.
-
-= 2.0.2 =
-* Fixed TeamVault REST requests on sites that use plain permalinks instead of pretty permalinks.
-* Improved upload feedback when PHP rejects an oversized request before a file reaches TeamVault validation.
-
-= 2.0.1 =
-* Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation.
-* Completed Italian interface translation coverage and removed stale translation entries.
-* Fixed the move-file validation message shown when a file is already in the destination folder.
+* Improved activity log IP handling by relying on the direct server address.
 
 = 2.0.0 =
-* Major security and reliability release for stricter administrator-only controls.
-* Settings, activity logs, whitelist management, maintenance tools, and uninstall data controls now require administrator-level access.
-* Reduced user data exposure by removing email search and email fields from the user search REST response.
-* Improved large-file handling for uploads, downloads, previews, and ZIP exports while keeping Plugin Checker compatibility annotations in place.
+* Major security and reliability release with stricter administrator-only controls for settings, logs, maintenance, whitelist management, and uninstall data controls.
+* Reduced user data exposure in user search responses.
+* Improved large-file handling for uploads, downloads, previews, and ZIP exports.
 * Added regression coverage for administrator-only controls and user search privacy.
-
-= 1.3.6 =
-* Restricted TeamVault settings, activity logs, whitelist management, and maintenance tools to administrator-level access.
-* Reduced user search exposure by removing email search and email data from the REST response.
-* Improved large-file handling by streaming uploads, downloads, previews, and ZIP exports in chunks instead of loading full files into memory.
-* Added regression coverage for administrator-only controls and user search privacy.
-
-= 1.1.35 =
-* Improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging.
-* Expanded FAQs to better explain private access, Media Library differences, and user access control.
-
-= 1.1.34 =
-* Simplified the storage widget to show only the space used by TeamVault files.
-* Fixed TeamVault storage totals so they are calculated from the registered files that still exist on disk.
-* Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size.
-
-= 1.1.33 =
-* Clarified storage usage in the sidebar with separate TeamVault, available, and total capacity metrics.
-* Fixed TeamVault storage totals so they reflect the real filesystem size of stored files.
-
-= 1.1.32 =
-* Clarified release metadata and WordPress.org asset documentation for the latest maintenance release.
-
-= 1.1.31 =
-* Improved whitelist input handling for safer user access settings processing.
-
-= 1.1.30 =
-* Fixed whitelist user selection visibility in settings.
-* Fixed persistence of selected whitelist users.
-
-= 1.1.29 =
-* Added TeamVault branding in the admin interface.
 
 For the full release history, see `changelog.txt` in the plugin package.
 
@@ -211,16 +154,11 @@ For the full release history, see `changelog.txt` in the plugin package.
 
 = 2.0.8 =
 
-Recommended security hardening update. Strengthens uninstall cleanup boundaries and keeps SVG uploads blocked even if extension filters are customized.
+Recommended security hardening update. Strengthens uninstall cleanup boundaries and keeps SVG uploads blocked even when extension filters are customized.
 
 = 2.0.7 =
 
 Recommended maintenance update for local and proxy-backed environments. Improves immediate file list refresh after file/folder changes, oversized upload feedback, and ZIP export handling.
-
-= 2.0.6 =
-
-Recommended bugfix update. Fixes the file list not refreshing automatically after delete, rename, and move operations.
-Also improves local refresh behavior after create/upload and hardens ZIP export temporary file handling.
 
 = 2.0.5 =
 
@@ -230,42 +168,6 @@ Recommended security and reliability update. Fixes UI refresh after upload/folde
 
 Security hardening update. Review role capabilities and whitelist settings if Editors previously had TeamVault access.
 
-= 2.0.2 =
-
-Recommended maintenance update for sites using plain permalinks and for clearer oversized upload errors.
-
-= 2.0.1 =
-
-Recommended maintenance update for complete Italian interface coverage, clearer file move messaging, and updated plugin screenshots.
-
 = 2.0.0 =
 
 Major security and reliability update. Recommended for all installations that use delegated document access or large private file transfers.
-
-= 1.3.6 =
-
-Recommended security and reliability update for stricter admin-only settings access, reduced user data exposure, and safer large-file streaming.
-
-= 1.1.35 =
-
-Recommended update for a clearer and more professional WordPress.org plugin page presentation.
-
-= 1.1.34 =
-
-Recommended update for more accurate TeamVault usage totals and less misleading storage information on shared hosting.
-
-= 1.1.33 =
-
-Recommended update for clearer storage reporting and more accurate TeamVault usage totals.
-
-= 1.1.32 =
-
-Maintenance release that aligns version metadata and WordPress.org asset documentation.
-
-= 1.1.31 =
-
-Recommended maintenance update for safer whitelist settings handling.
-
-= 1.1.30 =
-
-Recommended bugfix update for whitelist selection and persistence.

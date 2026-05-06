@@ -32,6 +32,14 @@ The deploy script already validates plugin version and stable tag alignment.
 8. Run the deployment script from the workspace root.
 9. Publish the matching GitHub release with the release ZIP attached.
 
+## Changelog Policy
+
+- Keep `changelog.txt` as the complete historical changelog, ordered newest first.
+- Keep the `readme.txt` changelog short and user-facing: current release plus the most important recent releases only.
+- Use clear categories in long-form entries, such as Security, Reliability, Uploads, Export, Admin UI, Storage, Documentation, Compliance, and Tests.
+- Do not rewrite the technical meaning of past releases when polishing release notes; improve clarity and consistency only.
+- Do not edit already published WordPress.org release tags for documentation-only cleanup. Include changelog cleanup in the next real release.
+
 ## WordPress.org Listing Translations
 
 Keep the shipped `readme.txt` in English. WordPress.org localizes plugin listing content through translate.wordpress.org, not through locale-specific files such as `readme-it_IT.txt` in the plugin package.
