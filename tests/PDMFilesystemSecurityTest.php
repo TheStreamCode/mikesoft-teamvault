@@ -55,6 +55,33 @@ final class PDMFilesystemSecurityTest extends TestCase
         self::assertFileDoesNotExist($this->basePath . '/moved.txt');
     }
 
+    public function test_move_file_prefers_native_rename_before_wp_filesystem_adapter(): void
+    {
+        $GLOBALS['wp_filesystem'] = new class {
+            public function delete($path, $recursive = false, $type = false): bool
+            {
+                return false;
+            }
+
+            public function move($from, $to, $overwrite = false): bool
+            {
+                if (is_file($from)) {
+                    unlink($from);
+                }
+
+                return true;
+            }
+        };
+
+        mkdir($this->basePath . '/nested');
+        $filesystem = new MSTV_Filesystem($this->basePath);
+
+        self::assertTrue($filesystem->move_file('inside.txt', 'nested/moved.txt'));
+        self::assertFileDoesNotExist($this->basePath . '/inside.txt');
+        self::assertFileExists($this->basePath . '/nested/moved.txt');
+        self::assertSame('inside', file_get_contents($this->basePath . '/nested/moved.txt'));
+    }
+
     public function test_list_directory_omits_symlinks(): void
     {
         $linkPath = $this->basePath . '/external-link.txt';

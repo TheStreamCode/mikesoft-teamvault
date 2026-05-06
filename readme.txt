@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.0.9 =
+* Fixed file moves so local private-storage files remain available on disk after being moved between TeamVault folders.
+* Added regression coverage for filesystem adapters that report a move without leaving the file in the destination.
+
 = 2.0.8 =
 * Security hardening for uninstall data removal so storage cleanup stays inside the TeamVault storage root and does not follow symlinks.
 * Security hardening for upload validation so SVG remains blocked even if custom extension filters try to re-enable it.
@@ -151,6 +155,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.9 =
+
+Recommended reliability update. Fixes moved files becoming unavailable on some local and filesystem-adapter-backed environments.
 
 = 2.0.8 =
 
