@@ -1,5 +1,10 @@
 Mikesoft TeamVault Changelog
 
+2.0.8 - 2026-05-06
+- Hardened uninstall data removal so recursive storage cleanup refuses paths outside the storage root and does not follow symlinks
+- Hardened upload validation so SVG remains blocked even if another extension filter tries to re-add it
+- Confirmed WordPress.org listing translations should be handled through translate.wordpress.org instead of shipping locale-specific readme files
+
 2.0.7 - 2026-05-06
 - Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests
 - Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions

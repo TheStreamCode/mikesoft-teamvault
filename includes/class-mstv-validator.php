@@ -15,6 +15,7 @@ class MSTV_Validator
         'asp', 'aspx', 'jsp', 'cfm',
         'htaccess', 'htpasswd',
         'sql',
+        'svg',
     ];
 
     private const DANGEROUS_MIMES = [
