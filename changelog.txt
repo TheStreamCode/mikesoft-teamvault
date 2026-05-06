@@ -1,306 +1,284 @@
 Mikesoft TeamVault Changelog
 
-2.0.8 - 2026-05-06
-- Hardened uninstall data removal so recursive storage cleanup refuses paths outside the storage root and does not follow symlinks
-- Hardened upload validation so SVG remains blocked even if another extension filter tries to re-add it
-- Confirmed WordPress.org listing translations should be handled through translate.wordpress.org instead of shipping locale-specific readme files
+Entries are ordered newest first. Release dates are included where recorded.
 
-2.0.7 - 2026-05-06
-- Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests
-- Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions
-- Improved client-side upload size validation so it also respects the effective PHP upload and post limits before sending oversized files
-- Split REST permission callbacks into explicit read, write, and delete guards while preserving the current capability model
-- Hardened ZIP export temporary file generation and readability checks before response headers
-- Updated the in-plugin admin logo color to TeamVault blue
+## 2.0.8 - 2026-05-06
+- Security: hardened uninstall data removal so recursive storage cleanup stays inside the TeamVault storage root and does not follow symlinks.
+- Security: hardened upload validation so SVG remains blocked even if custom extension filters try to re-enable it.
+- Documentation: clarified that WordPress.org listing translations are handled through translate.wordpress.org instead of locale-specific readme files.
 
-2.0.6 - 2026-05-06
-- Fixed file list not refreshing immediately after delete file, delete folder, rename file, rename folder, and move file operations
-- Disabled HTTP caching for browser/search REST responses and added client-side cache busting so local and proxy-backed environments show file changes immediately
-- Fixed ZIP export temporary file collisions when multiple exports start in the same second
-- Fixed ZIP export readability and size checks running after response headers
+## 2.0.7 - 2026-05-06
+- Reliability: fixed stale file browser responses in local and proxy-backed environments by adding cache busting to browser and search requests.
+- Reliability: disabled HTTP caching on browser and search REST responses so file and folder changes appear immediately after create, upload, rename, move, and delete actions.
+- Uploads: improved client-side size validation so files are checked against the effective PHP upload and post limits before the request is sent.
+- Architecture: split REST permission callbacks into clearer read, write, and delete guards while preserving the current capability model.
+- Export: hardened ZIP export temporary file generation and readability checks before response headers.
+- Branding: updated the in-plugin admin logo color to TeamVault blue.
 
-2.0.5 - 2026-05-06
-- Fixed new files and folders not appearing immediately after upload or folder creation without a manual interaction
-- Fixed storage security notice reappearing on every page load with no way to dismiss it persistently
-- Fixed context menu dismiss listener accumulating permanently on every right-click
-- Fixed folder tree toggle listener stacking on every navigation, causing multiple expand/collapse per click
-- Fixed concurrent navigation requests corrupting the file list with stale data
-- Fixed HTTP response headers sent before readable check in download and preview streams
-- Fixed MIME type not sanitized before Content-Type header, preventing response splitting
-- Fixed wp_mkdir_p failure silently ignored in storage directory creation
-- Fixed finfo_open resource leak when finfo_file raises an exception
-- Fixed sanitize_text_field incorrectly applied to PHP tmp_name upload path
-- Fixed strtotime returning false on invalid dates causing incorrect human_time_diff output
-- Fixed XSS vector in user search autocomplete via unescaped username attribute
-- Fixed fetch error responses with JSON content-type not surfacing the error message correctly
-- Added sanitize_callback to REST API string parameters for WordPress.org plugin review compliance
-- Added order_by and order parameters to REST route declarations for browser and search endpoints
+## 2.0.6 - 2026-05-06
+- Reliability: fixed file list refresh after delete file, delete folder, rename file, rename folder, and move file operations.
+- Reliability: disabled HTTP caching for browser and search REST responses and added client-side cache busting for local and proxy-backed environments.
+- Export: fixed ZIP export temporary file collisions when multiple exports start in the same second.
+- Export: fixed ZIP export readability and size checks running after response headers.
 
-2.0.4 - 2026-05-05
-- Improved upload error message when a file exceeds the size limit: the notice now shows the file name, its actual size, and the configured maximum, with a client-side check that gives immediate feedback before the request is sent to the server
+## 2.0.5 - 2026-05-06
+- Reliability: fixed newly uploaded files and newly created folders not appearing immediately without manual interaction.
+- Admin UI: fixed persistent dismissal for the storage security notice.
+- Admin UI: fixed context menu and folder tree event listeners accumulating across repeated interactions.
+- Reliability: fixed concurrent navigation requests overwriting the file list with stale data.
+- Security: moved download and preview readability checks before response headers and sanitized MIME types before output.
+- Correctness: fixed storage directory creation checks, finfo cleanup, upload tmp_name handling, and invalid date handling.
+- Security: fixed an XSS vector in user search autocomplete via the username attribute.
+- Compliance: added sanitize_callback declarations to REST API string parameters for WordPress.org review compatibility.
+- API: added order_by and order parameters to browser and search REST route declarations.
 
-2.0.3 - 2026-05-03
-- Hardened filesystem path verification for private storage operations, including traversal and symlink rejection
-- Added safer storage reindex validation so unsafe or disallowed files are skipped and reported to administrators
-- Switched activity log IP capture to `REMOTE_ADDR` only instead of trusting spoofable forwarding headers
-- Added an administrator notice when the TeamVault storage path is inside the public uploads tree
-- Changed new activations so only Administrators receive `manage_private_documents` by default
-- Added regression coverage for filesystem boundary checks, reindex validation, log IP handling, storage warnings, and activation capabilities
+## 2.0.4 - 2026-05-05
+- Uploads: improved the oversized file message so it shows the file name, actual size, and configured maximum.
+- Uploads: added a client-side size check so users receive immediate feedback before the upload request is sent.
 
-2.0.2 - 2026-05-03
-- Fixed TeamVault REST request URLs on sites that use plain permalinks, preventing 404 errors while loading folders and files
-- Improved upload feedback when PHP rejects an oversized request before a file reaches TeamVault validation
-- Added regression coverage for query-style REST bases and oversized empty upload requests
+## 2.0.3 - 2026-05-03
+- Security: hardened filesystem path verification for private storage operations, including traversal and symlink rejection.
+- Maintenance: added safer storage reindex validation so unsafe or disallowed files are skipped and reported to administrators.
+- Privacy: switched activity log IP capture to REMOTE_ADDR only instead of trusting spoofable forwarding headers.
+- Admin UI: added an administrator notice when the TeamVault storage path is inside the public uploads tree.
+- Access control: changed new activations so only Administrators receive manage_private_documents by default.
+- Tests: added regression coverage for filesystem boundaries, reindex validation, log IP handling, storage warnings, and activation capabilities.
 
-2.0.1 - 2026-05-03
-- Added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation
-- Completed Italian interface translation coverage and removed stale translation entries
-- Fixed the move-file validation message shown when a file is already in the destination folder
-- Added automated PHPUnit coverage to keep the Italian translation map aligned with plugin UI strings
+## 2.0.2 - 2026-05-03
+- Compatibility: fixed TeamVault REST request URLs on sites using plain permalinks, preventing 404 errors while loading folders and files.
+- Uploads: improved feedback when PHP rejects an oversized request before a file reaches TeamVault validation.
+- Tests: added regression coverage for query-style REST bases and oversized empty upload requests.
 
-2.0.0 - 2026-05-03
-- Major security and reliability release for stricter administrator-only plugin controls
-- Restricted settings, activity logs, whitelist management, maintenance tools, and uninstall data controls to administrator-level access
-- Kept document workspace access on `manage_private_documents` so authorized editors can continue managing files without controlling plugin settings
-- Removed email search and email fields from the user search REST response to reduce unnecessary user data exposure
-- Improved large-file upload, download, preview, and ZIP export handling while keeping Plugin Checker compatibility annotations in place
-- Added regression tests for administrator-only controls and user search privacy
+## 2.0.1 - 2026-05-03
+- Documentation: added the TeamVault file manager screenshot to the WordPress.org listing and GitHub documentation.
+- Localization: completed Italian interface translation coverage and removed stale translation entries.
+- Admin UI: fixed the move-file validation message shown when a file is already in the destination folder.
+- Tests: added automated coverage to keep the Italian translation map aligned with plugin UI strings.
 
-1.3.6 - 2026-05-03
-- Restricted settings, activity logs, whitelist management, and maintenance tools to administrator-level `manage_options` access
-- Kept document workspace access on `manage_private_documents` so authorized editors can continue managing files without controlling plugin settings
-- Removed email search and email fields from the user search REST response to reduce unnecessary user data exposure
-- Streamed uploads, downloads, previews, and ZIP exports in chunks to avoid loading large files fully into PHP memory
-- Added regression tests for administrator-only controls and user search privacy
+## 2.0.0 - 2026-05-03
+- Security: introduced stricter administrator-only controls for settings, activity logs, whitelist management, maintenance tools, and uninstall data controls.
+- Access control: kept document workspace access on manage_private_documents so authorized editors can manage files without controlling plugin settings.
+- Privacy: removed email search and email fields from the user search REST response.
+- Performance: improved large-file upload, download, preview, and ZIP export handling while keeping Plugin Checker compatibility annotations in place.
+- Tests: added regression coverage for administrator-only controls and user search privacy.
 
-1.1.35 - 2026-04-18
-- Improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging
-- Expanded FAQ content to better explain private access, Media Library differences, and user access control
+## 1.3.6 - 2026-05-03
+- Security: restricted settings, activity logs, whitelist management, and maintenance tools to administrator-level manage_options access.
+- Access control: kept document workspace access on manage_private_documents so authorized editors can manage files without controlling plugin settings.
+- Privacy: removed email search and email fields from the REST user search response.
+- Performance: streamed uploads, downloads, previews, and ZIP exports in chunks to avoid loading large files fully into PHP memory.
+- Tests: added regression coverage for administrator-only controls and user search privacy.
 
-1.1.34 - 2026-04-17
-- Simplified the storage widget to show only the space used by TeamVault files on shared hosting
-- Switched TeamVault storage totals to sum registered files that still exist on disk, avoiding brittle directory scans
-- Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size
+## 1.1.35 - 2026-04-18
+- Documentation: improved the WordPress.org plugin page copy with clearer positioning, use cases, and privacy messaging.
+- Documentation: expanded FAQ content to better explain private access, Media Library differences, and user access control.
 
-1.1.33 - 2026-04-17
-- Reworked the storage widget so it shows TeamVault usage, other disk usage, and available capacity separately
-- Switched TeamVault storage totals to a real filesystem scan so the reported usage matches the stored binaries more closely
-- Persisted the detected on-disk file size during upload so new records stay aligned with the physical file size
+## 1.1.34 - 2026-04-17
+- Admin UI: simplified the storage widget so it shows only the space used by TeamVault files on shared hosting.
+- Storage: calculated TeamVault storage totals from registered files that still exist on disk.
+- Storage: persisted detected on-disk file size during upload so new records stay aligned with the physical file size.
 
-1.1.32 - 2026-04-17
-- Refined release metadata and maintainer documentation for the next WordPress.org maintenance release
-- Clarified WordPress.org icon assets versus the in-plugin TeamVault logo in repository and maintainer documentation
-- Confirmed the WordPress.org release payload stays limited to runtime plugin files and public listing assets
+## 1.1.33 - 2026-04-17
+- Admin UI: reworked the storage widget to show TeamVault usage, other disk usage, and available capacity separately.
+- Storage: switched TeamVault storage totals to a filesystem scan so reported usage matches stored binaries more closely.
+- Storage: persisted detected on-disk file size during upload so new records stay aligned with the physical file size.
 
-1.1.31 - 2026-04-10
-- Improved whitelist settings handling so allowed users are processed more safely during save operations
-- Finalized the maintenance release for the latest WordPress.org package
+## 1.1.32 - 2026-04-17
+- Release: refined release metadata and maintainer documentation for the WordPress.org maintenance release.
+- Documentation: clarified WordPress.org icon assets versus the in-plugin TeamVault logo.
+- Packaging: confirmed the WordPress.org release payload stays limited to runtime plugin files and public listing assets.
 
-1.1.30 - 2026-04-10
-- Fixed whitelist settings wiring so the authorized users selector appears when user-specific access is enabled
-- Fixed persistence of selected whitelist users during settings save
-- Added temporary compatibility handling for legacy cached admin submissions using `pdm_allowed_users[]`
+## 1.1.31 - 2026-04-10
+- Settings: improved whitelist handling so allowed users are processed more safely during save operations.
+- Release: finalized the maintenance release for the latest WordPress.org package.
 
-1.1.29 - 2025-04-08
-- Added the TeamVault logo to the admin sidebar header on desktop and mobile
-- Increased logo size for better visibility in the file manager
-- Published the plugin on the WordPress.org Plugin Directory
+## 1.1.30 - 2026-04-10
+- Settings: fixed whitelist settings wiring so the authorized users selector appears when user-specific access is enabled.
+- Settings: fixed persistence of selected whitelist users during settings save.
+- Compatibility: added temporary handling for legacy cached admin submissions using pdm_allowed_users[].
 
-1.1.28
-- Security: replaced !empty() with wp_validate_boolean() for all boolean form inputs in settings handling
-- Security: replaced (bool) cast with wp_validate_boolean() in REST API settings updates
-- Security: added dedicated nonce verification for export selection with explicit check
-- Compliance: added wp_unslash() to all $_POST handling and PHPCS ignore comments for wp_validate_boolean
-- Compliance: added PHPCS ignore comments for orderClause in repository files (whitelist-sanitized values)
-- Enhancement: added TeamVault logo SVG to sidebar header in file manager
-- Refactor: extracted create_protection_files() to MSTV_Helpers to eliminate code duplication
-- Refactor: simplified repository files queries with build_order_clause() method
-- Refactor: removed side-effect from MSTV_Storage constructor, explicit directory creation
-- Refactor: injected MSTV_Settings into MSTV_Logger and MSTV_Assets via constructor
-- Refactor: moved data access logic from logs-page view to admin controller
-- Compliance: eliminated redundant MSTV_Settings instantiations in view templates
+## 1.1.29 - 2025-04-08
+- Branding: added the TeamVault logo to the admin sidebar header on desktop and mobile.
+- Admin UI: increased logo size for better visibility in the file manager.
+- Release: published the plugin on the WordPress.org Plugin Directory.
 
-1.1.27
-- Fixed WordPress.org Plugin Check warnings and security review issues:
-  * Added proper sanitization for uploaded file arrays (sanitize_file_name, sanitize_mime_type, sanitize_text_field)
-  * Removed FILTER_DEFAULT usage, replaced with isset() + array_map sanitization
-  * Added PHPCS ignore comments with detailed explanations for nonce verification patterns
-  * Prefixed all global variables in template files with "mstv_" (compliance requirement)
-  * Prefixed all hook names with "mstv_" for uniqueness compliance
-  * Fixed JavaScript config variable from "pdmConfig" to "mstvConfig" for consistency
-- Changed all prefixes from "pdm" (3 chars) to "mstv" (4+ chars) per WordPress.org naming guidelines
-- Updated all WordPress options from "pdm_*" to "mstv_*" for uniqueness compliance
-- All classes, constants, hooks, transients and global variables now use MSTV_/mstv_ prefix
-- Fixed syntax error in class-mstv-settings.php (ternary operator issues)
+## 1.1.28
+- Security: replaced boolean setting shortcuts with wp_validate_boolean() in settings and REST handling.
+- Security: added dedicated nonce verification for export selection.
+- Compliance: added wp_unslash() handling for POST input and PHPCS annotations for validated patterns.
+- Branding: added the TeamVault logo SVG to the file manager sidebar header.
+- Refactor: extracted protection file generation to MSTV_Helpers and simplified repository ordering logic.
+- Architecture: removed storage constructor side effects and injected settings dependencies into logger and assets classes.
+- Maintainability: moved log data access out of the admin view and removed redundant settings instantiations.
 
-1.1.26
-- Refined the mobile header toolbar so filters, actions, and controls stay on a single row
-- Reduced the mobile width of the Upload and Export actions for a tighter toolbar layout
+## 1.1.27
+- Compliance: fixed WordPress.org Plugin Check and security review findings across upload sanitization, request handling, and naming.
+- Compliance: changed legacy pdm prefixes to the mstv/MSTV prefix family for plugin uniqueness.
+- Compatibility: updated WordPress options from pdm_* to mstv_*.
+- Admin UI: fixed JavaScript configuration naming from pdmConfig to mstvConfig.
+- Correctness: fixed a syntax error in class-mstv-settings.php.
 
-1.1.25
-- Fixed file rename regression where legacy records with empty display names opened an empty rename modal and could fail validation on save
-- Added safer display-name fallback resolution during upload, reindex, browser payload formatting, and rename flows
-- Tightened file rename request args and added regression tests for display-name fallback handling
+## 1.1.26
+- Mobile UI: refined the header toolbar so filters, actions, and controls stay on a single row.
+- Mobile UI: reduced Upload and Export action widths for a tighter toolbar layout.
 
-1.1.24
-- Renamed plugin from "Private Document Manager" to "Mikesoft TeamVault" to comply with WordPress.org plugin guidelines
-- Updated textdomain from "private-document-manager" to "mikesoft-teamvault"
-- Updated all admin menu slugs to use new plugin slug
-- Reverted mobile sidebar to off-canvas drawer pattern (slide from left)
+## 1.1.25
+- Files: fixed a file rename regression affecting legacy records with empty display names.
+- Files: added safer display-name fallbacks during upload, reindex, browser payload formatting, and rename flows.
+- Tests: added regression coverage for display-name fallback handling.
 
-1.1.23
-- Fixed critical CSS typos (invalid background color, font-family misspellings)
-- Added mobile backdrop overlay for sidebar/details panels with click-to-close
-- Implemented ESC key handler for closing mobile panels
-- Added body scroll lock when sidebar/details panels are open on mobile
-- Increased touch targets to minimum 44x44px for better mobile interaction
-- Improved modal responsiveness with adaptive sizing for small screens
-- Added focus-visible states for better keyboard navigation and accessibility
-- Added prefers-reduced-motion support for users who prefer reduced animations
-- Added prefers-contrast support for high contrast mode
-- Added safe area insets support for notched devices
-- Fixed file rename sanitization issue where names with dots could become empty
+## 1.1.24
+- Branding: renamed the plugin from Private Document Manager to Mikesoft TeamVault for WordPress.org guideline compliance.
+- Localization: updated the text domain to mikesoft-teamvault.
+- Admin UI: updated admin menu slugs for the new plugin slug.
+- Mobile UI: restored the off-canvas drawer pattern for the mobile sidebar.
 
-1.1.22
-- Fixed Plugin Check compliance by removing forbidden filesystem functions (move_uploaded_file, fopen/fread/fclose, streaming)
-- Hardened database migrations with hash_equals() table name validation before ALTER operations
-- Replaced interpolated SQL with $wpdb->update() API for safer database updates
-- Added phpcs:ignore annotations for legitimate schema migration queries (DirectQuery/NoCaching)
-- Excluded development files (.gitignore, tests, vendor) from release package
+## 1.1.23
+- Admin UI: fixed critical CSS typos affecting background color and font-family declarations.
+- Mobile UI: added backdrop overlay behavior for sidebar and details panels.
+- Accessibility: added ESC closing, body scroll locking, 44px touch targets, focus-visible states, reduced-motion support, high-contrast support, and safe area inset support.
+- Files: fixed rename sanitization where names containing dots could become empty.
 
-1.1.21
-- Hardened whitelist enforcement so REST, admin screens, and admin-post handlers apply the same access rules
-- Normalized log target types, added safer storage markers/uninstall guards, and switched large-file delivery to chunked streaming
+## 1.1.22
+- Compliance: removed forbidden filesystem functions flagged by Plugin Check.
+- Database: hardened migrations with table name validation before ALTER operations.
+- Database: replaced interpolated updates with the WordPress database update API where appropriate.
+- Packaging: excluded development files from release packages.
 
-1.1.20
-- Added visible selection highlighting in the move dialog and restored the root node in the left sidebar tree
-- Completed the latest Italian translation review for pagination, maintenance, export, and storage recovery strings
+## 1.1.21
+- Access control: aligned whitelist enforcement across REST requests, admin screens, and admin-post handlers.
+- Storage: normalized log target types and added safer storage markers and uninstall guards.
+- Performance: switched large-file delivery to chunked streaming.
 
-1.1.19
-- Fixed remaining Plugin Check findings in uninstall cleanup, logs pagination input handling, and selected-folder export request sanitization
+## 1.1.20
+- Admin UI: added visible selection highlighting in the move dialog.
+- Admin UI: restored the root node in the left sidebar tree.
+- Localization: completed Italian translation review for pagination, maintenance, export, and storage recovery strings.
 
-1.1.18
-- Added automatic storage self-healing on browser load and folder creation so non-technical users do not need to run manual reindex after leftover storage is detected
+## 1.1.19
+- Compliance: fixed remaining Plugin Check findings in uninstall cleanup, logs pagination input handling, and selected-folder export request sanitization.
 
-1.1.17
-- Added maintenance reindex to restore folder and file records from the storage directory when database entries are missing
-- Restored creation of folders whose physical directory still exists after uninstall or partial cleanup
+## 1.1.18
+- Storage: added automatic storage self-healing on browser load and folder creation so non-technical users do not need manual reindex after leftover storage is detected.
 
-1.1.16
-- Restored folder creation when a directory already exists on disk but its database record was removed
+## 1.1.17
+- Maintenance: added storage reindexing to restore folder and file records from the storage directory when database entries are missing.
+- Storage: restored folder creation when the physical directory exists but the database record is missing.
 
-1.1.15
-- Fixed uninstall cleanup when "delete all data" is enabled by loading the correct WordPress filesystem API and cleaning both default and custom storage paths
+## 1.1.16
+- Storage: restored folder creation when a directory remains on disk after its database record has been removed.
 
-1.1.14
-- Fixed folder recreation when an empty directory remained on disk after deletion
-- Hardened filesystem rename/delete verification so stale directories are less likely to survive a successful admin action
+## 1.1.15
+- Uninstall: fixed full data cleanup by loading the correct WordPress filesystem API and cleaning both default and custom storage paths.
 
-1.1.13
-- Fixed Plugin Check issues around paginated repository queries, admin request sanitization, and filesystem fallbacks
-- Normalized line endings across the reported plugin files for cleaner Plugin Check output
+## 1.1.14
+- Folders: fixed folder recreation when an empty directory remained on disk after deletion.
+- Filesystem: hardened rename and delete verification so stale directories are less likely to survive successful admin actions.
 
-1.1.12
-- Simplified the export modal to two choices only: full library or selected folders
+## 1.1.13
+- Compliance: fixed Plugin Check issues around paginated repository queries, admin request sanitization, and filesystem fallbacks.
+- Maintenance: normalized line endings across reported plugin files for cleaner Plugin Check output.
 
-1.1.11
-- Removed REST create/upload reliance on WordPress filesystem abstraction for local file operations to avoid host-specific failures
-- Improved API error parsing in the admin app so critical backend responses surface a readable message instead of a generic upload error
+## 1.1.12
+- Export: simplified the export modal to two choices: full library or selected folders.
 
-1.1.10
-- Added export choices for full library, current folder, or selected folders from the export modal
-- Fixed sort order button direction so the icon follows ascending and descending states correctly
-- Added live filesystem metadata fallback for preview and download streams to reduce issues with stale stored metadata
+## 1.1.11
+- Compatibility: removed REST create/upload reliance on the WordPress filesystem abstraction for local file operations.
+- Admin UI: improved API error parsing so backend errors surface a readable message instead of a generic upload error.
 
-1.1.9
-- Fixed upload validation regressions that could block new file uploads
-- Fixed duplicate upload controls shown in the upload overlay
-- Added runtime self-healing for the private storage directory
-- Added live filesystem metadata fallback so existing files keep working even if stored MIME or size metadata is stale
-- Marked missing binaries clearly in the browser and disabled invalid preview/download actions
-- Added a maintenance action to clean orphaned file records after local migrations
+## 1.1.10
+- Export: added choices for full library, current folder, or selected folders from the export modal.
+- Admin UI: fixed sort order button direction so the icon follows ascending and descending states.
+- Files: added live filesystem metadata fallback for preview and download streams.
 
-1.1.8
-- Standardized the main plugin presentation around English-first source text
-- Polished README, WordPress.org readme, and contribution documentation
-- Repaired naming inconsistencies introduced during the language cleanup pass
+## 1.1.9
+- Uploads: fixed validation regressions that could block new uploads.
+- Admin UI: fixed duplicate upload controls in the upload overlay.
+- Storage: added runtime self-healing for the private storage directory.
+- Files: added live filesystem metadata fallback for stale MIME or size metadata.
+- Admin UI: marked missing binaries clearly and disabled invalid preview/download actions.
+- Maintenance: added an action to clean orphaned file records after local migrations.
 
-1.1.7
-- Improved binary streaming handlers for preview, download, and ZIP export
-- Improved custom table handling for repository classes
-- Hardened admin sanitization for allowed files extension settings
+## 1.1.8
+- Documentation: standardized the plugin presentation around English-first source text.
+- Documentation: polished README, WordPress.org readme, and contribution documentation.
+- Maintainability: repaired naming inconsistencies introduced during language cleanup.
 
-1.1.6
-- Fixed Windows path normalization in filesystem boundary checks
-- Resolved false upload failures caused by mixed slash formats in destination paths
-- Improved compatibility for uploads on Local and other Windows-based environments
+## 1.1.7
+- Files: improved binary streaming handlers for preview, download, and ZIP export.
+- Database: improved custom table handling for repository classes.
+- Settings: hardened allowed extension sanitization.
 
-1.1.5
-- Fixed internal drag and drop so files can be moved reliably into folders
-- Added drop targets to the folder tree and root breadcrumb
-- Prevented internal drag operations from triggering the upload overlay
+## 1.1.6
+- Compatibility: fixed Windows path normalization in filesystem boundary checks.
+- Uploads: resolved false upload failures caused by mixed slash formats in destination paths.
+- Compatibility: improved upload behavior on Local and Windows-based environments.
 
-1.1.4
-- Moved files and folder shortcut actions from hover overlays into the details sidebar
-- Added folder selection state with sidebar actions and double-click open behavior
-- Simplified content cards and list rows by removing inline hover action controls
+## 1.1.5
+- Admin UI: fixed internal drag and drop so files can be moved reliably into folders.
+- Admin UI: added drop targets to the folder tree and root breadcrumb.
+- Admin UI: prevented internal drag operations from triggering the upload overlay.
 
-1.1.3
-- Fixed remaining Plugin Check errors for translator comments and query ordering
-- Replaced remaining streamed `readfile()` calls with filesystem-backed reads
-- Improved admin settings input handling and repository log sanitization
+## 1.1.4
+- Admin UI: moved file and folder shortcut actions from hover overlays into the details sidebar.
+- Admin UI: added folder selection state with sidebar actions and double-click open behavior.
+- Admin UI: simplified content cards and list rows by removing inline hover action controls.
 
-1.1.2
-- Improved admin escaping, metadata consistency, and release packaging
-- Added `languages/` directory support and removed deprecated manual textdomain loading
-- Reworked streamed preview and download URLs through authenticated admin-post handlers with dedicated nonce support
-- Reduced Plugin Check issues across settings handling, uninstall cleanup, and filesystem operations
+## 1.1.3
+- Compliance: fixed remaining Plugin Check errors for translator comments and query ordering.
+- Files: replaced remaining streamed readfile() calls with filesystem-backed reads.
+- Settings: improved admin settings input handling and repository log sanitization.
 
-1.0.9
-- Added ZIP export feature for folders and all documents
-- Export current folder or entire document tree
-- Maintains folder structure in ZIP archive
-- Export button in toolbar with confirmation modal
+## 1.1.2
+- Security: improved admin escaping and metadata consistency.
+- Localization: added languages directory support and removed deprecated manual textdomain loading.
+- Files: reworked preview and download URLs through authenticated admin-post handlers with dedicated nonce support.
+- Compliance: reduced Plugin Check issues across settings handling, uninstall cleanup, and filesystem operations.
 
-1.0.8
-- Fixed downloaded files so they keep the correct extension in the saved filename
+## 1.0.9
+- Export: added ZIP export for folders and the full document library.
+- Export: preserved folder structure in exported ZIP archives.
+- Admin UI: added an export button with confirmation flow.
 
-1.0.7
-- Refactored user whitelist to use WordPress capabilities natively
-- Users in the whitelist automatically receive `manage_private_documents`
-- Menu visibility follows capability checks correctly
-- Added automatic capability sync on plugin upgrade
-- Added settings saved notification message
+## 1.0.8
+- Downloads: fixed downloaded files so they keep the correct extension in the saved filename.
 
-1.0.6
-- Fixed user whitelist visibility for menu and API access
+## 1.0.7
+- Access control: refactored user whitelist support to use WordPress capabilities natively.
+- Access control: users in the whitelist automatically receive manage_private_documents.
+- Admin UI: aligned menu visibility with capability checks.
+- Upgrade: added automatic capability synchronization during plugin upgrades.
+- Settings: added a saved notification message.
 
-1.0.5
-- Added user-specific access control with whitelist mode
-- Added settings UI for user management
-- Added REST endpoint for user search
-- Added EN/IT strings for user management
+## 1.0.6
+- Access control: fixed user whitelist visibility for menu and API access.
 
-1.0.4
-- Added image thumbnails for file cards
-- Fixed hover action buttons overflow
-- Added disk space usage indicator in sidebar
-- Added EN/IT strings for storage indicator
+## 1.0.5
+- Access control: added user-specific access control with whitelist mode.
+- Settings: added user management UI.
+- API: added a REST endpoint for user search.
+- Localization: added English and Italian strings for user management.
 
-1.0.3
-- Set English as the default plugin interface language
-- Added plugin setting to switch between English and Italian
-- Added runtime EN/IT translation layer for plugin UI strings
+## 1.0.4
+- Admin UI: added image thumbnails for file cards.
+- Admin UI: fixed hover action button overflow.
+- Storage: added a disk space usage indicator in the sidebar.
+- Localization: added English and Italian strings for the storage indicator.
 
-1.0.2
-- Fixed `parent_id` and `folder_id` validation for REST requests
-- Fixed root folder creation and move-to-root behavior in the frontend
+## 1.0.3
+- Localization: set English as the default plugin interface language.
+- Settings: added a plugin setting to switch between English and Italian.
+- Localization: added a runtime English/Italian translation layer for plugin UI strings.
 
-1.0.1
-- Fixed REST bootstrap and infinite loading in the interface
-- Fixed REST URLs in the frontend and asset cache busting
-- Fixed files schema by adding `relative_path`
-- Fixed upload, move, delete, download, and preview behavior
+## 1.0.2
+- API: fixed parent_id and folder_id validation for REST requests.
+- Folders: fixed root folder creation and move-to-root behavior in the frontend.
 
-1.0.0
-- Initial release
+## 1.0.1
+- API: fixed REST bootstrap and infinite loading in the interface.
+- API: fixed REST URLs in the frontend and asset cache busting.
+- Database: fixed the files schema by adding relative_path.
+- Files: fixed upload, move, delete, download, and preview behavior.
+
+## 1.0.0
+- Initial release.
