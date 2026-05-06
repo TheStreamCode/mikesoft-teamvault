@@ -201,16 +201,18 @@ class MSTV_Filesystem
             wp_mkdir_p($toDir);
         }
 
-        $wpFilesystem = $this->get_wp_filesystem();
-
-        if ($wpFilesystem && $wpFilesystem->move($from, $to, true)) {
-            if (!file_exists($from) && file_exists($to)) {
-                return true;
-            }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Local private-storage moves need an atomic filesystem operation with explicit verification.
+        if (@rename($from, $to)) {
+            return file_exists($to) && !file_exists($from);
         }
 
-        // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Fallback only when WP_Filesystem move is unavailable.
-        return @rename($from, $to);
+        $wpFilesystem = $this->get_wp_filesystem();
+
+        if ($wpFilesystem && file_exists($from) && $wpFilesystem->move($from, $to, true)) {
+            return !file_exists($from) && file_exists($to);
+        }
+
+        return false;
     }
 
     public function rename_directory(string $oldRelative, string $newRelative): bool
