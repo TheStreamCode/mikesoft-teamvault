@@ -90,9 +90,18 @@ class MSTV_Download
 
     private function stream_file(string $path, string $filename, string $mimeType, int $fileSize): void
     {
+        if (!is_readable($path)) {
+            wp_die(
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 500]
+            );
+        }
+
         nocache_headers();
 
-        header('Content-Type: ' . $mimeType);
+        $safeMime = sanitize_mime_type(str_replace(["\r", "\n"], '', $mimeType));
+        header('Content-Type: ' . $safeMime);
         header('Content-Disposition: attachment; filename="' . $this->sanitize_filename($filename) . '"');
         header('Content-Length: ' . $fileSize);
         header('Content-Transfer-Encoding: binary');
@@ -101,14 +110,6 @@ class MSTV_Download
         header('Expires: 0');
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
-
-        if (!is_readable($path)) {
-            wp_die(
-                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
-                esc_html__('Error', 'mikesoft-teamvault'),
-                ['response' => 500]
-            );
-        }
 
         if (!$this->stream_absolute_file($path)) {
             wp_die(

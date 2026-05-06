@@ -4,6 +4,8 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
+Current plugin version: `2.0.7`.
+
 ## Overview
 
 Mikesoft TeamVault adds a private document workspace inside the WordPress admin.
@@ -30,6 +32,10 @@ Core capabilities include:
 - ZIP export for folders or the full document library
 - activity logging for operational traceability
 - maintenance tools for orphan cleanup and storage reindex
+
+## Latest Release
+
+Version `2.0.7` is a maintenance release focused on reliability and internal permission structure. It prevents stale TeamVault file browser responses after file and folder changes, improves oversized upload feedback, separates REST read/write/delete guards for future permission expansion, hardens ZIP export temporary file handling, and updates the in-plugin admin logo color.
 
 Why teams adopt TeamVault:
 

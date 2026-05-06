@@ -340,26 +340,18 @@ class MSTV_Export
             $tempDir = $this->storage->get_base_path();
         }
 
-        $filename = $name . '-' . gmdate('Y-m-d-His') . '.zip';
+        $safeName = $this->sanitize_zip_name($name);
+        $tempPath = wp_tempnam($safeName . '.zip', $tempDir);
 
-        return $tempDir . DIRECTORY_SEPARATOR . $filename;
+        if ($tempPath !== false) {
+            return $tempPath;
+        }
+
+        return $tempDir . DIRECTORY_SEPARATOR . $safeName . '-' . bin2hex(random_bytes(8)) . '.zip';
     }
 
     private function stream_zip(string $zipPath, string $zipName): void
     {
-        $filesize = filesize($zipPath);
-
-        nocache_headers();
-
-        header('Content-Type: application/zip');
-        header('Content-Disposition: attachment; filename="' . str_replace(["\r", "\n"], '', $zipName) . '.zip"');
-        header('Content-Length: ' . $filesize);
-        header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Expires: 0');
-        header('X-Content-Type-Options: nosniff');
-
         if (!is_readable($zipPath)) {
             wp_delete_file($zipPath);
             wp_die(
@@ -368,6 +360,28 @@ class MSTV_Export
                 ['response' => 500]
             );
         }
+
+        $filesize = filesize($zipPath);
+        if ($filesize === false) {
+            wp_delete_file($zipPath);
+            wp_die(
+                esc_html__('Unable to read the ZIP file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 500]
+            );
+        }
+
+        nocache_headers();
+
+        $safeZipName = $this->sanitize_zip_name($zipName);
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="' . $safeZipName . '.zip"');
+        header('Content-Length: ' . $filesize);
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Expires: 0');
+        header('X-Content-Type-Options: nosniff');
 
         if (!$this->stream_zip_file($zipPath)) {
             wp_delete_file($zipPath);

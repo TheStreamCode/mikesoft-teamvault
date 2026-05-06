@@ -91,9 +91,18 @@ class MSTV_Preview
 
     private function stream_preview(string $path, string $filename, string $mimeType, int $fileSize): void
     {
+        if (!is_readable($path)) {
+            wp_die(
+                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 500]
+            );
+        }
+
         nocache_headers();
 
-        header('Content-Type: ' . $mimeType);
+        $safeMime = sanitize_mime_type(str_replace(["\r", "\n"], '', $mimeType));
+        header('Content-Type: ' . $safeMime);
         header('Content-Length: ' . $fileSize);
         header('Content-Disposition: inline; filename="' . $this->sanitize_filename($filename) . '"');
         header('Cache-Control: private, max-age=0, must-revalidate');
@@ -101,16 +110,8 @@ class MSTV_Preview
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
 
-        if ($mimeType === 'application/pdf') {
+        if ($safeMime === 'application/pdf') {
             header('Content-Security-Policy: default-src \'self\'; style-src \'self\' \'unsafe-inline\';');
-        }
-
-        if (!is_readable($path)) {
-            wp_die(
-                esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
-                esc_html__('Error', 'mikesoft-teamvault'),
-                ['response' => 500]
-            );
         }
 
         if (!$this->stream_absolute_file($path)) {

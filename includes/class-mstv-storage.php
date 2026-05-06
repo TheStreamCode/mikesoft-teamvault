@@ -416,15 +416,13 @@ class MSTV_Storage
     {
         $basePath = $this->get_base_path();
         
-        if (!is_dir($basePath)) {
-            wp_mkdir_p($basePath);
+        if (!is_dir($basePath) && !wp_mkdir_p($basePath)) {
+            return false;
         }
 
-        if (is_dir($basePath)) {
-            $this->create_protection_files($basePath);
-        }
+        $this->create_protection_files($basePath);
 
-        return is_dir($basePath) && $this->filesystem->is_writable($basePath);
+        return $this->filesystem->is_writable($basePath);
     }
 
     private function create_protection_files(string $path): void

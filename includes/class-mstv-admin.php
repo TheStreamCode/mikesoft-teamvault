@@ -25,6 +25,7 @@ class MSTV_Admin
         add_action('admin_post_mstv_export_folder', [$this, 'handle_export_folder']);
         add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);
         add_action('admin_notices', [$this, 'render_storage_security_notice']);
+        add_action('wp_ajax_mstv_dismiss_storage_notice', [$this, 'handle_dismiss_storage_notice']);
     }
 
     public function render_storage_security_notice(): void
@@ -33,12 +34,45 @@ class MSTV_Admin
             return;
         }
 
-        echo '<div class="notice notice-warning"><p>';
+        if (get_user_meta(get_current_user_id(), 'mstv_notice_storage_dismissed', true)) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning is-dismissible mstv-storage-security-notice"><p>';
         echo esc_html__(
             'TeamVault stores private files under WordPress uploads. Confirm your web server blocks direct access to the private-documents directory, especially on Nginx.',
             'mikesoft-teamvault'
         );
         echo '</p></div>';
+        ?>
+        <script>
+        (function () {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.mstv-storage-security-notice').forEach(function (notice) {
+                    notice.addEventListener('click', function (e) {
+                        if (!e.target.classList.contains('notice-dismiss')) return;
+                        fetch(ajaxurl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: 'action=mstv_dismiss_storage_notice&_ajax_nonce=<?php echo esc_js(wp_create_nonce('mstv_dismiss_storage_notice')); ?>'
+                        });
+                    });
+                });
+            });
+        })();
+        </script>
+        <?php
+    }
+
+    public function handle_dismiss_storage_notice(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die('', '', ['response' => 403]);
+        }
+
+        check_ajax_referer('mstv_dismiss_storage_notice');
+        update_user_meta(get_current_user_id(), 'mstv_notice_storage_dismissed', '1');
+        wp_die();
     }
 
     public function add_menu(): void

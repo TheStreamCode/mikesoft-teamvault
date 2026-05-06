@@ -316,6 +316,52 @@ final class PDMRestControllerTest extends TestCase
         unset($_SERVER['CONTENT_LENGTH']);
     }
 
+    public function test_browser_data_response_disables_http_cache(): void
+    {
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_by_parent')->with(null)->willReturn([]);
+        $folderRepo->method('find_all_with_hierarchy')->willReturn([]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_by_folder_paginated')->willReturn([
+            'items' => [],
+            'pagination' => [
+                'page' => 1,
+                'per_page' => 50,
+                'total_items' => 0,
+                'total_pages' => 0,
+                'has_prev' => false,
+                'has_next' => false,
+                'from_item' => 0,
+                'to_item' => 0,
+            ],
+        ]);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('has_reindexable_content')->willReturn(false);
+        $storage->method('get_storage_stats')->with($filesRepo)->willReturn([
+            'plugin_used_bytes' => 0,
+            'plugin_used_formatted' => '0 B',
+        ]);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $storage,
+            $this->createMock(MSTV_Validator::class),
+            $folderRepo,
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class)
+        );
+
+        $response = $controller->get_browser_data(new WP_REST_Request());
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertStringContainsString('no-store', $response->get_headers()['Cache-Control'] ?? '');
+    }
+
     public function test_search_users_does_not_expose_email_addresses(): void
     {
         $GLOBALS['pdm_test_users'] = [
