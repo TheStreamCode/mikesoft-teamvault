@@ -16,6 +16,7 @@ Before releasing, confirm these values match:
 - `MSTV_VERSION` constant in `mikesoft-teamvault.php`
 - `Stable tag` in `readme.txt`
 - current release entry in `changelog.txt`
+- current plugin version in `README.md`
 
 The deploy script already validates plugin version and stable tag alignment.
 
@@ -24,18 +25,19 @@ The deploy script already validates plugin version and stable tag alignment.
 1. Update the version in `mikesoft-teamvault.php`.
 2. Update `Stable tag` and the current release entry in `readme.txt`.
 3. Add the full release entry to `changelog.txt`.
-4. Run `composer ci` from `mikesoft-teamvault-src/`.
-5. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
-6. Confirm `.wordpress-org/assets/` contains the expected public assets.
-7. Run the deployment script from the workspace root.
-8. Publish the matching GitHub release with the release ZIP attached.
+4. Update the current plugin version and latest release summary in `README.md`.
+5. Run `composer ci` from `mikesoft-teamvault-src/`.
+6. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
+7. Confirm `.wordpress-org/assets/` contains the expected public assets.
+8. Run the deployment script from the workspace root.
+9. Publish the matching GitHub release with the release ZIP attached.
 
 ## Deployment Command
 
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 2.0.2 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 2.0.7 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
 ```
 
 Useful switches:

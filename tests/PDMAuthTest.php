@@ -48,6 +48,16 @@ final class PDMAuthTest extends TestCase
         self::assertSame('mstv_forbidden', $result->code);
     }
 
+    public function test_explicit_read_write_and_delete_request_guards_are_available(): void
+    {
+        $auth = new MSTV_Auth(new MSTV_Settings());
+        $request = new WP_REST_Request([], ['X-WP-Nonce' => 'valid-nonce']);
+
+        self::assertTrue($auth->verify_read_request($request));
+        self::assertTrue($auth->verify_write_request($request));
+        self::assertTrue($auth->verify_delete_request($request));
+    }
+
     public function test_can_admin_requires_manage_options(): void
     {
         $GLOBALS['pdm_test_current_user_caps'] = [

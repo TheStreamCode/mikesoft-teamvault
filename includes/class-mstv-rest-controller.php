@@ -46,7 +46,7 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/browser', [
             'methods' => 'GET',
             'callback' => [$this, 'get_browser_data'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
             'args' => [
                 'folder_id' => [
                     'required' => false,
@@ -75,15 +75,31 @@ class MSTV_REST_Controller
                         return $value === null || $value === '' || is_numeric($value);
                     },
                 ],
+                'order_by' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'display_name',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'order' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'ASC',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
             ],
         ]);
 
         register_rest_route(self::NAMESPACE, '/folders', [
             'methods' => 'POST',
             'callback' => [$this, 'create_folder'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
             'args' => [
-                'name' => ['required' => true, 'type' => 'string'],
+                'name' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
                 'parent_id' => [
                     'required' => false,
                     'sanitize_callback' => static function ($value) {
@@ -99,17 +115,21 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)', [
             'methods' => 'PATCH',
             'callback' => [$this, 'update_folder'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
-                'name' => ['required' => true, 'type' => 'string'],
+                'name' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
             ],
         ]);
 
         register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)', [
             'methods' => 'DELETE',
             'callback' => [$this, 'delete_folder'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_delete_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
             ],
@@ -118,23 +138,27 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/files/upload', [
             'methods' => 'POST',
             'callback' => [$this, 'upload_file'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
         ]);
 
         register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)', [
             'methods' => 'PATCH',
             'callback' => [$this, 'update_file'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
-                'display_name' => ['required' => true, 'type' => 'string'],
+                'display_name' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
             ],
         ]);
 
         register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)', [
             'methods' => 'DELETE',
             'callback' => [$this, 'delete_file'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_delete_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
             ],
@@ -143,7 +167,7 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/move', [
             'methods' => 'POST',
             'callback' => [$this, 'move_file'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
                 'folder_id' => [
@@ -161,7 +185,7 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/download', [
             'methods' => 'GET',
             'callback' => [$this, 'download_files'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
             ],
@@ -170,7 +194,7 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/files/(?P<id>\d+)/preview', [
             'methods' => 'GET',
             'callback' => [$this, 'preview_files'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
             ],
@@ -179,9 +203,25 @@ class MSTV_REST_Controller
         register_rest_route(self::NAMESPACE, '/search', [
             'methods' => 'GET',
             'callback' => [$this, 'search'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
             'args' => [
-                'q' => ['required' => true, 'type' => 'string'],
+                'q' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'order_by' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'display_name',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
+                'order' => [
+                    'required' => false,
+                    'type' => 'string',
+                    'default' => 'ASC',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
                 'page' => [
                     'required' => false,
                     'sanitize_callback' => static function ($value) {
@@ -246,20 +286,24 @@ class MSTV_REST_Controller
             'callback' => [$this, 'search_users'],
             'permission_callback' => [$this->auth, 'verify_admin_request'],
             'args' => [
-                'q' => ['required' => true, 'type' => 'string'],
+                'q' => [
+                    'required' => true,
+                    'type' => 'string',
+                    'sanitize_callback' => 'sanitize_text_field',
+                ],
             ],
         ]);
 
         register_rest_route(self::NAMESPACE, '/export', [
             'methods' => 'GET',
             'callback' => [$this, 'export_all'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
         ]);
 
         register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)/export', [
             'methods' => 'GET',
             'callback' => [$this, 'export_folder'],
-            'permission_callback' => [$this->auth, 'verify_request'],
+            'permission_callback' => [$this->auth, 'verify_read_request'],
             'args' => [
                 'id' => ['required' => true, 'type' => 'integer'],
             ],
@@ -285,7 +329,7 @@ class MSTV_REST_Controller
         $formattedFolders = array_map([$this, 'format_folder'], $folders);
         $formattedFiles = array_map([$this, 'format_file'], $filesPage['items']);
 
-        return new \WP_REST_Response([
+        return $this->with_no_store(new \WP_REST_Response([
             'success' => true,
             'data' => [
                 'current_folder' => $folderId,
@@ -296,7 +340,7 @@ class MSTV_REST_Controller
                 'breadcrumb' => $breadcrumb,
                 'storage_stats' => $this->storage->get_storage_stats($this->filesRepo),
             ],
-        ]);
+        ]));
     }
 
     public function create_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -420,7 +464,7 @@ class MSTV_REST_Controller
         return [
             'name' => isset($files['name']) ? sanitize_file_name($files['name']) : '',
             'type' => isset($files['type']) ? sanitize_mime_type($files['type']) : '',
-            'tmp_name' => isset($files['tmp_name']) ? sanitize_text_field($files['tmp_name']) : '',
+            'tmp_name' => isset($files['tmp_name']) ? (string) $files['tmp_name'] : '',
             'error' => isset($files['error']) ? absint($files['error']) : UPLOAD_ERR_NO_FILE,
             'size' => isset($files['size']) ? absint($files['size']) : 0,
         ];
@@ -730,27 +774,27 @@ class MSTV_REST_Controller
         $order = sanitize_text_field($request->get_param('order') ?: 'ASC');
 
         if (strlen($query) < 2) {
-            return new \WP_REST_Response([
+            return $this->with_no_store(new \WP_REST_Response([
                 'success' => true,
                 'data' => [
                     'folders' => [],
                     'files' => [],
                     'pagination' => $this->empty_pagination($perPage),
                 ],
-            ]);
+            ]));
         }
 
         $folders = [];
         $filesPage = $this->filesRepo->search_paginated($query, null, $orderBy, $order, $page, $perPage);
 
-        return new \WP_REST_Response([
+        return $this->with_no_store(new \WP_REST_Response([
             'success' => true,
             'data' => [
                 'folders' => $folders,
                 'files' => array_map([$this, 'format_file'], $filesPage['items']),
                 'pagination' => $filesPage['pagination'],
             ],
-        ]);
+        ]));
     }
 
     private function get_page_param(\WP_REST_Request $request): int
@@ -775,6 +819,14 @@ class MSTV_REST_Controller
             'from_item' => 0,
             'to_item' => 0,
         ];
+    }
+
+    private function with_no_store(\WP_REST_Response $response): \WP_REST_Response
+    {
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('Pragma', 'no-cache');
+
+        return $response;
     }
 
     private function maybe_auto_restore_storage_index(): void

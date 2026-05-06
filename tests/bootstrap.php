@@ -32,6 +32,11 @@ function esc_html($text)
     return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 }
 
+function esc_js($text)
+{
+    return addslashes((string) $text);
+}
+
 function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
 {
     $GLOBALS['pdm_test_actions'][$hook][] = [
@@ -80,6 +85,26 @@ function sanitize_mime_type($mime)
 function wp_is_writable($path)
 {
     return is_writable($path);
+}
+
+function wp_delete_file($path)
+{
+    return file_exists($path) ? unlink($path) : true;
+}
+
+function wp_tempnam($filename = '', $dir = '')
+{
+    $dir = $dir !== '' ? (string) $dir : sys_get_temp_dir();
+    $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
+    $prefix = pathinfo((string) $filename, PATHINFO_FILENAME);
+    $prefix = $prefix !== '' ? $prefix : 'wp-temp';
+    $path = $dir . DIRECTORY_SEPARATOR . $prefix . '-' . bin2hex(random_bytes(8));
+
+    if ($extension !== '') {
+        $path .= '.' . $extension;
+    }
+
+    return touch($path) ? $path : false;
 }
 
 function wp_normalize_path($path)
@@ -249,6 +274,11 @@ function wp_verify_nonce($nonce, $action)
     return $nonce === 'valid-nonce';
 }
 
+function check_ajax_referer($action, $query_arg = false, $die = true)
+{
+    return 1;
+}
+
 function wp_upload_dir()
 {
     return [
@@ -335,11 +365,22 @@ class WP_REST_Response
 {
     public array $data;
     public int $status;
+    private array $headers = [];
 
     public function __construct(array $data = [], int $status = 200)
     {
         $this->data = $data;
         $this->status = $status;
+    }
+
+    public function header(string $key, string $value): void
+    {
+        $this->headers[$key] = $value;
+    }
+
+    public function get_headers(): array
+    {
+        return $this->headers;
     }
 }
 
@@ -415,7 +456,9 @@ require_once __DIR__ . '/../includes/class-mstv-repository-folders.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-logs.php';
 require_once __DIR__ . '/../includes/class-mstv-download.php';
 require_once __DIR__ . '/../includes/class-mstv-preview.php';
+require_once __DIR__ . '/../includes/class-mstv-export.php';
 require_once __DIR__ . '/../includes/class-mstv-rest-controller.php';
 require_once __DIR__ . '/../includes/class-mstv-logger.php';
 require_once __DIR__ . '/../includes/class-mstv-activator.php';
 require_once __DIR__ . '/../includes/class-mstv-admin.php';
+require_once __DIR__ . '/../includes/class-mstv-assets.php';

@@ -124,6 +124,9 @@ class MSTV_Helpers
     public static function human_time_diff_mysql(string $mysqlTime): string
     {
         $time = strtotime($mysqlTime);
+        if ($time === false) {
+            return '';
+        }
         return human_time_diff($time, time()) . ' ' . __('ago', 'mikesoft-teamvault');
     }
 

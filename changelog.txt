@@ -1,5 +1,36 @@
 Mikesoft TeamVault Changelog
 
+2.0.7 - 2026-05-06
+- Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests
+- Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions
+- Improved client-side upload size validation so it also respects the effective PHP upload and post limits before sending oversized files
+- Split REST permission callbacks into explicit read, write, and delete guards while preserving the current capability model
+- Hardened ZIP export temporary file generation and readability checks before response headers
+- Updated the in-plugin admin logo color to TeamVault blue
+
+2.0.6 - 2026-05-06
+- Fixed file list not refreshing immediately after delete file, delete folder, rename file, rename folder, and move file operations
+- Disabled HTTP caching for browser/search REST responses and added client-side cache busting so local and proxy-backed environments show file changes immediately
+- Fixed ZIP export temporary file collisions when multiple exports start in the same second
+- Fixed ZIP export readability and size checks running after response headers
+
+2.0.5 - 2026-05-06
+- Fixed new files and folders not appearing immediately after upload or folder creation without a manual interaction
+- Fixed storage security notice reappearing on every page load with no way to dismiss it persistently
+- Fixed context menu dismiss listener accumulating permanently on every right-click
+- Fixed folder tree toggle listener stacking on every navigation, causing multiple expand/collapse per click
+- Fixed concurrent navigation requests corrupting the file list with stale data
+- Fixed HTTP response headers sent before readable check in download and preview streams
+- Fixed MIME type not sanitized before Content-Type header, preventing response splitting
+- Fixed wp_mkdir_p failure silently ignored in storage directory creation
+- Fixed finfo_open resource leak when finfo_file raises an exception
+- Fixed sanitize_text_field incorrectly applied to PHP tmp_name upload path
+- Fixed strtotime returning false on invalid dates causing incorrect human_time_diff output
+- Fixed XSS vector in user search autocomplete via unescaped username attribute
+- Fixed fetch error responses with JSON content-type not surfacing the error message correctly
+- Added sanitize_callback to REST API string parameters for WordPress.org plugin review compliance
+- Added order_by and order parameters to REST route declarations for browser and search endpoints
+
 2.0.4 - 2026-05-05
 - Improved upload error message when a file exceeds the size limit: the notice now shows the file name, its actual size, and the configured maximum, with a client-side check that gives immediate feedback before the request is sent to the server
 

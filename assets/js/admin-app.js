@@ -21,6 +21,7 @@
             sidebarOpen: false,
             detailsOpen: false,
             storageStats: null,
+            _loadSeq: 0,
             pagination: {
                 page: 1,
                 perPage: Number(mstvConfig.browserPerPage || 50),
@@ -43,6 +44,7 @@
                 return;
             }
 
+            this._boundHideContextMenu = this.hideContextMenu.bind(this);
             this.syncPerPageSelect();
             this.syncSortOrderButton();
             this.bindEvents();
@@ -165,6 +167,9 @@
                 if (e.key === 'Escape') {
                     this.closeMobilePanels();
                     this.elements.filtersDropdown?.classList.remove('active');
+                    this.hideModal();
+                    this.hidePreview();
+                    this.hideUploadOverlay();
                 }
             });
 
@@ -217,11 +222,15 @@
                 }
             });
 
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    this.hideModal();
-                    this.hidePreview();
-                    this.hideUploadOverlay();
+            this.elements.folderTree?.addEventListener('click', (e) => {
+                const toggle = e.target.closest('.pdm-folder-toggle');
+                if (!toggle) return;
+                e.stopPropagation();
+                const folderItem = toggle.closest('.pdm-folder-item');
+                toggle.classList.toggle('collapsed');
+                const children = folderItem?.nextElementSibling;
+                if (children) {
+                    children.style.display = toggle.classList.contains('collapsed') ? 'none' : 'block';
                 }
             });
         },
@@ -231,6 +240,7 @@
                 this.elements.searchInput.value = '';
             }
 
+            const seq = ++this.state._loadSeq;
             this.state.isLoading = true;
             this.state.isSearchMode = false;
             this.state.searchQuery = '';
@@ -251,7 +261,9 @@
                 });
 
                 const response = await this.apiGet(`browser?${params}`);
-                
+
+                if (seq !== this.state._loadSeq) return;
+
                 if (response.success) {
                     this.state.folders = response.data.folders;
                     this.state.files = response.data.files;
@@ -260,7 +272,7 @@
                     this.state.storageStats = response.data.storage_stats;
                     this.state.pagination = this.normalizePagination(response.data.pagination);
                     this.syncPerPageSelect();
-                    
+
                     this.renderFolderTree();
                     this.renderBreadcrumb();
                     this.renderStorageIndicator();
@@ -269,8 +281,10 @@
                 this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 console.error('Load browser error:', error);
             } finally {
-                this.state.isLoading = false;
-                this.renderContent();
+                if (seq === this.state._loadSeq) {
+                    this.state.isLoading = false;
+                    this.renderContent();
+                }
             }
         },
 
@@ -322,18 +336,6 @@
                 });
             });
 
-            this.elements.folderTree?.addEventListener('click', (e) => {
-                const toggle = e.target.closest('.pdm-folder-toggle');
-                if (!toggle) return;
-                
-                e.stopPropagation();
-                const folderItem = toggle.closest('.pdm-folder-item');
-                toggle.classList.toggle('collapsed');
-                const children = folderItem?.nextElementSibling;
-                if (children) {
-                    children.style.display = toggle.classList.contains('collapsed') ? 'none' : 'block';
-                }
-            });
         },
 
         buildFolderTreeHtml(folders, level = 0) {
@@ -1194,7 +1196,7 @@
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.folderCreateSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
+                    await this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.folderCreateError, 'error');
                 }
@@ -1211,7 +1213,7 @@
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
-                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
+                    await this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
@@ -1229,7 +1231,7 @@
 
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.deleteSuccess, 'success');
-                    this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
+                    await this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
                 }
@@ -1246,7 +1248,7 @@
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.renameSuccess, 'success');
                     this.hideModal();
-                    this.reloadCurrentView();
+                    await this.reloadCurrentView();
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
@@ -1264,7 +1266,7 @@
 
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.deleteSuccess, 'success');
-                    this.reloadCurrentView();
+                    await this.reloadCurrentView();
                     this.clearDetails();
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
@@ -1288,7 +1290,7 @@
                 if (response.success) {
                     this.showToast(mstvConfig.i18n.moveSuccess, 'success');
                     this.hideModal();
-                    this.reloadCurrentView();
+                    await this.reloadCurrentView();
                     this.clearDetails();
                 } else {
                     this.showToast(response.message || mstvConfig.i18n.moveError, 'error');
@@ -1371,6 +1373,7 @@
                 return;
             }
 
+            const seq = ++this.state._loadSeq;
             this.state.isLoading = true;
             this.state.isSearchMode = true;
             this.state.searchQuery = normalizedQuery;
@@ -1390,7 +1393,9 @@
                 });
 
                 const response = await this.apiGet(`search?${params}`);
-                
+
+                if (seq !== this.state._loadSeq) return;
+
                 if (response.success) {
                     this.state.folders = response.data.folders;
                     this.state.files = response.data.files;
@@ -1401,8 +1406,10 @@
                 this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 console.error('Search error:', error);
             } finally {
-                this.state.isLoading = false;
-                this.renderContent();
+                if (seq === this.state._loadSeq) {
+                    this.state.isLoading = false;
+                    this.renderContent();
+                }
             }
         },
 
@@ -1420,8 +1427,14 @@
 
             this.hideUploadOverlay();
 
+            let anySuccess = false;
             for (const file of files) {
-                await this.uploadFile(file);
+                if (await this.uploadFile(file)) {
+                    anySuccess = true;
+                }
+            }
+            if (anySuccess) {
+                await this.reloadCurrentView();
             }
         },
 
@@ -1432,7 +1445,7 @@
                     .replace('{fileSize}', this.formatBytes(file.size))
                     .replace('{maxSize}', this.formatBytes(mstvConfig.maxFileSize));
                 this.showToast(msg, 'error');
-                return;
+                return false;
             }
 
             const formData = new FormData();
@@ -1456,13 +1469,14 @@
 
                 if (data.success) {
                     this.showToast(mstvConfig.i18n.uploadSuccess, 'success');
-                    this.reloadCurrentView();
-                } else {
-                    this.showToast(data.message || mstvConfig.i18n.uploadError, 'error');
+                    return true;
                 }
+                this.showToast(data.message || mstvConfig.i18n.uploadError, 'error');
+                return false;
             } catch (error) {
                 this.showToast(error.message || mstvConfig.i18n.uploadError, 'error');
                 console.error('Upload error:', error);
+                return false;
             }
         },
 
@@ -1728,7 +1742,7 @@
                 this.deleteFolder(folderId);
             });
 
-            document.addEventListener('click', this.hideContextMenu);
+            document.addEventListener('click', this._boundHideContextMenu);
         },
 
         showFileContextMenu(e, fileId) {
@@ -1823,12 +1837,12 @@
                 this.deleteFile(fileId);
             });
 
-            document.addEventListener('click', this.hideContextMenu);
+            document.addEventListener('click', this._boundHideContextMenu);
         },
 
         hideContextMenu() {
             document.querySelectorAll('.context-menu').forEach(menu => menu.remove());
-            document.removeEventListener('click', this.hideContextMenu);
+            document.removeEventListener('click', this._boundHideContextMenu);
         },
 
         renderStorageIndicator() {
@@ -1985,7 +1999,8 @@
         },
 
         async apiGet(endpoint) {
-            const response = await fetch(this.buildApiUrl(endpoint), {
+            const response = await fetch(this.buildFreshApiUrl(endpoint), {
+                cache: 'no-store',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-WP-Nonce': mstvConfig.restNonce,
@@ -2033,7 +2048,11 @@
             const contentType = response.headers.get('content-type') || '';
 
             if (contentType.includes('application/json')) {
-                return response.json();
+                const data = await response.json();
+                if (!response.ok && !data.success) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
+                return data;
             }
 
             const text = await response.text();
@@ -2060,6 +2079,12 @@
             }
 
             return `${base}/${path}`;
+        },
+
+        buildFreshApiUrl(endpoint) {
+            const url = new URL(this.buildApiUrl(endpoint), window.location.href);
+            url.searchParams.set('_mstv', String(Date.now()));
+            return url.toString();
         },
 
         escapeHtml(text) {
@@ -2127,7 +2152,7 @@
                         
                         if (response.success && response.data.length > 0) {
                             userResults.innerHTML = response.data.map(user => `
-                                <div class="pdm-user-result" data-user-id="${user.id}" data-user-login="${user.login}" data-user-name="${this.escapeHtml(user.display_name)}">
+                                <div class="pdm-user-result" data-user-id="${user.id}" data-user-login="${this.escapeHtml(user.login)}" data-user-name="${this.escapeHtml(user.display_name)}">
                                     <div class="pdm-user-result-avatar">${user.display_name.charAt(0).toUpperCase()}</div>
                                     <div class="pdm-user-result-info">
                                         <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>

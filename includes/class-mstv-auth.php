@@ -38,6 +38,26 @@ class MSTV_Auth
 
     public function verify_request(\WP_REST_Request $request): bool|\WP_Error
     {
+        return $this->verify_read_request($request);
+    }
+
+    public function verify_read_request(\WP_REST_Request $request): bool|\WP_Error
+    {
+        return $this->verify_capability_request($request, 'can_read');
+    }
+
+    public function verify_write_request(\WP_REST_Request $request): bool|\WP_Error
+    {
+        return $this->verify_capability_request($request, 'can_write');
+    }
+
+    public function verify_delete_request(\WP_REST_Request $request): bool|\WP_Error
+    {
+        return $this->verify_capability_request($request, 'can_delete');
+    }
+
+    private function verify_capability_request(\WP_REST_Request $request, string $capabilityMethod): bool|\WP_Error
+    {
         if (!is_user_logged_in()) {
             return new \WP_Error(
                 'mstv_unauthorized',
@@ -46,7 +66,7 @@ class MSTV_Auth
             );
         }
 
-        if (!$this->has_effective_access()) {
+        if (!$this->{$capabilityMethod}()) {
             return new \WP_Error(
                 'mstv_forbidden',
                 __('You do not have permission to access this resource.', 'mikesoft-teamvault'),

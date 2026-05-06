@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 8.0
-Stable tag: 2.0.4
+Stable tag: 2.0.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,29 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.0.7 =
+* Fixed stale file browser refresh behavior in local and proxy-backed environments by adding cache-busting to TeamVault browser/search requests.
+* Disabled HTTP caching on browser/search REST responses so file and folder changes are visible immediately after create, upload, rename, move, and delete actions.
+* Improved client-side upload size validation so it also respects the effective PHP upload and post limits before sending oversized files.
+* Split REST permission callbacks into explicit read, write, and delete guards while preserving the current capability model.
+* Hardened ZIP export temporary file generation and readability checks.
+* Updated the in-plugin admin logo color to TeamVault blue.
+
+= 2.0.6 =
+* Fixed file list not refreshing immediately after delete file, delete folder, rename file, rename folder, and move file operations.
+* Disabled HTTP caching for browser/search REST responses so local environments show changes immediately.
+* Fixed ZIP export temporary file collisions and readability checks.
+
+= 2.0.5 =
+* Fixed new files and folders not appearing immediately after upload or folder creation.
+* Fixed storage security notice reappearing on every page load with no way to dismiss it.
+* Fixed JavaScript event listener accumulation on context menu and folder tree toggle.
+* Fixed concurrent navigation requests corrupting the file list with stale data.
+* Hardened download and preview streams: readable check before headers, MIME type sanitized against response splitting.
+* Fixed several PHP correctness issues: wp_mkdir_p return value, finfo resource leak, tmp_name path handling, strtotime false guard.
+* Fixed XSS vector in user search autocomplete via unescaped username attribute.
+* Added sanitize_callback to REST API string parameters for WordPress.org compliance.
+
 = 2.0.4 =
 * Improved the upload error message when a file exceeds the size limit so it now shows the file name, its actual size, and the configured maximum.
 * Added a client-side size check before upload so users get immediate feedback without waiting for a server round-trip.
@@ -180,6 +203,19 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.0.7 =
+
+Recommended maintenance update for local and proxy-backed environments. Improves immediate file list refresh after file/folder changes, oversized upload feedback, and ZIP export handling.
+
+= 2.0.6 =
+
+Recommended bugfix update. Fixes the file list not refreshing automatically after delete, rename, and move operations.
+Also improves local refresh behavior after create/upload and hardens ZIP export temporary file handling.
+
+= 2.0.5 =
+
+Recommended security and reliability update. Fixes UI refresh after upload/folder creation, persistent notice dismissal, JS listener leaks, and several PHP correctness issues.
 
 = 2.0.3 =
 

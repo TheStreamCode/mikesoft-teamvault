@@ -335,8 +335,12 @@ class MSTV_Filesystem
 
         $finfo = @finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo) {
-            $mime = @finfo_file($finfo, $fullPath);
-            @finfo_close($finfo);
+            $mime = false;
+            try {
+                $mime = @finfo_file($finfo, $fullPath);
+            } finally {
+                finfo_close($finfo);
+            }
             if ($mime !== false) {
                 return $mime;
             }

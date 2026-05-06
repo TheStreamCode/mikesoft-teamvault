@@ -43,7 +43,11 @@ class MSTV_Assets
             'streamNonce' => wp_create_nonce('mstv_stream_action'),
             'exportSelectionNonce' => wp_create_nonce('mstv_export_selection'),
             'browserPerPage' => 50,
-            'maxFileSize' => (int) get_option('mstv_max_file_size', 52428800),
+            'maxFileSize' => $this->get_effective_client_upload_limit(
+                (int) $this->settings->get_max_file_size(),
+                (string) ini_get('post_max_size'),
+                (string) ini_get('upload_max_filesize')
+            ),
             'allowedExtensions' => $this->settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),
@@ -145,5 +149,42 @@ class MSTV_Assets
                 'exportError' => __('Error during export', 'mikesoft-teamvault'),
             ],
         ]);
+    }
+
+    private function get_effective_client_upload_limit(int $pluginLimit, string $postMaxSize, string $uploadMaxFilesize): int
+    {
+        $limits = array_filter([
+            $pluginLimit,
+            $this->parse_php_size($postMaxSize),
+            $this->parse_php_size($uploadMaxFilesize),
+        ]);
+
+        return !empty($limits) ? min($limits) : $pluginLimit;
+    }
+
+    private function parse_php_size(string $value): int
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return 0;
+        }
+
+        $unit = strtolower(substr($value, -1));
+        $number = (float) $value;
+
+        switch ($unit) {
+            case 'g':
+                $number *= 1024;
+                // no break
+            case 'm':
+                $number *= 1024;
+                // no break
+            case 'k':
+                $number *= 1024;
+                break;
+        }
+
+        return max(0, (int) $number);
     }
 }
