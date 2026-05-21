@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.1
+Stable tag: 2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.2 =
+* Improved the private storage security notice so it appears only on the TeamVault settings screen.
+* Kept WordPress 7.0 compatibility metadata current.
+
 = 2.1 =
 * Compatibility update for WordPress 7.0.
 * Verified the TeamVault admin interface and release metadata for the WordPress 7.0 release cycle.
@@ -159,6 +163,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.2 =
+
+Recommended admin experience update. Limits the private storage security notice to the TeamVault settings screen while keeping WordPress 7.0 compatibility metadata current.
 
 = 2.1 =
 

@@ -30,7 +30,7 @@ class MSTV_Admin
 
     public function render_storage_security_notice(): void
     {
-        if (!$this->current_user_can_admin() || !$this->settings->is_storage_path_inside_uploads()) {
+        if (!$this->is_teamvault_settings_page() || !$this->current_user_can_admin() || !$this->settings->is_storage_path_inside_uploads()) {
             return;
         }
 
@@ -73,6 +73,14 @@ class MSTV_Admin
         check_ajax_referer('mstv_dismiss_storage_notice');
         update_user_meta(get_current_user_id(), 'mstv_notice_storage_dismissed', '1');
         wp_die();
+    }
+
+    private function is_teamvault_settings_page(): bool
+    {
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin page check used only to decide whether to render a notice.
+        $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
+
+        return $page === 'mikesoft-teamvault-settings';
     }
 
     public function add_menu(): void

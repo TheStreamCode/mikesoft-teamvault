@@ -2,6 +2,11 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.2 - 2026-05-21
+- Admin UI: limited the private storage security notice to the TeamVault settings page instead of showing it across the WordPress admin.
+- Compatibility: kept WordPress 7.0 release metadata current.
+- Tests: added regression coverage so the storage notice appears on settings and stays hidden elsewhere.
+
 ## 2.1 - 2026-05-21
 - Compatibility: verified TeamVault release metadata for WordPress 7.0.
 - Compatibility: confirmed the plugin does not depend on block editor, iframed editor, or `@wordpress/components` APIs affected by WordPress 7.0 admin changes.
