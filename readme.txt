@@ -2,9 +2,9 @@
 Contributors: thestreamcode
 Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.0.9
+Stable tag: 2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.1 =
+* Compatibility update for WordPress 7.0.
+* Verified the TeamVault admin interface and release metadata for the WordPress 7.0 release cycle.
+
 = 2.0.9 =
 * Fixed file moves so local private-storage files remain available on disk after being moved between TeamVault folders.
 * Added regression coverage for filesystem adapters that report a move without leaving the file in the destination.
@@ -155,6 +159,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.1 =
+
+Compatibility update for WordPress 7.0. Recommended for sites upgrading to the latest WordPress release.
 
 = 2.0.9 =
 

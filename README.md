@@ -4,7 +4,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `2.0.9`.
+Current plugin version: `2.1`.
 
 ## Overview
 
@@ -35,7 +35,7 @@ Core capabilities include:
 
 ## Latest Release
 
-Version `2.0.9` is a reliability release. It fixes file moves so private documents remain available on disk after being moved between TeamVault folders, including in filesystem-adapter-backed local environments.
+Version `2.1` is a compatibility release for WordPress 7.0. It confirms TeamVault's admin interface and release metadata for sites upgrading to the latest WordPress release.
 
 Why teams adopt TeamVault:
 

@@ -2,6 +2,11 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.1 - 2026-05-21
+- Compatibility: verified TeamVault release metadata for WordPress 7.0.
+- Compatibility: confirmed the plugin does not depend on block editor, iframed editor, or `@wordpress/components` APIs affected by WordPress 7.0 admin changes.
+- Tests: added regression coverage for release metadata alignment.
+
 ## 2.0.9 - 2026-05-06
 - Reliability: fixed file moves so local private-storage files remain on disk after being moved between TeamVault folders.
 - Reliability: verified moved files can still be downloaded, previewed, exported, and deleted after the move operation completes.
