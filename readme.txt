@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.2
+Stable tag: 2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -118,6 +118,11 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 
 == Changelog ==
 
+= 2.3 =
+* Improved the TeamVault file manager responsive layout on narrow desktop and tablet screens.
+* Moved the details panel into drawer mode earlier so toolbar actions remain reachable.
+* Kept the folder drawer logo visible below the WordPress admin bar on mobile.
+
 = 2.2 =
 * Improved the private storage security notice so it appears only on the TeamVault settings screen.
 * Kept WordPress 7.0 compatibility metadata current.
@@ -163,6 +168,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.3 =
+
+Recommended admin UI update. Improves responsive drawer behavior so the details panel and folder sidebar remain usable across desktop, tablet, and mobile widths.
 
 = 2.2 =
 

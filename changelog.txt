@@ -2,6 +2,12 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.3 - 2026-05-21
+- Admin UI: moved the file details panel to off-canvas drawer mode at 1200px and below so toolbar actions stay reachable on narrow desktop and tablet screens.
+- Admin UI: kept the folder sidebar drawer breakpoint at 992px while offsetting fixed drawers below the WordPress admin bar.
+- Admin UI: preserved the TeamVault logo inside the mobile folder drawer header.
+- Tests: added regression coverage for the split drawer breakpoints and admin-bar-safe drawer CSS.
+
 ## 2.2 - 2026-05-21
 - Admin UI: limited the private storage security notice to the TeamVault settings page instead of showing it across the WordPress admin.
 - Compatibility: kept WordPress 7.0 release metadata current.

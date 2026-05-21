@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMReleaseMetadataTest extends TestCase
 {
-    private const RELEASE_VERSION = '2.2';
+    private const RELEASE_VERSION = '2.3';
     private const TESTED_UP_TO = '7.0';
 
     public function test_release_metadata_matches_wordpress_7_release(): void

@@ -51,8 +51,12 @@
             this.loadBrowser();
         },
 
-        isMobileViewport() {
+        isSidebarDrawerViewport() {
             return window.innerWidth <= 992;
+        },
+
+        isDetailsDrawerViewport() {
+            return window.innerWidth <= 1200;
         },
 
         cacheElements() {
@@ -113,7 +117,7 @@
             const sidebarHeader = this.elements.sidebar?.querySelector('.pdm-sidebar-header');
             sidebarHeader?.addEventListener('click', (e) => {
                 if (e.target.closest('.pdm-btn')) return;
-                if (!this.isMobileViewport()) return;
+                if (!this.isSidebarDrawerViewport()) return;
                 this.toggleSidebar();
             });
 
@@ -1538,7 +1542,7 @@
         },
 
         toggleSidebar() {
-            if (!this.isMobileViewport()) {
+            if (!this.isSidebarDrawerViewport()) {
                 return;
             }
 
@@ -1586,7 +1590,7 @@
         },
 
         openMobileDetails() {
-            if (window.innerWidth <= 992) {
+            if (this.isDetailsDrawerViewport()) {
                 this.state.detailsOpen = true;
                 this.elements.details?.classList.add('open');
                 this.showBackdrop();
