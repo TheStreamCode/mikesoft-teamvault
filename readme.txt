@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.3
+Stable tag: 2.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,11 +112,21 @@ The sidebar widget shows only the space used by TeamVault files. On many shared 
 
 By default, TeamVault keeps its data for safety. You can enable full data removal before uninstall if you want the plugin to delete its files, folders, logs, and settings.
 
+== Support ==
+
+For end-user support, use the WordPress.org support forum for Mikesoft TeamVault.
+
+For direct contact, email teamvault@mikesoft.it.
+
 == Screenshots ==
 
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 2.4 =
+* General quality-of-life maintenance release for public support and contact metadata.
+* Added the dedicated TeamVault contact mailbox across repository and WordPress.org-facing documentation.
 
 = 2.3 =
 * Improved the TeamVault file manager responsive layout on narrow desktop and tablet screens.
@@ -168,6 +178,10 @@ By default, TeamVault keeps its data for safety. You can enable full data remova
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.4 =
+
+Quality-of-life documentation update. Refreshes the public TeamVault support and contact path.
 
 = 2.3 =
 

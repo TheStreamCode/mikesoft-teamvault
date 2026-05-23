@@ -4,7 +4,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `2.3`.
+Current plugin version: `2.4`.
 
 ## Overview
 
@@ -35,7 +35,7 @@ Core capabilities include:
 
 ## Latest Release
 
-Version `2.3` improves the file manager responsive admin layout. The folder drawer now clears the WordPress admin bar on mobile, and the details panel switches to drawer mode earlier on narrow desktop and tablet screens.
+Version `2.4` is a general quality-of-life maintenance release. It refreshes the public TeamVault support path with a dedicated contact mailbox across the repository, security policy, and WordPress.org-facing metadata.
 
 Why teams adopt TeamVault:
 
@@ -92,6 +92,7 @@ If a site is migrated without copying the private storage folder, TeamVault reco
 ## Support
 
 - End-user support: [WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
+- Email: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
 - Website: [mikesoft.it](https://mikesoft.it)
 - Security reports: see [SECURITY.md](SECURITY.md)
 

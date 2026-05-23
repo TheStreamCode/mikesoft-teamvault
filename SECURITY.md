@@ -12,7 +12,7 @@ Do not disclose security issues in public support forums or public issue tracker
 
 Report vulnerabilities privately to:
 
-- `info@mikesoft.it`
+- `teamvault@mikesoft.it`
 
 Include the following details when possible:
 
