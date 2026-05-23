@@ -6,8 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMReleaseMetadataTest extends TestCase
 {
-    private const RELEASE_VERSION = '2.3';
+    private const RELEASE_VERSION = '2.4';
     private const TESTED_UP_TO = '7.0';
+    private const CONTACT_EMAIL = 'teamvault@mikesoft.it';
 
     public function test_release_metadata_matches_wordpress_7_release(): void
     {
@@ -20,5 +21,16 @@ final class PDMReleaseMetadataTest extends TestCase
         self::assertMatchesRegularExpression('/^Stable tag:\s*' . preg_quote(self::RELEASE_VERSION, '/') . '\s*$/m', $readme);
         self::assertMatchesRegularExpression('/^Tested up to:\s*' . preg_quote(self::TESTED_UP_TO, '/') . '\s*$/m', $readme);
         self::assertStringContainsString('Current plugin version: `' . self::RELEASE_VERSION . '`.', $githubReadme);
+    }
+
+    public function test_public_contact_metadata_uses_teamvault_mailbox(): void
+    {
+        $readme = (string) file_get_contents(__DIR__ . '/../readme.txt');
+        $githubReadme = (string) file_get_contents(__DIR__ . '/../README.md');
+        $securityPolicy = (string) file_get_contents(__DIR__ . '/../SECURITY.md');
+
+        self::assertStringContainsString(self::CONTACT_EMAIL, $readme);
+        self::assertStringContainsString(self::CONTACT_EMAIL, $githubReadme);
+        self::assertStringContainsString(self::CONTACT_EMAIL, $securityPolicy);
     }
 }
