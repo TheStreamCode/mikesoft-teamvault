@@ -74,6 +74,37 @@ If `Invoke-Pester` is not available, install or enable Pester in the local Power
 
 If you are working from a standalone clone of `mikesoft-teamvault-src`, these workspace-level deployment scripts are not included.
 
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on pushes and pull requests to `main`:
+
+- **PHP lint** on PHP 8.0–8.4 (`tools/lint-php.php`).
+- **PHPUnit** on PHP 8.2–8.4 (`composer test`).
+- **WordPress Plugin Check** against a clean runtime build (development-only files excluded).
+
+### Why Plugin Check runs inline
+
+The Plugin Check job intentionally does **not** use `wordpress/plugin-check-action`. That action
+injects plugin-check as a URL plugin in `.wp-env.json`, which triggers an upstream `@wordpress/env`
+bug on the `ubuntu-24.04` runner image (Node 24.16 / libuv 1.52.1): `wp-env start` exits `0`
+without starting Docker, so the check reports `Environment not initialized`
+(see [plugin-check-action#579](https://github.com/WordPress/plugin-check-action/issues/579)).
+
+The job instead starts `wp-env` with no URL plugins and installs plugin-check via WP-CLI
+(`wp plugin install plugin-check --activate`) after the environment is up. Keep this inline form
+until the upstream bug is resolved; reverting to the action reintroduces the failure.
+
+### Running Plugin Check locally
+
+In any local WordPress install with the plugin active:
+
+```bash
+wp plugin install plugin-check --activate
+wp plugin check mikesoft-teamvault
+```
+
+A clean result prints `Success: Checks complete. No errors found.`
+
 ## Manual QA Focus
 
 Before release, validate at least:
@@ -81,6 +112,7 @@ Before release, validate at least:
 - access control and whitelist mode
 - storage widget value for TeamVault used space only
 - upload, rename, move, delete, preview, and download flows
+- folder create, rename, move, and delete operations
 - ZIP export
 - cleanup and reindex maintenance tools
 - uninstall setting behavior
