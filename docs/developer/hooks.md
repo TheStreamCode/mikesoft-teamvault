@@ -130,6 +130,18 @@ Parameters:
 - `string $oldName`
 - `string $newName`
 
+### `mstv_folder_moved`
+
+Runs after a folder is moved under a different parent folder.
+
+Parameters:
+
+- `int $folderId`
+- `?int $oldParentId`
+- `?int $newParentId`
+
+`$oldParentId` and `$newParentId` are `null` for folders at the storage root.
+
 ### `mstv_export_started`
 
 Runs when a ZIP export starts.
@@ -231,4 +243,3 @@ add_filter('mstv_upload_validation', function (array $result, array $files): arr
 
 - These hooks are intended for WordPress customizations and must be used from site code, custom plugins, or mu-plugins.
 - Hook payloads reflect the current implementation and may expand in future releases.
-- The class also defines `mstv_folder_moved`, but the current plugin flow does not emit it yet.

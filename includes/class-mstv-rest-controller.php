@@ -135,6 +135,24 @@ class MSTV_REST_Controller
             ],
         ]);
 
+        register_rest_route(self::NAMESPACE, '/folders/(?P<id>\d+)/move', [
+            'methods' => 'POST',
+            'callback' => [$this, 'move_folder'],
+            'permission_callback' => [$this->auth, 'verify_write_request'],
+            'args' => [
+                'id' => ['required' => true, 'type' => 'integer'],
+                'parent_id' => [
+                    'required' => false,
+                    'sanitize_callback' => static function ($value) {
+                        return ($value === null || $value === '') ? null : absint($value);
+                    },
+                    'validate_callback' => static function ($value) {
+                        return $value === null || $value === '' || is_numeric($value);
+                    },
+                ],
+            ],
+        ]);
+
         register_rest_route(self::NAMESPACE, '/files/upload', [
             'methods' => 'POST',
             'callback' => [$this, 'upload_file'],
@@ -451,6 +469,47 @@ class MSTV_REST_Controller
         }
 
         return new \WP_REST_Response(['success' => true]);
+    }
+
+    public function move_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $id = (int) $request->get_param('id');
+        $targetParentId = $this->resolve_folder_id($request->get_param('parent_id'));
+
+        if ($targetParentId instanceof \WP_Error) {
+            return $targetParentId;
+        }
+
+        $folder = $this->folderRepo->find($id);
+        if (!$folder) {
+            return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        $result = $this->storage->move_folder($id, $targetParentId, $this->folderRepo);
+        if (!$result['success']) {
+            return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
+        }
+
+        $oldParentId = $folder->parent_id !== null ? (int) $folder->parent_id : null;
+        $oldRelativePath = (string) $folder->relative_path;
+
+        $this->folderRepo->update($id, [
+            'parent_id' => $targetParentId,
+            'relative_path' => $result['new_relative_path'],
+        ]);
+
+        $this->filesRepo->update_relative_paths_for_folder_rename($oldRelativePath, $result['new_relative_path']);
+        $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+        $this->logger->log_folder_move($id, $folder->name, $oldParentId, $targetParentId);
+
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_folder_moved($id, $oldParentId, $targetParentId);
+        }
+
+        return new \WP_REST_Response([
+            'success' => true,
+            'data' => $this->format_folder($this->folderRepo->find($id)),
+        ]);
     }
 
     /**
@@ -837,20 +896,25 @@ class MSTV_REST_Controller
             return;
         }
 
-        if (!$this->storage->has_reindexable_content()) {
-            set_transient($transientKey, 1, self::AUTO_REINDEX_TTL);
+        set_transient($transientKey, 1, self::AUTO_REINDEX_TTL);
+
+        // Normal create/upload/move/delete operations keep the database in sync, so a full
+        // recursive storage scan is only needed to self-heal an empty index (for example after
+        // the database was reset or migrated without its records). Once the index is populated
+        // we skip the scan, keeping it off the request path during normal use on large vaults.
+        if ($this->filesRepo->get_count() > 0 || $this->folderRepo->find_all() !== []) {
             return;
         }
 
-        $result = $this->storage->reindex_storage_records(
+        if (!$this->storage->has_reindexable_content()) {
+            return;
+        }
+
+        $this->storage->reindex_storage_records(
             $this->folderRepo,
             $this->filesRepo,
             $this->auth->get_current_user_id()
         );
-
-        if (!empty($result['success'])) {
-            set_transient($transientKey, 1, self::AUTO_REINDEX_TTL);
-        }
     }
 
     public function get_settings(\WP_REST_Request $request): \WP_REST_Response
@@ -1016,29 +1080,18 @@ class MSTV_REST_Controller
 
     private function get_file_runtime_state(object $files): array
     {
+        // Trust the metadata persisted at upload/reindex time for listing performance.
+        // A single existence check keeps the "missing from storage" indicator accurate
+        // without a per-file MIME read (finfo) and extra path resolutions, which would
+        // otherwise run for every row on a page (up to 200) and become the dominant cost
+        // on network-backed or large storage.
         $filesystem = $this->storage->get_filesystem();
         $relativePath = (string) $files->relative_path;
-        $existsOnDisk = $filesystem->is_file($relativePath);
-        $mimeType = (string) $files->mime_type;
-        $fileSize = (int) $files->file_size;
-
-        if ($existsOnDisk) {
-            $detectedMime = $filesystem->get_mime_type($relativePath);
-            $detectedSize = $filesystem->get_file_size($relativePath);
-
-            if (!empty($detectedMime)) {
-                $mimeType = $detectedMime;
-            }
-
-            if ($detectedSize > 0) {
-                $fileSize = $detectedSize;
-            }
-        }
 
         return [
-            'exists_on_disk' => $existsOnDisk,
-            'mime_type' => $mimeType,
-            'file_size' => $fileSize,
+            'exists_on_disk' => $filesystem->is_file($relativePath),
+            'mime_type' => (string) $files->mime_type,
+            'file_size' => (int) $files->file_size,
         ];
     }
 

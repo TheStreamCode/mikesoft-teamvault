@@ -2,6 +2,16 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.5 - 2026-06-05
+- Feature: added folder move so folders can be relocated across the workspace tree from the context menu and details panel, with protection against moving a folder into its own subtree and cascading relative-path updates for nested folders and files.
+- Performance: the file browser now renders list metadata from stored records and performs a single on-disk existence check per file, avoiding a per-file MIME read on large folders.
+- Performance: the storage self-heal reindex now runs only when the index is empty (for example after a database reset or migration) instead of re-scanning the storage tree on a timer during normal browsing.
+- Admin UI: replaced native browser confirmation dialogs for delete actions with an in-app confirmation modal.
+- Uploads: added a cancellable upload progress indicator backed by AbortController.
+- Maintenance: uninstall data removal now also clears plugin transients (storage-usage cache and auto-reindex markers).
+- Code quality: replaced inline display toggles on the settings whitelist UI with a reusable CSS class.
+- Tests: added regression coverage for folder move (storage relocation, cycle protection, REST wiring) and the storage reindex gate.
+
 ## 2.4 - 2026-05-23
 - Quality of life: refreshed the public TeamVault support path with the dedicated `teamvault@mikesoft.it` mailbox.
 - Documentation: added direct contact details to the WordPress.org-facing readme, GitHub README, and security policy.

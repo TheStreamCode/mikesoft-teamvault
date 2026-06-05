@@ -57,6 +57,18 @@ function mstv_uninstall_site(array $storage_path_usage = []) {
     delete_option('mstv_use_user_whitelist');
     delete_option('mstv_allowed_users');
 
+    // Remove plugin transients (storage-usage cache + auto-reindex markers) and their timeouts.
+    $transient_like = $wpdb->esc_like('_transient_mstv_') . '%';
+    $transient_timeout_like = $wpdb->esc_like('_transient_timeout_mstv_') . '%';
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Expected cleanup during uninstall.
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+            $transient_like,
+            $transient_timeout_like
+        )
+    );
+
     $storage_paths = array_filter(array_unique([
         mstv_normalize_uninstall_path($custom_storage_path),
         mstv_normalize_uninstall_path($default_storage_path),

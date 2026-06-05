@@ -412,6 +412,78 @@ class MSTV_Storage
         ];
     }
 
+    public function move_folder(
+        int $folderId,
+        ?int $targetParentId,
+        MSTV_Repository_Folders $folderRepo
+    ): array {
+        $folder = $folderRepo->find($folderId);
+        if (!$folder) {
+            return [
+                'success' => false,
+                'error' => __('Folder not found.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        $currentParentId = $folder->parent_id !== null ? (int) $folder->parent_id : null;
+        if ($currentParentId === $targetParentId) {
+            return [
+                'success' => false,
+                'error' => __('The folder is already in the destination folder.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        $targetParentPath = '';
+        if ($targetParentId !== null) {
+            $targetParent = $folderRepo->find($targetParentId);
+            if (!$targetParent) {
+                return [
+                    'success' => false,
+                    'error' => __('Parent folder not found.', 'mikesoft-teamvault'),
+                ];
+            }
+
+            if ($targetParentId === $folderId
+                || $this->is_descendant_path((string) $targetParent->relative_path, (string) $folder->relative_path)) {
+                return [
+                    'success' => false,
+                    'error' => __('You cannot move a folder into itself or one of its subfolders.', 'mikesoft-teamvault'),
+                ];
+            }
+
+            $targetParentPath = (string) $targetParent->relative_path;
+        }
+
+        $newRelativePath = $this->build_folder_path($targetParentPath, (string) $folder->slug);
+
+        if (!$this->filesystem->is_path_within_base($this->filesystem->resolve($newRelativePath))) {
+            return [
+                'success' => false,
+                'error' => __('Invalid folder path.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        if ($this->filesystem->exists($newRelativePath)) {
+            return [
+                'success' => false,
+                'error' => __('A folder with this name already exists.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        $moved = $this->filesystem->rename_directory((string) $folder->relative_path, $newRelativePath);
+        if (!$moved) {
+            return [
+                'success' => false,
+                'error' => __('Unable to move the folder.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        return [
+            'success' => true,
+            'new_relative_path' => $newRelativePath,
+        ];
+    }
+
     public function ensure_storage_directory(): bool
     {
         $basePath = $this->get_base_path();
@@ -600,5 +672,18 @@ class MSTV_Storage
             return $slug;
         }
         return rtrim($parentPath, '/\\') . '/' . $slug;
+    }
+
+    private function is_descendant_path(string $candidatePath, string $ancestorPath): bool
+    {
+        $candidatePath = trim(str_replace('\\', '/', $candidatePath), '/');
+        $ancestorPath = trim(str_replace('\\', '/', $ancestorPath), '/');
+
+        if ($ancestorPath === '') {
+            return false;
+        }
+
+        return $candidatePath === $ancestorPath
+            || str_starts_with($candidatePath . '/', $ancestorPath . '/');
     }
 }

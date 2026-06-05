@@ -87,4 +87,13 @@ class MSTV_Logger
     {
         return $this->log('create', 'folder', $folderId, ['name' => $name]);
     }
+
+    public function log_folder_move(int $folderId, string $name, ?int $fromParent, ?int $toParent): int
+    {
+        return $this->log('move', 'folder', $folderId, [
+            'name' => $name,
+            'from_parent' => $fromParent,
+            'to_parent' => $toParent,
+        ]);
+    }
 }

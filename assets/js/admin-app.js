@@ -992,6 +992,17 @@
                         </svg>
                         ${mstvConfig.i18n.rename}
                     </button>
+                    <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-move-folder-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="5 9 2 12 5 15"/>
+                            <polyline points="9 5 12 2 15 5"/>
+                            <polyline points="15 19 12 22 9 19"/>
+                            <polyline points="19 9 22 12 19 15"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <line x1="12" y1="2" x2="12" y2="22"/>
+                        </svg>
+                        ${mstvConfig.i18n.move}
+                    </button>
                     <button type="button" class="pdm-btn pdm-btn-danger pdm-details-delete-folder-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3 6 5 6 21 6"/>
@@ -1010,6 +1021,10 @@
 
             this.elements.details.querySelector('.pdm-details-rename-folder-btn')?.addEventListener('click', () => {
                 this.showRenameFolderModal(folder.id);
+            });
+
+            this.elements.details.querySelector('.pdm-details-move-folder-btn')?.addEventListener('click', () => {
+                this.showMoveFolderModal(folder.id);
             });
 
             this.elements.details.querySelector('.pdm-details-delete-folder-btn')?.addEventListener('click', () => {
@@ -1165,10 +1180,66 @@
             });
         },
 
-        buildMoveTreeHtml(folders, currentFolderId, level = 0) {
+        showMoveFolderModal(folderId) {
+            const folder = this.state.folders.find(f => f.id === folderId);
+            if (!folder) return;
+
+            const currentParentId = folder.parent_id ?? null;
+            // Exclude the folder itself and its subtree from the destinations to prevent cycles.
+            const folderTreeHtml = this.buildMoveTreeHtml(this.state.folderTree, currentParentId, 0, folderId);
+
+            const html = `
+                <div class="pdm-field">
+                    <label class="pdm-field-label">${mstvConfig.i18n.moveTo}</label>
+                    <div class="pdm-move-tree">
+                        <div class="pdm-move-item ${currentParentId === null ? 'current' : ''}" data-folder-id="">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                            </svg>
+                            <span>${mstvConfig.i18n.rootFolder}</span>
+                        </div>
+                        ${folderTreeHtml}
+                    </div>
+                </div>
+            `;
+
+            const footer = `
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm" disabled>${mstvConfig.i18n.confirm}</button>
+            `;
+
+            this.showModal(mstvConfig.i18n.move, html, footer);
+
+            let selectedParentId = null;
+
+            this.elements.modal.querySelectorAll('.pdm-move-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    if (el.classList.contains('current')) return;
+
+                    this.elements.modal.querySelectorAll('.pdm-move-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    el.classList.add('active');
+
+                    selectedParentId = el.dataset.folderId ? parseInt(el.dataset.folderId) : null;
+                    this.elements.modal.querySelector('.pdm-modal-confirm')?.removeAttribute('disabled');
+                });
+            });
+
+            this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
+            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+                await this.moveFolder(folderId, selectedParentId);
+            });
+        },
+
+        buildMoveTreeHtml(folders, currentFolderId, level = 0, excludeFolderId = null) {
             if (!folders || folders.length === 0) return '';
 
             return folders.map(folder => {
+                if (excludeFolderId !== null && folder.id === excludeFolderId) {
+                    return '';
+                }
+
                 const isCurrent = folder.id === currentFolderId;
                 let html = `
                     <div class="pdm-move-item ${isCurrent ? 'current' : ''}" data-folder-id="${folder.id}" style="padding-left: ${12 + level * 20}px;">
@@ -1180,7 +1251,7 @@
                 `;
 
                 if (folder.children && folder.children.length > 0) {
-                    html += this.buildMoveTreeHtml(folder.children, currentFolderId, level + 1);
+                    html += this.buildMoveTreeHtml(folder.children, currentFolderId, level + 1, excludeFolderId);
                 }
 
                 return html;
@@ -1228,7 +1299,11 @@
         },
 
         async deleteFolder(folderId) {
-            if (!confirm(mstvConfig.i18n.confirmDeleteFolder)) return;
+            const confirmed = await this.confirmDialog(mstvConfig.i18n.confirmDeleteFolder, {
+                danger: true,
+                confirmLabel: mstvConfig.i18n.delete,
+            });
+            if (!confirmed) return;
 
             try {
                 const response = await this.apiDelete(`folders/${folderId}`);
@@ -1263,7 +1338,11 @@
         },
 
         async deleteFile(fileId) {
-            if (!confirm(mstvConfig.i18n.confirmDelete)) return;
+            const confirmed = await this.confirmDialog(mstvConfig.i18n.confirmDelete, {
+                danger: true,
+                confirmLabel: mstvConfig.i18n.delete,
+            });
+            if (!confirmed) return;
 
             try {
                 const response = await this.apiDelete(`files/${fileId}`);
@@ -1302,6 +1381,30 @@
             } catch (error) {
                 this.showToast(mstvConfig.i18n.moveError, 'error');
                 console.error('Move files error:', error);
+            }
+        },
+
+        async moveFolder(folderId, targetParentId) {
+            try {
+                const payload = {};
+
+                if (targetParentId !== null) {
+                    payload.parent_id = targetParentId;
+                }
+
+                const response = await this.apiPost(`folders/${folderId}/move`, payload);
+
+                if (response.success) {
+                    this.showToast(mstvConfig.i18n.folderMoveSuccess, 'success');
+                    this.hideModal();
+                    await this.loadBrowser(this.state.currentFolder, 1, { clearSearchInput: true });
+                    this.clearDetails();
+                } else {
+                    this.showToast(response.message || mstvConfig.i18n.folderMoveError, 'error');
+                }
+            } catch (error) {
+                this.showToast(mstvConfig.i18n.folderMoveError, 'error');
+                console.error('Move folder error:', error);
             }
         },
 
@@ -1426,23 +1529,71 @@
             this.elements.uploadOverlay?.querySelector('.pdm-upload-dropzone')?.classList.remove('drag-over');
         },
 
+        showUploadProgress(controller) {
+            let el = document.getElementById('pdm-upload-progress');
+            if (!el) {
+                el = document.createElement('div');
+                el.id = 'pdm-upload-progress';
+                el.className = 'pdm-upload-progress';
+                document.body.appendChild(el);
+            }
+
+            el.innerHTML = `
+                <span class="pdm-spinner pdm-upload-progress-spinner"></span>
+                <span class="pdm-upload-progress-text" id="pdm-upload-progress-text">${this.escapeHtml(mstvConfig.i18n.uploading)}</span>
+                <button type="button" class="pdm-btn pdm-btn-secondary pdm-upload-progress-cancel">${mstvConfig.i18n.cancel}</button>
+            `;
+
+            el.querySelector('.pdm-upload-progress-cancel')?.addEventListener('click', () => {
+                controller.abort();
+                this.showToast(mstvConfig.i18n.uploadCancelled, 'info');
+            });
+        },
+
+        updateUploadProgress(index, total, fileName) {
+            const el = document.getElementById('pdm-upload-progress-text');
+            if (!el) return;
+
+            const label = total > 1
+                ? `${mstvConfig.i18n.uploading} (${index}/${total})`
+                : mstvConfig.i18n.uploading;
+            el.textContent = `${label} — ${fileName}`;
+        },
+
+        hideUploadProgress() {
+            document.getElementById('pdm-upload-progress')?.remove();
+        },
+
         async handleFileSelect(files) {
             if (!files || files.length === 0) return;
 
             this.hideUploadOverlay();
 
+            const fileList = Array.from(files);
+            const controller = new AbortController();
+            this.showUploadProgress(controller);
+
             let anySuccess = false;
-            for (const file of files) {
-                if (await this.uploadFile(file)) {
-                    anySuccess = true;
+            try {
+                let index = 0;
+                for (const file of fileList) {
+                    if (controller.signal.aborted) break;
+                    index += 1;
+                    this.updateUploadProgress(index, fileList.length, file.name);
+                    if (await this.uploadFile(file, controller.signal)) {
+                        anySuccess = true;
+                    }
                 }
+            } finally {
+                this.hideUploadProgress();
             }
+
             if (anySuccess) {
                 await this.reloadCurrentView();
             }
         },
 
-        async uploadFile(file) {
+        async uploadFile(file, signal = null) {
             if (mstvConfig.maxFileSize > 0 && file.size > mstvConfig.maxFileSize) {
                 const msg = mstvConfig.i18n.fileTooLarge
                     .replace('{fileName}', file.name)
@@ -1467,6 +1618,7 @@
                         'X-WP-Nonce': mstvConfig.restNonce,
                     },
                     body: formData,
+                    signal,
                 });
 
                 const data = await this.parseApiResponse(response);
@@ -1478,6 +1630,9 @@
                 this.showToast(data.message || mstvConfig.i18n.uploadError, 'error');
                 return false;
             } catch (error) {
+                if (error.name === 'AbortError') {
+                    return false;
+                }
                 this.showToast(error.message || mstvConfig.i18n.uploadError, 'error');
                 console.error('Upload error:', error);
                 return false;
@@ -1657,6 +1812,41 @@
             this.elements.modal.classList.remove('active');
         },
 
+        confirmDialog(message, options = {}) {
+            return new Promise((resolve) => {
+                const danger = options.danger === true;
+                const confirmLabel = options.confirmLabel || mstvConfig.i18n.confirm;
+                const body = `<p class="pdm-confirm-message">${this.escapeHtml(message)}</p>`;
+                const footer = `
+                    <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
+                    <button type="button" class="pdm-btn ${danger ? 'pdm-btn-danger' : 'pdm-btn-primary'} pdm-confirm-accept">${confirmLabel}</button>
+                `;
+
+                this.showModal(options.title || mstvConfig.i18n.confirm, body, footer);
+
+                let settled = false;
+                const finish = (result) => {
+                    if (settled) return;
+                    settled = true;
+                    observer.disconnect();
+                    this.hideModal();
+                    resolve(result);
+                };
+
+                // Any dismissal (backdrop, close button, Escape) removes the "active"
+                // class through the shared handlers; treat all of them as a cancel.
+                const observer = new MutationObserver(() => {
+                    if (!this.elements.modal.classList.contains('active')) {
+                        finish(false);
+                    }
+                });
+                observer.observe(this.elements.modal, { attributes: true, attributeFilter: ['class'] });
+
+                this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => finish(false));
+                this.elements.modal.querySelector('.pdm-confirm-accept')?.addEventListener('click', () => finish(true));
+            });
+        },
+
         showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = 'pdm-toast';
@@ -1709,6 +1899,17 @@
                     </svg>
                     ${mstvConfig.i18n.rename}
                 </div>
+                <div class="context-menu-item pdm-context-move">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="5 9 2 12 5 15"/>
+                        <polyline points="9 5 12 2 15 5"/>
+                        <polyline points="15 19 12 22 9 19"/>
+                        <polyline points="19 9 22 12 19 15"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <line x1="12" y1="2" x2="12" y2="22"/>
+                    </svg>
+                    ${mstvConfig.i18n.move}
+                </div>
                 <div class="context-menu-divider"></div>
                 <div class="context-menu-item context-menu-item--danger pdm-context-delete">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1739,6 +1940,11 @@
             menu.querySelector('.pdm-context-rename')?.addEventListener('click', () => {
                 this.hideContextMenu();
                 this.showRenameFolderModal(folderId);
+            });
+
+            menu.querySelector('.pdm-context-move')?.addEventListener('click', () => {
+                this.hideContextMenu();
+                this.showMoveFolderModal(folderId);
             });
 
             menu.querySelector('.pdm-context-delete')?.addEventListener('click', () => {
@@ -2137,7 +2343,7 @@
 
             if (whitelistCheckbox && whitelistField) {
                 whitelistCheckbox.addEventListener('change', () => {
-                    whitelistField.style.display = whitelistCheckbox.checked ? 'block' : 'none';
+                    whitelistField.classList.toggle('pdm-hidden', !whitelistCheckbox.checked);
                 });
             }
 
@@ -2237,7 +2443,7 @@
             allowedUsersContainer.appendChild(tag);
 
             if (noUsersMsg) {
-                noUsersMsg.style.display = 'none';
+                noUsersMsg.classList.add('pdm-hidden');
             }
         },
 
@@ -2248,7 +2454,7 @@
             if (!allowedUsersContainer || !noUsersMsg) return;
 
             const userTags = allowedUsersContainer.querySelectorAll('.pdm-user-tag');
-            noUsersMsg.style.display = userTags.length === 0 ? '' : 'none';
+            noUsersMsg.classList.toggle('pdm-hidden', userTags.length !== 0);
         },
 
         showExportModal() {

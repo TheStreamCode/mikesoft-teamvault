@@ -125,7 +125,7 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                 <p class="pdm-field-desc"><?php esc_html_e('If enabled, users still need the plugin capability and must also be present in this list. Include your current account before saving to avoid locking yourself out.', 'mikesoft-teamvault'); ?></p>
             </div>
 
-            <div class="pdm-field pdm-user-whitelist-field" style="<?php echo esc_attr($mstv_use_user_whitelist ? '' : 'display:none;'); ?>">
+            <div class="pdm-field pdm-user-whitelist-field<?php echo $mstv_use_user_whitelist ? '' : ' pdm-hidden'; ?>">
                 <label class="pdm-field-label"><?php esc_html_e('Authorized users', 'mikesoft-teamvault'); ?></label>
 
                 <div class="pdm-user-search">
@@ -154,7 +154,7 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                     <?php endforeach; ?>
                 </div>
 
-                <p id="pdm-no-users" class="pdm-field-desc" style="<?php echo esc_attr(empty($mstv_allowed_users) ? '' : 'display:none;'); ?>">
+                <p id="pdm-no-users" class="pdm-field-desc<?php echo empty($mstv_allowed_users) ? '' : ' pdm-hidden'; ?>">
                     <?php esc_html_e('No users selected', 'mikesoft-teamvault'); ?>
                 </p>
             </div>

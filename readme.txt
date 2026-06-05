@@ -4,7 +4,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.4
+Stable tag: 2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,14 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 2.5 =
+* Added folder move from the context menu and details panel, with protection against moving a folder into its own subtree and cascading path updates for nested folders and files.
+* Improved file browser performance on large folders by rendering stored metadata and checking each file's presence on disk only once.
+* Replaced native browser delete confirmations with an in-app confirmation modal.
+* Added a cancellable upload progress indicator.
+* Uninstall data removal now also clears plugin transients (storage-usage cache and auto-reindex markers).
+* The storage self-heal scan now runs only when the index is empty (for example after a database reset), not on a timer during normal browsing.
+
 = 2.4 =
 * General quality-of-life maintenance release for public support and contact metadata.
 * Added the dedicated TeamVault contact mailbox across repository and WordPress.org-facing documentation.
@@ -178,6 +186,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.5 =
+
+Recommended feature update. Adds folder move, faster large-folder browsing, an in-app delete confirmation, and cancellable uploads.
 
 = 2.4 =
 
