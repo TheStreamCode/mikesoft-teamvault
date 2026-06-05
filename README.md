@@ -4,7 +4,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `2.4`.
+Current plugin version: `2.5`.
 
 ## Overview
 
@@ -35,7 +35,7 @@ Core capabilities include:
 
 ## Latest Release
 
-Version `2.4` is a general quality-of-life maintenance release. It refreshes the public TeamVault support path with a dedicated contact mailbox across the repository, security policy, and WordPress.org-facing metadata.
+Version `2.5` adds folder move across the workspace tree, faster browsing for large folders, an in-app delete confirmation dialog, and cancellable uploads. Uninstall data removal also clears plugin transients.
 
 Why teams adopt TeamVault:
 
