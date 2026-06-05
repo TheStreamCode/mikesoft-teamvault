@@ -149,12 +149,19 @@ jobs:
           let raw = '';
           try { raw = fs.readFileSync(process.env.RESULTS, 'utf8'); } catch (e) {}
           const checkExit = parseInt(process.env.CHECK_EXIT || '0', 10);
-          if (raw.trim() === '') {
+          const trimmed = raw.trim();
+          // With --format=json WP-CLI still prints a plain "Success: ... No errors found." line
+          // (not a JSON array) when there are no findings. Treat that as a pass.
+          if (/no errors found/i.test(trimmed) || /^success:/i.test(trimmed)) {
+            console.log(trimmed || 'Plugin Check: no issues.');
+            process.exit(0);
+          }
+          if (trimmed === '') {
             if (checkExit !== 0) { console.error('Plugin Check produced no output and exited ' + checkExit + ' — treating as failure.'); process.exit(2); }
             console.log('Plugin Check: no issues.'); process.exit(0);
           }
           let data;
-          try { data = JSON.parse(raw); } catch (e) { console.error('Plugin Check output is not valid JSON — the check did not run correctly.'); process.exit(2); }
+          try { data = JSON.parse(trimmed); } catch (e) { console.error('Plugin Check output is neither a success message nor valid JSON — the check did not run correctly:'); console.error(trimmed.slice(0, 1000)); process.exit(2); }
           let items = Array.isArray(data) ? data : [];
           if (!Array.isArray(data) && data && typeof data === 'object') {
             for (const k in data) { if (Array.isArray(data[k])) items = items.concat(data[k]); }
