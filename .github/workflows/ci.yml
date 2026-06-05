@@ -100,9 +100,69 @@ jobs:
             --exclude='tools' \
             --exclude='vendor'
 
-      - name: Run WordPress Plugin Check
-        uses: wordpress/plugin-check-action@v1
+      # Plugin Check is run inline instead of via wordpress/plugin-check-action@v1.
+      # That action injects plugin-check as a URL plugin in .wp-env.json, which triggers an
+      # upstream @wordpress/env bug on the ubuntu-24.04 runner image (Node 24.16 / libuv
+      # 1.52.1): wp-env exits 0 without starting Docker, so the check reports
+      # "Environment not initialized". Installing plugin-check via WP-CLI after wp-env start
+      # avoids the broken URL-download path. See WordPress/plugin-check-action#579.
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          build-dir: plugin-check-build/mikesoft-teamvault
-          slug: mikesoft-teamvault
-          include-experimental: false
+          node-version: '24'
+
+      - name: Configure wp-env (no URL plugins)
+        run: |
+          PLUGIN_DIR="$(realpath plugin-check-build/mikesoft-teamvault)"
+          printf '{ "core": null, "plugins": [], "mappings": { "wp-content/plugins/mikesoft-teamvault": "%s" } }\n' "$PLUGIN_DIR" > .wp-env.json
+          cat .wp-env.json
+          npm -g --no-fund install @wordpress/env
+
+      - name: Start wp-env
+        uses: nick-fields/retry@v4
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          shell: bash
+          command: wp-env start --update
+
+      - name: Run WordPress Plugin Check
+        run: |
+          wp-env run cli wp cli info
+          wp-env run cli wp plugin install plugin-check --activate
+          wp-env run cli wp plugin activate mikesoft-teamvault
+
+          set +e
+          wp-env run cli wp plugin check mikesoft-teamvault \
+            --format=json --slug=mikesoft-teamvault \
+            --require=./wp-content/plugins/plugin-check/cli.php > "$RUNNER_TEMP/pc.json"
+          CHECK_EXIT=$?
+          set -e
+
+          echo "wp plugin check exit: $CHECK_EXIT"
+          echo "----- Plugin Check results -----"
+          cat "$RUNNER_TEMP/pc.json" || true
+          echo ""
+
+          RESULTS="$RUNNER_TEMP/pc.json" CHECK_EXIT="$CHECK_EXIT" node <<'NODE'
+          const fs = require('fs');
+          let raw = '';
+          try { raw = fs.readFileSync(process.env.RESULTS, 'utf8'); } catch (e) {}
+          const checkExit = parseInt(process.env.CHECK_EXIT || '0', 10);
+          if (raw.trim() === '') {
+            if (checkExit !== 0) { console.error('Plugin Check produced no output and exited ' + checkExit + ' — treating as failure.'); process.exit(2); }
+            console.log('Plugin Check: no issues.'); process.exit(0);
+          }
+          let data;
+          try { data = JSON.parse(raw); } catch (e) { console.error('Plugin Check output is not valid JSON — the check did not run correctly.'); process.exit(2); }
+          let items = Array.isArray(data) ? data : [];
+          if (!Array.isArray(data) && data && typeof data === 'object') {
+            for (const k in data) { if (Array.isArray(data[k])) items = items.concat(data[k]); }
+          }
+          const errs = items.filter((x) => x && String(x.type || '').toUpperCase() === 'ERROR');
+          const warns = items.filter((x) => x && String(x.type || '').toUpperCase() === 'WARNING');
+          console.log('Plugin Check: ' + errs.length + ' error(s), ' + warns.length + ' warning(s).');
+          for (const e of errs.slice(0, 50)) { console.log('ERROR ' + (e.code || '') + ' ' + (e.file || '') + ':' + (e.line || '') + ' ' + (e.message || '')); }
+          if (errs.length > 0) { console.error('::error::WordPress Plugin Check reported ' + errs.length + ' error(s).'); process.exit(1); }
+          console.log('Plugin Check passed (no errors).');
+          NODE
