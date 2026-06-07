@@ -95,6 +95,7 @@ If a site is migrated without copying the private storage folder, TeamVault reco
 - Email: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
 - Website: [mikesoft.it](https://mikesoft.it)
 - Security reports: see [SECURITY.md](SECURITY.md)
+- Support continued open-source maintenance: [GitHub Sponsors](https://github.com/sponsors/TheStreamCode)
 
 ## Development Quick Check
 
