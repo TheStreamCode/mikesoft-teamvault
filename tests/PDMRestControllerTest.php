@@ -448,6 +448,71 @@ final class PDMRestControllerTest extends TestCase
         $controller->get_browser_data(new WP_REST_Request());
     }
 
+    public function test_create_folder_is_forbidden_without_manage_permission(): void
+    {
+        $permissions = $this->getMockBuilder(MSTV_Permissions::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $permissions->method('current_user_can')->willReturn(false);
+
+        $auth = $this->createMock(MSTV_Auth::class);
+        $auth->method('get_current_user_id')->willReturn(5);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->expects(self::never())->method('create_folder');
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $auth,
+            $storage,
+            $this->createMock(MSTV_Validator::class),
+            $this->createMock(MSTV_Repository_Folders::class),
+            $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class),
+            $permissions
+        );
+
+        $result = $controller->create_folder(new WP_REST_Request(['name' => 'Reports', 'parent_id' => 7]));
+
+        self::assertInstanceOf(WP_Error::class, $result);
+        self::assertSame('mstv_forbidden', $result->get_error_code());
+        self::assertSame(403, $result->data['status']);
+    }
+
+    public function test_browser_grants_full_permission_map_without_engine(): void
+    {
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_by_parent')->willReturn([]);
+        $folderRepo->method('find_all_with_hierarchy')->willReturn([]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('get_count')->willReturn(3);
+        $filesRepo->method('find_by_folder_paginated')->willReturn(['items' => [], 'pagination' => $this->emptyPagination()]);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('get_storage_stats')->willReturn(['plugin_used_bytes' => 0, 'plugin_used_formatted' => '0 B']);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $storage,
+            $this->createMock(MSTV_Validator::class),
+            $folderRepo,
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class)
+        );
+
+        $response = $controller->get_browser_data(new WP_REST_Request());
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertTrue($response->data['data']['permissions']['view']);
+        self::assertTrue($response->data['data']['permissions']['manage']);
+    }
+
     private function emptyPagination(): array
     {
         return [

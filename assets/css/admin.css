@@ -1597,8 +1597,9 @@
 }
 
 @media (max-width: 600px) {
-    /* Keep secondary toolbar actions compact */
-    .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
+    /* Keep secondary toolbar actions compact (file-manager app only; must not affect
+       the governance pages or the shared modal, which live outside .pdm-app). */
+    .pdm-app .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
         display: none;
     }
 
@@ -2430,4 +2431,337 @@ body.pdm-no-scroll {
     .pdm-list-item {
         break-inside: avoid;
     }
+}
+
+/* ============================================================
+   Governance suite: groups page + folder permissions modal
+   ============================================================ */
+
+.pdm-is-hidden {
+    display: none !important;
+}
+
+.pdm-governance-wrap {
+    font-family: var(--pdm-font-sans);
+    color: var(--pdm-color-text);
+}
+
+.mstv-governance-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 16px 0 24px;
+    flex-wrap: wrap;
+}
+
+.mstv-governance-title {
+    margin: 0 0 4px;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.mstv-governance-subtitle {
+    margin: 0;
+    max-width: 640px;
+    color: var(--pdm-color-text-secondary);
+}
+
+.mstv-groups-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.mstv-group-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius);
+}
+
+.mstv-group-name {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.mstv-group-desc {
+    margin-top: 4px;
+    color: var(--pdm-color-text-secondary);
+    font-size: 13px;
+}
+
+.mstv-group-meta {
+    margin-top: 8px;
+    color: var(--pdm-color-text-secondary);
+    font-size: 12px;
+}
+
+.mstv-group-card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.mstv-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    margin: 4px 6px 0 0;
+    background: var(--pdm-color-bg);
+    border-radius: 999px;
+    font-size: 13px;
+}
+
+.mstv-chip-remove {
+    border: 0;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--pdm-color-text-secondary);
+}
+
+.mstv-group-chips {
+    margin-top: 8px;
+}
+
+.pdm-perm-table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+}
+
+.pdm-perm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.pdm-perm-table th,
+.pdm-perm-table td {
+    padding: 8px;
+    border-bottom: 1px solid var(--pdm-color-border);
+}
+
+.pdm-perm-table thead th {
+    text-align: left;
+    color: var(--pdm-color-text-secondary);
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pdm-perm-principal {
+    font-weight: 600;
+}
+
+.pdm-perm-type {
+    color: var(--pdm-color-text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+.pdm-perm-empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--pdm-color-text-secondary);
+}
+
+.pdm-perm-add {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--pdm-color-border);
+}
+
+.pdm-perm-add-user,
+.pdm-perm-add-group {
+    flex: 1 1 220px;
+    display: flex;
+    gap: 8px;
+}
+
+/* Group picker is a select + button on one row. */
+.pdm-perm-add-group {
+    align-items: flex-start;
+}
+
+/* User search results flow inline below the input (column) instead of an absolutely
+   positioned overlay, so they are never clipped inside a scrollable modal body. */
+.pdm-perm-add-user {
+    flex-direction: column;
+}
+
+.pdm-perm-user-results {
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius-sm);
+    max-height: 180px;
+    overflow-y: auto;
+    box-shadow: var(--pdm-shadow-sm);
+}
+
+.pdm-perm-user-results:empty {
+    display: none;
+}
+
+.pdm-perm-user-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--pdm-color-text);
+}
+
+.pdm-perm-user-option:hover {
+    background: var(--pdm-color-bg);
+}
+
+.pdm-perm-user-option:focus-visible,
+.mstv-chip-remove:focus-visible,
+.pdm-perm-table input[type="checkbox"]:focus-visible,
+.mstv-notif-events input:focus-visible {
+    outline: 2px solid var(--pdm-color-primary);
+    outline-offset: 2px;
+    border-radius: var(--pdm-radius-sm);
+}
+
+/* Scroll affordance for wide governance tables on narrow screens. */
+.pdm-perm-table-wrap::-webkit-scrollbar {
+    height: 8px;
+}
+
+.pdm-perm-table-wrap::-webkit-scrollbar-thumb {
+    background: var(--pdm-color-border);
+    border-radius: 999px;
+}
+
+.mstv-quota-mb {
+    width: 100px;
+}
+
+.pdm-governance-wrap input[type="color"],
+.pdm-settings-form input[type="color"] {
+    width: 56px;
+    height: 36px;
+    padding: 2px;
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius-sm);
+    background: var(--pdm-color-bg-secondary);
+    cursor: pointer;
+}
+
+.mstv-filter input[type="date"] {
+    max-width: 180px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+/* ---- Governance responsive behavior ---- */
+@media (max-width: 782px) {
+    .mstv-groups-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .mstv-groups-list {
+        grid-template-columns: 1fr;
+    }
+
+    .mstv-reports-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .mstv-reports-filters .pdm-btn,
+    .mstv-filter,
+    .mstv-filter input[type="date"] {
+        width: 100%;
+        max-width: none;
+    }
+
+    .pdm-perm-add {
+        flex-direction: column;
+    }
+
+    .pdm-perm-add-user,
+    .pdm-perm-add-group {
+        flex: 1 1 100%;
+    }
+
+    .mstv-governance-title {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mstv-quota-mb {
+        width: 72px;
+    }
+}
+
+.mstv-quotas-enable {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 16px;
+}
+
+/* Space out stacked checkbox rows (e.g. notification events/groups), which sit as
+   direct siblings here rather than each wrapped in its own .pdm-field. */
+.mstv-notif-events,
+.mstv-notif-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.pdm-governance-wrap .pdm-checkbox-label + .pdm-checkbox-label {
+    margin-top: 10px;
+}
+
+.pdm-governance-wrap .pdm-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 20px 0 4px;
+}
+
+.mstv-governance-footer {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.mstv-reports-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+    margin: 16px 0 20px;
+    padding: 16px;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius);
+}
+
+.mstv-filter {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--pdm-color-text-secondary);
 }

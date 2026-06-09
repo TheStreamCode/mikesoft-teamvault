@@ -18,6 +18,8 @@ class MSTV_REST_Controller
     private MSTV_Download $download;
     private MSTV_Preview $preview;
     private MSTV_Logger $logger;
+    private ?MSTV_Permissions $permissions;
+    private ?MSTV_Quota $quota;
 
     public function __construct(
         MSTV_Settings $settings,
@@ -28,7 +30,9 @@ class MSTV_REST_Controller
         MSTV_Repository_Files $filesRepo,
         MSTV_Download $download,
         MSTV_Preview $preview,
-        MSTV_Logger $logger
+        MSTV_Logger $logger,
+        ?MSTV_Permissions $permissions = null,
+        ?MSTV_Quota $quota = null
     ) {
         $this->settings = $settings;
         $this->auth = $auth;
@@ -39,6 +43,56 @@ class MSTV_REST_Controller
         $this->download = $download;
         $this->preview = $preview;
         $this->logger = $logger;
+        $this->permissions = $permissions;
+        $this->quota = $quota;
+    }
+
+    /**
+     * Per-folder permission guard for handlers. Returns a 403 WP_Error when the current
+     * user lacks the action on the folder, or null to proceed. When no permission engine
+     * is wired (e.g. unit tests) the check is a no-op, preserving prior behavior.
+     */
+    private function guard_folder_action(?int $folderId, string $action): ?\WP_Error
+    {
+        if (!$this->permissions) {
+            return null;
+        }
+
+        if ($this->permissions->current_user_can($folderId, $action)) {
+            return null;
+        }
+
+        if (class_exists('MSTV_Hooks')) {
+            MSTV_Hooks::do_access_denied($this->auth->get_current_user_id(), $folderId, $action);
+        }
+
+        return new \WP_Error(
+            'mstv_forbidden',
+            __('You do not have permission to perform this action.', 'mikesoft-teamvault'),
+            ['status' => 403]
+        );
+    }
+
+    private function folder_id_of_file(object $file): ?int
+    {
+        return $file->folder_id ? (int) $file->folder_id : null;
+    }
+
+    /**
+     * Remove governance data attached to a deleted folder: permission rules and any
+     * per-folder notification override. Quotas are principal-based, not folder-based.
+     */
+    private function cleanup_folder_governance(int $folderId): void
+    {
+        if (class_exists('MSTV_Repository_Permissions')) {
+            (new MSTV_Repository_Permissions())->delete_for_folder($folderId);
+        }
+
+        $folderNotifications = get_option('mstv_folder_notifications', []);
+        if (is_array($folderNotifications) && isset($folderNotifications[$folderId])) {
+            unset($folderNotifications[$folderId]);
+            update_option('mstv_folder_notifications', $folderNotifications);
+        }
     }
 
     public function register_routes(): void
@@ -328,7 +382,7 @@ class MSTV_REST_Controller
         ]);
     }
 
-    public function get_browser_data(\WP_REST_Request $request): \WP_REST_Response
+    public function get_browser_data(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
     {
         $this->maybe_auto_restore_storage_index();
 
@@ -339,9 +393,13 @@ class MSTV_REST_Controller
         $page = $this->get_page_param($request);
         $perPage = $this->get_per_page_param($request);
 
-        $folders = $this->folderRepo->find_by_parent($folderId);
+        if ($denied = $this->guard_folder_action($folderId, MSTV_Permissions::ACTION_VIEW)) {
+            return $denied;
+        }
+
+        $folders = $this->filter_folders_by_view($this->folderRepo->find_by_parent($folderId));
         $filesPage = $this->filesRepo->find_by_folder_paginated($folderId, $orderBy, $order, $page, $perPage);
-        $allFolders = $this->folderRepo->find_all_with_hierarchy();
+        $allFolders = $this->filter_tree_by_view($this->folderRepo->find_all_with_hierarchy());
         $breadcrumb = $folderId ? $this->folderRepo->get_breadcrumb_data($folderId) : [];
 
         $formattedFolders = array_map([$this, 'format_folder'], $folders);
@@ -357,8 +415,67 @@ class MSTV_REST_Controller
                 'folder_tree' => $allFolders,
                 'breadcrumb' => $breadcrumb,
                 'storage_stats' => $this->storage->get_storage_stats($this->filesRepo),
+                'permissions' => $this->permissions_for($folderId),
             ],
         ]));
+    }
+
+    /**
+     * Effective actions of the current user on a folder, as a JS-friendly map.
+     * When no engine is wired (tests), every action is granted (prior behavior).
+     */
+    private function permissions_for(?int $folderId): array
+    {
+        if (!$this->permissions) {
+            return array_fill_keys(MSTV_Permissions::ACTIONS, true);
+        }
+
+        return $this->permissions->effective_actions($this->auth->get_current_user_id(), $folderId);
+    }
+
+    /**
+     * @param object[] $folders
+     * @return object[]
+     */
+    private function filter_folders_by_view(array $folders): array
+    {
+        if (!$this->permissions) {
+            return $folders;
+        }
+
+        $userId = $this->auth->get_current_user_id();
+
+        return array_values(array_filter($folders, function ($folder) use ($userId) {
+            return $this->permissions->user_can($userId, (int) $folder->id, MSTV_Permissions::ACTION_VIEW);
+        }));
+    }
+
+    /**
+     * Recursively drop tree nodes the current user cannot view (and their subtree).
+     */
+    private function filter_tree_by_view(array $nodes): array
+    {
+        if (!$this->permissions) {
+            return $nodes;
+        }
+
+        $userId = $this->auth->get_current_user_id();
+        $filtered = [];
+
+        foreach ($nodes as $node) {
+            if (!$this->permissions->user_can($userId, (int) $node['id'], MSTV_Permissions::ACTION_VIEW)) {
+                continue;
+            }
+
+            if (!empty($node['children'])) {
+                $node['children'] = $this->filter_tree_by_view($node['children']);
+                $node['has_children'] = !empty($node['children']);
+            }
+
+            $filtered[] = $node;
+        }
+
+        return $filtered;
     }
 
     public function create_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -368,6 +485,10 @@ class MSTV_REST_Controller
         $name = sanitize_text_field($request->get_param('name'));
         $parentId = $request->get_param('parent_id');
         $parentId = $parentId ? (int) $parentId : null;
+
+        if ($denied = $this->guard_folder_action($parentId, MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
+        }
 
         $validation = $this->validator->validate_folder_name($name);
         if (!$validation['valid']) {
@@ -417,6 +538,10 @@ class MSTV_REST_Controller
             return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
+        if ($denied = $this->guard_folder_action($id, MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
+        }
+
         $validation = $this->validator->validate_folder_name($name);
         if (!$validation['valid']) {
             return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
@@ -456,12 +581,17 @@ class MSTV_REST_Controller
             return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
+        if ($denied = $this->guard_folder_action($id, MSTV_Permissions::ACTION_DELETE)) {
+            return $denied;
+        }
+
         $result = $this->storage->delete_folder($id, $this->folderRepo, $this->filesRepo);
         if (!$result['success']) {
             return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
         }
 
         $this->folderRepo->delete($id);
+        $this->cleanup_folder_governance($id);
         $this->logger->log_delete('folder', $id, $folder->name);
 
         if (class_exists('MSTV_Hooks')) {
@@ -483,6 +613,14 @@ class MSTV_REST_Controller
         $folder = $this->folderRepo->find($id);
         if (!$folder) {
             return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        if ($denied = $this->guard_folder_action($id, MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
+        }
+
+        if ($denied = $this->guard_folder_action($targetParentId, MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
         }
 
         $result = $this->storage->move_folder($id, $targetParentId, $this->folderRepo);
@@ -620,10 +758,24 @@ class MSTV_REST_Controller
             return $folderId;
         }
 
+        if ($denied = $this->guard_folder_action($folderId, MSTV_Permissions::ACTION_UPLOAD)) {
+            ob_end_clean();
+            return $denied;
+        }
+
         $validation = $this->validator->validate_upload_full($files);
         if (!$validation['valid']) {
             ob_end_clean();
             return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
+        }
+
+        // Enforce quotas before any disk write or metadata insert (block-before-create).
+        if ($this->quota) {
+            $quotaError = $this->quota->check_upload($this->auth->get_current_user_id(), (int) $validation['size']);
+            if ($quotaError instanceof \WP_Error) {
+                ob_end_clean();
+                return $quotaError;
+            }
         }
 
         $rawDisplayName = $request->get_param('display_name');
@@ -706,6 +858,10 @@ class MSTV_REST_Controller
             return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
+        if ($denied = $this->guard_folder_action($this->folder_id_of_file($files), MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
+        }
+
         if (empty($displayName)) {
             return new \WP_Error('validation_error', __('The name cannot be empty.', 'mikesoft-teamvault'), ['status' => 400]);
         }
@@ -731,6 +887,10 @@ class MSTV_REST_Controller
         $files = $this->filesRepo->find($id);
         if (!$files) {
             return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        if ($denied = $this->guard_folder_action($this->folder_id_of_file($files), MSTV_Permissions::ACTION_DELETE)) {
+            return $denied;
         }
 
         $result = $this->storage->delete_file($id, $this->filesRepo);
@@ -764,6 +924,14 @@ class MSTV_REST_Controller
         $files = $this->filesRepo->find($id);
         if (!$files) {
             return new \WP_Error('not_found', __('File not found.', 'mikesoft-teamvault'), ['status' => 404]);
+        }
+
+        if ($denied = $this->guard_folder_action($this->folder_id_of_file($files), MSTV_Permissions::ACTION_MANAGE)) {
+            return $denied;
+        }
+
+        if ($denied = $this->guard_folder_action($targetFolderId, MSTV_Permissions::ACTION_UPLOAD)) {
+            return $denied;
         }
 
         $result = $this->storage->move_file($id, $targetFolderId, $this->filesRepo, $this->folderRepo);
@@ -964,7 +1132,11 @@ class MSTV_REST_Controller
         $repo = new MSTV_Repository_Logs();
         $page = $this->get_page_param($request);
         $perPage = $this->get_per_page_param($request);
-        $logsPage = $repo->find_recent_paginated($page, $perPage);
+        $filters = $this->collect_log_filters($request);
+
+        $logsPage = empty($filters)
+            ? $repo->find_recent_paginated($page, $perPage)
+            : $repo->find_filtered($filters, $page, $perPage);
 
         return new \WP_REST_Response([
             'success' => true,
@@ -973,6 +1145,30 @@ class MSTV_REST_Controller
                 'pagination' => $logsPage['pagination'],
             ],
         ]);
+    }
+
+    private function collect_log_filters(\WP_REST_Request $request): array
+    {
+        $filters = [];
+
+        foreach (['date_from', 'date_to', 'action', 'file_type'] as $key) {
+            $value = $request->get_param($key);
+            if (is_string($value) && $value !== '') {
+                $filters[$key] = sanitize_text_field($value);
+            }
+        }
+
+        $userId = $request->get_param('user_id');
+        if ($userId !== null && $userId !== '') {
+            $filters['user_id'] = absint($userId);
+        }
+
+        $folderId = $request->get_param('folder_id');
+        if ($folderId !== null && $folderId !== '') {
+            $filters['folder_id'] = absint($folderId);
+        }
+
+        return $filters;
     }
 
     public function search_users(\WP_REST_Request $request): \WP_REST_Response
@@ -1015,7 +1211,8 @@ class MSTV_REST_Controller
             $this->storage,
             $this->filesRepo,
             $this->folderRepo,
-            $this->auth
+            $this->auth,
+            $this->permissions
         );
 
         $export->export_all();
@@ -1029,7 +1226,8 @@ class MSTV_REST_Controller
             $this->storage,
             $this->filesRepo,
             $this->folderRepo,
-            $this->auth
+            $this->auth,
+            $this->permissions
         );
 
         $export->export_folder($folderId);
@@ -1045,6 +1243,7 @@ class MSTV_REST_Controller
             'created_at' => $folder->created_at,
             'created_at_human' => MSTV_Helpers::human_time_diff_mysql($folder->created_at),
             'has_children' => $this->folderRepo->count_children((int) $folder->id) > 0,
+            'permissions' => $this->permissions_for((int) $folder->id),
         ];
     }
 

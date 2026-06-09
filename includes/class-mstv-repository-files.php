@@ -280,6 +280,38 @@ class MSTV_Repository_Files
         );
     }
 
+    public function get_total_size_by_user(int $userId): int
+    {
+        global $wpdb;
+
+        return (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COALESCE(SUM(file_size), 0) FROM {$this->table} WHERE created_by = %d",
+                $userId
+            )
+        );
+    }
+
+    public function get_total_size_by_users(array $userIds): int
+    {
+        global $wpdb;
+
+        $userIds = array_values(array_unique(array_filter(array_map('absint', $userIds))));
+
+        if (empty($userIds)) {
+            return 0;
+        }
+
+        $placeholders = implode(',', array_fill(0, count($userIds), '%d'));
+
+        return (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COALESCE(SUM(file_size), 0) FROM {$this->table} WHERE created_by IN ($placeholders)",
+                ...$userIds
+            )
+        );
+    }
+
     public function get_count(): int
     {
         global $wpdb;

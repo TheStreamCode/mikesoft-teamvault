@@ -8,17 +8,20 @@ class MSTV_Download
     private MSTV_Repository_Files $filesRepo;
     private MSTV_Auth $auth;
     private MSTV_Logger $logger;
+    private ?MSTV_Permissions $permissions;
 
     public function __construct(
         MSTV_Storage $storage,
         MSTV_Repository_Files $filesRepo,
         MSTV_Auth $auth,
-        MSTV_Logger $logger
+        MSTV_Logger $logger,
+        ?MSTV_Permissions $permissions = null
     ) {
         $this->storage = $storage;
         $this->filesRepo = $filesRepo;
         $this->auth = $auth;
         $this->logger = $logger;
+        $this->permissions = $permissions;
     }
 
     public function serve(int $fileId): void
@@ -37,6 +40,17 @@ class MSTV_Download
                 esc_html__('File not found.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
                 ['response' => 404]
+            );
+        }
+
+        if ($this->permissions && !$this->permissions->current_user_can(
+            $files->folder_id ? (int) $files->folder_id : null,
+            MSTV_Permissions::ACTION_DOWNLOAD
+        )) {
+            wp_die(
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 403]
             );
         }
 

@@ -19,6 +19,8 @@ class MSTV_Hooks
     public const EXPORT_STARTED = 'mstv_export_started';
     public const EXPORT_COMPLETED = 'mstv_export_completed';
 
+    public const ACCESS_DENIED = 'mstv_access_denied';
+
     public const FILTER_ALLOWED_EXTENSIONS = 'mstv_allowed_extensions';
     public const FILTER_MAX_FILE_SIZE = 'mstv_max_file_size';
     public const FILTER_STORAGE_PATH = 'mstv_storage_path';
@@ -95,6 +97,12 @@ class MSTV_Hooks
     {
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is prefixed in constant value.
         do_action(self::EXPORT_COMPLETED, $folderId, $zipPath, $filesCount);
+    }
+
+    public static function do_access_denied(int $userId, ?int $folderId, string $action): void
+    {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is prefixed in constant value.
+        do_action(self::ACCESS_DENIED, $userId, $folderId, $action);
     }
 
     public static function filter_allowed_extensions(array $extensions): array

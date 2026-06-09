@@ -24,6 +24,7 @@ class MSTV_Admin
         add_action('admin_post_mstv_export_all', [$this, 'handle_export_all']);
         add_action('admin_post_mstv_export_folder', [$this, 'handle_export_folder']);
         add_action('admin_post_mstv_export_selection', [$this, 'handle_export_selection']);
+        add_action('admin_post_mstv_export_audit_csv', [$this, 'handle_export_audit_csv']);
         add_action('admin_notices', [$this, 'render_storage_security_notice']);
         add_action('wp_ajax_mstv_dismiss_storage_notice', [$this, 'handle_dismiss_storage_notice']);
     }
@@ -93,9 +94,11 @@ class MSTV_Admin
             '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#a7aaad" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>'
         );
 
+        $brand_name = $this->settings->get_brand_name();
+
         add_menu_page(
-            __('TeamVault', 'mikesoft-teamvault'),
-            __('TeamVault', 'mikesoft-teamvault'),
+            $brand_name,
+            $brand_name,
             MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault',
             [$this, 'render_file_manager_page'],
@@ -119,6 +122,42 @@ class MSTV_Admin
             'manage_options',
             'mikesoft-teamvault-settings',
             [$this, 'render_settings_page']
+        );
+
+        add_submenu_page(
+            'mikesoft-teamvault',
+            __('Groups', 'mikesoft-teamvault'),
+            __('Groups', 'mikesoft-teamvault'),
+            'manage_options',
+            'mikesoft-teamvault-groups',
+            [$this, 'render_groups_page']
+        );
+
+        add_submenu_page(
+            'mikesoft-teamvault',
+            __('Quotas', 'mikesoft-teamvault'),
+            __('Quotas', 'mikesoft-teamvault'),
+            'manage_options',
+            'mikesoft-teamvault-quotas',
+            [$this, 'render_quotas_page']
+        );
+
+        add_submenu_page(
+            'mikesoft-teamvault',
+            __('Notifications', 'mikesoft-teamvault'),
+            __('Notifications', 'mikesoft-teamvault'),
+            'manage_options',
+            'mikesoft-teamvault-notifications',
+            [$this, 'render_notifications_page']
+        );
+
+        add_submenu_page(
+            'mikesoft-teamvault',
+            __('Reports', 'mikesoft-teamvault'),
+            __('Reports', 'mikesoft-teamvault'),
+            'manage_options',
+            'mikesoft-teamvault-reports',
+            [$this, 'render_reports_page']
         );
 
         add_submenu_page(
@@ -166,6 +205,46 @@ class MSTV_Admin
         }
 
         include MSTV_PLUGIN_DIR . 'admin/views/settings-page.php';
+    }
+
+    public function render_groups_page(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
+        }
+
+        $settings = $this->settings;
+        include MSTV_PLUGIN_DIR . 'admin/views/groups-page.php';
+    }
+
+    public function render_quotas_page(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
+        }
+
+        $settings = $this->settings;
+        include MSTV_PLUGIN_DIR . 'admin/views/quotas-page.php';
+    }
+
+    public function render_reports_page(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
+        }
+
+        $settings = $this->settings;
+        include MSTV_PLUGIN_DIR . 'admin/views/reports-page.php';
+    }
+
+    public function render_notifications_page(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'));
+        }
+
+        $settings = $this->settings;
+        include MSTV_PLUGIN_DIR . 'admin/views/notifications-page.php';
     }
 
     public function render_logs_page(): void
@@ -251,6 +330,15 @@ class MSTV_Admin
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
         update_option('mstv_remove_data_on_uninstall', wp_validate_boolean(wp_unslash($_POST['mstv_remove_data_on_uninstall'] ?? false)));
 
+        // White-label branding.
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value.
+        update_option('mstv_white_label_enabled', wp_validate_boolean(wp_unslash($_POST['mstv_white_label_enabled'] ?? false)));
+        $brandName = isset($_POST['mstv_brand_name']) ? sanitize_text_field(wp_unslash($_POST['mstv_brand_name'])) : 'TeamVault';
+        update_option('mstv_brand_name', $brandName !== '' ? $brandName : 'TeamVault');
+        update_option('mstv_brand_logo_url', isset($_POST['mstv_brand_logo_url']) ? esc_url_raw(wp_unslash($_POST['mstv_brand_logo_url'])) : '');
+        $accent = isset($_POST['mstv_brand_accent']) ? sanitize_hex_color(wp_unslash($_POST['mstv_brand_accent'])) : '';
+        update_option('mstv_brand_accent', $accent ?: '');
+
         set_transient('mstv_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
 
         wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
@@ -330,7 +418,7 @@ class MSTV_Admin
         $this->guard_stream_request();
 
         $services = $this->build_files_services();
-        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth'], $services['permissions']);
         $export->export_all();
     }
 
@@ -341,7 +429,7 @@ class MSTV_Admin
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in guard_stream_request().
         $folderId = isset($_REQUEST['folder_id']) ? absint(wp_unslash($_REQUEST['folder_id'])) : 0;
         $services = $this->build_files_services();
-        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth'], $services['permissions']);
         $export->export_folder($folderId > 0 ? $folderId : null);
     }
 
@@ -364,8 +452,73 @@ class MSTV_Admin
         }
 
         $services = $this->build_files_services();
-        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth']);
+        $export = new MSTV_Export($services['storage'], $services['files_repo'], $services['folder_repo'], $services['auth'], $services['permissions']);
         $export->export_selection($folderIds);
+    }
+
+    public function handle_export_audit_csv(): void
+    {
+        if (!$this->current_user_can_admin()) {
+            wp_die(esc_html__('You do not have permission to access this page.', 'mikesoft-teamvault'), esc_html__('Error', 'mikesoft-teamvault'), ['response' => 403]);
+        }
+
+        $nonce = isset($_GET['mstv_audit_csv_nonce']) ? sanitize_text_field(wp_unslash($_GET['mstv_audit_csv_nonce'])) : '';
+        if (!$nonce || !wp_verify_nonce($nonce, 'mstv_audit_csv')) {
+            wp_die(esc_html__('Invalid security token.', 'mikesoft-teamvault'));
+        }
+
+        // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce verified above; reading read-only filter values.
+        $filters = [];
+        foreach (['date_from', 'date_to', 'action', 'file_type'] as $key) {
+            if (isset($_GET[$key]) && $_GET[$key] !== '') {
+                $filters[$key] = sanitize_text_field(wp_unslash($_GET[$key]));
+            }
+        }
+        if (isset($_GET['user_id']) && $_GET['user_id'] !== '') {
+            $filters['user_id'] = absint(wp_unslash($_GET['user_id']));
+        }
+        if (isset($_GET['folder_id']) && $_GET['folder_id'] !== '') {
+            $filters['folder_id'] = absint(wp_unslash($_GET['folder_id']));
+        }
+        // phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+        $repo = new MSTV_Repository_Logs();
+
+        nocache_headers();
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="teamvault-audit-' . gmdate('Ymd-His') . '.csv"');
+        header('X-Content-Type-Options: nosniff');
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Streaming CSV directly to the client output buffer.
+        $out = fopen('php://output', 'w');
+        fputcsv($out, ['date', 'user_login', 'user_id', 'action', 'target_type', 'target_id', 'name', 'ip_address']);
+
+        $page = 1;
+        do {
+            $result = $repo->find_filtered($filters, $page, 200);
+            foreach ($result['items'] as $log) {
+                $context = json_decode($log->context ?? '{}', true);
+                $name = '';
+                if (is_array($context)) {
+                    $name = $context['filename'] ?? $context['name'] ?? $context['display_name'] ?? '';
+                }
+                fputcsv($out, [
+                    $log->created_at,
+                    $log->user_login ?? '',
+                    (int) $log->user_id,
+                    $log->action,
+                    $log->target_type,
+                    $log->target_id !== null ? (int) $log->target_id : '',
+                    $name,
+                    $log->ip_address ?? '',
+                ]);
+            }
+            $page++;
+        } while ($page <= ($result['pagination']['total_pages'] ?? 0));
+
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the output stream.
+        fclose($out);
+        exit;
     }
 
     private function guard_stream_request(): void
@@ -386,14 +539,21 @@ class MSTV_Admin
         $folderRepo = new MSTV_Repository_Folders();
         $logRepo = new MSTV_Repository_Logs();
         $logger = new MSTV_Logger($logRepo, $this->settings);
+        $permissions = new MSTV_Permissions(
+            $folderRepo,
+            new MSTV_Repository_Groups(),
+            new MSTV_Repository_Permissions(),
+            $this->settings
+        );
 
         return [
             'auth' => $auth,
             'storage' => $storage,
             'files_repo' => $filesRepo,
             'folder_repo' => $folderRepo,
-            'download' => new MSTV_Download($storage, $filesRepo, $auth, $logger),
-            'preview' => new MSTV_Preview($storage, $filesRepo, $auth, $this->settings),
+            'permissions' => $permissions,
+            'download' => new MSTV_Download($storage, $filesRepo, $auth, $logger, $permissions),
+            'preview' => new MSTV_Preview($storage, $filesRepo, $auth, $this->settings, $permissions, $logger),
         ];
     }
 

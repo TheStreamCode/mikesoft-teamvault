@@ -27,6 +27,9 @@ class MSTV_Assets
             MSTV_VERSION
         );
 
+        // The branding logo picker on the settings page uses the WordPress media modal.
+        wp_enqueue_media();
+
         wp_enqueue_script(
             'mstv-admin',
             MSTV_PLUGIN_URL . 'assets/js/admin-app.js',
@@ -36,12 +39,18 @@ class MSTV_Assets
         );
 
         wp_localize_script('mstv-admin', 'mstvConfig', [
+            'branding' => [
+                'name' => $this->settings->get_brand_name(),
+                'logoUrl' => $this->settings->get_brand_logo_url(),
+                'accent' => $this->settings->get_brand_accent(),
+            ],
             'restUrl' => trailingslashit(rest_url('mstv/v1')),
             'restNonce' => wp_create_nonce('wp_rest'),
             'adminUrl' => admin_url('admin.php'),
             'actionUrl' => admin_url('admin-post.php'),
             'streamNonce' => wp_create_nonce('mstv_stream_action'),
             'exportSelectionNonce' => wp_create_nonce('mstv_export_selection'),
+            'auditCsvNonce' => wp_create_nonce('mstv_audit_csv'),
             'browserPerPage' => 50,
             'maxFileSize' => $this->get_effective_client_upload_limit(
                 (int) $this->settings->get_max_file_size(),
@@ -151,6 +160,58 @@ class MSTV_Assets
                 'exportSuccess' => __('Export completed', 'mikesoft-teamvault'),
                 'noFoldersAvailable' => __('No folders available for selective export.', 'mikesoft-teamvault'),
                 'exportError' => __('Error during export', 'mikesoft-teamvault'),
+                // Governance: folder permissions.
+                'permissions' => __('Permissions', 'mikesoft-teamvault'),
+                'permTitle' => __('Folder permissions', 'mikesoft-teamvault'),
+                'permIntro' => __('Grant access to specific users or groups. With no rules, the folder follows the default access (capability and optional whitelist).', 'mikesoft-teamvault'),
+                'permPrincipal' => __('User / Group', 'mikesoft-teamvault'),
+                'permUser' => __('User', 'mikesoft-teamvault'),
+                'permGroup' => __('Group', 'mikesoft-teamvault'),
+                'permView' => __('View', 'mikesoft-teamvault'),
+                'permUpload' => __('Upload', 'mikesoft-teamvault'),
+                'permDownload' => __('Download', 'mikesoft-teamvault'),
+                'permDelete' => __('Delete', 'mikesoft-teamvault'),
+                'permManage' => __('Manage', 'mikesoft-teamvault'),
+                'permNoRules' => __('No explicit rules. Default access applies.', 'mikesoft-teamvault'),
+                'permNoGroups' => __('No groups available', 'mikesoft-teamvault'),
+                'permAdd' => __('Add', 'mikesoft-teamvault'),
+                'permReset' => __('Reset', 'mikesoft-teamvault'),
+                'permResetConfirm' => __('Remove all permission rules for this folder?', 'mikesoft-teamvault'),
+                'permSave' => __('Save permissions', 'mikesoft-teamvault'),
+                'permSaved' => __('Permissions updated.', 'mikesoft-teamvault'),
+                'permAlreadyAdded' => __('This user or group is already in the list.', 'mikesoft-teamvault'),
+                // Governance: groups.
+                'groupsEmpty' => __('No groups yet. Create one to organize document access.', 'mikesoft-teamvault'),
+                'groupsMembers' => __('members', 'mikesoft-teamvault'),
+                'groupsName' => __('Group name', 'mikesoft-teamvault'),
+                'groupsDescription' => __('Description', 'mikesoft-teamvault'),
+                'groupsNew' => __('New group', 'mikesoft-teamvault'),
+                'groupsEdit' => __('Edit group', 'mikesoft-teamvault'),
+                'groupsNameRequired' => __('The group name cannot be empty.', 'mikesoft-teamvault'),
+                'groupsSaved' => __('Group saved.', 'mikesoft-teamvault'),
+                'groupsDeleteConfirm' => __('Delete this group? Members and its folder permissions will be removed.', 'mikesoft-teamvault'),
+                'groupsDeleted' => __('Group deleted.', 'mikesoft-teamvault'),
+                // Governance: quotas.
+                'quotasEmpty' => __('No quotas set. All users have unlimited storage.', 'mikesoft-teamvault'),
+                'quotasLimit' => __('Limit', 'mikesoft-teamvault'),
+                'quotasUsed' => __('Used', 'mikesoft-teamvault'),
+                'quotasSave' => __('Save quotas', 'mikesoft-teamvault'),
+                'quotasSaved' => __('Quotas updated.', 'mikesoft-teamvault'),
+                // Governance: reports.
+                'reportEvents' => __('Events', 'mikesoft-teamvault'),
+                'reportLastAccess' => __('Last access', 'mikesoft-teamvault'),
+                // Governance: notifications.
+                'notifEnable' => __('Enable email notifications', 'mikesoft-teamvault'),
+                'notifEvents' => __('Events', 'mikesoft-teamvault'),
+                'notifRecipients' => __('Recipients', 'mikesoft-teamvault'),
+                'notifAdmins' => __('All administrators', 'mikesoft-teamvault'),
+                'notifUsers' => __('Specific users', 'mikesoft-teamvault'),
+                'notifGroups' => __('Groups', 'mikesoft-teamvault'),
+                'notifAccessDenied' => __('Access denied', 'mikesoft-teamvault'),
+                'notifSave' => __('Save notifications', 'mikesoft-teamvault'),
+                'notifSaved' => __('Notification settings saved.', 'mikesoft-teamvault'),
+                // Governance: white-label.
+                'brandSelectImage' => __('Select image', 'mikesoft-teamvault'),
             ],
         ]);
     }
