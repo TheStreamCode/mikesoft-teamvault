@@ -305,8 +305,8 @@ class MSTV_Repository_Files
         $placeholders = implode(',', array_fill(0, count($userIds), '%d'));
 
         return (int) $wpdb->get_var(
-            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- %d placeholders for the IN() list are generated dynamically to match the bound ids.
             $wpdb->prepare(
+                // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- %d placeholders for the IN() list are generated dynamically to match the bound ids.
                 "SELECT COALESCE(SUM(file_size), 0) FROM {$this->table} WHERE created_by IN ($placeholders)",
                 ...$userIds
             )
