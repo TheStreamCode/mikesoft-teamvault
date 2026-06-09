@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.6
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,10 @@ For direct contact, email teamvault@mikesoft.it.
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 2.6.1 =
+* Added a discreet Sponsor link on the Plugins screen row and a "Support the project" line in the TeamVault settings Information box. TeamVault remains free with all governance features included; sponsorships support development.
+* Code quality: annotated the new governance database queries for the WordPress Plugin Check static analysis (no behavior changes).
 
 = 2.6 =
 * New: TeamVault Groups — organize users into departments or teams from a dedicated admin screen, independent from WordPress roles.
