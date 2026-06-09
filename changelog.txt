@@ -2,6 +2,10 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.6.1 - 2026-06-09
+- Admin UI: added a discreet Sponsor link to the plugin row on the Plugins screen and a "Support the project" line in the TeamVault settings Information box. Both stay inside plugin-owned surfaces, with no dashboard-wide notices. TeamVault remains free with all governance features included; sponsorships support continued development.
+- Code quality: annotated the governance repository queries (filtered activity log queries and the dynamic IN() placeholder list) for the WordPress Plugin Check static analysis. Comment-only changes with no runtime behavior differences.
+
 ## 2.6 - 2026-06-09
 - Feature: TeamVault Groups — a dedicated admin screen to organize users into departments/teams, independent from WordPress roles; a user can belong to multiple groups.
 - Feature: per-folder permissions with granular actions (view, upload, download, delete, manage) for individual users and groups, evaluated with inheritance from the nearest ruled ancestor and explicit child overrides. Folders with no rules keep the prior all-or-nothing free behavior, so existing installations are unaffected.
