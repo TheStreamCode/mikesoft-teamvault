@@ -53,6 +53,11 @@ function do_action($hook, ...$args)
     return null;
 }
 
+function add_filter($hook, $callback, $priority = 10, $accepted_args = 1)
+{
+    return add_action($hook, $callback, $priority, $accepted_args);
+}
+
 function apply_filters($hook, $value, ...$args)
 {
     return $value;

@@ -27,6 +27,27 @@ class MSTV_Admin
         add_action('admin_post_mstv_export_audit_csv', [$this, 'handle_export_audit_csv']);
         add_action('admin_notices', [$this, 'render_storage_security_notice']);
         add_action('wp_ajax_mstv_dismiss_storage_notice', [$this, 'handle_dismiss_storage_notice']);
+        add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
+    }
+
+    /**
+     * Add a discreet Sponsor link to the plugin row on the Plugins screen.
+     *
+     * @param array  $links Existing row meta links.
+     * @param string $file  Plugin basename for the current row.
+     * @return array
+     */
+    public function add_plugin_row_meta($links, $file): array
+    {
+        $links = is_array($links) ? $links : [];
+
+        if (defined('MSTV_PLUGIN_BASENAME') && $file === MSTV_PLUGIN_BASENAME) {
+            $links[] = '<a href="https://github.com/sponsors/TheStreamCode" target="_blank" rel="noopener noreferrer">'
+                . esc_html__('Sponsor', 'mikesoft-teamvault')
+                . ' &hearts;</a>';
+        }
+
+        return $links;
     }
 
     public function render_storage_security_notice(): void

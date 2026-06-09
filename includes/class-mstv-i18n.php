@@ -7,6 +7,11 @@ class MSTV_I18n
     public const OPTION_LANGUAGE = 'mstv_interface_language';
 
     private const ITALIAN_MAP = [
+        // Sponsor links.
+        'Sponsor' => 'Sponsorizza',
+        'Sponsor TeamVault on GitHub' => 'Sponsorizza TeamVault su GitHub',
+        'Support the project:' => 'Sostieni il progetto:',
+        'TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.' => 'TeamVault è gratuito e tutte le funzionalità di governance sono incluse senza costi. Le sponsorizzazioni sostengono lo sviluppo.',
         // Governance suite (white-label).
         'Accent color' => 'Colore d\'accento',
         'Brand name' => 'Nome del marchio',

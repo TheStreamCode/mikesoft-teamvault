@@ -352,6 +352,13 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
             <li><strong><?php esc_html_e('Storage directory:', 'mikesoft-teamvault'); ?></strong> <?php echo esc_html($mstv_current_storage_path); ?></li>
             <li><strong><?php esc_html_e('Required capability:', 'mikesoft-teamvault'); ?></strong> <code>manage_private_documents</code></li>
             <li><strong><?php esc_html_e('Authorized roles:', 'mikesoft-teamvault'); ?></strong> <?php echo esc_html(implode(', ', $mstv_roles_with_capability)); ?></li>
+            <li>
+                <strong><?php esc_html_e('Support the project:', 'mikesoft-teamvault'); ?></strong>
+                <a href="https://github.com/sponsors/TheStreamCode" target="_blank" rel="noopener noreferrer">
+                    <?php esc_html_e('Sponsor TeamVault on GitHub', 'mikesoft-teamvault'); ?> &hearts;
+                </a>
+                — <?php esc_html_e('TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.', 'mikesoft-teamvault'); ?>
+            </li>
         </ul>
     </div>
 </div>
