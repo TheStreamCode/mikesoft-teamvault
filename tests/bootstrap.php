@@ -48,6 +48,16 @@ function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
     return true;
 }
 
+function do_action($hook, ...$args)
+{
+    return null;
+}
+
+function apply_filters($hook, $value, ...$args)
+{
+    return $value;
+}
+
 function wp_strip_all_tags($text)
 {
     return trim(strip_tags((string) $text));
@@ -294,6 +304,32 @@ function get_avatar_url($userId, array $args = [])
     return 'https://example.test/avatar/' . (int) $userId;
 }
 
+function get_userdata($userId)
+{
+    return $GLOBALS['pdm_test_users'][(int) $userId] ?? false;
+}
+
+function is_email($email)
+{
+    return is_string($email) && strpos($email, '@') !== false ? $email : false;
+}
+
+function get_bloginfo($key = '')
+{
+    return 'Test Site';
+}
+
+function wp_mail($to, $subject, $message, $headers = '', $attachments = [])
+{
+    $GLOBALS['pdm_test_mails'][] = [
+        'to' => $to,
+        'subject' => $subject,
+        'message' => $message,
+    ];
+
+    return true;
+}
+
 function wp_verify_nonce($nonce, $action)
 {
     return $nonce === 'valid-nonce';
@@ -471,6 +507,7 @@ class FakePDMRole
 require_once __DIR__ . '/../includes/class-mstv-capabilities.php';
 require_once __DIR__ . '/../includes/class-mstv-i18n.php';
 require_once __DIR__ . '/../includes/class-mstv-settings.php';
+require_once __DIR__ . '/../includes/class-mstv-permissions.php';
 require_once __DIR__ . '/../includes/class-mstv-auth.php';
 require_once __DIR__ . '/../includes/class-mstv-helpers.php';
 require_once __DIR__ . '/../includes/class-mstv-filesystem.php';
@@ -479,10 +516,16 @@ require_once __DIR__ . '/../includes/class-mstv-validator.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-files.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-folders.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-logs.php';
+require_once __DIR__ . '/../includes/class-mstv-repository-groups.php';
+require_once __DIR__ . '/../includes/class-mstv-repository-permissions.php';
+require_once __DIR__ . '/../includes/class-mstv-quota.php';
+require_once __DIR__ . '/../includes/class-mstv-hooks.php';
+require_once __DIR__ . '/../includes/class-mstv-notifications.php';
 require_once __DIR__ . '/../includes/class-mstv-download.php';
 require_once __DIR__ . '/../includes/class-mstv-preview.php';
 require_once __DIR__ . '/../includes/class-mstv-export.php';
 require_once __DIR__ . '/../includes/class-mstv-rest-controller.php';
+require_once __DIR__ . '/../includes/class-mstv-rest-governance.php';
 require_once __DIR__ . '/../includes/class-mstv-logger.php';
 require_once __DIR__ . '/../includes/class-mstv-activator.php';
 require_once __DIR__ . '/../includes/class-mstv-admin.php';

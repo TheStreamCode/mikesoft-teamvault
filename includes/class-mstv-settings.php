@@ -196,6 +196,40 @@ class MSTV_Settings
         return (bool) $this->get('mstv_use_user_whitelist', false);
     }
 
+    public function is_white_label_enabled(): bool
+    {
+        return (bool) get_option('mstv_white_label_enabled', false);
+    }
+
+    public function get_brand_name(): string
+    {
+        if (!$this->is_white_label_enabled()) {
+            return 'TeamVault';
+        }
+
+        $name = (string) get_option('mstv_brand_name', 'TeamVault');
+
+        return $name !== '' ? $name : 'TeamVault';
+    }
+
+    public function get_brand_logo_url(): string
+    {
+        if (!$this->is_white_label_enabled()) {
+            return '';
+        }
+
+        return (string) get_option('mstv_brand_logo_url', '');
+    }
+
+    public function get_brand_accent(): string
+    {
+        if (!$this->is_white_label_enabled()) {
+            return '';
+        }
+
+        return (string) get_option('mstv_brand_accent', '');
+    }
+
     public function get_allowed_users(): array
     {
         $users = $this->get('mstv_allowed_users', []);

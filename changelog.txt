@@ -2,6 +2,19 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.6 - 2026-06-09
+- Feature: TeamVault Groups — a dedicated admin screen to organize users into departments/teams, independent from WordPress roles; a user can belong to multiple groups.
+- Feature: per-folder permissions with granular actions (view, upload, download, delete, manage) for individual users and groups, evaluated with inheritance from the nearest ruled ancestor and explicit child overrides. Folders with no rules keep the prior all-or-nothing free behavior, so existing installations are unaffected.
+- Feature: preview-only access — granting view without download lets selected users/groups preview files but not download or ZIP-export them; export honors the per-folder download permission so restricted files are never bundled.
+- Feature: storage quotas per user or per group on customer-owned storage; the upload is blocked before any disk write or metadata insert when it would exceed the limit, and existing files remain accessible. Administrators are never limited.
+- Feature: access reports aggregating preview and download events by user, file, or folder with date/action filters, plus a streamed CSV export of the filtered activity log via an admin-post endpoint. Preview events are now logged (previously only downloads were) and exports are recorded.
+- Feature: email notifications on upload, download, delete and access-denied events; recipients resolve to administrators, selected users, and/or group members. Emails are batched per request and sent on shutdown so uploads/downloads are never slowed.
+- Feature: light white-label branding (name, logo, accent color) applied across the plugin admin screens, including the menu title and primary accent.
+- Improvement: clearer upload validation errors — disallowed extensions list the allowed types, dangerous extensions are called out for security, and the size error reports the actual size against the maximum.
+- Improvement: the governance admin screens (Groups, Quotas, Reports, Notifications) and the permissions modal were aligned to the plugin design tokens and the WordPress dashboard, made fully responsive across breakpoints, and hardened for keyboard accessibility and color contrast.
+- Security: downloads, previews, exports and all folder/file mutations are now authorized per folder through a central permission engine; WordPress administrators always retain emergency full access.
+- Note: these governance features were previously planned as a paid Pro add-on and are now included for free in the core plugin. The free user limit planned for that split was not introduced — the plugin remains unlimited.
+
 ## 2.5 - 2026-06-05
 - Feature: added folder move so folders can be relocated across the workspace tree from the context menu and details panel, with protection against moving a folder into its own subtree and cascading relative-path updates for nested folders and files.
 - Performance: the file browser now renders list metadata from stored records and performs a single on-disk existence check per file, avoiding a per-file MIME read on large folders.

@@ -70,6 +70,9 @@ class MSTV_Activator
         $folders_table = $blog_prefix . 'mstv_folders';
         $files_table = $blog_prefix . 'mstv_files';
         $logs_table = $blog_prefix . 'mstv_logs';
+        $groups_table = $blog_prefix . 'mstv_groups';
+        $group_members_table = $blog_prefix . 'mstv_group_members';
+        $folder_permissions_table = $blog_prefix . 'mstv_folder_permissions';
 
         $sql = [];
 
@@ -125,6 +128,44 @@ class MSTV_Activator
             KEY idx_action (action),
             KEY idx_target (target_type, target_id),
             KEY idx_created_at (created_at)
+        ) $charset_collate;";
+
+        $sql[] = "CREATE TABLE $groups_table (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            name VARCHAR(190) NOT NULL,
+            slug VARCHAR(190) NOT NULL,
+            description VARCHAR(500) NOT NULL DEFAULT '',
+            created_by BIGINT(20) UNSIGNED NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uq_slug (slug),
+            KEY idx_name (name)
+        ) $charset_collate;";
+
+        $sql[] = "CREATE TABLE $group_members_table (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            group_id BIGINT(20) UNSIGNED NOT NULL,
+            user_id BIGINT(20) UNSIGNED NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uq_group_user (group_id, user_id),
+            KEY idx_group_id (group_id),
+            KEY idx_user_id (user_id)
+        ) $charset_collate;";
+
+        $sql[] = "CREATE TABLE $folder_permissions_table (
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            folder_id BIGINT(20) UNSIGNED NOT NULL DEFAULT 0,
+            principal_type VARCHAR(10) NOT NULL,
+            principal_id BIGINT(20) UNSIGNED NOT NULL,
+            action VARCHAR(20) NOT NULL,
+            created_by BIGINT(20) UNSIGNED NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY uq_rule (folder_id, principal_type, principal_id, action),
+            KEY idx_folder (folder_id),
+            KEY idx_principal (principal_type, principal_id)
         ) $charset_collate;";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -220,6 +261,17 @@ class MSTV_Activator
             'mstv_log_enabled' => true,
             'mstv_pdf_preview_enabled' => true,
             'mstv_remove_data_on_uninstall' => false,
+            // Governance suite (Quotas, Notifications, White-label).
+            'mstv_quotas_enabled' => false,
+            'mstv_quotas' => [],
+            'mstv_notify_enabled' => false,
+            'mstv_notify_events' => '',
+            'mstv_notify_recipients' => ['admins' => true, 'users' => [], 'groups' => []],
+            'mstv_folder_notifications' => [],
+            'mstv_white_label_enabled' => false,
+            'mstv_brand_name' => 'TeamVault',
+            'mstv_brand_logo_url' => '',
+            'mstv_brand_accent' => '',
             self::VERSION_OPTION => MSTV_VERSION,
         ];
 

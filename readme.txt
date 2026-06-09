@@ -1,14 +1,15 @@
 === Mikesoft TeamVault ===
 Contributors: thestreamcode
+Donate link: https://github.com/sponsors/TheStreamCode
 Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.5
+Stable tag: 2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Private document workspace for WordPress teams with protected storage, controlled access, previews, ZIP export, and drag-and-drop uploads.
+Private document workspace for WordPress: protected storage, groups, per-folder permissions, previews, ZIP export, quotas, reports, and notifications.
 
 == Description ==
 
@@ -30,6 +31,12 @@ What you can do with TeamVault:
 * Rename, move, preview, download, and delete files from one interface
 * Export a folder or the full library as ZIP
 * Track uploads, downloads, moves, and deletions in the activity log
+* Organize users into groups and grant per-folder permissions (view, upload, download, delete, manage)
+* Allow preview-only access without download for sensitive documents
+* Set per-user or per-group storage quotas
+* Review access reports and export the activity log to CSV
+* Send email notifications on key document events
+* Apply light white-label branding to the plugin screens
 
 Why use TeamVault instead of the Media Library?
 
@@ -41,7 +48,8 @@ Privacy and access control:
 
 * Files are stored outside the normal Media Library workflow
 * Access is controlled by the `manage_private_documents` capability, which allows full workspace actions including upload, download, export, rename, move, and delete
-* Settings, activity logs, whitelist management, and maintenance tools require administrator-level `manage_options` access
+* Optional per-folder permissions limit access to specific users or groups with granular actions and inheritance; folders with no rules keep the capability-based behavior, and administrators always retain full access
+* Settings, groups, quotas, notifications, reports, activity logs, whitelist management, and maintenance tools require administrator-level `manage_options` access
 * Optional whitelist mode adds a second authorization layer for selected users
 * Cleanup and reindex tools help recover from migrations with missing binaries
 
@@ -49,11 +57,18 @@ Key features:
 
 * Private document storage separated from the Media Library workflow
 * Capability-based access control with optional per-user whitelist mode
+* TeamVault groups independent from WordPress roles
+* Per-folder permissions with granular actions (view, upload, download, delete, manage) and inheritance
+* Preview-only access that blocks download and ZIP export
+* Per-user and per-group storage quotas enforced before upload
+* Access reports by user, file, or folder, with CSV export of the activity log
+* Email notifications for upload, download, delete, and access-denied events
+* Light white-label branding (name, logo, accent color)
 * Folder create, rename, move, and delete operations
-* Drag-and-drop uploads with upload validation
+* Drag-and-drop uploads with upload validation and clear error messages
 * Inline preview for supported files, including PDFs
 * ZIP export for folders or the full library
-* Activity logging for uploads, downloads, moves, and deletions
+* Activity logging for uploads, downloads, previews, moves, and deletions
 * Maintenance tools for orphan cleanup and storage reindex
 * Storage widget focused on the space used by TeamVault files
 * English interface with optional Italian translation
@@ -92,6 +107,22 @@ Apache/LiteSpeed can enforce the generated `.htaccess`, IIS can enforce `web.con
 
 Yes, if they have the required capability and, when whitelist mode is enabled, they are explicitly allowed in the plugin settings.
 
+= How do groups and per-folder permissions work? =
+
+You can create TeamVault groups (independent from WordPress roles) and grant per-folder permissions to users or groups with granular actions: view, upload, download, delete, and manage. Child folders inherit the nearest parent's rules unless they define their own. A folder with no explicit rules keeps the default capability-based behavior, and administrators always retain full access. Granting view without download gives preview-only access, and ZIP export honors the same rule.
+
+= Will my existing folders change after upgrading to 2.6? =
+
+No. The governance features are opt-in. Folders without explicit permission rules behave exactly as before, and quotas, notifications, and white-label branding start disabled.
+
+= Can I limit how much each user or group uploads? =
+
+Yes. You can set per-user or per-group storage quotas. When an upload would exceed a limit it is blocked before anything is written, while existing files stay accessible. Administrators are never limited.
+
+= Are the governance features free? =
+
+Yes. Groups, per-folder permissions, preview-only access, quotas, access reports with CSV export, email notifications, and white-label branding are all included for free in the core plugin.
+
 = Can I change the storage directory? =
 
 The plugin supports a custom writable storage path at code/configuration level, but the standard admin workflow is built around the default private storage location.
@@ -123,6 +154,19 @@ For direct contact, email teamvault@mikesoft.it.
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 2.6 =
+* New: TeamVault Groups — organize users into departments or teams from a dedicated admin screen, independent from WordPress roles.
+* New: per-folder permissions with granular actions (view, upload, download, delete, manage) for users and groups, with inheritance from parent folders and explicit child overrides. Folders with no rules keep the previous behavior, so existing installs are unaffected.
+* New: preview-only access — grant view without download to selected users or groups; ZIP export honors the same rule so restricted files are never bundled.
+* New: storage quotas — set per-user or per-group upload limits; uploads that would exceed a limit are blocked before any file is written, while existing files stay accessible.
+* New: access reports — see who viewed or downloaded what, grouped by user, file, or folder, with date and action filters, plus a one-click CSV export of the full activity log for compliance.
+* New: email notifications — get notified on upload, download, delete, and access-denied events; recipients can be administrators, selected users, or groups.
+* New: white-label branding — replace the TeamVault name, logo, and accent color inside the plugin screens.
+* Improved: clearer upload errors that state exactly what is wrong (disallowed extension with the list of allowed types, or the actual size versus the maximum).
+* Improved: refreshed, fully responsive admin UI that follows the plugin design system and the WordPress dashboard, with better keyboard accessibility and contrast.
+* Security: downloads, previews, and exports are now authorized per folder; administrators always retain full access.
+* All of the above is free: the previously planned paid governance features are now included in the core plugin.
 
 = 2.5 =
 * Added folder move from the context menu and details panel, with protection against moving a folder into its own subtree and cascading path updates for nested folders and files.

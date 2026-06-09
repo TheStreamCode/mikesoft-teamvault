@@ -10,6 +10,7 @@ class MSTV_Export
     private MSTV_Repository_Files $filesRepo;
     private MSTV_Repository_Folders $folderRepo;
     private MSTV_Auth $auth;
+    private ?MSTV_Permissions $permissions;
     private string $currentZipPath = '';
     private int $currentFileCount = 0;
     private array $reservedArchivePaths = [];
@@ -18,12 +19,14 @@ class MSTV_Export
         MSTV_Storage $storage,
         MSTV_Repository_Files $filesRepo,
         MSTV_Repository_Folders $folderRepo,
-        MSTV_Auth $auth
+        MSTV_Auth $auth,
+        ?MSTV_Permissions $permissions = null
     ) {
         $this->storage = $storage;
         $this->filesRepo = $filesRepo;
         $this->folderRepo = $folderRepo;
         $this->auth = $auth;
+        $this->permissions = $permissions;
     }
 
     public function export_all(): void
@@ -197,6 +200,15 @@ class MSTV_Export
             $folderPath = $this->build_unique_folder_archive_path($basePath, $folder->name);
             $zip->addEmptyDir($folderPath);
             $this->add_folder_to_zip($zip, $folder->id, $folderPath);
+        }
+
+        // Per-folder download gate: skip a folder's files when the user cannot download
+        // them (e.g. preview-only access), so a parent export never leaks restricted children.
+        if ($this->permissions && !$this->permissions->current_user_can(
+            $folderId !== null && $folderId > 0 ? $folderId : null,
+            MSTV_Permissions::ACTION_DOWNLOAD
+        )) {
+            return;
         }
 
         $files = $this->filesRepo->find_by_folder($folderId);

@@ -163,6 +163,22 @@ Parameters:
 - `string $zipPath`
 - `int $filesCount`
 
+### `mstv_access_denied`
+
+Runs when a request is rejected by the per-folder permission engine (since 2.6).
+
+Parameters:
+
+- `int $userId`
+- `?int $folderId` (`null` for the storage root)
+- `string $action` (one of `view`, `upload`, `download`, `delete`, `manage`)
+
+```php
+add_action('mstv_access_denied', function (int $userId, ?int $folderId, string $action): void {
+    error_log(sprintf('TeamVault denied %s on folder %s for user %d', $action, $folderId ?? 'root', $userId));
+}, 10, 3);
+```
+
 ## Filters
 
 ### `mstv_allowed_extensions`

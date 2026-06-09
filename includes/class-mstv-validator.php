@@ -198,22 +198,35 @@ class MSTV_Validator
         $extension = strtolower(pathinfo($files['name'], PATHINFO_EXTENSION));
 
         if ($this->has_dangerous_double_extension((string) ($files['name'] ?? ''))) {
-            $errors[] = __('The file contains multiple disallowed extensions.', 'mikesoft-teamvault');
+            $errors[] = __('The file name contains multiple extensions, which is not allowed for security reasons.', 'mikesoft-teamvault');
         }
 
-        if (!$this->validate_extension($extension)) {
+        // Specific, actionable extension diagnostics so the user knows exactly what is wrong.
+        if ($extension === '') {
+            $errors[] = __('The file has no extension, so its type cannot be verified. Add a valid extension and try again.', 'mikesoft-teamvault');
+        } elseif (in_array($extension, self::DANGEROUS_EXTENSIONS, true)) {
             $errors[] = sprintf(
-                /* translators: %s: files extension. */
-                __('Extension .%s is not allowed.', 'mikesoft-teamvault'),
+                /* translators: %s: file extension. */
+                __('For security reasons, .%s files cannot be uploaded.', 'mikesoft-teamvault'),
                 $extension
+            );
+        } elseif (!$this->validate_extension($extension)) {
+            $allowed = $this->settings->get_allowed_extensions();
+            $errors[] = sprintf(
+                /* translators: 1: file extension, 2: comma-separated list of allowed extensions. */
+                __('Extension .%1$s is not allowed. Allowed file types: %2$s.', 'mikesoft-teamvault'),
+                $extension,
+                implode(', ', $allowed)
             );
         }
 
         if (!$this->validate_file_size($files['size'])) {
             $maxSize = MSTV_Helpers::format_filesize($this->settings->get_max_file_size());
+            $actualSize = MSTV_Helpers::format_filesize((int) $files['size']);
             $errors[] = sprintf(
-                /* translators: %s: maximum allowed file size. */
-                __('The file size exceeds the allowed limit (%s).', 'mikesoft-teamvault'),
+                /* translators: 1: actual file size, 2: maximum allowed file size. */
+                __('The file is too large (%1$s). The maximum allowed size is %2$s.', 'mikesoft-teamvault'),
+                $actualSize,
                 $maxSize
             );
         }

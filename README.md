@@ -1,10 +1,13 @@
 # Mikesoft TeamVault
 
 [![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `2.5`.
+Current plugin version: `2.6`.
+
+If TeamVault is useful to you, consider [sponsoring the project on GitHub](https://github.com/sponsors/TheStreamCode) — it is developed and maintained for free, and sponsorships help keep it going.
 
 ## Overview
 
@@ -33,14 +36,24 @@ Core capabilities include:
 - activity logging for operational traceability
 - maintenance tools for orphan cleanup and storage reindex
 
+Governance capabilities (all free, since 2.6):
+
+- TeamVault groups to organize users into departments or teams, independent from WordPress roles
+- per-folder permissions with granular actions (view, upload, download, delete, manage) for users and groups, with inheritance and explicit child overrides
+- preview-only access that allows viewing without download or ZIP export
+- per-user and per-group storage quotas enforced before upload
+- access reports (who viewed or downloaded what) with filters and a CSV export of the activity log
+- email notifications for upload, download, delete, and access-denied events
+- light white-label branding (name, logo, accent color) inside the plugin screens
+
 ## Latest Release
 
-Version `2.5` adds folder move across the workspace tree, faster browsing for large folders, an in-app delete confirmation dialog, and cancellable uploads. Uninstall data removal also clears plugin transients.
+Version `2.6` brings a full document **governance suite** to the free plugin: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, email notifications, and light white-label branding. Upload errors are now specific (disallowed extension with the allowed list, or actual versus maximum size), and the admin interface was refreshed for responsiveness and accessibility across the WordPress dashboard. These features were previously planned as a paid add-on and are now included for free; existing installs are unaffected because folders with no rules keep the prior behavior.
 
 Why teams adopt TeamVault:
 
 - it creates a dedicated private document area instead of overloading the Media Library
-- it adds capability-based access control with an optional whitelist layer
+- it adds capability-based access control with an optional whitelist layer, plus per-folder permissions and groups for finer governance
 - it keeps export, maintenance, and recovery workflows focused on operational files
 
 ## Requirements
@@ -73,7 +86,8 @@ Install the plugin from the [WordPress.org Plugin Directory](https://wordpress.o
 - New activations grant that capability to Administrators only.
 - The `manage_private_documents` capability grants full TeamVault workspace access, including upload, rename, move, download, export, and delete actions.
 - Optional whitelist mode adds a second authorization layer for selected users.
-- Settings, activity logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
+- Per-folder permissions (since 2.6) add fine-grained control on top of the capability: when a folder has explicit rules, access is limited to the granted users/groups and actions, with inheritance from parent folders; folders with no rules keep the capability-based behavior. Administrators always retain full access.
+- Settings, groups, quotas, notifications, reports, activity logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
 
 When whitelist mode is enabled, keep the current administrator account in the allowed users list before saving settings.
 On sites upgraded from older releases, review existing role capabilities and whitelist settings if Editors previously had TeamVault access.

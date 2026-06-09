@@ -31,16 +31,19 @@ function mstv_uninstall_site(array $storage_path_usage = []) {
     }
 
     $prefix = $wpdb->get_blog_prefix(get_current_blog_id());
-    $folders_table = $prefix . 'mstv_folders';
-    $files_table = $prefix . 'mstv_files';
-    $logs_table = $prefix . 'mstv_logs';
+    $tables = [
+        $prefix . 'mstv_folders',
+        $prefix . 'mstv_files',
+        $prefix . 'mstv_logs',
+        $prefix . 'mstv_groups',
+        $prefix . 'mstv_group_members',
+        $prefix . 'mstv_folder_permissions',
+    ];
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Expected cleanup during uninstall.
-    $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($folders_table) . '`');
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Expected cleanup during uninstall.
-    $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($files_table) . '`');
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Expected cleanup during uninstall.
-    $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($logs_table) . '`');
+    foreach ($tables as $table) {
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery.SchemaChange -- Expected cleanup during uninstall.
+        $wpdb->query('DROP TABLE IF EXISTS `' . esc_sql($table) . '`');
+    }
 
     $custom_storage_path = (string) get_option('mstv_storage_path', '');
     $upload_dir = wp_upload_dir();
@@ -56,6 +59,16 @@ function mstv_uninstall_site(array $storage_path_usage = []) {
     delete_option('mstv_plugin_version');
     delete_option('mstv_use_user_whitelist');
     delete_option('mstv_allowed_users');
+    delete_option('mstv_quotas_enabled');
+    delete_option('mstv_quotas');
+    delete_option('mstv_notify_enabled');
+    delete_option('mstv_notify_events');
+    delete_option('mstv_notify_recipients');
+    delete_option('mstv_folder_notifications');
+    delete_option('mstv_white_label_enabled');
+    delete_option('mstv_brand_name');
+    delete_option('mstv_brand_logo_url');
+    delete_option('mstv_brand_accent');
 
     // Remove plugin transients (storage-usage cache + auto-reindex markers) and their timeouts.
     $transient_like = $wpdb->esc_like('_transient_mstv_') . '%';
