@@ -1,5 +1,9 @@
 # Contributing to Mikesoft TeamVault
 
+## Code of Conduct
+
+All interactions around this project are covered by the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Repository Policy
 
 This repository is a public source mirror for the Mikesoft TeamVault plugin.
