@@ -1,6 +1,10 @@
 # Mikesoft TeamVault
 
 [![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
+[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
+[![WordPress Tested](https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to)](https://wordpress.org/plugins/mikesoft-teamvault/)
+[![PHP](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
@@ -130,7 +134,7 @@ This repository is the public source mirror for the plugin.
 
 - Product and installation information for WordPress.org users lives in [`readme.txt`](readme.txt).
 - Full release history lives in [`changelog.txt`](changelog.txt).
-- Repository policies live in [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
+- Repository policies live in [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), and [`SECURITY.md`](SECURITY.md).
 - Maintainer and developer notes live in [`docs/`](docs/).
 
 ## Branding Assets

@@ -15,6 +15,10 @@ mikesoft-teamvault-*.zip
 /.phpunit.cache/
 /.phpunit.result.cache
 
+# Local working areas
+/.worktrees/
+/screenshots/
+
 # IDE
 /.idea/
 /.vscode/
