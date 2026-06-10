@@ -20,6 +20,10 @@ final class MSTV_Bootstrap
     {
     }
 
+    /**
+     * Bootstrap the plugin: load all class files and register WP hooks.
+     * Called directly from the plugin entry point after the singleton is created.
+     */
     public function init(): void
     {
         $this->load_dependencies();
@@ -47,6 +51,7 @@ final class MSTV_Bootstrap
             'class-mstv-permissions',
             'class-mstv-quota',
             'class-mstv-notifications',
+            'trait-mstv-binary-stream',
             'class-mstv-download',
             'class-mstv-preview',
             'class-mstv-export',
@@ -109,6 +114,13 @@ final class MSTV_Bootstrap
         MSTV_Deactivator::deactivate();
     }
 
+    /**
+     * Instantiate core services and wire their WP hooks.
+     *
+     * Runs on `init` at priority 5 (after maybe_upgrade at priority 1). Admin-only services
+     * (MSTV_Admin, MSTV_Assets) are only instantiated when is_admin() is true to avoid loading
+     * unnecessary code on front-end requests.
+     */
     public function init_services(): void
     {
         if (!isset($this->services['settings'])) {
@@ -161,6 +173,14 @@ final class MSTV_Bootstrap
         MSTV_Activator::initialize_site((int) $newSite->blog_id);
     }
 
+    /**
+     * Wire the REST API controllers with all required dependencies.
+     *
+     * Runs on `rest_api_init`. Builds the full dependency graph (settings → auth → storage →
+     * repos → permissions → quota → download/preview) and registers routes for both
+     * MSTV_REST_Controller (browser, files, exports) and MSTV_REST_Governance_Controller
+     * (groups, permissions, quotas, reports).
+     */
     public function init_rest_api(): void
     {
         $settings = $this->service('settings');

@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.6.1
+Stable tag: 2.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,13 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 2.6.2 =
+* Code quality: extracted shared binary streaming into a reusable trait, eliminating duplicate code between download and preview handlers.
+* Code quality: moved the storage notice dismiss script from inline HTML to a proper enqueued asset, improving compatibility with strict Content Security Policy headers.
+* Performance: cached the orphaned-file count on the settings page so the filesystem is not stat-checked for every database record on every page load.
+* Code quality: applied PHP 8.0 type hints to `MSTV_Settings` and replaced the last `stripslashes()` call with `wp_unslash()`.
+* Code quality: added PHPDoc to security-critical filesystem methods and bootstrap entry points.
+
 = 2.6.1 =
 * Added a discreet Sponsor link on the Plugins screen row and a "Support the project" line in the TeamVault settings Information box. TeamVault remains free with all governance features included; sponsorships support development.
 * Code quality: annotated the new governance database queries for the WordPress Plugin Check static analysis (no behavior changes).
@@ -234,6 +241,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.6.2 =
+
+Code quality maintenance release. No behavior changes; recommended for all installations.
 
 = 2.5 =
 

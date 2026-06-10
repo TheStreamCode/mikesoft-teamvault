@@ -38,6 +38,18 @@ class MSTV_Assets
             true
         );
 
+        wp_enqueue_script(
+            'mstv-admin-notices',
+            MSTV_PLUGIN_URL . 'assets/js/admin-notice-dismiss.js',
+            [],
+            MSTV_VERSION,
+            true
+        );
+
+        wp_localize_script('mstv-admin-notices', 'mstvNoticeData', [
+            'dismissNonce' => wp_create_nonce('mstv_dismiss_storage_notice'),
+        ]);
+
         wp_localize_script('mstv-admin', 'mstvConfig', [
             'branding' => [
                 'name' => $this->settings->get_brand_name(),

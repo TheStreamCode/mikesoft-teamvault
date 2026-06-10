@@ -44,6 +44,16 @@ class MSTV_Filesystem
         return wp_normalize_path($this->basePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relativePath));
     }
 
+    /**
+     * Confirm that an absolute path lives inside the base storage directory.
+     *
+     * Uses realpath() to resolve symlinks and then a normalized prefix comparison to block
+     * traversal. Falls back to dirname()+basename() when the path does not yet exist (e.g.
+     * a file being written for the first time).
+     *
+     * @param string $path Absolute filesystem path to validate.
+     * @return bool True only if the path is inside the configured base directory.
+     */
     public function verify_path(string $path): bool
     {
         $realBase = realpath($this->basePath);
@@ -75,6 +85,18 @@ class MSTV_Filesystem
             || strpos(trailingslashit($normalizedPath), $normalizedBase) === 0;
     }
 
+    /**
+     * Resolve a relative path and run all security checks in one call.
+     *
+     * Combines verify_path() (boundary check), optional file-existence check, and
+     * path_has_symlink() (symlink traversal check). Returns false on any failure so
+     * callers can treat a false return as "access denied" without distinguishing the cause.
+     *
+     * @param string $relativePath  Path relative to the base storage directory.
+     * @param bool   $allowMissing  When true, skip the file-existence check (used for paths
+     *                              that are about to be created).
+     * @return string|false Absolute verified path, or false if any check fails.
+     */
     public function get_verified_path(string $relativePath, bool $allowMissing = false): string|false
     {
         $fullPath = $this->resolve($relativePath);
@@ -536,6 +558,16 @@ class MSTV_Filesystem
         ];
     }
 
+    /**
+     * Walk each segment of a path and return true if any segment is a symlink.
+     *
+     * A simple is_link($path) is insufficient because an intermediate directory in the
+     * path could be a symlink pointing outside the base directory. This method iterates
+     * from the base root down to the target path, stopping at the first symlink found.
+     *
+     * @param string $path Absolute path to inspect (must already pass verify_path()).
+     * @return bool True if any segment of the path is a symlink, false if the path is clean.
+     */
     private function path_has_symlink(string $path): bool
     {
         $realBase = realpath($this->basePath);
