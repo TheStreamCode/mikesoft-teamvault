@@ -2,6 +2,9 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.6.3 - 2026-06-10
+- Admin UI: fixed the file/folder details panel close (X) button on desktop. The button was rendered but inactive because `closeDetails()` only acted in drawer mode; on desktop it now clears the panel back to the empty state and removes the selection highlight from the grid item. In drawer mode (viewport <= 1200px) the button continues to slide the panel away as before.
+
 ## 2.6.2 - 2026-06-10
 - Code quality: extracted shared binary streaming logic into a reusable `MSTV_Binary_Stream` trait, eliminating duplicate `stream_absolute_file()` implementations across download and preview handlers.
 - Code quality: added server-side `error_log()` diagnostics for file-not-readable and stream-failure conditions in download and preview handlers; errors go to the server log only, not to the user.

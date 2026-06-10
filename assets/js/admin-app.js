@@ -945,7 +945,7 @@
             });
 
             this.elements.details.querySelector('.pdm-details-close')?.addEventListener('click', () => {
-                this.closeDetails();
+                this.dismissDetails();
             });
 
             this.openMobileDetails();
@@ -1056,7 +1056,7 @@
             });
 
             this.elements.details.querySelector('.pdm-details-close')?.addEventListener('click', () => {
-                this.closeDetails();
+                this.dismissDetails();
             });
 
             this.openMobileDetails();
@@ -1755,6 +1755,14 @@
             }
         },
 
+        dismissDetails() {
+            if (this.isDetailsDrawerViewport()) {
+                this.closeDetails();
+            } else {
+                this.clearDetails();
+            }
+        },
+
         closeMobilePanels() {
             this.closeSidebar();
             this.closeDetails();
@@ -1802,6 +1810,9 @@
         clearDetails() {
             this.state.selectedFile = null;
             this.state.selectedFolder = null;
+            this.elements.content?.querySelectorAll('.pdm-item, .pdm-list-item').forEach(el => {
+                el.classList.remove('selected');
+            });
             this.closeDetails();
             this.elements.details.innerHTML = `
                 <div class="pdm-details-empty">

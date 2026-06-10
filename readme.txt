@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.6.2
+Stable tag: 2.6.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,9 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 2.6.3 =
+* Fixed the file/folder details panel close (X) button on desktop: it was visible but inactive. It now clears the panel and deselects the item; in drawer mode it continues to slide the panel away as before.
+
 = 2.6.2 =
 * Code quality: extracted shared binary streaming into a reusable trait, eliminating duplicate code between download and preview handlers.
 * Code quality: moved the storage notice dismiss script from inline HTML to a proper enqueued asset, improving compatibility with strict Content Security Policy headers.
@@ -241,6 +244,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 2.6.3 =
+
+Bug fix release. Repairs the details panel close button on desktop. Recommended for all installations.
 
 = 2.6.2 =
 
