@@ -8,7 +8,7 @@ class MSTV_Settings
     private const OPTION_PAGE = 'mstv-settings';
     private const DISALLOWED_UPLOAD_EXTENSIONS = ['svg'];
 
-    private $defaults = [
+    private array $defaults = [
         'mstv_interface_language' => 'en',
         'mstv_storage_path' => '',
         'mstv_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
@@ -99,10 +99,10 @@ class MSTV_Settings
         return implode(',', $extensions);
     }
 
-    public function sanitize_user_ids($value): array
+    public function sanitize_user_ids(mixed $value): array
     {
         if (!is_array($value)) {
-            $value = json_decode(stripslashes($value), true);
+            $value = json_decode(wp_unslash((string) $value), true);
         }
 
         if (!is_array($value)) {
@@ -112,7 +112,7 @@ class MSTV_Settings
         return array_filter(array_map('absint', $value), fn($id) => $id > 0);
     }
 
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         $value = get_option($key, $default ?? ($this->defaults[$key] ?? null));
         return $value;
@@ -412,7 +412,7 @@ class MSTV_Settings
         }
     }
 
-    public function update(string $key, $value): bool
+    public function update(string $key, mixed $value): bool
     {
         return update_option($key, $value);
     }

@@ -4,6 +4,7 @@ defined('ABSPATH') || exit;
 
 class MSTV_Preview
 {
+    use MSTV_Binary_Stream;
     private MSTV_Storage $storage;
     private MSTV_Repository_Files $filesRepo;
     private MSTV_Auth $auth;
@@ -115,6 +116,8 @@ class MSTV_Preview
     private function stream_preview(string $path, string $filename, string $mimeType, int $fileSize): void
     {
         if (!is_readable($path)) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
+            error_log('TeamVault: file not readable for preview: ' . $path);
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -138,6 +141,8 @@ class MSTV_Preview
         }
 
         if (!$this->stream_absolute_file($path)) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
+            error_log('TeamVault: stream failed for preview: ' . $path);
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -146,35 +151,6 @@ class MSTV_Preview
         }
 
         exit;
-    }
-
-    private function stream_absolute_file(string $path): bool
-    {
-        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Authenticated binary previews need chunked streaming; WP_Filesystem::get_contents() loads full files into memory.
-        $handle = @fopen($path, 'rb');
-
-        if ($handle === false) {
-            return false;
-        }
-
-        while (!feof($handle)) {
-            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread -- Authenticated binary previews need chunked streaming; WP_Filesystem::get_contents() loads full files into memory.
-            $chunk = fread($handle, 1048576);
-            if ($chunk === false) {
-                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
-                fclose($handle);
-                return false;
-            }
-
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Binary preview stream output must not be escaped.
-            echo $chunk;
-            flush();
-        }
-
-        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing a local stream opened only for chunked binary output.
-        fclose($handle);
-
-        return true;
     }
 
     private function sanitize_filename(string $filename): string

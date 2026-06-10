@@ -2,6 +2,15 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 2.6.2 - 2026-06-10
+- Code quality: extracted shared binary streaming logic into a reusable `MSTV_Binary_Stream` trait, eliminating duplicate `stream_absolute_file()` implementations across download and preview handlers.
+- Code quality: added server-side `error_log()` diagnostics for file-not-readable and stream-failure conditions in download and preview handlers; errors go to the server log only, not to the user.
+- Code quality: moved the storage security notice dismiss script from an inline `<script>` block to a dedicated `admin-notice-dismiss.js` asset loaded with `wp_enqueue_script()` and `wp_localize_script()`; improves compatibility with strict Content Security Policy headers.
+- Performance: cached the orphaned-file count in a short-lived transient so the settings page does not repeat a filesystem stat per database record on every load; the cache is invalidated immediately after running orphan cleanup.
+- Code quality: extracted the audit CSV row builder into a dedicated private method `build_audit_csv_row()` in the admin class.
+- Code quality: added PHPDoc to the security-critical filesystem methods (`verify_path`, `get_verified_path`, `path_has_symlink`) and the bootstrap entry points (`init`, `init_services`, `init_rest_api`).
+- Code quality: applied PHP 8.0 type hints (`array`, `mixed`) to the untyped `MSTV_Settings` properties and method signatures; replaced the last `stripslashes()` call with the canonical `wp_unslash()`.
+
 ## 2.6.1 - 2026-06-09
 - Admin UI: added a discreet Sponsor link to the plugin row on the Plugins screen and a "Support the project" line in the TeamVault settings Information box. Both stay inside plugin-owned surfaces, with no dashboard-wide notices. TeamVault remains free with all governance features included; sponsorships support continued development.
 - Code quality: annotated the governance repository queries (filtered activity log queries and the dynamic IN() placeholder list) for the WordPress Plugin Check static analysis. Comment-only changes with no runtime behavior differences.

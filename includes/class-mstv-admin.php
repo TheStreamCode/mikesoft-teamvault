@@ -66,24 +66,6 @@ class MSTV_Admin
             'mikesoft-teamvault'
         );
         echo '</p></div>';
-        ?>
-        <script>
-        (function () {
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.mstv-storage-security-notice').forEach(function (notice) {
-                    notice.addEventListener('click', function (e) {
-                        if (!e.target.classList.contains('notice-dismiss')) return;
-                        fetch(ajaxurl, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: 'action=mstv_dismiss_storage_notice&_ajax_nonce=<?php echo esc_js(wp_create_nonce('mstv_dismiss_storage_notice')); ?>'
-                        });
-                    });
-                });
-            });
-        })();
-        </script>
-        <?php
     }
 
     public function handle_dismiss_storage_notice(): void
@@ -379,6 +361,8 @@ class MSTV_Admin
 
         $deletedCount = $this->cleanup_orphaned_files();
 
+        delete_transient('mstv_orphan_count_' . get_current_blog_id());
+
         set_transient('mstv_cleanup_orphans_' . get_current_user_id(), [
             'deleted_count' => $deletedCount,
         ], MINUTE_IN_SECONDS);
@@ -518,21 +502,7 @@ class MSTV_Admin
         do {
             $result = $repo->find_filtered($filters, $page, 200);
             foreach ($result['items'] as $log) {
-                $context = json_decode($log->context ?? '{}', true);
-                $name = '';
-                if (is_array($context)) {
-                    $name = $context['filename'] ?? $context['name'] ?? $context['display_name'] ?? '';
-                }
-                fputcsv($out, [
-                    $log->created_at,
-                    $log->user_login ?? '',
-                    (int) $log->user_id,
-                    $log->action,
-                    $log->target_type,
-                    $log->target_id !== null ? (int) $log->target_id : '',
-                    $name,
-                    $log->ip_address ?? '',
-                ]);
+                fputcsv($out, $this->build_audit_csv_row($log));
             }
             $page++;
         } while ($page <= ($result['pagination']['total_pages'] ?? 0));
@@ -540,6 +510,26 @@ class MSTV_Admin
         // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing the output stream.
         fclose($out);
         exit;
+    }
+
+    private function build_audit_csv_row(object $log): array
+    {
+        $context = json_decode($log->context ?? '{}', true);
+        $name = '';
+        if (is_array($context)) {
+            $name = $context['filename'] ?? $context['name'] ?? $context['display_name'] ?? '';
+        }
+
+        return [
+            $log->created_at,
+            $log->user_login ?? '',
+            (int) $log->user_id,
+            $log->action,
+            $log->target_type,
+            $log->target_id !== null ? (int) $log->target_id : '',
+            $name,
+            $log->ip_address ?? '',
+        ];
     }
 
     private function guard_stream_request(): void
@@ -580,6 +570,13 @@ class MSTV_Admin
 
     private function count_orphaned_files(): int
     {
+        $cacheKey = 'mstv_orphan_count_' . get_current_blog_id();
+        $cached = get_transient($cacheKey);
+
+        if ($cached !== false) {
+            return (int) $cached;
+        }
+
         $services = $this->build_files_services();
         $filesystem = $services['storage']->get_filesystem();
         $count = 0;
@@ -589,6 +586,8 @@ class MSTV_Admin
                 $count++;
             }
         }
+
+        set_transient($cacheKey, $count, 5 * MINUTE_IN_SECONDS);
 
         return $count;
     }

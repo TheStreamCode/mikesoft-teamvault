@@ -526,6 +526,7 @@ require_once __DIR__ . '/../includes/class-mstv-repository-permissions.php';
 require_once __DIR__ . '/../includes/class-mstv-quota.php';
 require_once __DIR__ . '/../includes/class-mstv-hooks.php';
 require_once __DIR__ . '/../includes/class-mstv-notifications.php';
+require_once __DIR__ . '/../includes/trait-mstv-binary-stream.php';
 require_once __DIR__ . '/../includes/class-mstv-download.php';
 require_once __DIR__ . '/../includes/class-mstv-preview.php';
 require_once __DIR__ . '/../includes/class-mstv-export.php';
