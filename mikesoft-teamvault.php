@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/TheStreamCode/mikesoft-teamvault
  * Description: Private shared document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop.
  * Version: 2.6.3
- * Author: Michael Gasperini
+ * Author: Michael Gasperini (Mikesoft)
  * Author URI: https://mikesoft.it
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
