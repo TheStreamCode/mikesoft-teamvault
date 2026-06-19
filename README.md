@@ -11,6 +11,8 @@ Private document workspace for WordPress teams, agencies, and operations that ne
 
 Current plugin version: `2.6.3`.
 
+**2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
+
 If TeamVault is useful to you, consider [sponsoring the project on GitHub](https://github.com/sponsors/TheStreamCode) — it is developed and maintained for free, and sponsorships help keep it going.
 
 ## Overview
