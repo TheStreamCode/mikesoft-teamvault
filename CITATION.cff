@@ -1,0 +1,8 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Mikesoft TeamVault"
+authors:
+  - family-names: Gasperini
+    given-names: Michael
+url: "https://github.com/TheStreamCode/mikesoft-teamvault"
+license: GPL-2.0
