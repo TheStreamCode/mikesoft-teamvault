@@ -108,6 +108,9 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                 <select id="mstv_interface_language" name="mstv_interface_language" class="pdm-select">
                     <option value="en" <?php selected($mstv_interface_language, 'en'); ?>><?php esc_html_e('English (default)', 'mikesoft-teamvault'); ?></option>
                     <option value="it" <?php selected($mstv_interface_language, 'it'); ?>><?php esc_html_e('Italian', 'mikesoft-teamvault'); ?></option>
+                    <option value="fr" <?php selected($mstv_interface_language, 'fr'); ?>><?php esc_html_e('French', 'mikesoft-teamvault'); ?></option>
+                    <option value="es" <?php selected($mstv_interface_language, 'es'); ?>><?php esc_html_e('Spanish', 'mikesoft-teamvault'); ?></option>
+                    <option value="de" <?php selected($mstv_interface_language, 'de'); ?>><?php esc_html_e('German', 'mikesoft-teamvault'); ?></option>
                 </select>
             </div>
         </div>

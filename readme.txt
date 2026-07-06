@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.0.0
+Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,10 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.1.0 =
+* New: the plugin admin interface is now fully translated into Italian, French, Spanish, and German, in addition to English. Choose the interface language under TeamVault > Settings; every screen, label, warning, and error message is localized.
+* Improved: reviewed and corrected the Italian translation (terminology and wording fixes) and made all warnings and notices read naturally in every language.
+
 = 3.0.0 =
 * Security: search results are now filtered by per-folder permissions, so a restricted user can no longer discover file names or metadata from folders they cannot view.
 * Security: the generated storage `.htaccess` now denies direct access on Apache 2.4 (`Require all denied`) in addition to the existing Apache 2.2 and IIS rules.
@@ -254,6 +258,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.1.0 =
+
+Adds a fully translated admin interface in Italian, French, Spanish, and German, selectable under TeamVault > Settings. No functional changes to storage or access control.
 
 = 3.0.0 =
 

@@ -2,6 +2,12 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.1.0 - 2026-07-06
+- Feature: full in-admin interface localization. The custom gettext-filter translation layer (`MSTV_I18n`) now ships complete Italian, French, Spanish, and German maps (314 strings each) alongside the English source; the interface language selector on the settings page exposes all five, and `sanitize_language()`/`get_language()` accept the new codes. Every user-facing label, warning, and error message is translated, with printf placeholders preserved across all languages.
+- Improvement: reviewed the Italian translation and fixed genuine errors — "capability" was mistranslated as "capacità", "rinominazione" corrected to "rinomina", a dropped object in "Errore durante lo spostamento del file", "Collapse" corrected from "Raccogli" to "Comprimi", register inconsistencies made consistently informal, and a few "upload"/"storage" terms harmonized.
+- Docs: the GitHub README is now available in Italian, French, Spanish, and German (`README.it.md`, `README.fr.md`, `README.es.md`, `README.de.md`) with a language switcher, for international discoverability. These repository-only files are excluded from the shipped plugin package.
+- Tests: the i18n coverage test now asserts that every language map covers exactly the same set of translatable strings, with no missing, unused, or duplicate keys.
+
 ## 3.0.0 - 2026-07-06
 - Security: the REST search endpoint now filters results through the per-folder permission engine (`viewable_folder_scope()` in the controller, constrained at the SQL level in `MSTV_Repository_Files::search_paginated()`). Previously a user with plugin access could enumerate file names, sizes, and folder association for files inside folders they had been denied. Added regression coverage in `PDMRestControllerTest`.
 - Security: `MSTV_Helpers::create_protection_files()` now writes an Apache 2.4-native `Require all denied` block (guarded by `mod_authz_core`) alongside the legacy Apache 2.2 `Order/Deny` fallback and the `mod_rewrite` fallback, so the storage `.htaccess` is effective on Apache 2.4 hosts that lack `mod_access_compat`. The existing IIS `web.config` and the settings-screen Nginx notice are unchanged.
