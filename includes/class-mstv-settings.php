@@ -9,7 +9,7 @@ class MSTV_Settings
     private const DISALLOWED_UPLOAD_EXTENSIONS = ['svg'];
 
     private array $defaults = [
-        'mstv_interface_language' => 'en',
+        'mstv_interface_language' => 'auto',
         'mstv_storage_path' => '',
         'mstv_allowed_extensions' => 'pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,webp,zip,rar,7z,txt,csv,rtf,mp3,wav,ogg,mp4,avi,mov,mkv',
         'mstv_max_file_size' => 52428800,
@@ -27,7 +27,7 @@ class MSTV_Settings
         register_setting(self::OPTION_GROUP, 'mstv_interface_language', [
             'type' => 'string',
             'sanitize_callback' => ['MSTV_I18n', 'sanitize_language'],
-            'default' => 'en',
+            'default' => 'auto',
         ]);
 
         register_setting(self::OPTION_GROUP, 'mstv_storage_path', [
@@ -188,7 +188,7 @@ class MSTV_Settings
 
     public function get_interface_language(): string
     {
-        return (string) $this->get('mstv_interface_language', 'en');
+        return (string) $this->get('mstv_interface_language', 'auto');
     }
 
     public function get_max_file_size(): int

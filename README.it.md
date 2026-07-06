@@ -11,7 +11,7 @@
 
 Spazio di lavoro documentale privato per team, agenzie e reparti operativi WordPress che hanno bisogno di condividere file in modo controllato al di fuori della Libreria Media.
 
-Versione attuale del plugin: `3.1.0`.
+Versione attuale del plugin: `3.1.1`.
 
 **Oltre 2.000 download totali** su WordPress.org, con decine di nuovi download ogni giorno.
 

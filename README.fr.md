@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.1.0`.
+Version actuelle du plugin : `3.1.1`.
 
 **Plus de 2 000 téléchargements au total** sur WordPress.org, avec des dizaines de nouveaux téléchargements chaque jour.
 

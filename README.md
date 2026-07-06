@@ -11,7 +11,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.1.0`.
+Current plugin version: `3.1.1`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
@@ -55,6 +55,8 @@ Governance capabilities (all free, since 2.6):
 - light white-label branding (name, logo, accent color) inside the plugin screens
 
 ## Latest Release
+
+Version `3.1.1` makes the interface language **follow the WordPress language automatically**. The new default "Automatic" mode matches the WordPress site/admin locale — Italian, French, Spanish, or German when supported, English otherwise — so the plugin speaks the same language as the rest of the dashboard with no configuration. A specific language can still be forced in the settings.
 
 Version `3.1.0` adds a fully translated plugin admin interface: the interface language selector now offers **Italian, French, Spanish, and German** in addition to English, covering every screen, label, warning, and error message. This README is also available in those languages via the links at the top.
 
