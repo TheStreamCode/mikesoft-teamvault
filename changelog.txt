@@ -2,6 +2,12 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.0 - 2026-07-06
+- Feature: governance visibility. Folders that carry explicit permission rules are now badged with a lock icon in the folder tree, grid, and list. `MSTV_Repository_Permissions::folders_with_rules()` returns the ruled folder IDs in one query, surfaced via `MSTV_Permissions::ruled_folder_ids()` and the `has_rules` flag added to folder REST payloads.
+- Improvement: the empty-folder state now renders a dashed drop zone with "Browse files" and "New folder" call-to-action buttons (gated by the upload/manage permissions), replacing the plain placeholder. The no-results search state is unchanged.
+- Improvement: accessibility. Raised the muted text color to meet WCAG AA contrast, added `aria-label` to the toast close button, and gave toasts `role="status"`/`role="alert"` with an appropriate `aria-live` so screen readers announce success and error messages.
+- Removed: white-label branding. The "Branding" settings section, the brand-name/logo/accent options, their save handling and Settings API registration, the `MSTV_Settings` branding getters, the `wp_enqueue_media()` logo picker, and the `applyBranding()`/`bindBrandLogoPicker()` client code were all removed. The admin menu and sidebar now always use the TeamVault name and logo. Existing `mstv_white_label_enabled` / `mstv_brand_*` options are deleted on upgrade (and on uninstall). Removing this cosmetic, non-core feature keeps the plugin focused on secure document management and reduces the settings surface.
+
 ## 3.1.1 - 2026-07-06
 - Feature: the interface language selector gained an "Automatic (match WordPress language)" option, which is now the default. `MSTV_I18n::get_language()` resolves `auto` via `determine_locale()` and maps the WordPress locale prefix to a shipped TeamVault language (it/fr/es/de), falling back to English for any other locale. `sanitize_language()` accepts `auto`; an explicit language choice still overrides the WordPress locale.
 - Change: new installs default to `auto` instead of `en`, so the plugin interface matches the WordPress language out of the box. Installs that previously saved an explicit language keep it.

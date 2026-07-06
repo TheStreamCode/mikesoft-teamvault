@@ -11,7 +11,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.1.1`.
+Current plugin version: `3.2.0`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
@@ -52,9 +52,10 @@ Governance capabilities (all free, since 2.6):
 - per-user and per-group storage quotas enforced before upload
 - access reports (who viewed or downloaded what) with filters and a CSV export of the activity log
 - email notifications for upload, download, delete, and access-denied events
-- light white-label branding (name, logo, accent color) inside the plugin screens
 
 ## Latest Release
+
+Version `3.2.0` improves the file manager and streamlines the settings. Folders that carry their own permission rules now show a **lock badge** so restricted areas are recognizable at a glance, the **empty-folder view** offers a clear drop zone with quick upload / new-folder actions, and the interface received accessibility improvements (higher-contrast text, labeled icon buttons, screen-reader announcements). The **white-label branding option was removed** to keep TeamVault focused on secure document management; the plugin now always uses its standard identity and any previously saved brand settings are cleaned up on update.
 
 Version `3.1.1` makes the interface language **follow the WordPress language automatically**. The new default "Automatic" mode matches the WordPress site/admin locale — Italian, French, Spanish, or German when supported, English otherwise — so the plugin speaks the same language as the rest of the dashboard with no configuration. A specific language can still be forced in the settings.
 
@@ -62,7 +63,7 @@ Version `3.1.0` adds a fully translated plugin admin interface: the interface la
 
 Version `3.0.0` is a security and reliability milestone. Search results are now filtered through the per-folder permission engine, so restricted users can no longer discover file names or metadata from folders they cannot view. The generated storage `.htaccess` denies direct access on Apache 2.4 in addition to Apache 2.2 and IIS, and storage quotas are enforced with a database lock so concurrent uploads cannot jointly exceed a limit. Downloads and inline previews gain HTTP Range support (`Accept-Ranges` / `206 Partial Content`) for resumable transfers and range-seeking PDF viewers on large files. The folder permissions dialog now warns when rules exist but the root has none, the admin menu icon matches native WordPress styling, and the admin JavaScript was split into focused modules with no change in behavior.
 
-Version `2.6` introduced the free document **governance suite**: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, email notifications, and light white-label branding. Existing installs are unaffected because folders with no rules keep the prior behavior.
+Version `2.6` introduced the free document **governance suite**: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, and email notifications. Existing installs are unaffected because folders with no rules keep the prior behavior.
 
 Why teams adopt TeamVault:
 

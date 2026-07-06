@@ -48,6 +48,21 @@ class MSTV_Repository_Permissions
     }
 
     /**
+     * IDs of the real folders (excluding the virtual root, 0) that carry at least one
+     * explicit rule, in a single query. Used to badge governed folders in the browser.
+     *
+     * @return int[]
+     */
+    public function folders_with_rules(): array
+    {
+        global $wpdb;
+
+        $ids = $wpdb->get_col("SELECT DISTINCT folder_id FROM {$this->table} WHERE folder_id > 0");
+
+        return array_map('intval', $ids);
+    }
+
+    /**
      * Replace in one shot all rules of a folder with the provided grant set.
      *
      * @param array $rules each: ['principal_type' => 'user'|'group', 'principal_id' => int, 'actions' => string[]]

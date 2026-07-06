@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.1.1`.
+Aktuelle Plugin-Version: `3.2.0`.
 
 **Über 2.000 Downloads insgesamt** auf WordPress.org, mit täglich Dutzenden neuer Downloads.
 
@@ -52,13 +52,12 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - Speicherkontingente pro Benutzer und pro Gruppe, die vor dem Hochladen durchgesetzt werden
 - Zugriffsberichte (wer was angesehen oder heruntergeladen hat) mit Filtern und einem CSV-Export des Aktivitätsprotokolls
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
-- leichtes White-Label-Branding (Name, Logo, Akzentfarbe) innerhalb der Plugin-Bildschirme
 
 ## Neueste Version
 
 Version `3.0.0` ist ein Meilenstein für Sicherheit und Zuverlässigkeit. Suchergebnisse werden nun durch die ordnerbezogene Berechtigungs-Engine gefiltert, sodass eingeschränkte Benutzer keine Dateinamen oder Metadaten mehr aus Ordnern entdecken können, die sie nicht anzeigen dürfen. Die generierte `.htaccess` für den Speicher verweigert den direkten Zugriff auf Apache 2.4 zusätzlich zu Apache 2.2 und IIS, und Speicherkontingente werden mit einer Datenbanksperre durchgesetzt, damit gleichzeitige Uploads ein Limit nicht gemeinsam überschreiten können. Downloads und Inline-Vorschauen erhalten HTTP-Range-Unterstützung (`Accept-Ranges` / `206 Partial Content`) für fortsetzbare Übertragungen und PDF-Viewer mit Bereichssuche bei großen Dateien. Der Dialog für Ordnerberechtigungen warnt nun, wenn Regeln existieren, das Stammverzeichnis jedoch keine hat, das Symbol im Admin-Menü entspricht dem nativen WordPress-Design, und das Admin-JavaScript wurde ohne Verhaltensänderung in fokussierte Module aufgeteilt.
 
-Version `2.6` führte die kostenlose **Governance-Suite** für Dokumente ein: TeamVault-Gruppen, ordnerbezogene Berechtigungen mit Vererbung und granularen Aktionen (Anzeigen, Hochladen, Herunterladen, Löschen, Verwalten), reinen Vorschauzugriff, Speicherkontingente pro Benutzer und pro Gruppe, Zugriffsberichte mit CSV-Export, E-Mail-Benachrichtigungen und leichtes White-Label-Branding. Bestehende Installationen sind nicht betroffen, da Ordner ohne Regeln das bisherige Verhalten beibehalten.
+Version `2.6` führte die kostenlose **Governance-Suite** für Dokumente ein: TeamVault-Gruppen, ordnerbezogene Berechtigungen mit Vererbung und granularen Aktionen (Anzeigen, Hochladen, Herunterladen, Löschen, Verwalten), reinen Vorschauzugriff, Speicherkontingente pro Benutzer und pro Gruppe, Zugriffsberichte mit CSV-Export, E-Mail-Benachrichtigungen. Bestehende Installationen sind nicht betroffen, da Ordner ohne Regeln das bisherige Verhalten beibehalten.
 
 Warum Teams TeamVault einsetzen:
 

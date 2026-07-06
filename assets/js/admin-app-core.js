@@ -367,6 +367,7 @@
                             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                         </svg>
                         <span class="pdm-folder-name">${this.escapeHtml(folder.name)}</span>
+                        ${this.folderRulesBadge(folder)}
                         ${isDeep && childrenCount > 0 ? `<span class="pdm-folder-count">+${childrenCount}</span>` : ''}
                     </div>
                 `;
@@ -379,6 +380,12 @@
 
                 return html;
             }).join('');
+        },
+
+        folderRulesBadge(folder) {
+            if (!folder || !folder.has_rules) return '';
+            const label = mstvConfig.i18n.folderRestricted;
+            return `<span class="pdm-folder-badge" title="${this.escapeHtml(label)}" aria-label="${this.escapeHtml(label)}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span>`;
         },
 
         countDescendants(folder) {
@@ -470,20 +477,48 @@
             const totalItems = this.state.folders.length + this.state.files.length;
 
             if (totalItems === 0) {
-                const emptyTitle = this.state.isSearchMode ? mstvConfig.i18n.noResults : mstvConfig.i18n.emptyState;
-                const emptyDescription = this.state.isSearchMode ? mstvConfig.i18n.searchNoResultsDesc : mstvConfig.i18n.emptyStateDesc;
+                if (this.state.isSearchMode) {
+                    this.elements.content.innerHTML = `
+                        <div class="pdm-empty-state">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <h3>${mstvConfig.i18n.noResults}</h3>
+                            <p>${mstvConfig.i18n.searchNoResultsDesc}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const actions = [];
+                if (this.can('upload')) {
+                    actions.push(`<button type="button" class="pdm-btn pdm-btn-primary pdm-empty-upload">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        ${mstvConfig.i18n.browseFiles}
+                    </button>`);
+                }
+                if (this.can('manage')) {
+                    actions.push(`<button type="button" class="pdm-btn pdm-btn-secondary pdm-empty-newfolder">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                        ${mstvConfig.i18n.untitledFolder}
+                    </button>`);
+                }
 
                 this.elements.content.innerHTML = `
-                    <div class="pdm-empty-state">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <div class="pdm-empty-state pdm-empty-state--dropzone">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                             <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                             <line x1="12" y1="11" x2="12" y2="17"/>
                             <line x1="9" y1="14" x2="15" y2="14"/>
                         </svg>
-                        <h3>${emptyTitle}</h3>
-                        <p>${emptyDescription}</p>
+                        <h3>${mstvConfig.i18n.emptyState}</h3>
+                        <p>${this.can('upload') ? mstvConfig.i18n.dragDropHere : mstvConfig.i18n.emptyStateDesc}</p>
+                        ${actions.length ? `<div class="pdm-empty-actions">${actions.join('')}</div>` : ''}
                     </div>
                 `;
+                this.elements.content.querySelector('.pdm-empty-upload')?.addEventListener('click', () => this.showUploadOverlay());
+                this.elements.content.querySelector('.pdm-empty-newfolder')?.addEventListener('click', () => this.showNewFolderModal());
                 return;
             }
 
@@ -507,7 +542,7 @@
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                             </svg>
                         </div>
-                        <div class="pdm-item-name">${this.escapeHtml(folder.name)}</div>
+                        <div class="pdm-item-name">${this.escapeHtml(folder.name)}${this.folderRulesBadge(folder)}</div>
                     </div>
                 `;
             });
@@ -549,7 +584,7 @@
                             </svg>
                         </div>
                         <div class="pdm-list-item-info">
-                            <div class="pdm-list-item-name">${this.escapeHtml(folder.name)}</div>
+                            <div class="pdm-list-item-name">${this.escapeHtml(folder.name)}${this.folderRulesBadge(folder)}</div>
                             <div class="pdm-list-item-meta">${mstvConfig.i18n.folder}</div>
                         </div>
                     </div>
@@ -1885,7 +1920,9 @@
         showToast(message, type = 'info') {
             const toast = document.createElement('div');
             toast.className = 'pdm-toast';
-            
+            toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+            toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+
             const iconSvg = type === 'success' 
                 ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
                 : type === 'error'
@@ -1895,8 +1932,8 @@
             toast.innerHTML = `
                 <span class="pdm-toast-icon pdm-toast-icon--${type}">${iconSvg}</span>
                 <span class="pdm-toast-message">${this.escapeHtml(message)}</span>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-toast-close">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-toast-close" aria-label="${this.escapeHtml(mstvConfig.i18n.close)}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
                     </svg>

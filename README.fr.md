@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.1.1`.
+Version actuelle du plugin : `3.2.0`.
 
 **Plus de 2 000 téléchargements au total** sur WordPress.org, avec des dizaines de nouveaux téléchargements chaque jour.
 
@@ -52,13 +52,12 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - quotas de stockage par utilisateur et par groupe appliqués avant le téléversement
 - rapports d'accès (qui a consulté ou téléchargé quoi) avec filtres et export CSV du journal d'activité
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
-- marque blanche légère (nom, logo, couleur d'accentuation) au sein des écrans du plugin
 
 ## Dernière version
 
 La version `3.0.0` constitue une étape majeure en matière de sécurité et de fiabilité. Les résultats de recherche sont désormais filtrés par le moteur d'autorisations par dossier, de sorte que les utilisateurs restreints ne peuvent plus découvrir les noms de fichiers ou les métadonnées des dossiers qu'ils ne sont pas autorisés à consulter. Le fichier `.htaccess` de stockage généré refuse l'accès direct sur Apache 2.4 en plus d'Apache 2.2 et IIS, et les quotas de stockage sont appliqués à l'aide d'un verrou de base de données afin que des téléversements concurrents ne puissent pas dépasser conjointement une limite. Les téléchargements et les aperçus intégrés gagnent la prise en charge des plages HTTP (`Accept-Ranges` / `206 Partial Content`) pour les transferts reprenables et les lecteurs PDF à navigation par plage sur les fichiers volumineux. La boîte de dialogue des autorisations de dossier avertit désormais lorsque des règles existent mais que la racine n'en possède aucune, l'icône du menu d'administration s'aligne sur le style natif de WordPress, et le JavaScript d'administration a été scindé en modules ciblés sans changement de comportement.
 
-La version `2.6` a introduit la **suite de gouvernance** documentaire gratuite : groupes TeamVault, autorisations par dossier avec héritage et actions granulaires (consulter, téléverser, télécharger, supprimer, gérer), accès en aperçu seul, quotas de stockage par utilisateur et par groupe, rapports d'accès avec export CSV, notifications par e-mail et marque blanche légère. Les installations existantes ne sont pas affectées, car les dossiers dépourvus de règles conservent le comportement antérieur.
+La version `2.6` a introduit la **suite de gouvernance** documentaire gratuite : groupes TeamVault, autorisations par dossier avec héritage et actions granulaires (consulter, téléverser, télécharger, supprimer, gérer), accès en aperçu seul, quotas de stockage par utilisateur et par groupe, rapports d'accès avec export CSV, notifications par e-mail. Les installations existantes ne sont pas affectées, car les dossiers dépourvus de règles conservent le comportement antérieur.
 
 Pourquoi les équipes adoptent TeamVault :
 

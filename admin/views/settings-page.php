@@ -10,10 +10,6 @@ $mstv_max_file_size = (int) get_option('mstv_max_file_size', 52428800);
 $mstv_pdf_preview_enabled = (bool) get_option('mstv_pdf_preview_enabled', true);
 $mstv_log_enabled = (bool) get_option('mstv_log_enabled', true);
 $mstv_remove_data_on_uninstall = (bool) get_option('mstv_remove_data_on_uninstall', false);
-$mstv_white_label_enabled = (bool) get_option('mstv_white_label_enabled', false);
-$mstv_brand_name = (string) get_option('mstv_brand_name', 'TeamVault');
-$mstv_brand_logo_url = (string) get_option('mstv_brand_logo_url', '');
-$mstv_brand_accent = (string) get_option('mstv_brand_accent', '');
 $mstv_settings_saved = (bool) get_transient('mstv_settings_saved_' . get_current_user_id());
 $mstv_settings_error = get_transient('mstv_settings_error_' . get_current_user_id());
 
@@ -278,37 +274,6 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                         <?php esc_html_e('Reindex storage', 'mikesoft-teamvault'); ?>
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="pdm-settings-section">
-            <h2 class="pdm-section-title"><?php esc_html_e('Branding', 'mikesoft-teamvault'); ?></h2>
-
-            <div class="pdm-field">
-                <label class="pdm-checkbox-label">
-                    <input type="checkbox" id="mstv_white_label_enabled" name="mstv_white_label_enabled" value="1" <?php checked($mstv_white_label_enabled, true); ?>>
-                    <span class="pdm-checkbox-text"><?php esc_html_e('Enable white-label branding', 'mikesoft-teamvault'); ?></span>
-                </label>
-                <p class="pdm-field-desc"><?php esc_html_e('Replace the TeamVault name, logo, and accent color inside the plugin screens.', 'mikesoft-teamvault'); ?></p>
-            </div>
-
-            <div class="pdm-field">
-                <label class="pdm-field-label" for="mstv_brand_name"><?php esc_html_e('Brand name', 'mikesoft-teamvault'); ?></label>
-                <input type="text" id="mstv_brand_name" name="mstv_brand_name" class="pdm-input" value="<?php echo esc_attr($mstv_brand_name); ?>">
-            </div>
-
-            <div class="pdm-field">
-                <label class="pdm-field-label" for="mstv_brand_logo_url"><?php esc_html_e('Logo URL', 'mikesoft-teamvault'); ?></label>
-                <div class="pdm-inline-form">
-                    <input type="url" id="mstv_brand_logo_url" name="mstv_brand_logo_url" class="pdm-input" value="<?php echo esc_attr($mstv_brand_logo_url); ?>" placeholder="https://...">
-                    <button type="button" class="pdm-btn pdm-btn-secondary" id="mstv-brand-logo-picker"><?php esc_html_e('Select image', 'mikesoft-teamvault'); ?></button>
-                </div>
-                <p class="pdm-field-desc"><?php esc_html_e('Leave empty to use the default TeamVault logo.', 'mikesoft-teamvault'); ?></p>
-            </div>
-
-            <div class="pdm-field">
-                <label class="pdm-field-label" for="mstv_brand_accent"><?php esc_html_e('Accent color', 'mikesoft-teamvault'); ?></label>
-                <input type="color" id="mstv_brand_accent" name="mstv_brand_accent" value="<?php echo esc_attr($mstv_brand_accent !== '' ? $mstv_brand_accent : '#2271b1'); ?>">
             </div>
         </div>
 

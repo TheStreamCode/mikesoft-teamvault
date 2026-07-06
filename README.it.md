@@ -11,7 +11,7 @@
 
 Spazio di lavoro documentale privato per team, agenzie e reparti operativi WordPress che hanno bisogno di condividere file in modo controllato al di fuori della Libreria Media.
 
-Versione attuale del plugin: `3.1.1`.
+Versione attuale del plugin: `3.2.0`.
 
 **Oltre 2.000 download totali** su WordPress.org, con decine di nuovi download ogni giorno.
 
@@ -52,13 +52,12 @@ Funzionalità di governance (tutte gratuite, dalla versione 2.6):
 - quote di storage per utente e per gruppo applicate prima del caricamento
 - report di accesso (chi ha visualizzato o scaricato cosa) con filtri ed esportazione CSV del registro attività
 - notifiche email per gli eventi di caricamento, download, eliminazione e accesso negato
-- leggera personalizzazione white-label (nome, logo, colore d'accento) all'interno delle schermate del plugin
 
 ## Ultima versione
 
 La versione `3.0.0` è una tappa importante per la sicurezza e l'affidabilità. I risultati di ricerca ora vengono filtrati attraverso il motore dei permessi per cartella, così gli utenti con restrizioni non possono più scoprire nomi di file o metadati provenienti da cartelle che non possono visualizzare. Il file `.htaccess` di storage generato nega l'accesso diretto su Apache 2.4 oltre che su Apache 2.2 e IIS, e le quote di storage vengono applicate con un blocco a livello di database in modo che i caricamenti concorrenti non possano superare congiuntamente un limite. I download e le anteprime inline acquisiscono il supporto HTTP Range (`Accept-Ranges` / `206 Partial Content`) per trasferimenti riprendibili e visualizzatori PDF con ricerca per intervallo sui file di grandi dimensioni. La finestra di dialogo dei permessi delle cartelle ora avvisa quando esistono regole ma la radice non ne ha, l'icona del menu di amministrazione è coerente con lo stile nativo di WordPress e il JavaScript di amministrazione è stato suddiviso in moduli mirati senza alcuna variazione di comportamento.
 
-La versione `2.6` ha introdotto la **suite di governance** documentale gratuita: gruppi TeamVault, permessi per cartella con ereditarietà e azioni granulari (visualizzazione, caricamento, download, eliminazione, gestione), accesso in sola anteprima, quote di storage per utente e per gruppo, report di accesso con esportazione CSV, notifiche email e leggera personalizzazione white-label. Le installazioni esistenti non subiscono variazioni perché le cartelle senza regole mantengono il comportamento precedente.
+La versione `2.6` ha introdotto la **suite di governance** documentale gratuita: gruppi TeamVault, permessi per cartella con ereditarietà e azioni granulari (visualizzazione, caricamento, download, eliminazione, gestione), accesso in sola anteprima, quote di storage per utente e per gruppo, report di accesso con esportazione CSV, notifiche email. Le installazioni esistenti non subiscono variazioni perché le cartelle senza regole mantengono il comportamento precedente.
 
 Perché i team adottano TeamVault:
 

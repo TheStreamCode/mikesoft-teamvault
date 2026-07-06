@@ -96,11 +96,9 @@ class MSTV_Admin
 
         $menu_icon = 'data:image/svg+xml;base64,' . base64_encode($this->menu_icon_svg());
 
-        $brand_name = $this->settings->get_brand_name();
-
         add_menu_page(
-            $brand_name,
-            $brand_name,
+            'TeamVault',
+            'TeamVault',
             MSTV_Capabilities::CAP_MANAGE,
             'mikesoft-teamvault',
             [$this, 'render_file_manager_page'],
@@ -369,15 +367,6 @@ class MSTV_Admin
         update_option('mstv_log_enabled', wp_validate_boolean(wp_unslash($_POST['mstv_log_enabled'] ?? false)));
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
         update_option('mstv_remove_data_on_uninstall', wp_validate_boolean(wp_unslash($_POST['mstv_remove_data_on_uninstall'] ?? false)));
-
-        // White-label branding.
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value.
-        update_option('mstv_white_label_enabled', wp_validate_boolean(wp_unslash($_POST['mstv_white_label_enabled'] ?? false)));
-        $brandName = isset($_POST['mstv_brand_name']) ? sanitize_text_field(wp_unslash($_POST['mstv_brand_name'])) : 'TeamVault';
-        update_option('mstv_brand_name', $brandName !== '' ? $brandName : 'TeamVault');
-        update_option('mstv_brand_logo_url', isset($_POST['mstv_brand_logo_url']) ? esc_url_raw(wp_unslash($_POST['mstv_brand_logo_url'])) : '');
-        $accent = isset($_POST['mstv_brand_accent']) ? sanitize_hex_color(wp_unslash($_POST['mstv_brand_accent'])) : '';
-        update_option('mstv_brand_accent', $accent ?: '');
 
         set_transient('mstv_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
 

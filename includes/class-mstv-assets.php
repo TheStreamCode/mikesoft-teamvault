@@ -27,9 +27,6 @@ class MSTV_Assets
             MSTV_VERSION
         );
 
-        // The branding logo picker on the settings page uses the WordPress media modal.
-        wp_enqueue_media();
-
         // admin-app is split into three files loaded in order: core (state + file
         // browser + shared utilities) exposes window.PDM, then governance and the
         // settings/export/bootstrap layer augment it via Object.assign.
@@ -72,11 +69,6 @@ class MSTV_Assets
         // Localized onto the first script so mstvConfig exists before admin-app-core
         // evaluates its state initializer (which reads mstvConfig.browserPerPage).
         wp_localize_script('mstv-admin-core', 'mstvConfig', [
-            'branding' => [
-                'name' => $this->settings->get_brand_name(),
-                'logoUrl' => $this->settings->get_brand_logo_url(),
-                'accent' => $this->settings->get_brand_accent(),
-            ],
             'restUrl' => trailingslashit(rest_url('mstv/v1')),
             'restNonce' => wp_create_nonce('wp_rest'),
             'adminUrl' => admin_url('admin.php'),
@@ -194,6 +186,7 @@ class MSTV_Assets
                 'exportError' => __('Error during export', 'mikesoft-teamvault'),
                 // Governance: folder permissions.
                 'permissions' => __('Permissions', 'mikesoft-teamvault'),
+                'folderRestricted' => __('Custom permissions', 'mikesoft-teamvault'),
                 'permTitle' => __('Folder permissions', 'mikesoft-teamvault'),
                 'permIntro' => __('Grant access to specific users or groups. With no rules, the folder follows the default access (capability and optional whitelist).', 'mikesoft-teamvault'),
                 'permPrincipal' => __('User / Group', 'mikesoft-teamvault'),
@@ -243,8 +236,6 @@ class MSTV_Assets
                 'notifAccessDenied' => __('Access denied', 'mikesoft-teamvault'),
                 'notifSave' => __('Save notifications', 'mikesoft-teamvault'),
                 'notifSaved' => __('Notification settings saved.', 'mikesoft-teamvault'),
-                // Governance: white-label.
-                'brandSelectImage' => __('Select image', 'mikesoft-teamvault'),
             ],
         ]);
     }
