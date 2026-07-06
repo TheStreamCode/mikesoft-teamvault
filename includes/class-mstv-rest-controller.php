@@ -21,6 +21,9 @@ class MSTV_REST_Controller
     private ?MSTV_Permissions $permissions;
     private ?MSTV_Quota $quota;
 
+    /** @var array<int,bool> set of folder ids that carry explicit permission rules */
+    private array $ruledFolderIds = [];
+
     public function __construct(
         MSTV_Settings $settings,
         MSTV_Auth $auth,
@@ -397,6 +400,10 @@ class MSTV_REST_Controller
             return $denied;
         }
 
+        $this->ruledFolderIds = $this->permissions
+            ? array_fill_keys($this->permissions->ruled_folder_ids(), true)
+            : [];
+
         $folders = $this->filter_folders_by_view($this->folderRepo->find_by_parent($folderId));
         $filesPage = $this->filesRepo->find_by_folder_paginated($folderId, $orderBy, $order, $page, $perPage);
         $allFolders = $this->filter_tree_by_view($this->folderRepo->find_all_with_hierarchy());
@@ -496,6 +503,8 @@ class MSTV_REST_Controller
             if (!$this->permissions->user_can($userId, (int) $node['id'], MSTV_Permissions::ACTION_VIEW)) {
                 continue;
             }
+
+            $node['has_rules'] = isset($this->ruledFolderIds[(int) $node['id']]);
 
             if (!empty($node['children'])) {
                 $node['children'] = $this->filter_tree_by_view($node['children']);
@@ -1288,6 +1297,7 @@ class MSTV_REST_Controller
             'created_at' => $folder->created_at,
             'created_at_human' => MSTV_Helpers::human_time_diff_mysql($folder->created_at),
             'has_children' => $this->folderRepo->count_children((int) $folder->id) > 0,
+            'has_rules' => isset($this->ruledFolderIds[(int) $folder->id]),
             'permissions' => $this->permissions_for((int) $folder->id),
         ];
     }

@@ -77,33 +77,6 @@ class MSTV_Settings
             'sanitize_callback' => [$this, 'sanitize_user_ids'],
             'default' => [],
         ]);
-
-        // White-label options: saved through the custom admin-post flow, but registered
-        // here so the "sanitize_option_*" filter also guards every update_option() call
-        // and the option set is complete for the Settings API.
-        register_setting(self::OPTION_GROUP, 'mstv_white_label_enabled', [
-            'type' => 'boolean',
-            'sanitize_callback' => 'wp_validate_boolean',
-            'default' => false,
-        ]);
-
-        register_setting(self::OPTION_GROUP, 'mstv_brand_name', [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'default' => 'TeamVault',
-        ]);
-
-        register_setting(self::OPTION_GROUP, 'mstv_brand_logo_url', [
-            'type' => 'string',
-            'sanitize_callback' => 'esc_url_raw',
-            'default' => '',
-        ]);
-
-        register_setting(self::OPTION_GROUP, 'mstv_brand_accent', [
-            'type' => 'string',
-            'sanitize_callback' => 'sanitize_hex_color',
-            'default' => '',
-        ]);
     }
 
     public function sanitize_extensions(?string $value): string
@@ -216,40 +189,6 @@ class MSTV_Settings
     public function use_user_whitelist(): bool
     {
         return (bool) $this->get('mstv_use_user_whitelist', false);
-    }
-
-    public function is_white_label_enabled(): bool
-    {
-        return (bool) get_option('mstv_white_label_enabled', false);
-    }
-
-    public function get_brand_name(): string
-    {
-        if (!$this->is_white_label_enabled()) {
-            return 'TeamVault';
-        }
-
-        $name = (string) get_option('mstv_brand_name', 'TeamVault');
-
-        return $name !== '' ? $name : 'TeamVault';
-    }
-
-    public function get_brand_logo_url(): string
-    {
-        if (!$this->is_white_label_enabled()) {
-            return '';
-        }
-
-        return (string) get_option('mstv_brand_logo_url', '');
-    }
-
-    public function get_brand_accent(): string
-    {
-        if (!$this->is_white_label_enabled()) {
-            return '';
-        }
-
-        return (string) get_option('mstv_brand_accent', '');
     }
 
     public function get_allowed_users(): array

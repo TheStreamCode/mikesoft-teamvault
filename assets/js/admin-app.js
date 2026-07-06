@@ -65,42 +65,7 @@
             return !types.includes('text/plain');
         },
 
-        // Apply the configured white-label accent color as a CSS custom property so the
-        // plugin screens pick it up. No-op when branding is disabled or unset.
-        applyBranding() {
-            const accent = (mstvConfig.branding && mstvConfig.branding.accent) || '';
-            if (accent) {
-                const root = document.documentElement.style;
-                root.setProperty('--pdm-accent', accent);
-                // Primary buttons across all plugin screens read --pdm-color-primary.
-                root.setProperty('--pdm-color-primary', accent);
-                root.setProperty('--pdm-color-primary-hover', accent);
-            }
-        },
-
-        bindBrandLogoPicker() {
-            const button = document.getElementById('mstv-brand-logo-picker');
-            const input = document.getElementById('mstv_brand_logo_url');
-            if (!button || !input || !window.wp || !window.wp.media) {
-                return;
-            }
-
-            let frame;
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                if (frame) { frame.open(); return; }
-                frame = window.wp.media({ title: mstvConfig.i18n.brandSelectImage, button: { text: mstvConfig.i18n.brandSelectImage }, multiple: false });
-                frame.on('select', () => {
-                    const attachment = frame.state().get('selection').first().toJSON();
-                    input.value = attachment.url;
-                });
-                frame.open();
-            });
-        },
-
         initSettingsPage() {
-            this.bindBrandLogoPicker();
-
             const whitelistCheckbox = document.getElementById('mstv_use_user_whitelist');
             const whitelistField = document.querySelector('.pdm-user-whitelist-field');
             const userSearch = document.getElementById('pdm-user-search');
@@ -374,8 +339,6 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        window.PDM.applyBranding();
-
         if (document.getElementById('pdm-app')) {
             window.PDM.init();
         }

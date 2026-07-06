@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.1.1
+Stable tag: 3.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -36,7 +36,6 @@ What you can do with TeamVault:
 * Set per-user or per-group storage quotas
 * Review access reports and export the activity log to CSV
 * Send email notifications on key document events
-* Apply light white-label branding to the plugin screens
 
 Why use TeamVault instead of the Media Library?
 
@@ -63,7 +62,6 @@ Key features:
 * Per-user and per-group storage quotas enforced before upload
 * Access reports by user, file, or folder, with CSV export of the activity log
 * Email notifications for upload, download, delete, and access-denied events
-* Light white-label branding (name, logo, accent color)
 * Folder create, rename, move, and delete operations
 * Drag-and-drop uploads with upload validation and clear error messages
 * Inline preview for supported files, including PDFs
@@ -113,7 +111,7 @@ You can create TeamVault groups (independent from WordPress roles) and grant per
 
 = Will my existing folders change after upgrading to 2.6? =
 
-No. The governance features are opt-in. Folders without explicit permission rules behave exactly as before, and quotas, notifications, and white-label branding start disabled.
+No. The governance features are opt-in. Folders without explicit permission rules behave exactly as before, and quotas and notifications start disabled.
 
 = Can I limit how much each user or group uploads? =
 
@@ -121,7 +119,7 @@ Yes. You can set per-user or per-group storage quotas. When an upload would exce
 
 = Are the governance features free? =
 
-Yes. Groups, per-folder permissions, preview-only access, quotas, access reports with CSV export, email notifications, and white-label branding are all included for free in the core plugin.
+Yes. Groups, per-folder permissions, preview-only access, quotas, access reports with CSV export, and email notifications are all included for free in the core plugin.
 
 = Can I change the storage directory? =
 
@@ -154,6 +152,12 @@ For direct contact, email teamvault@mikesoft.it.
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 3.2.0 =
+* New: folders that have their own permission rules now show a small lock badge in the folder tree and the file grid, so restricted folders are recognizable at a glance.
+* Improved: the empty-folder view now shows a clear drop zone with "Browse files" and "New folder" actions to make getting started obvious.
+* Improved: accessibility — higher-contrast secondary text (WCAG AA), labels on icon-only buttons, and screen-reader announcements for success and error messages.
+* Removed: the white-label branding option (custom name, logo, accent color). TeamVault now always uses its standard identity; any previously saved brand settings are cleaned up automatically on update. This keeps the plugin focused and the settings simpler.
 
 = 3.1.1 =
 * New: the interface language now defaults to "Automatic", matching the WordPress site/admin language. If WordPress runs in Italian, French, Spanish, or German, TeamVault follows automatically; any other language falls back to English. You can still force a specific language under TeamVault > Settings.
@@ -261,6 +265,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.2.0 =
+
+Adds folder permission badges, a friendlier empty-folder view, and accessibility improvements. The white-label branding option was removed — the plugin now uses its default TeamVault branding, and any saved brand settings are cleaned up on update.
 
 = 3.1.1 =
 

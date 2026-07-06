@@ -19,14 +19,6 @@ class MSTV_I18n
         'Sponsor TeamVault on GitHub' => 'Sponsorizza TeamVault su GitHub',
         'Support the project:' => 'Sostieni il progetto:',
         'TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.' => 'TeamVault è gratuito e tutte le funzionalità di governance sono incluse senza costi. Le sponsorizzazioni sostengono lo sviluppo.',
-        'Accent color' => 'Colore d\'accento',
-        'Brand name' => 'Nome del marchio',
-        'Branding' => 'Personalizzazione',
-        'Enable white-label branding' => 'Abilita personalizzazione white-label',
-        'Leave empty to use the default TeamVault logo.' => 'Lascia vuoto per usare il logo TeamVault predefinito.',
-        'Logo URL' => 'URL del logo',
-        'Replace the TeamVault name, logo, and accent color inside the plugin screens.' => 'Sostituisci nome, logo e colore d\'accento di TeamVault all\'interno delle schermate del plugin.',
-        'Select image' => 'Seleziona immagine',
         'Access denied' => 'Accesso negato',
         'Access denied for %1$s (action: %2$s, folder: %3$s)' => 'Accesso negato per %1$s (azione: %2$s, cartella: %3$s)',
         'All administrators' => 'Tutti gli amministratori',
@@ -329,6 +321,7 @@ class MSTV_I18n
         'Spanish' => 'Spagnolo',
         'German' => 'Tedesco',
         'English' => 'Inglese',
+        'Custom permissions' => 'Permessi personalizzati',
     ];
 
     private const FRENCH_MAP = [
@@ -337,14 +330,6 @@ class MSTV_I18n
         'Sponsor TeamVault on GitHub' => 'Sponsoriser TeamVault sur GitHub',
         'Support the project:' => 'Soutenez le projet :',
         'TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.' => 'TeamVault est gratuit et toutes les fonctionnalités de gouvernance sont incluses sans frais. Les parrainages permettent de poursuivre le développement.',
-        'Accent color' => 'Couleur d\'accentuation',
-        'Brand name' => 'Nom de la marque',
-        'Branding' => 'Personnalisation',
-        'Enable white-label branding' => 'Activer la personnalisation en marque blanche',
-        'Leave empty to use the default TeamVault logo.' => 'Laissez vide pour utiliser le logo TeamVault par défaut.',
-        'Logo URL' => 'URL du logo',
-        'Replace the TeamVault name, logo, and accent color inside the plugin screens.' => 'Remplacez le nom, le logo et la couleur d\'accentuation de TeamVault dans les écrans de l\'extension.',
-        'Select image' => 'Sélectionner une image',
         'Access denied' => 'Accès refusé',
         'Access denied for %1$s (action: %2$s, folder: %3$s)' => 'Accès refusé pour %1$s (action : %2$s, dossier : %3$s)',
         'All administrators' => 'Tous les administrateurs',
@@ -647,6 +632,7 @@ class MSTV_I18n
         'Spanish' => 'Espagnol',
         'German' => 'Allemand',
         'English' => 'Anglais',
+        'Custom permissions' => 'Autorisations personnalisées',
     ];
 
     private const SPANISH_MAP = [
@@ -655,14 +641,6 @@ class MSTV_I18n
         'Sponsor TeamVault on GitHub' => 'Patrocina TeamVault en GitHub',
         'Support the project:' => 'Apoya el proyecto:',
         'TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.' => 'TeamVault es gratuito y todas las funciones de gobernanza están incluidas sin coste. Los patrocinios mantienen el desarrollo.',
-        'Accent color' => 'Color de acento',
-        'Brand name' => 'Nombre de marca',
-        'Branding' => 'Personalización',
-        'Enable white-label branding' => 'Activar personalización de marca blanca',
-        'Leave empty to use the default TeamVault logo.' => 'Deja vacío para usar el logo predeterminado de TeamVault.',
-        'Logo URL' => 'URL del logo',
-        'Replace the TeamVault name, logo, and accent color inside the plugin screens.' => 'Sustituye el nombre, el logo y el color de acento de TeamVault dentro de las pantallas del plugin.',
-        'Select image' => 'Seleccionar imagen',
         'Access denied' => 'Acceso denegado',
         'Access denied for %1$s (action: %2$s, folder: %3$s)' => 'Acceso denegado para %1$s (acción: %2$s, carpeta: %3$s)',
         'All administrators' => 'Todos los administradores',
@@ -965,6 +943,7 @@ class MSTV_I18n
         'Spanish' => 'Español',
         'German' => 'Alemán',
         'English' => 'Inglés',
+        'Custom permissions' => 'Permisos personalizados',
     ];
 
     private const GERMAN_MAP = [
@@ -973,14 +952,6 @@ class MSTV_I18n
         'Sponsor TeamVault on GitHub' => 'TeamVault auf GitHub sponsern',
         'Support the project:' => 'Unterstützen Sie das Projekt:',
         'TeamVault is free and all governance features are included at no cost. Sponsorships keep development going.' => 'TeamVault ist kostenlos und alle Governance-Funktionen sind ohne Zusatzkosten enthalten. Sponsoring hält die Weiterentwicklung am Laufen.',
-        'Accent color' => 'Akzentfarbe',
-        'Brand name' => 'Markenname',
-        'Branding' => 'Branding',
-        'Enable white-label branding' => 'White-Label-Branding aktivieren',
-        'Leave empty to use the default TeamVault logo.' => 'Leer lassen, um das Standard-TeamVault-Logo zu verwenden.',
-        'Logo URL' => 'Logo-URL',
-        'Replace the TeamVault name, logo, and accent color inside the plugin screens.' => 'Ersetzen Sie Name, Logo und Akzentfarbe von TeamVault in den Plugin-Ansichten.',
-        'Select image' => 'Bild auswählen',
         'Access denied' => 'Zugriff verweigert',
         'Access denied for %1$s (action: %2$s, folder: %3$s)' => 'Zugriff verweigert für %1$s (Aktion: %2$s, Ordner: %3$s)',
         'All administrators' => 'Alle Administratoren',
@@ -1283,6 +1254,7 @@ class MSTV_I18n
         'Spanish' => 'Spanisch',
         'German' => 'Deutsch',
         'English' => 'Englisch',
+        'Custom permissions' => 'Benutzerdefinierte Berechtigungen',
     ];
 
     public function init(): void

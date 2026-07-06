@@ -49,6 +49,16 @@ class MSTV_Permissions
         $this->settings = $settings;
     }
 
+    /**
+     * IDs of folders that carry explicit rules (governed folders), for UI badging.
+     *
+     * @return int[]
+     */
+    public function ruled_folder_ids(): array
+    {
+        return $this->permissionsRepo->folders_with_rules();
+    }
+
     public function user_can(int $userId, ?int $folderId, string $action): bool
     {
         $actions = $this->effective_actions($userId, $folderId);

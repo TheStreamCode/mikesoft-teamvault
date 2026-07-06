@@ -20,36 +20,6 @@ final class PDMSettingsTest extends TestCase
         ];
     }
 
-    public function test_branding_getters_return_defaults_when_white_label_disabled(): void
-    {
-        $GLOBALS['pdm_test_options']['mstv_white_label_enabled'] = false;
-        $GLOBALS['pdm_test_options']['mstv_brand_name'] = 'Acme Vault';
-        $GLOBALS['pdm_test_options']['mstv_brand_logo_url'] = 'https://example.test/logo.png';
-        $GLOBALS['pdm_test_options']['mstv_brand_accent'] = '#ff0000';
-
-        $settings = new MSTV_Settings();
-
-        self::assertFalse($settings->is_white_label_enabled());
-        self::assertSame('TeamVault', $settings->get_brand_name());
-        self::assertSame('', $settings->get_brand_logo_url());
-        self::assertSame('', $settings->get_brand_accent());
-    }
-
-    public function test_branding_getters_return_custom_values_when_white_label_enabled(): void
-    {
-        $GLOBALS['pdm_test_options']['mstv_white_label_enabled'] = true;
-        $GLOBALS['pdm_test_options']['mstv_brand_name'] = 'Acme Vault';
-        $GLOBALS['pdm_test_options']['mstv_brand_logo_url'] = 'https://example.test/logo.png';
-        $GLOBALS['pdm_test_options']['mstv_brand_accent'] = '#ff0000';
-
-        $settings = new MSTV_Settings();
-
-        self::assertTrue($settings->is_white_label_enabled());
-        self::assertSame('Acme Vault', $settings->get_brand_name());
-        self::assertSame('https://example.test/logo.png', $settings->get_brand_logo_url());
-        self::assertSame('#ff0000', $settings->get_brand_accent());
-    }
-
     public function test_sync_capabilities_preserves_access_for_existing_legacy_whitelist_user(): void
     {
         $settings = new MSTV_Settings();

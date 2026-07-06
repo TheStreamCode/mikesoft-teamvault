@@ -4,15 +4,13 @@ defined('ABSPATH') || exit;
 
 $mstv_allowed_extensions = $settings->get_allowed_extensions();
 $mstv_accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $mstv_allowed_extensions));
-$mstv_brand_name = $settings->get_brand_name();
-$mstv_brand_logo = $settings->get_brand_logo_url();
-$mstv_logo_src = $mstv_brand_logo !== '' ? $mstv_brand_logo : MSTV_PLUGIN_URL . 'assets/logo-teamvault.svg';
+$mstv_logo_src = MSTV_PLUGIN_URL . 'assets/logo-teamvault.svg';
 ?>
 <div class="pdm-wrapper">
     <div class="pdm-app" id="pdm-app">
         <div class="pdm-sidebar" id="pdm-sidebar">
             <div class="pdm-sidebar-header">
-                <img class="pdm-sidebar-logo" src="<?php echo esc_url($mstv_logo_src); ?>" alt="<?php echo esc_attr($mstv_brand_name); ?>">
+                <img class="pdm-sidebar-logo" src="<?php echo esc_url($mstv_logo_src); ?>" alt="TeamVault">
                 <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost" id="pdm-new-folder-btn" title="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('New folder', 'mikesoft-teamvault'); ?>">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14M5 12h14"/>

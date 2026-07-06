@@ -11,7 +11,7 @@
 
 Espacio de trabajo de documentos privados para equipos, agencias y operaciones de WordPress que necesitan compartir archivos de forma controlada fuera de la Biblioteca de medios.
 
-Versión actual del plugin: `3.1.1`.
+Versión actual del plugin: `3.2.0`.
 
 **Más de 2.000 descargas totales** en WordPress.org, con decenas de nuevas descargas cada día.
 
@@ -52,13 +52,12 @@ Capacidades de gobernanza (todas gratuitas, desde la versión 2.6):
 - cuotas de almacenamiento por usuario y por grupo, aplicadas antes de la subida
 - informes de acceso (quién vio o descargó qué) con filtros y una exportación en CSV del registro de actividad
 - notificaciones por correo electrónico para los eventos de subida, descarga, eliminación y acceso denegado
-- marca blanca ligera (nombre, logotipo, color de acento) dentro de las pantallas del plugin
 
 ## Última versión
 
 La versión `3.0.0` es un hito de seguridad y fiabilidad. Los resultados de búsqueda ahora se filtran a través del motor de permisos por carpeta, de modo que los usuarios restringidos ya no pueden descubrir nombres de archivo ni metadatos de carpetas que no pueden ver. El archivo `.htaccess` de almacenamiento generado deniega el acceso directo en Apache 2.4 además de en Apache 2.2 e IIS, y las cuotas de almacenamiento se aplican con un bloqueo de base de datos para que las subidas concurrentes no puedan superar conjuntamente un límite. Las descargas y las vistas previas integradas incorporan compatibilidad con HTTP Range (`Accept-Ranges` / `206 Partial Content`) para transferencias reanudables y visores de PDF con búsqueda por rangos en archivos grandes. El cuadro de diálogo de permisos de carpeta ahora advierte cuando existen reglas pero la raíz no tiene ninguna, el icono del menú de administración coincide con el estilo nativo de WordPress, y el JavaScript de administración se dividió en módulos específicos sin cambios en el comportamiento.
 
-La versión `2.6` introdujo la **suite de gobernanza** de documentos gratuita: grupos de TeamVault, permisos por carpeta con herencia y acciones granulares (ver, subir, descargar, eliminar, gestionar), acceso de solo vista previa, cuotas de almacenamiento por usuario y por grupo, informes de acceso con exportación en CSV, notificaciones por correo electrónico y marca blanca ligera. Las instalaciones existentes no se ven afectadas, porque las carpetas sin reglas mantienen el comportamiento anterior.
+La versión `2.6` introdujo la **suite de gobernanza** de documentos gratuita: grupos de TeamVault, permisos por carpeta con herencia y acciones granulares (ver, subir, descargar, eliminar, gestionar), acceso de solo vista previa, cuotas de almacenamiento por usuario y por grupo, informes de acceso con exportación en CSV, notificaciones por correo electrónico. Las instalaciones existentes no se ven afectadas, porque las carpetas sin reglas mantienen el comportamiento anterior.
 
 Por qué los equipos adoptan TeamVault:
 

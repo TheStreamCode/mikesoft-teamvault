@@ -57,7 +57,21 @@ class MSTV_Activator
         self::register_capabilities();
         self::set_default_options();
         self::sync_user_whitelist_capabilities();
+        self::cleanup_removed_options();
         update_option(self::VERSION_OPTION, MSTV_VERSION);
+    }
+
+    /**
+     * Remove options for features dropped in later versions so upgraded installs do
+     * not keep orphaned rows. Safe to run repeatedly.
+     */
+    private static function cleanup_removed_options(): void
+    {
+        // White-label branding was removed in 3.2.0.
+        delete_option('mstv_white_label_enabled');
+        delete_option('mstv_brand_name');
+        delete_option('mstv_brand_logo_url');
+        delete_option('mstv_brand_accent');
     }
 
     private static function create_tables(): void
@@ -261,17 +275,13 @@ class MSTV_Activator
             'mstv_log_enabled' => true,
             'mstv_pdf_preview_enabled' => true,
             'mstv_remove_data_on_uninstall' => false,
-            // Governance suite (Quotas, Notifications, White-label).
+            // Governance suite (Quotas, Notifications).
             'mstv_quotas_enabled' => false,
             'mstv_quotas' => [],
             'mstv_notify_enabled' => false,
             'mstv_notify_events' => '',
             'mstv_notify_recipients' => ['admins' => true, 'users' => [], 'groups' => []],
             'mstv_folder_notifications' => [],
-            'mstv_white_label_enabled' => false,
-            'mstv_brand_name' => 'TeamVault',
-            'mstv_brand_logo_url' => '',
-            'mstv_brand_accent' => '',
             self::VERSION_OPTION => MSTV_VERSION,
         ];
 
