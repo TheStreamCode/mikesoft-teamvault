@@ -1089,7 +1089,7 @@
     color: var(--pdm-color-text-muted);
 }
 
-.pdm-empty-state svg {
+.pdm-empty-state > svg {
     margin-bottom: 20px;
     opacity: 0.5;
 }

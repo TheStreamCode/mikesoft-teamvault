@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.2.0
+Stable tag: 3.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,9 @@ For direct contact, email teamvault@mikesoft.it.
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 3.2.1 =
+* Fixed: the icons in the empty-folder "Browse files" and "New folder" buttons were pushed out of alignment and dimmed; they are now correctly centered with the button label at full opacity.
 
 = 3.2.0 =
 * New: folders that have their own permission rules now show a small lock badge in the folder tree and the file grid, so restricted folders are recognizable at a glance.
