@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 2.6.3
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,16 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.0.0 =
+* Security: search results are now filtered by per-folder permissions, so a restricted user can no longer discover file names or metadata from folders they cannot view.
+* Security: the generated storage `.htaccess` now denies direct access on Apache 2.4 (`Require all denied`) in addition to the existing Apache 2.2 and IIS rules.
+* Reliability: storage quotas are enforced with a short database lock so two simultaneous uploads can no longer both pass the check and jointly exceed a limit.
+* New: downloads and inline previews support HTTP Range requests (`Accept-Ranges`, `206 Partial Content`), enabling resumable downloads and faster seeking within large PDFs.
+* Governance: the folder permissions dialog now warns when rules exist but the Home (root) folder has none, since unruled folders otherwise stay open to every vault user.
+* Interface: the admin sidebar icon now matches native WordPress menu icons and recolors on hover and when active, across all admin color schemes.
+* Fixed: the security-notice dismissal now fails silently instead of surfacing an unhandled error, and the reports view handles error responses gracefully.
+* Code quality: the admin JavaScript was split into focused modules (core, governance, settings) for maintainability, with no change to behavior; white-label options are now registered through the Settings API.
+
 = 2.6.3 =
 * Fixed the file/folder details panel close (X) button on desktop: it was visible but inactive. It now clears the panel and deselects the item; in drawer mode it continues to slide the panel away as before.
 
@@ -244,6 +254,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.0.0 =
+
+Recommended security and reliability update. Search now respects per-folder permissions, storage protection covers Apache 2.4, quota enforcement is race-safe, and downloads/previews gain HTTP Range support. Includes a native-style menu icon and internal JavaScript refactor with no behavior change.
 
 = 2.6.3 =
 

@@ -464,6 +464,10 @@ class MSTV_REST_Governance_Controller
                     return ['id' => (int) $group->id, 'name' => $group->name];
                 }, $this->groupsRepo->find_all_groups()),
                 'available_actions' => MSTV_Permissions::ACTIONS,
+                // Warn admins: with rules configured but none on the root, any folder
+                // whose ancestry has no rule falls back to full access for all users.
+                'default_access_open' => $this->permissionsRepo->has_any_rules()
+                    && !$this->permissionsRepo->has_any_rule(0),
             ],
         ]);
     }

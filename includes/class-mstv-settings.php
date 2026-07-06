@@ -22,11 +22,6 @@ class MSTV_Settings
 
     private const LEGACY_GRANTED_CAPABILITY_META = 'mstv_granted_capability';
 
-    public function init(): void
-    {
-        add_action('admin_init', [$this, 'register_settings']);
-    }
-
     public function register_settings(): void
     {
         register_setting(self::OPTION_GROUP, 'mstv_interface_language', [
@@ -81,6 +76,33 @@ class MSTV_Settings
             'type' => 'array',
             'sanitize_callback' => [$this, 'sanitize_user_ids'],
             'default' => [],
+        ]);
+
+        // White-label options: saved through the custom admin-post flow, but registered
+        // here so the "sanitize_option_*" filter also guards every update_option() call
+        // and the option set is complete for the Settings API.
+        register_setting(self::OPTION_GROUP, 'mstv_white_label_enabled', [
+            'type' => 'boolean',
+            'sanitize_callback' => 'wp_validate_boolean',
+            'default' => false,
+        ]);
+
+        register_setting(self::OPTION_GROUP, 'mstv_brand_name', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => 'TeamVault',
+        ]);
+
+        register_setting(self::OPTION_GROUP, 'mstv_brand_logo_url', [
+            'type' => 'string',
+            'sanitize_callback' => 'esc_url_raw',
+            'default' => '',
+        ]);
+
+        register_setting(self::OPTION_GROUP, 'mstv_brand_accent', [
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_hex_color',
+            'default' => '',
         ]);
     }
 

@@ -33,6 +33,15 @@ Maintainer-specific development and release notes have been moved to dedicated d
 - [`docs/maintainer/release.md`](docs/maintainer/release.md)
 - [`docs/developer/hooks.md`](docs/developer/hooks.md)
 
+## Naming Conventions
+
+The codebase deliberately uses two prefixes, kept apart on purpose:
+
+- PHP classes use `MSTV_`, and plugin options/hooks use `mstv_`.
+- CSS classes, the front-end JS namespace, and legacy test file names use the historical `pdm-` / `PDM` prefix.
+
+When adding code, follow the prefix of the layer you are in (PHP → `MSTV_`/`mstv_`, CSS/JS selectors → `pdm-`). Do not rename across layers in unrelated changes; a full `pdm-` → `mstv-` migration, if ever done, must be its own dedicated change.
+
 ## Security Reports
 
 Do not post security vulnerabilities publicly.

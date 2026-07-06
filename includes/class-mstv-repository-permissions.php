@@ -38,6 +38,16 @@ class MSTV_Repository_Permissions
     }
 
     /**
+     * Whether any permission rule exists in the whole vault (governance is in use).
+     */
+    public function has_any_rules(): bool
+    {
+        global $wpdb;
+
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM {$this->table}") > 0;
+    }
+
+    /**
      * Replace in one shot all rules of a folder with the provided grant set.
      *
      * @param array $rules each: ['principal_type' => 'user'|'group', 'principal_id' => int, 'actions' => string[]]

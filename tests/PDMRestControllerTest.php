@@ -301,6 +301,82 @@ final class PDMRestControllerTest extends TestCase
         unset($_FILES['file']);
     }
 
+    public function test_upload_acquires_and_releases_quota_lock_around_metadata_insert(): void
+    {
+        $_FILES['file'] = [
+            'name' => 'spec.pdf',
+            'type' => 'application/pdf',
+            'tmp_name' => __FILE__,
+            'error' => UPLOAD_ERR_OK,
+            'size' => 9999,
+        ];
+
+        $validator = $this->createMock(MSTV_Validator::class);
+        $validator->method('validate_file_name')->willReturn(['valid' => true, 'errors' => []]);
+        $validator->method('validate_upload_full')->willReturn([
+            'valid' => true,
+            'errors' => [],
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'size' => 9999,
+        ]);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('ensure_storage_directory')->willReturn(true);
+        $storage->method('store_uploaded_file')->willReturn([
+            'success' => true,
+            'stored_name' => 'stored.pdf',
+            'relative_path' => 'stored.pdf',
+            'extension' => 'pdf',
+            'file_size' => 1234,
+            'checksum' => 'checksum',
+        ]);
+        $filesystem = $this->createMock(MSTV_Filesystem::class);
+        $filesystem->method('is_file')->willReturn(false);
+        $storage->method('get_filesystem')->willReturn($filesystem);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('create')->willReturn(42);
+        $filesRepo->method('find')->willReturn((object) [
+            'id' => 42,
+            'folder_id' => null,
+            'original_name' => 'spec.pdf',
+            'display_name' => 'spec',
+            'extension' => 'pdf',
+            'mime_type' => 'application/pdf',
+            'file_size' => 1234,
+            'relative_path' => 'stored.pdf',
+            'created_at' => '2026-04-17 10:00:00',
+            'created_by' => 1,
+        ]);
+
+        $quota = $this->getMockBuilder(MSTV_Quota::class)->disableOriginalConstructor()->getMock();
+        $quota->expects(self::once())->method('acquire_upload_lock');
+        $quota->expects(self::once())->method('check_upload')->willReturn(null);
+        $quota->expects(self::once())->method('release_upload_lock');
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $storage,
+            $validator,
+            $this->createMock(MSTV_Repository_Folders::class),
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class),
+            null,
+            $quota
+        );
+
+        $response = $controller->upload_file(new WP_REST_Request());
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+        self::assertTrue($response->data['success']);
+
+        unset($_FILES['file']);
+    }
+
     public function test_upload_file_reports_size_limit_when_php_drops_oversized_request(): void
     {
         unset($_FILES['file']);
@@ -381,6 +457,74 @@ final class PDMRestControllerTest extends TestCase
         self::assertArrayNotHasKey('email', $response->data['data'][0]);
 
         $GLOBALS['pdm_test_users'] = [];
+    }
+
+    public function test_search_restricts_results_to_folders_the_user_can_view(): void
+    {
+        $permissions = $this->getMockBuilder(MSTV_Permissions::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        // Grantable only on folder 10; folder 20 and root (null) are denied.
+        $permissions->method('user_can')->willReturnCallback(
+            static fn (int $userId, ?int $folderId, string $action): bool => $folderId === 10
+        );
+
+        $auth = $this->createMock(MSTV_Auth::class);
+        $auth->method('get_current_user_id')->willReturn(3);
+
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_all')->willReturn([
+            (object) ['id' => 10],
+            (object) ['id' => 20],
+        ]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->expects(self::once())
+            ->method('search_paginated')
+            ->with('report', null, 'display_name', 'ASC', 1, self::anything(), [10], false)
+            ->willReturn(['items' => [], 'pagination' => $this->emptyPagination()]);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $auth,
+            $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Validator::class),
+            $folderRepo,
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class),
+            $permissions
+        );
+
+        $response = $controller->search(new WP_REST_Request(['q' => 'report']));
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
+    }
+
+    public function test_search_is_unrestricted_when_no_permission_engine_is_wired(): void
+    {
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->expects(self::once())
+            ->method('search_paginated')
+            ->with('report', null, 'display_name', 'ASC', 1, self::anything())
+            ->willReturn(['items' => [], 'pagination' => $this->emptyPagination()]);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Validator::class),
+            $this->createMock(MSTV_Repository_Folders::class),
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class)
+        );
+
+        $response = $controller->search(new WP_REST_Request(['q' => 'report']));
+
+        self::assertInstanceOf(WP_REST_Response::class, $response);
     }
 
     public function test_browser_skips_storage_reindex_when_index_is_populated(): void

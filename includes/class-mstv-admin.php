@@ -27,6 +27,7 @@ class MSTV_Admin
         add_action('admin_post_mstv_export_audit_csv', [$this, 'handle_export_audit_csv']);
         add_action('admin_notices', [$this, 'render_storage_security_notice']);
         add_action('wp_ajax_mstv_dismiss_storage_notice', [$this, 'handle_dismiss_storage_notice']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_menu_icon_style']);
         add_filter('plugin_row_meta', [$this, 'add_plugin_row_meta'], 10, 2);
     }
 
@@ -93,9 +94,7 @@ class MSTV_Admin
             return;
         }
 
-        $menu_icon = 'data:image/svg+xml;base64,' . base64_encode(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#a7aaad" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>'
-        );
+        $menu_icon = 'data:image/svg+xml;base64,' . base64_encode($this->menu_icon_svg());
 
         $brand_name = $this->settings->get_brand_name();
 
@@ -171,6 +170,44 @@ class MSTV_Admin
             'mikesoft-teamvault-logs',
             [$this, 'render_logs_page']
         );
+    }
+
+    /**
+     * Monochrome folder glyph for the admin menu, sized to the 20x20 canvas
+     * WordPress uses for native menu icons. Filled (not stroked) with the default
+     * admin icon color so it matches core menus even before CSS recoloring applies.
+     */
+    private function menu_icon_svg(): string
+    {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#a7aaad">'
+            . '<path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h3.29a1.5 1.5 0 0 1 1.06.44L9.2 5.6h7.3A1.5 1.5 0 0 1 18 7.1v7.4a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 2 14.5v-9z"/>'
+            . '</svg>';
+    }
+
+    /**
+     * Recolor the custom SVG menu icon like a native Dashicon.
+     *
+     * WordPress renders a data-URI menu icon as a static background image that never
+     * changes color on hover/current. Painting the glyph as a CSS mask filled with
+     * `currentColor` instead lets it inherit the per-state color WordPress already
+     * assigns to `.wp-menu-image::before`, so it adapts to every admin color scheme.
+     */
+    public function enqueue_menu_icon_style(): void
+    {
+        $mask = 'data:image/svg+xml;base64,' . base64_encode($this->menu_icon_svg());
+
+        // Fill the whole 36x34 menu-image box and center the 20x20 mask inside it, so the
+        // glyph lines up with the label exactly like a native Dashicon. Zero margin/padding
+        // avoids stacking on top of WordPress's own .wp-menu-image::before padding.
+        $css = '#adminmenu #toplevel_page_mikesoft-teamvault .wp-menu-image{background-image:none !important;}'
+            . '#adminmenu #toplevel_page_mikesoft-teamvault .wp-menu-image::before{'
+            . 'content:"";display:block;width:36px;height:34px;margin:0;padding:0;'
+            . 'background-color:currentColor;'
+            . '-webkit-mask:url("' . $mask . '") no-repeat center;'
+            . 'mask:url("' . $mask . '") no-repeat center;'
+            . '-webkit-mask-size:20px 20px;mask-size:20px 20px;}';
+
+        wp_add_inline_style('admin-menu', $css);
     }
 
     public function register_settings(): void

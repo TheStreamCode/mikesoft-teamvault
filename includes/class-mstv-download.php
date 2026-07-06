@@ -120,7 +120,6 @@ class MSTV_Download
         $safeMime = sanitize_mime_type(str_replace(["\r", "\n"], '', $mimeType));
         header('Content-Type: ' . $safeMime);
         header('Content-Disposition: attachment; filename="' . $this->sanitize_filename($filename) . '"');
-        header('Content-Length: ' . $fileSize);
         header('Content-Transfer-Encoding: binary');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
@@ -128,7 +127,7 @@ class MSTV_Download
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
 
-        if (!$this->stream_absolute_file($path)) {
+        if (!$this->stream_binary($path, $fileSize)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
             error_log('TeamVault: stream failed for download: ' . $path);
             wp_die(

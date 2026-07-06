@@ -103,6 +103,49 @@ class MSTV_Quota
         return null;
     }
 
+    /**
+     * Serialize the quota check + metadata insert against concurrent uploads.
+     *
+     * check_upload() reads committed usage (SUM of file_size) and the caller inserts
+     * the new row afterwards. Without a lock, two simultaneous uploads can both pass
+     * the check before either row is committed and jointly exceed the quota (TOCTOU).
+     * A named advisory lock held across the whole check→insert window closes that gap.
+     *
+     * Best-effort: waits up to 10s, then proceeds regardless, so a contended or stuck
+     * lock degrades to the prior behavior instead of failing the upload outright.
+     * No-op when quotas are disabled, to avoid lock overhead on the common path.
+     */
+    public function acquire_upload_lock(): void
+    {
+        if (!$this->is_enabled()) {
+            return;
+        }
+
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory MySQL lock; a lock acquisition is inherently uncacheable.
+        $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, %d)', $this->lock_name(), 10));
+    }
+
+    public function release_upload_lock(): void
+    {
+        if (!$this->is_enabled()) {
+            return;
+        }
+
+        global $wpdb;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory MySQL lock; a lock release is inherently uncacheable.
+        $wpdb->get_var($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $this->lock_name()));
+    }
+
+    private function lock_name(): string
+    {
+        global $wpdb;
+
+        // Namespace by table prefix: MySQL advisory locks are server-global, so sites
+        // sharing a database server must not contend on the same lock name.
+        return substr((string) $wpdb->prefix, 0, 40) . 'mstv_quota';
+    }
+
     public function user_usage(int $userId): int
     {
         return $this->filesRepo->get_total_size_by_user($userId);

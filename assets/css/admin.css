@@ -2571,6 +2571,17 @@ body.pdm-no-scroll {
     color: var(--pdm-color-text-secondary);
 }
 
+.pdm-perm-warning {
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--pdm-color-warning);
+    background: var(--pdm-color-warning-light);
+    color: var(--pdm-color-warning);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
 .pdm-perm-add {
     display: flex;
     flex-wrap: wrap;

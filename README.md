@@ -9,7 +9,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `2.6.3`.
+Current plugin version: `3.0.0`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
@@ -54,7 +54,9 @@ Governance capabilities (all free, since 2.6):
 
 ## Latest Release
 
-Version `2.6` brings a full document **governance suite** to the free plugin: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, email notifications, and light white-label branding. Upload errors are now specific (disallowed extension with the allowed list, or actual versus maximum size), and the admin interface was refreshed for responsiveness and accessibility across the WordPress dashboard. These features were previously planned as a paid add-on and are now included for free; existing installs are unaffected because folders with no rules keep the prior behavior.
+Version `3.0.0` is a security and reliability milestone. Search results are now filtered through the per-folder permission engine, so restricted users can no longer discover file names or metadata from folders they cannot view. The generated storage `.htaccess` denies direct access on Apache 2.4 in addition to Apache 2.2 and IIS, and storage quotas are enforced with a database lock so concurrent uploads cannot jointly exceed a limit. Downloads and inline previews gain HTTP Range support (`Accept-Ranges` / `206 Partial Content`) for resumable transfers and range-seeking PDF viewers on large files. The folder permissions dialog now warns when rules exist but the root has none, the admin menu icon matches native WordPress styling, and the admin JavaScript was split into focused modules with no change in behavior.
+
+Version `2.6` introduced the free document **governance suite**: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, email notifications, and light white-label branding. Existing installs are unaffected because folders with no rules keep the prior behavior.
 
 Why teams adopt TeamVault:
 
