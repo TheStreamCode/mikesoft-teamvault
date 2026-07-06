@@ -6,9 +6,25 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMAdminAppTest extends TestCase
 {
+    /**
+     * The admin app is split across admin-app-core.js, admin-app-governance.js and
+     * admin-app.js; assert against their concatenation so behavior checks are
+     * independent of which module a helper currently lives in.
+     */
+    private function adminAppSource(): string
+    {
+        $files = glob(dirname(__DIR__) . '/assets/js/admin-app*.js') ?: [];
+        sort($files);
+
+        return implode("\n", array_map(
+            static fn (string $file): string => (string) file_get_contents($file),
+            $files
+        ));
+    }
+
     public function testApiUrlBuilderSupportsPlainPermalinkRestUrls(): void
     {
-        $source = (string) file_get_contents(dirname(__DIR__) . '/assets/js/admin-app.js');
+        $source = $this->adminAppSource();
 
         self::assertStringContainsString(
             "base.includes('?')",
@@ -24,7 +40,7 @@ final class PDMAdminAppTest extends TestCase
 
     public function testResponsiveViewportHelpersUseSeparateSidebarAndDetailsBreakpoints(): void
     {
-        $source = (string) file_get_contents(dirname(__DIR__) . '/assets/js/admin-app.js');
+        $source = $this->adminAppSource();
 
         self::assertStringContainsString(
             'isSidebarDrawerViewport()',

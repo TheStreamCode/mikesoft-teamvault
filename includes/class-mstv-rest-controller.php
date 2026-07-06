@@ -434,6 +434,36 @@ class MSTV_REST_Controller
     }
 
     /**
+     * Folders the current user may VIEW, plus whether root-level items are visible.
+     * Returns null when no permission engine is wired (tests / legacy free access),
+     * meaning "no restriction" so callers keep their historical behavior.
+     *
+     * @return array{ids: int[], root: bool}|null
+     */
+    private function viewable_folder_scope(): ?array
+    {
+        if (!$this->permissions) {
+            return null;
+        }
+
+        $userId = $this->auth->get_current_user_id();
+        $ids = [];
+
+        foreach ($this->folderRepo->find_all() as $folder) {
+            $folderId = (int) $folder->id;
+
+            if ($this->permissions->user_can($userId, $folderId, MSTV_Permissions::ACTION_VIEW)) {
+                $ids[] = $folderId;
+            }
+        }
+
+        return [
+            'ids' => $ids,
+            'root' => $this->permissions->user_can($userId, null, MSTV_Permissions::ACTION_VIEW),
+        ];
+    }
+
+    /**
      * @param object[] $folders
      * @return object[]
      */
@@ -769,15 +799,6 @@ class MSTV_REST_Controller
             return new \WP_Error('validation_error', implode(' ', $validation['errors']), ['status' => 400]);
         }
 
-        // Enforce quotas before any disk write or metadata insert (block-before-create).
-        if ($this->quota) {
-            $quotaError = $this->quota->check_upload($this->auth->get_current_user_id(), (int) $validation['size']);
-            if ($quotaError instanceof \WP_Error) {
-                ob_end_clean();
-                return $quotaError;
-            }
-        }
-
         $rawDisplayName = $request->get_param('display_name');
         $rawDisplayName = is_string($rawDisplayName) && $rawDisplayName !== ''
             ? sanitize_text_field($rawDisplayName)
@@ -800,26 +821,47 @@ class MSTV_REST_Controller
             return new \WP_Error('validation_error', __('The file name cannot be empty.', 'mikesoft-teamvault'), ['status' => 400]);
         }
 
-        $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
-        if (!$result['success']) {
-            ob_end_clean();
-            return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+        // Serialize the quota check and the metadata insert so two concurrent uploads
+        // cannot both pass the check before either row is committed and jointly exceed
+        // the quota. The lock spans check→store→insert and is always released.
+        if ($this->quota) {
+            $this->quota->acquire_upload_lock();
         }
 
-        $storedFileSize = !empty($result['file_size']) ? (int) $result['file_size'] : (int) $validation['size'];
+        try {
+            if ($this->quota) {
+                $quotaError = $this->quota->check_upload($this->auth->get_current_user_id(), (int) $validation['size']);
+                if ($quotaError instanceof \WP_Error) {
+                    ob_end_clean();
+                    return $quotaError;
+                }
+            }
 
-        $fileId = $this->filesRepo->create([
-            'folder_id' => $folderId,
-            'original_name' => $files['name'],
-            'stored_name' => $result['stored_name'],
-            'display_name' => $displayName,
-            'relative_path' => $result['relative_path'],
-            'extension' => $validation['extension'],
-            'mime_type' => $validation['mime_type'],
-            'file_size' => $storedFileSize,
-            'checksum' => $result['checksum'],
-            'created_by' => $this->auth->get_current_user_id(),
-        ]);
+            $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
+            if (!$result['success']) {
+                ob_end_clean();
+                return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+            }
+
+            $storedFileSize = !empty($result['file_size']) ? (int) $result['file_size'] : (int) $validation['size'];
+
+            $fileId = $this->filesRepo->create([
+                'folder_id' => $folderId,
+                'original_name' => $files['name'],
+                'stored_name' => $result['stored_name'],
+                'display_name' => $displayName,
+                'relative_path' => $result['relative_path'],
+                'extension' => $validation['extension'],
+                'mime_type' => $validation['mime_type'],
+                'file_size' => $storedFileSize,
+                'checksum' => $result['checksum'],
+                'created_by' => $this->auth->get_current_user_id(),
+            ]);
+        } finally {
+            if ($this->quota) {
+                $this->quota->release_upload_lock();
+            }
+        }
 
         $this->logger->log_upload($fileId, $displayName);
 
@@ -1012,7 +1054,10 @@ class MSTV_REST_Controller
         }
 
         $folders = [];
-        $filesPage = $this->filesRepo->search_paginated($query, null, $orderBy, $order, $page, $perPage);
+        $scope = $this->viewable_folder_scope();
+        $filesPage = $scope === null
+            ? $this->filesRepo->search_paginated($query, null, $orderBy, $order, $page, $perPage)
+            : $this->filesRepo->search_paginated($query, null, $orderBy, $order, $page, $perPage, $scope['ids'], $scope['root']);
 
         return $this->with_no_store(new \WP_REST_Response([
             'success' => true,

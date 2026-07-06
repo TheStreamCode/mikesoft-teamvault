@@ -93,13 +93,22 @@ class MSTV_Repository_Files
         );
     }
 
+    /**
+     * @param int[]|null $allowedFolderIds When non-null, restricts a global search
+     *                                      (folderId === null) to files inside these
+     *                                      folders. Null keeps the historical behavior.
+     * @param bool       $rootAllowed       Whether root-level files (folder_id IS NULL)
+     *                                       are included in a restricted global search.
+     */
     public function search_paginated(
         string $query,
         ?int $folderId = null,
         string $orderBy = 'display_name',
         string $order = 'ASC',
         int $page = 1,
-        int $perPage = 50
+        int $perPage = 50,
+        ?array $allowedFolderIds = null,
+        bool $rootAllowed = true
     ): array {
         global $wpdb;
 
@@ -109,37 +118,88 @@ class MSTV_Repository_Files
         $page = $this->sanitize_page($page);
         $perPage = $this->sanitize_per_page($perPage);
 
-        if (null === $folderId) {
-            $totalItems = (int) $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->table} WHERE display_name LIKE %s",
-                    $searchTerm
-                )
-            );
-        } else {
-            $totalItems = (int) $wpdb->get_var(
-                $wpdb->prepare(
-                    "SELECT COUNT(*) FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s)",
-                    $folderId,
-                    $searchTerm,
-                    $searchTerm
-                )
-            );
-        }
+        // $where carries its own %s/%d placeholders and $whereArgs the matching values
+        // (see build_search_where); the count of folder-id placeholders is dynamic, so the
+        // static sniff cannot reconcile them even though every value is passed to prepare().
+        [$where, $whereArgs] = $this->build_search_where($searchTerm, $folderId, $allowedFolderIds, $rootAllowed);
+
+        $totalItems = (int) $wpdb->get_var(
+            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Placeholders live inside $where; values passed via $whereArgs.
+            $wpdb->prepare("SELECT COUNT(*) FROM {$this->table} WHERE {$where}", $whereArgs)
+        );
 
         $totalPages = $totalItems > 0 ? (int) ceil($totalItems / $perPage) : 0;
         $page = $this->normalize_page($page, $totalPages);
         $offset = ($page - 1) * $perPage;
 
         $orderClause = $this->build_order_clause($orderBy, $order);
-
-        if (null === $folderId) {
-            $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE display_name LIKE %s {$orderClause} LIMIT %d OFFSET %d", $searchTerm, $perPage, $offset));
-        } else {
-            $items = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$this->table} WHERE folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s) {$orderClause} LIMIT %d OFFSET %d", $folderId, $searchTerm, $searchTerm, $perPage, $offset));
-        }
+        $items = $wpdb->get_results(
+            // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- Placeholders live inside $where; values passed via array_merge($whereArgs, [perPage, offset]).
+            $wpdb->prepare(
+                "SELECT * FROM {$this->table} WHERE {$where} {$orderClause} LIMIT %d OFFSET %d",
+                array_merge($whereArgs, [$perPage, $offset])
+            )
+        );
 
         return $this->build_paginated_result($items, $page, $perPage, $totalItems, $offset);
+    }
+
+    /**
+     * Build the WHERE fragment (and its prepared arguments) shared by the count and
+     * fetch queries of a paginated search.
+     *
+     * @param int[]|null $allowedFolderIds
+     * @return array{0: string, 1: array<int, mixed>}
+     */
+    private function build_search_where(string $searchTerm, ?int $folderId, ?array $allowedFolderIds, bool $rootAllowed): array
+    {
+        if (null !== $folderId) {
+            return [
+                'folder_id = %d AND (display_name LIKE %s OR original_name LIKE %s)',
+                [$folderId, $searchTerm, $searchTerm],
+            ];
+        }
+
+        if (null === $allowedFolderIds) {
+            return ['display_name LIKE %s', [$searchTerm]];
+        }
+
+        $scope = $this->build_folder_scope_clause($allowedFolderIds, $rootAllowed);
+
+        return [
+            'display_name LIKE %s AND ' . $scope['sql'],
+            array_merge([$searchTerm], $scope['args']),
+        ];
+    }
+
+    /**
+     * Build a "(folder_id IN (...) OR folder_id IS NULL)" style clause from an allow-list.
+     *
+     * @param int[] $allowedFolderIds
+     * @return array{sql: string, args: int[]}
+     */
+    private function build_folder_scope_clause(array $allowedFolderIds, bool $rootAllowed): array
+    {
+        $ids = array_values(array_unique(array_map('intval', $allowedFolderIds)));
+        $clauses = [];
+        $args = [];
+
+        if (!empty($ids)) {
+            $placeholders = implode(', ', array_fill(0, count($ids), '%d'));
+            $clauses[] = "folder_id IN ({$placeholders})";
+            $args = $ids;
+        }
+
+        if ($rootAllowed) {
+            $clauses[] = 'folder_id IS NULL';
+        }
+
+        if (empty($clauses)) {
+            // Nothing is viewable: match no rows.
+            return ['sql' => '1 = 0', 'args' => []];
+        }
+
+        return ['sql' => '(' . implode(' OR ', $clauses) . ')', 'args' => $args];
     }
 
     public function create(array $data): int

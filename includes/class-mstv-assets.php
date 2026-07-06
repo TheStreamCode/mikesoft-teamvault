@@ -30,10 +30,29 @@ class MSTV_Assets
         // The branding logo picker on the settings page uses the WordPress media modal.
         wp_enqueue_media();
 
+        // admin-app is split into three files loaded in order: core (state + file
+        // browser + shared utilities) exposes window.PDM, then governance and the
+        // settings/export/bootstrap layer augment it via Object.assign.
+        wp_enqueue_script(
+            'mstv-admin-core',
+            MSTV_PLUGIN_URL . 'assets/js/admin-app-core.js',
+            [],
+            MSTV_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
+            'mstv-admin-governance',
+            MSTV_PLUGIN_URL . 'assets/js/admin-app-governance.js',
+            ['mstv-admin-core'],
+            MSTV_VERSION,
+            true
+        );
+
         wp_enqueue_script(
             'mstv-admin',
             MSTV_PLUGIN_URL . 'assets/js/admin-app.js',
-            [],
+            ['mstv-admin-governance'],
             MSTV_VERSION,
             true
         );
@@ -50,7 +69,9 @@ class MSTV_Assets
             'dismissNonce' => wp_create_nonce('mstv_dismiss_storage_notice'),
         ]);
 
-        wp_localize_script('mstv-admin', 'mstvConfig', [
+        // Localized onto the first script so mstvConfig exists before admin-app-core
+        // evaluates its state initializer (which reads mstvConfig.browserPerPage).
+        wp_localize_script('mstv-admin-core', 'mstvConfig', [
             'branding' => [
                 'name' => $this->settings->get_brand_name(),
                 'logoUrl' => $this->settings->get_brand_logo_url(),
@@ -112,7 +133,6 @@ class MSTV_Assets
                 'file' => __('File', 'mikesoft-teamvault'),
                 'files' => __('files', 'mikesoft-teamvault'),
                 'folders' => __('folders', 'mikesoft-teamvault'),
-                'available' => __('Available', 'mikesoft-teamvault'),
                 'missing' => __('Missing', 'mikesoft-teamvault'),
                 'selected' => __('selected', 'mikesoft-teamvault'),
                 'gridView' => __('Grid view', 'mikesoft-teamvault'),
@@ -192,6 +212,7 @@ class MSTV_Assets
                 'permSave' => __('Save permissions', 'mikesoft-teamvault'),
                 'permSaved' => __('Permissions updated.', 'mikesoft-teamvault'),
                 'permAlreadyAdded' => __('This user or group is already in the list.', 'mikesoft-teamvault'),
+                'permDefaultOpenWarning' => __('Heads up: some folders have rules but the Home (root) folder has none. Any folder without a rule in its parent chain stays accessible to every vault user. Add a rule on Home to restrict the default access.', 'mikesoft-teamvault'),
                 // Governance: groups.
                 'groupsEmpty' => __('No groups yet. Create one to organize document access.', 'mikesoft-teamvault'),
                 'groupsMembers' => __('members', 'mikesoft-teamvault'),

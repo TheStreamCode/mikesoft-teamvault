@@ -174,12 +174,21 @@ class MSTV_Helpers
     {
         $htaccess = $path . '/.htaccess';
         if (!file_exists($htaccess)) {
+            // Cover Apache 2.4 (mod_authz_core), Apache 2.2 (mod_access_compat) and,
+            // as a last resort, mod_rewrite. On Apache 2.4 the legacy "Order/Deny"
+            // directives are inert unless mod_access_compat is loaded, so the native
+            // "Require all denied" must be emitted too.
             $content = "# Mikesoft TeamVault - Access Denied\n";
-            $content .= "Order deny,allow\n";
-            $content .= "Deny from all\n";
+            $content .= "<IfModule mod_authz_core.c>\n";
+            $content .= "  Require all denied\n";
+            $content .= "</IfModule>\n";
+            $content .= "<IfModule !mod_authz_core.c>\n";
+            $content .= "  Order deny,allow\n";
+            $content .= "  Deny from all\n";
+            $content .= "</IfModule>\n";
             $content .= "<IfModule mod_rewrite.c>\n";
-            $content .= "RewriteEngine On\n";
-            $content .= "RewriteRule .* - [F]\n";
+            $content .= "  RewriteEngine On\n";
+            $content .= "  RewriteRule .* - [F]\n";
             $content .= "</IfModule>\n";
             @file_put_contents($htaccess, $content);
         }

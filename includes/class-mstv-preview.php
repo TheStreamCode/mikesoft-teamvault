@@ -129,7 +129,6 @@ class MSTV_Preview
 
         $safeMime = sanitize_mime_type(str_replace(["\r", "\n"], '', $mimeType));
         header('Content-Type: ' . $safeMime);
-        header('Content-Length: ' . $fileSize);
         header('Content-Disposition: inline; filename="' . $this->sanitize_filename($filename) . '"');
         header('Cache-Control: private, max-age=0, must-revalidate');
         header('Pragma: public');
@@ -140,7 +139,7 @@ class MSTV_Preview
             header('Content-Security-Policy: default-src \'self\'; style-src \'self\' \'unsafe-inline\';');
         }
 
-        if (!$this->stream_absolute_file($path)) {
+        if (!$this->stream_binary($path, $fileSize)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
             error_log('TeamVault: stream failed for preview: ' . $path);
             wp_die(

@@ -91,6 +91,7 @@ class MSTV_I18n
         'TeamVault Groups' => 'Gruppi TeamVault',
         'The group name cannot be empty.' => 'Il nome del gruppo non può essere vuoto.',
         'This user or group is already in the list.' => 'Questo utente o gruppo è già nell\'elenco.',
+        'Heads up: some folders have rules but the Home (root) folder has none. Any folder without a rule in its parent chain stays accessible to every vault user. Add a rule on Home to restrict the default access.' => 'Attenzione: alcune cartelle hanno regole ma la cartella Home (radice) no. Qualsiasi cartella senza una regola nella sua catena di genitori resta accessibile a tutti gli utenti del vault. Aggiungi una regola su Home per limitare l\'accesso predefinito.',
         'User / Group' => 'Utente / Gruppo',
         'View' => 'Visualizza',
         'You do not have permission to manage this folder.' => 'Non hai i permessi per gestire questa cartella.',
