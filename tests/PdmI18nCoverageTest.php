@@ -6,48 +6,73 @@ use PHPUnit\Framework\TestCase;
 
 final class PdmI18nCoverageTest extends TestCase
 {
-    public function testItalianMapCoversEveryPluginTranslationString(): void
+    /** Language maps that must each fully cover the plugin's translatable strings. */
+    private const LANGUAGE_CONSTANTS = ['ITALIAN_MAP', 'FRENCH_MAP', 'SPANISH_MAP', 'GERMAN_MAP'];
+
+    public function testEveryLanguageMapCoversEveryPluginTranslationString(): void
     {
         $usedStrings = $this->collectUsedTranslationStrings();
-        $translatedStrings = $this->getItalianMapKeys();
-        $missingStrings = array_values(array_diff($usedStrings, $translatedStrings));
 
-        sort($missingStrings);
+        foreach (self::LANGUAGE_CONSTANTS as $const) {
+            $translatedStrings = $this->getMapKeys($const);
+            $missingStrings = array_values(array_diff($usedStrings, $translatedStrings));
+            sort($missingStrings);
 
-        self::assertSame(
-            [],
-            $missingStrings,
-            "Missing Italian translations:\n" . implode("\n", $missingStrings)
-        );
+            self::assertSame(
+                [],
+                $missingStrings,
+                "Missing {$const} translations:\n" . implode("\n", $missingStrings)
+            );
+        }
     }
 
-    public function testItalianMapDoesNotContainUnusedTranslationStrings(): void
+    public function testNoLanguageMapContainsUnusedTranslationStrings(): void
     {
         $usedStrings = $this->collectUsedTranslationStrings();
-        $translatedStrings = $this->getItalianMapKeys();
-        $unusedStrings = array_values(array_diff($translatedStrings, $usedStrings));
 
-        sort($unusedStrings);
+        foreach (self::LANGUAGE_CONSTANTS as $const) {
+            $translatedStrings = $this->getMapKeys($const);
+            $unusedStrings = array_values(array_diff($translatedStrings, $usedStrings));
+            sort($unusedStrings);
 
-        self::assertSame(
-            [],
-            $unusedStrings,
-            "Unused Italian translations:\n" . implode("\n", $unusedStrings)
-        );
+            self::assertSame(
+                [],
+                $unusedStrings,
+                "Unused {$const} translations:\n" . implode("\n", $unusedStrings)
+            );
+        }
     }
 
-    public function testItalianMapDoesNotContainDuplicateKeys(): void
+    public function testAllLanguageMapsShareTheSameKeySet(): void
     {
-        $keys = $this->getItalianMapKeysFromSource();
-        $duplicates = array_values(array_unique(array_diff_assoc($keys, array_unique($keys))));
+        $reference = $this->getMapKeys('ITALIAN_MAP');
+        sort($reference);
 
-        sort($duplicates);
+        foreach (['FRENCH_MAP', 'SPANISH_MAP', 'GERMAN_MAP'] as $const) {
+            $keys = $this->getMapKeys($const);
+            sort($keys);
 
-        self::assertSame(
-            [],
-            $duplicates,
-            "Duplicate Italian translation keys:\n" . implode("\n", $duplicates)
-        );
+            self::assertSame(
+                $reference,
+                $keys,
+                "{$const} does not cover the same source strings as ITALIAN_MAP."
+            );
+        }
+    }
+
+    public function testNoLanguageMapContainsDuplicateKeys(): void
+    {
+        foreach (self::LANGUAGE_CONSTANTS as $const) {
+            $keys = $this->getMapKeysFromSource($const);
+            $duplicates = array_values(array_unique(array_diff_assoc($keys, array_unique($keys))));
+            sort($duplicates);
+
+            self::assertSame(
+                [],
+                $duplicates,
+                "Duplicate {$const} keys:\n" . implode("\n", $duplicates)
+            );
+        }
     }
 
     /**
@@ -94,13 +119,13 @@ final class PdmI18nCoverageTest extends TestCase
     /**
      * @return string[]
      */
-    private function getItalianMapKeys(): array
+    private function getMapKeys(string $constant): array
     {
-        $constant = (new ReflectionClass(MSTV_I18n::class))->getReflectionConstant('ITALIAN_MAP');
+        $reflectionConstant = (new ReflectionClass(MSTV_I18n::class))->getReflectionConstant($constant);
 
-        self::assertNotFalse($constant);
+        self::assertNotFalse($reflectionConstant, "Missing constant {$constant} on MSTV_I18n.");
 
-        $keys = array_keys($constant->getValue());
+        $keys = array_keys($reflectionConstant->getValue());
         sort($keys);
 
         return $keys;
@@ -109,10 +134,15 @@ final class PdmI18nCoverageTest extends TestCase
     /**
      * @return string[]
      */
-    private function getItalianMapKeysFromSource(): array
+    private function getMapKeysFromSource(string $constant): array
     {
         $contents = (string) file_get_contents(dirname(__DIR__) . '/includes/class-mstv-i18n.php');
-        preg_match_all("/^\\s*'((?:\\\\'|[^'])*)'\\s*=>/m", $contents, $matches);
+
+        if (! preg_match('/private const ' . preg_quote($constant, '/') . ' = \[(.*?)\n    \];/s', $contents, $block)) {
+            self::fail("Could not locate the {$constant} block in class-mstv-i18n.php.");
+        }
+
+        preg_match_all("/^\\s*'((?:\\\\'|[^'])*)'\\s*=>/m", $block[1], $matches);
 
         return array_map(
             static fn (string $key): string => str_replace("\\'", "'", $key),

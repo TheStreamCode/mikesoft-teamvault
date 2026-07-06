@@ -7,9 +7,11 @@
 [![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
 
+**English** · [Italiano](README.it.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md)
+
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.0.0`.
+Current plugin version: `3.1.0`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
@@ -53,6 +55,8 @@ Governance capabilities (all free, since 2.6):
 - light white-label branding (name, logo, accent color) inside the plugin screens
 
 ## Latest Release
+
+Version `3.1.0` adds a fully translated plugin admin interface: the interface language selector now offers **Italian, French, Spanish, and German** in addition to English, covering every screen, label, warning, and error message. This README is also available in those languages via the links at the top.
 
 Version `3.0.0` is a security and reliability milestone. Search results are now filtered through the per-folder permission engine, so restricted users can no longer discover file names or metadata from folders they cannot view. The generated storage `.htaccess` denies direct access on Apache 2.4 in addition to Apache 2.2 and IIS, and storage quotas are enforced with a database lock so concurrent uploads cannot jointly exceed a limit. Downloads and inline previews gain HTTP Range support (`Accept-Ranges` / `206 Partial Content`) for resumable transfers and range-seeking PDF viewers on large files. The folder permissions dialog now warns when rules exist but the root has none, the admin menu icon matches native WordPress styling, and the admin JavaScript was split into focused modules with no change in behavior.
 
