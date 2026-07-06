@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.2.0`.
+Aktuelle Plugin-Version: `3.2.1`.
 
 **Über 2.000 Downloads insgesamt** auf WordPress.org, mit täglich Dutzenden neuer Downloads.
 

@@ -2,6 +2,9 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.1 - 2026-07-06
+- Fix: the empty-state action buttons ("Browse files" / "New folder") inherited the empty-state placeholder icon styling (`margin-bottom: 20px` and `opacity: 0.5`) via a descendant selector, which pushed their icons above the text baseline and dimmed them. Scoped that styling to the direct-child placeholder icon (`.pdm-empty-state > svg`) so the button icons stay vertically centered with their labels at full opacity.
+
 ## 3.2.0 - 2026-07-06
 - Feature: governance visibility. Folders that carry explicit permission rules are now badged with a lock icon in the folder tree, grid, and list. `MSTV_Repository_Permissions::folders_with_rules()` returns the ruled folder IDs in one query, surfaced via `MSTV_Permissions::ruled_folder_ids()` and the `has_rules` flag added to folder REST payloads.
 - Improvement: the empty-folder state now renders a dashed drop zone with "Browse files" and "New folder" call-to-action buttons (gated by the upload/manage permissions), replacing the plain placeholder. The no-results search state is unchanged.

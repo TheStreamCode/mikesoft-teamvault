@@ -11,7 +11,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.2.0`.
+Current plugin version: `3.2.1`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
