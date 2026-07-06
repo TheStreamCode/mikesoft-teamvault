@@ -8,12 +8,13 @@ class MSTV_I18n
 
     /**
      * Interface languages the plugin ships in-admin translations for. English ('en') is
-     * the gettext source and needs no map. To add a language: provide its map below, list
-     * it in SUPPORTED_LANGUAGES and map_for(), and add an option in the settings selector.
+     * the gettext source and needs no map. The stored option may also be 'auto', which
+     * follows the WordPress locale (see get_language()).
      */
     public const SUPPORTED_LANGUAGES = ['en', 'it', 'fr', 'es', 'de'];
 
     private const ITALIAN_MAP = [
+        'Automatic (match WordPress language)' => 'Automatica (segui la lingua di WordPress)',
         'Sponsor' => 'Sponsorizza',
         'Sponsor TeamVault on GitHub' => 'Sponsorizza TeamVault su GitHub',
         'Support the project:' => 'Sostieni il progetto:',
@@ -137,7 +138,6 @@ class MSTV_I18n
         'Drag files here to upload them' => 'Trascina i file qui per caricarli',
         'Enable activity log' => 'Abilita log attività',
         'Enable inline PDF preview' => 'Abilita anteprima PDF inline',
-        'English (default)' => 'Inglese (predefinito)',
         'Error' => 'Errore',
         'Error during export' => 'Errore durante l\'esportazione',
         'Error while creating the folder.' => 'Errore durante la creazione della cartella.',
@@ -328,9 +328,11 @@ class MSTV_I18n
         'French' => 'Francese',
         'Spanish' => 'Spagnolo',
         'German' => 'Tedesco',
+        'English' => 'Inglese',
     ];
 
     private const FRENCH_MAP = [
+        'Automatic (match WordPress language)' => 'Automatique (suivre la langue de WordPress)',
         'Sponsor' => 'Sponsoriser',
         'Sponsor TeamVault on GitHub' => 'Sponsoriser TeamVault sur GitHub',
         'Support the project:' => 'Soutenez le projet :',
@@ -454,7 +456,6 @@ class MSTV_I18n
         'Drag files here to upload them' => 'Glissez les fichiers ici pour les téléverser',
         'Enable activity log' => 'Activer le journal d\'activité',
         'Enable inline PDF preview' => 'Activer l\'aperçu PDF intégré',
-        'English (default)' => 'Anglais (par défaut)',
         'Error' => 'Erreur',
         'Error during export' => 'Erreur lors de l\'exportation',
         'Error while creating the folder.' => 'Erreur lors de la création du dossier.',
@@ -645,9 +646,11 @@ class MSTV_I18n
         'French' => 'Français',
         'Spanish' => 'Espagnol',
         'German' => 'Allemand',
+        'English' => 'Anglais',
     ];
 
     private const SPANISH_MAP = [
+        'Automatic (match WordPress language)' => 'Automático (seguir el idioma de WordPress)',
         'Sponsor' => 'Patrocinar',
         'Sponsor TeamVault on GitHub' => 'Patrocina TeamVault en GitHub',
         'Support the project:' => 'Apoya el proyecto:',
@@ -771,7 +774,6 @@ class MSTV_I18n
         'Drag files here to upload them' => 'Arrastra los archivos aquí para subirlos',
         'Enable activity log' => 'Activar registro de actividad',
         'Enable inline PDF preview' => 'Activar vista previa de PDF integrada',
-        'English (default)' => 'Inglés (predeterminado)',
         'Error' => 'Error',
         'Error during export' => 'Error durante la exportación',
         'Error while creating the folder.' => 'Error al crear la carpeta.',
@@ -962,9 +964,11 @@ class MSTV_I18n
         'French' => 'Francés',
         'Spanish' => 'Español',
         'German' => 'Alemán',
+        'English' => 'Inglés',
     ];
 
     private const GERMAN_MAP = [
+        'Automatic (match WordPress language)' => 'Automatisch (WordPress-Sprache übernehmen)',
         'Sponsor' => 'Sponsern',
         'Sponsor TeamVault on GitHub' => 'TeamVault auf GitHub sponsern',
         'Support the project:' => 'Unterstützen Sie das Projekt:',
@@ -1088,7 +1092,6 @@ class MSTV_I18n
         'Drag files here to upload them' => 'Ziehen Sie Dateien hierher, um sie hochzuladen',
         'Enable activity log' => 'Aktivitätsprotokoll aktivieren',
         'Enable inline PDF preview' => 'Inline-PDF-Vorschau aktivieren',
-        'English (default)' => 'Englisch (Standard)',
         'Error' => 'Fehler',
         'Error during export' => 'Fehler beim Export',
         'Error while creating the folder.' => 'Fehler beim Erstellen des Ordners.',
@@ -1279,6 +1282,7 @@ class MSTV_I18n
         'French' => 'Französisch',
         'Spanish' => 'Spanisch',
         'German' => 'Deutsch',
+        'English' => 'Englisch',
     ];
 
     public function init(): void
@@ -1316,15 +1320,39 @@ class MSTV_I18n
         }
     }
 
+    /**
+     * Resolve the effective interface language. The default 'auto' follows the WordPress
+     * locale: a supported language when the site/user locale matches one, English otherwise.
+     * An explicit language choice always takes precedence over the WordPress locale.
+     */
     public static function get_language(): string
     {
-        $language = get_option(self::OPTION_LANGUAGE, 'en');
+        $language = get_option(self::OPTION_LANGUAGE, 'auto');
+
+        if ('auto' === $language) {
+            $language = self::language_from_locale(determine_locale());
+        }
 
         return in_array($language, self::SUPPORTED_LANGUAGES, true) ? $language : 'en';
     }
 
+    /**
+     * Map a WordPress locale (e.g. 'it_IT', 'de_DE_formal', 'pt_BR') to a supported
+     * TeamVault interface language by its language prefix; unsupported locales fall back to English.
+     */
+    private static function language_from_locale(string $locale): string
+    {
+        $prefix = strtolower(substr($locale, 0, 2));
+
+        return in_array($prefix, self::SUPPORTED_LANGUAGES, true) ? $prefix : 'en';
+    }
+
     public static function sanitize_language($value): string
     {
+        if ('auto' === $value) {
+            return 'auto';
+        }
+
         return in_array($value, self::SUPPORTED_LANGUAGES, true) ? $value : 'en';
     }
 }

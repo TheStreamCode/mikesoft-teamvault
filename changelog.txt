@@ -2,6 +2,10 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.1.1 - 2026-07-06
+- Feature: the interface language selector gained an "Automatic (match WordPress language)" option, which is now the default. `MSTV_I18n::get_language()` resolves `auto` via `determine_locale()` and maps the WordPress locale prefix to a shipped TeamVault language (it/fr/es/de), falling back to English for any other locale. `sanitize_language()` accepts `auto`; an explicit language choice still overrides the WordPress locale.
+- Change: new installs default to `auto` instead of `en`, so the plugin interface matches the WordPress language out of the box. Installs that previously saved an explicit language keep it.
+
 ## 3.1.0 - 2026-07-06
 - Feature: full in-admin interface localization. The custom gettext-filter translation layer (`MSTV_I18n`) now ships complete Italian, French, Spanish, and German maps (314 strings each) alongside the English source; the interface language selector on the settings page exposes all five, and `sanitize_language()`/`get_language()` accept the new codes. Every user-facing label, warning, and error message is translated, with printf placeholders preserved across all languages.
 - Improvement: reviewed the Italian translation and fixed genuine errors — "capability" was mistranslated as "capacità", "rinominazione" corrected to "rinomina", a dropped object in "Errore durante lo spostamento del file", "Collapse" corrected from "Raccogli" to "Comprimi", register inconsistencies made consistently informal, and a few "upload"/"storage" terms harmonized.

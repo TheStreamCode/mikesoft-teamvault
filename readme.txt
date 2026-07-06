@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,7 +71,7 @@ Key features:
 * Activity logging for uploads, downloads, previews, moves, and deletions
 * Maintenance tools for orphan cleanup and storage reindex
 * Storage widget focused on the space used by TeamVault files
-* English interface with optional Italian translation
+* Interface available in English, Italian, French, Spanish, and German, automatically matched to the WordPress language
 
 == Installation ==
 
@@ -154,6 +154,9 @@ For direct contact, email teamvault@mikesoft.it.
 1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
 
 == Changelog ==
+
+= 3.1.1 =
+* New: the interface language now defaults to "Automatic", matching the WordPress site/admin language. If WordPress runs in Italian, French, Spanish, or German, TeamVault follows automatically; any other language falls back to English. You can still force a specific language under TeamVault > Settings.
 
 = 3.1.0 =
 * New: the plugin admin interface is now fully translated into Italian, French, Spanish, and German, in addition to English. Choose the interface language under TeamVault > Settings; every screen, label, warning, and error message is localized.
@@ -258,6 +261,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.1.1 =
+
+The interface language now defaults to Automatic and follows the WordPress language (Italian, French, Spanish, German, or English). Set a fixed language under TeamVault > Settings if you prefer. No functional changes to storage or access control.
 
 = 3.1.0 =
 

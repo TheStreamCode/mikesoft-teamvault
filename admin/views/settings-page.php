@@ -2,7 +2,7 @@
 
 defined('ABSPATH') || exit;
 
-$mstv_interface_language = (string) get_option('mstv_interface_language', 'en');
+$mstv_interface_language = (string) get_option('mstv_interface_language', 'auto');
 $mstv_use_user_whitelist = (bool) get_option('mstv_use_user_whitelist', false);
 $mstv_allowed_users = get_option('mstv_allowed_users', []);
 $mstv_allowed_extensions = implode(',', $settings->get_allowed_extensions());
@@ -106,7 +106,8 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                 </label>
                 <p class="pdm-field-desc"><?php esc_html_e('Choose the plugin interface language. The default language is English.', 'mikesoft-teamvault'); ?></p>
                 <select id="mstv_interface_language" name="mstv_interface_language" class="pdm-select">
-                    <option value="en" <?php selected($mstv_interface_language, 'en'); ?>><?php esc_html_e('English (default)', 'mikesoft-teamvault'); ?></option>
+                    <option value="auto" <?php selected($mstv_interface_language, 'auto'); ?>><?php esc_html_e('Automatic (match WordPress language)', 'mikesoft-teamvault'); ?></option>
+                    <option value="en" <?php selected($mstv_interface_language, 'en'); ?>><?php esc_html_e('English', 'mikesoft-teamvault'); ?></option>
                     <option value="it" <?php selected($mstv_interface_language, 'it'); ?>><?php esc_html_e('Italian', 'mikesoft-teamvault'); ?></option>
                     <option value="fr" <?php selected($mstv_interface_language, 'fr'); ?>><?php esc_html_e('French', 'mikesoft-teamvault'); ?></option>
                     <option value="es" <?php selected($mstv_interface_language, 'es'); ?>><?php esc_html_e('Spanish', 'mikesoft-teamvault'); ?></option>
