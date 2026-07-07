@@ -11,7 +11,7 @@
 
 Spazio di lavoro documentale privato per team, agenzie e reparti operativi WordPress che hanno bisogno di condividere file in modo controllato al di fuori della Libreria Media.
 
-Versione attuale del plugin: `3.2.1`.
+Versione attuale del plugin: `3.2.2`.
 
 **Oltre 2.000 download totali** su WordPress.org, con decine di nuovi download ogni giorno.
 
@@ -24,7 +24,13 @@ Mikesoft TeamVault aggiunge uno spazio di lavoro documentale privato all'interno
 
 I file sono archiviati in uno storage protetto e distribuiti tramite gestori WordPress autenticati anziché tramite URL pubblici dei media.
 
-![TeamVault file manager interface](.wordpress-org/assets/screenshot-1.jpg)
+![File manager TeamVault — albero cartelle, schede file con icone per tipo e anteprime immagine, pannello dettagli con anteprima inline](.wordpress-org/assets/screenshot-1.jpg)
+
+| Permessi per cartella | Ricerca nel vault | Quote di storage |
+| :---: | :---: | :---: |
+| [![Controllo accessi per cartella](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Ricerca con badge per tipo di file](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Quote per utente e per gruppo](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Gruppi** | **Registro attività** | **Impostazioni** |
+| [![Gruppi utenti](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Impostazioni del plugin](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 Tra i casi d'uso tipici rientrano:
 
@@ -54,6 +60,8 @@ Funzionalità di governance (tutte gratuite, dalla versione 2.6):
 - notifiche email per gli eventi di caricamento, download, eliminazione e accesso negato
 
 ## Ultima versione
+
+La versione `3.2.2` rinnova le **icone dei tipi di file** in tutto il file manager: PDF, Word, Excel, PowerPoint, CSV, testo, archivi, audio, video e immagini mostrano ora badge colorati chiari e riconoscibili con l'etichetta del formato — nella griglia, nella vista elenco e nell'anteprima del pannello dettagli — al posto dei precedenti glifi monocromatici.
 
 La versione `3.0.0` è una tappa importante per la sicurezza e l'affidabilità. I risultati di ricerca ora vengono filtrati attraverso il motore dei permessi per cartella, così gli utenti con restrizioni non possono più scoprire nomi di file o metadati provenienti da cartelle che non possono visualizzare. Il file `.htaccess` di storage generato nega l'accesso diretto su Apache 2.4 oltre che su Apache 2.2 e IIS, e le quote di storage vengono applicate con un blocco a livello di database in modo che i caricamenti concorrenti non possano superare congiuntamente un limite. I download e le anteprime inline acquisiscono il supporto HTTP Range (`Accept-Ranges` / `206 Partial Content`) per trasferimenti riprendibili e visualizzatori PDF con ricerca per intervallo sui file di grandi dimensioni. La finestra di dialogo dei permessi delle cartelle ora avvisa quando esistono regole ma la radice non ne ha, l'icona del menu di amministrazione è coerente con lo stile nativo di WordPress e il JavaScript di amministrazione è stato suddiviso in moduli mirati senza alcuna variazione di comportamento.
 

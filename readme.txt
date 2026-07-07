@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.2.1
+Stable tag: 3.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -149,9 +149,18 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Screenshots ==
 
-1. TeamVault file manager with folder navigation, private file cards, upload/export controls, and the file details panel.
+1. File manager: folder tree, private file cards with type-aware icons and image thumbnails, and the details panel with inline preview.
+2. Per-folder access control: grant view, upload, download, delete, or manage rights to specific users or groups.
+3. Search across the vault by file name, with clear file-type badges for PDF, Word, Excel, PowerPoint, and more.
+4. Storage quotas: set per-user or per-group upload limits; existing files stay accessible and administrators are never limited.
+5. Groups: organize users into departments or teams, then grant folder access to a whole group at once.
+6. Activity log: a full audit trail of previews, downloads, uploads, and exports, with user, time, and IP address.
+7. Settings: interface language, allowed file types, maximum upload size, and preview options.
 
 == Changelog ==
+
+= 3.2.2 =
+* Improved: file-type icons across the file manager. PDF, Word, Excel, PowerPoint, CSV, text, archive, audio, video, and image files now show clear, recognizable colored badges with the format label — in the file grid, the list view, and the details preview — replacing the previous monochrome glyphs.
 
 = 3.2.1 =
 * Fixed: the icons in the empty-folder "Browse files" and "New folder" buttons were pushed out of alignment and dimmed; they are now correctly centered with the button label at full opacity.
@@ -268,6 +277,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.2.2 =
+
+Refreshed file-type icons: PDF, Office, archive, media, and other files now show clear, recognizable colored badges with the format label. No configuration changes.
 
 = 3.2.0 =
 

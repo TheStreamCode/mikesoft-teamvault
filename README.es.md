@@ -11,7 +11,7 @@
 
 Espacio de trabajo de documentos privados para equipos, agencias y operaciones de WordPress que necesitan compartir archivos de forma controlada fuera de la Biblioteca de medios.
 
-Versión actual del plugin: `3.2.1`.
+Versión actual del plugin: `3.2.2`.
 
 **Más de 2.000 descargas totales** en WordPress.org, con decenas de nuevas descargas cada día.
 
@@ -24,7 +24,13 @@ Está diseñado para equipos que necesitan organizar, previsualizar, exportar y 
 
 Los archivos se almacenan en un almacenamiento protegido y se entregan a través de gestores autenticados de WordPress en lugar de URL de medios públicas.
 
-![Interfaz del gestor de archivos de TeamVault](.wordpress-org/assets/screenshot-1.jpg)
+![Gestor de archivos de TeamVault — árbol de carpetas, tarjetas de archivo con iconos por tipo y miniaturas, panel de detalles con vista previa integrada](.wordpress-org/assets/screenshot-1.jpg)
+
+| Permisos por carpeta | Búsqueda en el vault | Cuotas de almacenamiento |
+| :---: | :---: | :---: |
+| [![Control de acceso por carpeta](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Búsqueda con distintivos de tipo de archivo](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Cuotas por usuario y por grupo](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Grupos** | **Registro de actividad** | **Ajustes** |
+| [![Grupos de usuarios](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Registro de auditoría](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Ajustes del plugin](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 Los casos de uso típicos incluyen:
 
@@ -54,6 +60,8 @@ Capacidades de gobernanza (todas gratuitas, desde la versión 2.6):
 - notificaciones por correo electrónico para los eventos de subida, descarga, eliminación y acceso denegado
 
 ## Última versión
+
+La versión `3.2.2` renueva los **iconos de tipo de archivo** en todo el gestor de archivos: los archivos PDF, Word, Excel, PowerPoint, CSV, texto, archivo comprimido, audio, vídeo e imagen ahora muestran distintivos de color claros y reconocibles con la etiqueta del formato — en la cuadrícula, la vista de lista y la vista previa del panel de detalles — en lugar de los antiguos glifos monocromos.
 
 La versión `3.0.0` es un hito de seguridad y fiabilidad. Los resultados de búsqueda ahora se filtran a través del motor de permisos por carpeta, de modo que los usuarios restringidos ya no pueden descubrir nombres de archivo ni metadatos de carpetas que no pueden ver. El archivo `.htaccess` de almacenamiento generado deniega el acceso directo en Apache 2.4 además de en Apache 2.2 e IIS, y las cuotas de almacenamiento se aplican con un bloqueo de base de datos para que las subidas concurrentes no puedan superar conjuntamente un límite. Las descargas y las vistas previas integradas incorporan compatibilidad con HTTP Range (`Accept-Ranges` / `206 Partial Content`) para transferencias reanudables y visores de PDF con búsqueda por rangos en archivos grandes. El cuadro de diálogo de permisos de carpeta ahora advierte cuando existen reglas pero la raíz no tiene ninguna, el icono del menú de administración coincide con el estilo nativo de WordPress, y el JavaScript de administración se dividió en módulos específicos sin cambios en el comportamiento.
 
