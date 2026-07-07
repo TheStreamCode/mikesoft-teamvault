@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.2.1`.
+Aktuelle Plugin-Version: `3.2.2`.
 
 **Über 2.000 Downloads insgesamt** auf WordPress.org, mit täglich Dutzenden neuer Downloads.
 
@@ -24,7 +24,13 @@ Es wurde für Teams konzipiert, die sensible Dateien organisieren, in der Vorsch
 
 Dateien werden in geschütztem Speicher abgelegt und über authentifizierte WordPress-Handler ausgeliefert, anstatt über öffentliche Medien-URLs.
 
-![TeamVault Dateimanager-Oberfläche](.wordpress-org/assets/screenshot-1.jpg)
+![TeamVault Dateimanager — Ordnerbaum, Dateikarten mit typbezogenen Symbolen und Miniaturansichten, Detailbereich mit Inline-Vorschau](.wordpress-org/assets/screenshot-1.jpg)
+
+| Ordnerberechtigungen | Suche im Vault | Speicherkontingente |
+| :---: | :---: | :---: |
+| [![Ordnerbezogene Zugriffskontrolle](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Suche mit Dateityp-Badges](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Kontingente pro Benutzer und Gruppe](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Gruppen** | **Aktivitätsprotokoll** | **Einstellungen** |
+| [![Benutzergruppen](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit-Trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin-Einstellungen](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 Typische Anwendungsfälle sind:
 
@@ -54,6 +60,8 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
 
 ## Neueste Version
+
+Version `3.2.2` erneuert die **Dateityp-Symbole** im gesamten Dateimanager: PDF-, Word-, Excel-, PowerPoint-, CSV-, Text-, Archiv-, Audio-, Video- und Bilddateien zeigen jetzt klare, wiedererkennbare farbige Badges mit der Formatbezeichnung — im Raster, in der Listenansicht und in der Vorschau des Detailbereichs — anstelle der bisherigen einfarbigen Glyphen.
 
 Version `3.0.0` ist ein Meilenstein für Sicherheit und Zuverlässigkeit. Suchergebnisse werden nun durch die ordnerbezogene Berechtigungs-Engine gefiltert, sodass eingeschränkte Benutzer keine Dateinamen oder Metadaten mehr aus Ordnern entdecken können, die sie nicht anzeigen dürfen. Die generierte `.htaccess` für den Speicher verweigert den direkten Zugriff auf Apache 2.4 zusätzlich zu Apache 2.2 und IIS, und Speicherkontingente werden mit einer Datenbanksperre durchgesetzt, damit gleichzeitige Uploads ein Limit nicht gemeinsam überschreiten können. Downloads und Inline-Vorschauen erhalten HTTP-Range-Unterstützung (`Accept-Ranges` / `206 Partial Content`) für fortsetzbare Übertragungen und PDF-Viewer mit Bereichssuche bei großen Dateien. Der Dialog für Ordnerberechtigungen warnt nun, wenn Regeln existieren, das Stammverzeichnis jedoch keine hat, das Symbol im Admin-Menü entspricht dem nativen WordPress-Design, und das Admin-JavaScript wurde ohne Verhaltensänderung in fokussierte Module aufgeteilt.
 

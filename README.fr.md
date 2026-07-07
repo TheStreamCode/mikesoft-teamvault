@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.2.1`.
+Version actuelle du plugin : `3.2.2`.
 
 **Plus de 2 000 téléchargements au total** sur WordPress.org, avec des dizaines de nouveaux téléchargements chaque jour.
 
@@ -24,7 +24,13 @@ Il est conçu pour les équipes qui ont besoin d'organiser, de prévisualiser, d
 
 Les fichiers sont conservés dans un stockage protégé et distribués par des gestionnaires WordPress authentifiés plutôt que par des URL de médias publiques.
 
-![Interface du gestionnaire de fichiers TeamVault](.wordpress-org/assets/screenshot-1.jpg)
+![Gestionnaire de fichiers TeamVault — arborescence des dossiers, cartes de fichiers avec icônes par type et vignettes, panneau de détails avec aperçu intégré](.wordpress-org/assets/screenshot-1.jpg)
+
+| Autorisations par dossier | Recherche dans le coffre | Quotas de stockage |
+| :---: | :---: | :---: |
+| [![Contrôle d'accès par dossier](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Recherche avec badges de type de fichier](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Quotas par utilisateur et par groupe](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Groupes** | **Journal d'activité** | **Réglages** |
+| [![Groupes d'utilisateurs](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Piste d'audit](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Réglages du plugin](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 Les cas d'usage typiques incluent :
 
@@ -54,6 +60,8 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
 
 ## Dernière version
+
+La version `3.2.2` renouvelle les **icônes de type de fichier** dans tout le gestionnaire de fichiers : les fichiers PDF, Word, Excel, PowerPoint, CSV, texte, archive, audio, vidéo et image affichent désormais des badges colorés clairs et reconnaissables avec l'étiquette du format — dans la grille, la vue en liste et l'aperçu du panneau de détails — à la place des anciens glyphes monochromes.
 
 La version `3.0.0` constitue une étape majeure en matière de sécurité et de fiabilité. Les résultats de recherche sont désormais filtrés par le moteur d'autorisations par dossier, de sorte que les utilisateurs restreints ne peuvent plus découvrir les noms de fichiers ou les métadonnées des dossiers qu'ils ne sont pas autorisés à consulter. Le fichier `.htaccess` de stockage généré refuse l'accès direct sur Apache 2.4 en plus d'Apache 2.2 et IIS, et les quotas de stockage sont appliqués à l'aide d'un verrou de base de données afin que des téléversements concurrents ne puissent pas dépasser conjointement une limite. Les téléchargements et les aperçus intégrés gagnent la prise en charge des plages HTTP (`Accept-Ranges` / `206 Partial Content`) pour les transferts reprenables et les lecteurs PDF à navigation par plage sur les fichiers volumineux. La boîte de dialogue des autorisations de dossier avertit désormais lorsque des règles existent mais que la racine n'en possède aucune, l'icône du menu d'administration s'aligne sur le style natif de WordPress, et le JavaScript d'administration a été scindé en modules ciblés sans changement de comportement.
 

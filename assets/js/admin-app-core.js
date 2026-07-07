@@ -2156,45 +2156,33 @@
         },
 
         getFileIconSvg(icon, size = 48) {
-            const svgs = {
-                'folder': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            if (icon === 'folder') {
+                return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                </svg>`,
-                'pdf': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <path d="M9 15v-2h2a1 1 0 0 1 0 2H9z"/>
-                    <path d="M9 15v2"/>
-                    <path d="M13 13v4"/>
-                    <path d="M13 15h2"/>
-                </svg>`,
-                'word': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <path d="M8 13l2 4 2-4"/>
-                    <path d="M16 13l-2 4"/>
-                </svg>`,
-                'excel': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <path d="M8 13h8"/>
-                    <path d="M8 17h8"/>
-                    <path d="M12 13v4"/>
-                </svg>`,
-                'image': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21 15 16 10 5 21"/>
-                </svg>`,
-                'archive': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 8v13H3V8"/>
-                    <path d="M1 3h22v5H1z"/>
-                    <path d="M10 12h4"/>
-                </svg>`,
-                'default': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                </svg>`,
+                </svg>`;
+            }
+
+            // Recognizable, brand-coloured document badge with the format label,
+            // matching the familiar file-type icon style used by mainstream file managers.
+            const sheet = (color, label) => `<svg width="${size}" height="${size}" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+                    <path d="M12 4h14l10 10v26a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z" fill="${color}"/>
+                    <path d="M26 4l10 10H26z" fill="#ffffff" fill-opacity="0.3"/>
+                    <text x="22" y="34" text-anchor="middle" font-family="'Segoe UI',Roboto,Arial,Helvetica,sans-serif" font-size="10.5" font-weight="700" letter-spacing="0.4" fill="#ffffff">${label}</text>
+                </svg>`;
+
+            const svgs = {
+                'pdf': sheet('#e0392b', 'PDF'),
+                'word': sheet('#2a5699', 'DOC'),
+                'excel': sheet('#1e7145', 'XLS'),
+                'powerpoint': sheet('#d14524', 'PPT'),
+                'csv': sheet('#12924f', 'CSV'),
+                'text': sheet('#5a6b7b', 'TXT'),
+                'code': sheet('#3b4a57', '&lt;/&gt;'),
+                'archive': sheet('#f0a01e', 'ZIP'),
+                'audio': sheet('#8e44ad', 'AUD'),
+                'video': sheet('#5b6cc0', 'VID'),
+                'image': sheet('#7d57c2', 'IMG'),
+                'default': sheet('#8c98a4', 'FILE'),
             };
 
             return svgs[icon] || svgs['default'];

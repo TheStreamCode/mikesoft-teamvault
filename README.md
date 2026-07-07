@@ -11,7 +11,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.2.1`.
+Current plugin version: `3.2.2`.
 
 **2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
 
@@ -24,7 +24,13 @@ It is designed for teams that need to organize, preview, export, and share sensi
 
 Files are stored in protected storage and delivered through authenticated WordPress handlers instead of public media URLs.
 
-![TeamVault file manager interface](.wordpress-org/assets/screenshot-1.jpg)
+![TeamVault file manager — folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
+
+| Per-folder permissions | Search across the vault | Storage quotas |
+| :---: | :---: | :---: |
+| [![Per-folder access control](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Search with file-type badges](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Per-user and per-group quotas](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Groups** | **Activity log** | **Settings** |
+| [![User groups](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin settings](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 Typical use cases include:
 
@@ -54,6 +60,8 @@ Governance capabilities (all free, since 2.6):
 - email notifications for upload, download, delete, and access-denied events
 
 ## Latest Release
+
+Version `3.2.2` refreshes the **file-type icons** throughout the file manager. PDF, Word, Excel, PowerPoint, CSV, text, archive, audio, video, and image files now show clear, recognizable colored badges with the format label — in the file grid, the list view, and the details preview — replacing the previous monochrome glyphs.
 
 Version `3.2.0` improves the file manager and streamlines the settings. Folders that carry their own permission rules now show a **lock badge** so restricted areas are recognizable at a glance, the **empty-folder view** offers a clear drop zone with quick upload / new-folder actions, and the interface received accessibility improvements (higher-contrast text, labeled icon buttons, screen-reader announcements). The **white-label branding option was removed** to keep TeamVault focused on secure document management; the plugin now always uses its standard identity and any previously saved brand settings are cleaned up on update.
 
@@ -152,7 +160,7 @@ This repository is the public source mirror for the plugin.
 
 - `.wordpress-org/assets/icon-256x256.png` is the primary full-color icon for the WordPress.org listing.
 - `.wordpress-org/assets/icon.svg` is the scalable companion asset for the WordPress.org listing.
-- `.wordpress-org/assets/screenshot-1.jpg` is the primary file manager screenshot used by the WordPress.org listing and this README.
+- `.wordpress-org/assets/screenshot-1.jpg` … `screenshot-7.jpg` are the WordPress.org listing screenshots, also used in this README.
 - `assets/logo-teamvault.svg` is the in-plugin admin logo used inside the TeamVault interface.
 
 These assets serve different surfaces and should stay aligned to the same brand without forcing the runtime plugin UI to match WordPress.org packaging constraints.
