@@ -117,6 +117,9 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Test Plugin Check output parser
+        run: node --test tests/plugin-check-output.test.mjs
+
       - name: Configure wp-env (no URL plugins)
         run: |
           PLUGIN_DIR="$(realpath plugin-check-build/mikesoft-teamvault)"
@@ -135,47 +138,28 @@ jobs:
       - name: Run WordPress Plugin Check
         run: |
           wp-env run cli wp cli info
+          STOP_MARKER="$(node -e "process.stdout.write(require('node:crypto').randomUUID())")"
+          echo "::stop-commands::$STOP_MARKER"
+
           wp-env run cli wp plugin install plugin-check --activate
           wp-env run cli wp plugin activate mikesoft-teamvault
 
           set +e
           wp-env run cli wp plugin check mikesoft-teamvault \
             --format=json --slug=mikesoft-teamvault \
-            --require=./wp-content/plugins/plugin-check/cli.php > "$RUNNER_TEMP/pc.json"
+            --require=./wp-content/plugins/plugin-check/cli.php \
+            > "$RUNNER_TEMP/pc.json" 2> "$RUNNER_TEMP/pc.stderr"
           CHECK_EXIT=$?
           set -e
 
           echo "wp plugin check exit: $CHECK_EXIT"
           echo "----- Plugin Check results -----"
-          cat "$RUNNER_TEMP/pc.json" || true
+          sed 's/^/| /' "$RUNNER_TEMP/pc.json" || true
+          if [ -s "$RUNNER_TEMP/pc.stderr" ]; then
+            echo "----- Plugin Check stderr -----"
+            sed 's/^/| /' "$RUNNER_TEMP/pc.stderr" || true
+          fi
           echo ""
+          echo "::$STOP_MARKER::"
 
-          RESULTS="$RUNNER_TEMP/pc.json" CHECK_EXIT="$CHECK_EXIT" node <<'NODE'
-          const fs = require('fs');
-          let raw = '';
-          try { raw = fs.readFileSync(process.env.RESULTS, 'utf8'); } catch (e) {}
-          const checkExit = parseInt(process.env.CHECK_EXIT || '0', 10);
-          const trimmed = raw.trim();
-          // With --format=json WP-CLI still prints a plain "Success: ... No errors found." line
-          // (not a JSON array) when there are no findings. Treat that as a pass.
-          if (/no errors found/i.test(trimmed) || /^success:/i.test(trimmed)) {
-            console.log(trimmed || 'Plugin Check: no issues.');
-            process.exit(0);
-          }
-          if (trimmed === '') {
-            if (checkExit !== 0) { console.error('Plugin Check produced no output and exited ' + checkExit + ' — treating as failure.'); process.exit(2); }
-            console.log('Plugin Check: no issues.'); process.exit(0);
-          }
-          let data;
-          try { data = JSON.parse(trimmed); } catch (e) { console.error('Plugin Check output is neither a success message nor valid JSON — the check did not run correctly:'); console.error(trimmed.slice(0, 1000)); process.exit(2); }
-          let items = Array.isArray(data) ? data : [];
-          if (!Array.isArray(data) && data && typeof data === 'object') {
-            for (const k in data) { if (Array.isArray(data[k])) items = items.concat(data[k]); }
-          }
-          const errs = items.filter((x) => x && String(x.type || '').toUpperCase() === 'ERROR');
-          const warns = items.filter((x) => x && String(x.type || '').toUpperCase() === 'WARNING');
-          console.log('Plugin Check: ' + errs.length + ' error(s), ' + warns.length + ' warning(s).');
-          for (const e of errs.slice(0, 50)) { console.log('ERROR ' + (e.code || '') + ' ' + (e.file || '') + ':' + (e.line || '') + ' ' + (e.message || '')); }
-          if (errs.length > 0) { console.error('::error::WordPress Plugin Check reported ' + errs.length + ' error(s).'); process.exit(1); }
-          console.log('Plugin Check passed (no errors).');
-          NODE
+          node tools/parse-plugin-check-output.mjs "$RUNNER_TEMP/pc.json" "$CHECK_EXIT"
