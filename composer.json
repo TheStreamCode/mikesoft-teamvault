@@ -3,6 +3,13 @@
   "description": "Development tooling for Mikesoft TeamVault",
   "type": "project",
   "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Michael Gasperini",
+      "homepage": "https://mikesoft.it",
+      "role": "Developer"
+    }
+  ],
   "scripts": {
     "ci": [
       "@lint",
