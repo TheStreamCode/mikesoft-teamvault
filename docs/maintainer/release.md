@@ -27,10 +27,13 @@ The deploy script already validates plugin version and stable tag alignment.
 3. Add the full release entry to `changelog.txt`.
 4. Update the current plugin version and latest release summary in `README.md`.
 5. Run `composer ci` from `mikesoft-teamvault-src/`.
-6. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
-7. Confirm `.wordpress-org/assets/` contains the expected public assets.
-8. Run the deployment script from the workspace root.
-9. Publish the matching GitHub release with the release ZIP attached.
+6. Run WordPress Plugin Check against the clean runtime payload.
+7. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
+8. Confirm `.wordpress-org/assets/` contains the expected public assets.
+9. Build the release ZIP and verify that repository-only files are absent.
+10. Commit the release, push `main`, and publish the matching GitHub tag and release with the ZIP attached.
+11. Run the WordPress.org deployment script from the workspace root.
+12. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
 
 ## Changelog Policy
 
@@ -51,13 +54,17 @@ For Italian listing copy, translate the plugin readme strings in the plugin's De
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 2.0.8 -Username thestreamcode -SvnPassword "YOUR_SVN_PASSWORD"
+.\deployment\deploy-to-wordpress.ps1 -Version 3.2.3 -Username thestreamcode
 ```
+
+The script never accepts or forwards an SVN password. Authenticate through SVN's interactive prompt or its operating-system credential store so credentials are not exposed in native process arguments.
 
 Useful switches:
 
 - `-SkipCommit` stages the SVN working copy without committing.
 - `-FreshCheckout` recreates the local SVN checkout before staging.
+
+`-FreshCheckout` only removes a dedicated working copy inside the maintainer workspace when an existing `.svn` directory is present. It refuses the workspace root, the source repository, external paths, ordinary directories, symbolic links, and junctions. Release versions are validated as semantic versions before they are used as SVN tag paths.
 
 ## What the Script Does
 
@@ -69,11 +76,14 @@ The deployment script:
 - syncs WordPress.org assets separately
 - refuses to overwrite an already published tag
 
+Generated staging directories under `.deploy/` are disposable and are rebuilt from `mikesoft-teamvault-src/`. Historical `build/` or `.deploy/github-release/` directories are not release inputs and must not be used for publication.
+
 ## Packaging Rules
 
 Repository-only material must stay out of the WordPress.org package, including:
 
 - `README.md`
+- `COPYRIGHT.md`
 - `AGENTS.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`

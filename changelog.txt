@@ -2,6 +2,16 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.3 - 2026-07-18
+- Security: upload validation now requires the detected MIME signature to match the file extension, inline preview requires the same explicit extension/MIME pair, and active markup MIME types are rejected.
+- Security: admin HTML escaping now covers quoted attribute delimiters, audit CSV exports neutralize spreadsheet formulas, and restricted folder names are omitted from exports and breadcrumbs.
+- Reliability: permission and group membership replacement is transactional; file and folder operations verify every metadata write and compensate reversible filesystem changes when persistence fails.
+- Reliability: quota-enabled uploads stop when the advisory lock cannot be acquired, file moves never overwrite an existing destination, and explicitly shared descendants remain discoverable when their parent is hidden.
+- Release tooling: `FreshCheckout` validates the canonical SVN working-copy path and rejects links before removal, release versions are validated before becoming tag paths, the deploy script relies on SVN prompt or credential-store authentication instead of accepting passwords, and historical generated directories are documented as non-release inputs.
+- Fix: new installations once again persist the documented `auto` interface-language default.
+- Metadata: the WordPress plugin list now displays the author as `Mikesoft`.
+- Tests: added regression coverage for MIME matching, contextual escaping, permission transactions, filesystem compensation, export redaction, shared descendants, quota locking, CSV output, and release path guards.
+
 ## 3.2.2 - 2026-07-07
 - Improvement: file-type icons. `getFileIconSvg()` in `admin-app-core.js` now renders recognizable, brand-coloured document badges with the format label (PDF, DOC, XLS, PPT, CSV, TXT, ZIP, AUD, VID, IMG, code, FILE) instead of monochrome line glyphs, and adds the previously missing PowerPoint, audio, video, text, csv, and code types (which fell back to the generic document icon). The badges are self-coloured SVG, so they render consistently in the file grid, the list view, and the details-panel preview.
 

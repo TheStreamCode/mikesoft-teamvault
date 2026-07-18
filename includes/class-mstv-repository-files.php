@@ -206,7 +206,7 @@ class MSTV_Repository_Files
     {
         global $wpdb;
 
-        $wpdb->insert($this->table, [
+        $inserted = $wpdb->insert($this->table, [
             'folder_id' => $data['folder_id'] ?? null,
             'original_name' => $data['original_name'],
             'stored_name' => $data['stored_name'],
@@ -219,7 +219,7 @@ class MSTV_Repository_Files
             'created_by' => $data['created_by'],
         ], ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%d']);
 
-        return (int) $wpdb->insert_id;
+        return $inserted === false ? 0 : (int) $wpdb->insert_id;
     }
 
     public function update(int $id, array $data): bool
@@ -296,6 +296,10 @@ class MSTV_Repository_Files
             )
         );
 
+        if (!is_array($records)) {
+            return -1;
+        }
+
         $updated = 0;
 
         foreach ($records as $record) {
@@ -311,9 +315,11 @@ class MSTV_Repository_Files
                 ['id' => (int) $record->id]
             );
 
-            if ($result !== false) {
-                $updated++;
+            if ($result === false) {
+                return -1;
             }
+
+            $updated++;
         }
 
         return $updated;

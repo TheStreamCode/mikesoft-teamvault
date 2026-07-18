@@ -196,6 +196,27 @@ add_filter('mstv_allowed_extensions', function (array $extensions): array {
 });
 ```
 
+Custom extensions must also declare their accepted detected MIME signatures through
+`mstv_extension_mime_map`; adding an extension alone does not bypass file-type validation.
+
+### `mstv_extension_mime_map`
+
+Filters the extension-to-MIME map used to verify uploaded and reindexed files.
+
+Parameters:
+
+- `array<string, string[]> $mimeMap`
+
+```php
+add_filter('mstv_extension_mime_map', function (array $mimeMap): array {
+    $mimeMap['md'] = ['text/plain', 'text/markdown'];
+    return $mimeMap;
+});
+```
+
+Keep each entry limited to MIME signatures that are valid for that extension. MIME types that
+TeamVault rejects globally cannot be re-enabled through this filter.
+
 ### `mstv_max_file_size`
 
 Filters the maximum file size in bytes.

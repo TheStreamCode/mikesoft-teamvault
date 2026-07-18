@@ -108,12 +108,13 @@ class MSTV_Preview
         $this->stream_preview(
             $fullPath,
             $files->display_name,
+            $files->extension,
             $mimeType ?: (string) $files->mime_type,
             $fileSize > 0 ? $fileSize : (int) $files->file_size
         );
     }
 
-    private function stream_preview(string $path, string $filename, string $mimeType, int $fileSize): void
+    private function stream_preview(string $path, string $filename, string $extension, string $mimeType, int $fileSize): void
     {
         if (!is_readable($path)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
@@ -128,6 +129,15 @@ class MSTV_Preview
         nocache_headers();
 
         $safeMime = sanitize_mime_type(str_replace(["\r", "\n"], '', $mimeType));
+
+        if (!MSTV_Helpers::is_previewable($extension, $safeMime)) {
+            wp_die(
+                esc_html__('Preview is not available for this file type.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 400]
+            );
+        }
+
         header('Content-Type: ' . $safeMime);
         header('Content-Disposition: inline; filename="' . $this->sanitize_filename($filename) . '"');
         header('Cache-Control: private, max-age=0, must-revalidate');

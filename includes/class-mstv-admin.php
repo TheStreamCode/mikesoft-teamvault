@@ -332,7 +332,7 @@ class MSTV_Admin
 
         $interfaceLanguage = isset($_POST['mstv_interface_language'])
             ? sanitize_text_field(wp_unslash($_POST['mstv_interface_language']))
-            : 'en';
+            : 'auto';
 
         $rawAllowedExtensions = isset($_POST['mstv_allowed_extensions'])
             ? sanitize_text_field(wp_unslash($_POST['mstv_allowed_extensions']))
@@ -546,7 +546,7 @@ class MSTV_Admin
             $name = $context['filename'] ?? $context['name'] ?? $context['display_name'] ?? '';
         }
 
-        return [
+        $row = [
             $log->created_at,
             $log->user_login ?? '',
             (int) $log->user_id,
@@ -556,6 +556,21 @@ class MSTV_Admin
             $name,
             $log->ip_address ?? '',
         ];
+
+        return array_map([$this, 'sanitize_csv_cell'], $row);
+    }
+
+    private function sanitize_csv_cell(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        if (preg_match('/^[\x00-\x20]*[=+\-@]/', $value)) {
+            return "'" . $value;
+        }
+
+        return $value;
     }
 
     private function guard_stream_request(): void

@@ -16,6 +16,7 @@ class MSTV_Quota
     private MSTV_Settings $settings;
     private MSTV_Repository_Files $filesRepo;
     private MSTV_Repository_Groups $groupsRepo;
+    private bool $uploadLockHeld = false;
 
     public function __construct(
         MSTV_Settings $settings,
@@ -111,30 +112,38 @@ class MSTV_Quota
      * the check before either row is committed and jointly exceed the quota (TOCTOU).
      * A named advisory lock held across the whole check→insert window closes that gap.
      *
-     * Best-effort: waits up to 10s, then proceeds regardless, so a contended or stuck
-     * lock degrades to the prior behavior instead of failing the upload outright.
+     * Lock acquisition is mandatory while quotas are enabled. Callers must stop the
+     * upload when this method returns false, otherwise the quota check would be racy.
      * No-op when quotas are disabled, to avoid lock overhead on the common path.
      */
-    public function acquire_upload_lock(): void
+    public function acquire_upload_lock(): bool
     {
         if (!$this->is_enabled()) {
-            return;
+            return true;
+        }
+
+        if ($this->uploadLockHeld) {
+            return true;
         }
 
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory MySQL lock; a lock acquisition is inherently uncacheable.
-        $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, %d)', $this->lock_name(), 10));
+        $result = $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, %d)', $this->lock_name(), 10));
+        $this->uploadLockHeld = (string) $result === '1';
+
+        return $this->uploadLockHeld;
     }
 
     public function release_upload_lock(): void
     {
-        if (!$this->is_enabled()) {
+        if (!$this->uploadLockHeld) {
             return;
         }
 
         global $wpdb;
         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory MySQL lock; a lock release is inherently uncacheable.
         $wpdb->get_var($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $this->lock_name()));
+        $this->uploadLockHeld = false;
     }
 
     private function lock_name(): string

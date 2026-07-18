@@ -107,18 +107,71 @@ class MSTV_Helpers
 
     public static function is_previewable(string $extension, string $mimeType): bool
     {
-        $previewable = [
-            'jpg', 'jpeg', 'png', 'gif', 'webp',
-            'pdf',
+        $previewMimeMap = [
+            'jpg' => ['image/jpeg', 'image/pjpeg'],
+            'jpeg' => ['image/jpeg', 'image/pjpeg'],
+            'png' => ['image/png'],
+            'gif' => ['image/gif'],
+            'webp' => ['image/webp'],
+            'pdf' => ['application/pdf'],
         ];
 
-        $previewableMimes = [
-            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-            'application/pdf',
+        $extension = strtolower(trim($extension));
+        $mimeType = self::normalize_mime_type($mimeType);
+
+        return isset($previewMimeMap[$extension])
+            && in_array($mimeType, $previewMimeMap[$extension], true);
+    }
+
+    public static function mime_matches_extension(string $extension, string $mimeType): bool
+    {
+        $mimeMap = [
+            'pdf' => ['application/pdf'],
+            'doc' => ['application/msword', 'application/x-ole-storage', 'application/cdfv2'],
+            'docx' => ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/zip'],
+            'xls' => ['application/vnd.ms-excel', 'application/x-ole-storage', 'application/cdfv2'],
+            'xlsx' => ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/zip'],
+            'ppt' => ['application/vnd.ms-powerpoint', 'application/x-ole-storage', 'application/cdfv2'],
+            'pptx' => ['application/vnd.openxmlformats-officedocument.presentationml.presentation', 'application/zip'],
+            'jpg' => ['image/jpeg', 'image/pjpeg'],
+            'jpeg' => ['image/jpeg', 'image/pjpeg'],
+            'png' => ['image/png'],
+            'gif' => ['image/gif'],
+            'webp' => ['image/webp'],
+            'zip' => ['application/zip', 'application/x-zip', 'application/x-zip-compressed'],
+            'rar' => ['application/vnd.rar', 'application/x-rar', 'application/x-rar-compressed'],
+            '7z' => ['application/x-7z-compressed'],
+            'txt' => ['text/plain'],
+            'csv' => ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'],
+            'rtf' => ['application/rtf', 'text/rtf', 'application/x-rtf'],
+            'mp3' => ['audio/mpeg', 'audio/mp3'],
+            'wav' => ['audio/wav', 'audio/x-wav', 'audio/vnd.wave'],
+            'ogg' => ['audio/ogg', 'application/ogg'],
+            'mp4' => ['video/mp4', 'application/mp4'],
+            'avi' => ['video/x-msvideo', 'video/avi'],
+            'mov' => ['video/quicktime'],
+            'mkv' => ['video/x-matroska'],
         ];
 
-        return in_array(strtolower($extension), $previewable, true) 
-            || in_array(strtolower($mimeType), $previewableMimes, true);
+        /**
+         * Filter the accepted MIME signatures for each TeamVault extension.
+         *
+         * @param array<string, string[]> $mimeMap Extension-to-MIME map.
+         */
+        $mimeMap = apply_filters('mstv_extension_mime_map', $mimeMap);
+        $extension = strtolower(trim($extension));
+        $mimeType = self::normalize_mime_type($mimeType);
+
+        $acceptedMimes = isset($mimeMap[$extension]) && is_array($mimeMap[$extension])
+            ? array_values(array_filter($mimeMap[$extension], 'is_string'))
+            : [];
+
+        return in_array($mimeType, array_map([self::class, 'normalize_mime_type'], $acceptedMimes), true);
+    }
+
+    private static function normalize_mime_type(string $mimeType): string
+    {
+        return strtolower(trim(explode(';', $mimeType, 2)[0]));
     }
 
     public static function human_time_diff_mysql(string $mysqlTime): string

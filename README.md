@@ -11,9 +11,9 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.2.2`.
+Current plugin version: `3.2.3`.
 
-**2,000+ total downloads** on WordPress.org, with dozens of new downloads every day.
+Available directly from WordPress.org and maintained against current WordPress releases.
 
 If TeamVault is useful to you, consider [sponsoring the project on GitHub](https://github.com/sponsors/TheStreamCode) — it is developed and maintained for free, and sponsorships help keep it going.
 
@@ -60,6 +60,8 @@ Governance capabilities (all free, since 2.6):
 - email notifications for upload, download, delete, and access-denied events
 
 ## Latest Release
+
+Version `3.2.3` strengthens upload and inline-preview validation, makes permission and group updates transactional, and keeps file, folder, quota, and export operations consistent when storage or database writes fail. Explicitly shared child folders remain discoverable when a parent is hidden, audit CSV exports are safer to open in spreadsheet applications, new installations again default to the Automatic interface language, and the Plugins screen now identifies the author simply as Mikesoft.
 
 Version `3.2.2` refreshes the **file-type icons** throughout the file manager. PDF, Word, Excel, PowerPoint, CSV, text, archive, audio, video, and image files now show clear, recognizable colored badges with the format label — in the file grid, the list view, and the details preview — replacing the previous monochrome glyphs.
 

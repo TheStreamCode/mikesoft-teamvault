@@ -351,7 +351,7 @@ final class PDMRestControllerTest extends TestCase
         ]);
 
         $quota = $this->getMockBuilder(MSTV_Quota::class)->disableOriginalConstructor()->getMock();
-        $quota->expects(self::once())->method('acquire_upload_lock');
+        $quota->expects(self::once())->method('acquire_upload_lock')->willReturn(true);
         $quota->expects(self::once())->method('check_upload')->willReturn(null);
         $quota->expects(self::once())->method('release_upload_lock');
 
@@ -592,6 +592,41 @@ final class PDMRestControllerTest extends TestCase
         $controller->get_browser_data(new WP_REST_Request());
     }
 
+    public function test_browser_allows_reindex_retry_after_metadata_failure(): void
+    {
+        $GLOBALS['pdm_test_transients'] = [];
+
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_all')->willReturn([]);
+        $folderRepo->method('find_by_parent')->willReturn([]);
+        $folderRepo->method('find_all_with_hierarchy')->willReturn([]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('get_count')->willReturn(0);
+        $filesRepo->method('find_by_folder_paginated')->willReturn([
+            'items' => [], 'pagination' => $this->emptyPagination(),
+        ]);
+
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('has_reindexable_content')->willReturn(true);
+        $storage->expects(self::once())->method('reindex_storage_records')->willReturn([
+            'success' => false, 'error' => 'Database write failed.',
+        ]);
+        $storage->method('get_storage_stats')->willReturn(['plugin_used_bytes' => 0, 'plugin_used_formatted' => '0 B']);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(), $this->createMock(MSTV_Auth::class), $storage,
+            $this->createMock(MSTV_Validator::class), $folderRepo, $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class)
+        );
+
+        $controller->get_browser_data(new WP_REST_Request());
+
+        self::assertFalse(get_transient('mstv_auto_reindex_1'));
+    }
+
     public function test_create_folder_is_forbidden_without_manage_permission(): void
     {
         $permissions = $this->getMockBuilder(MSTV_Permissions::class)
@@ -655,6 +690,74 @@ final class PDMRestControllerTest extends TestCase
         self::assertInstanceOf(WP_REST_Response::class, $response);
         self::assertTrue($response->data['data']['permissions']['view']);
         self::assertTrue($response->data['data']['permissions']['manage']);
+    }
+
+    public function test_browser_promotes_shared_descendant_and_redacts_hidden_breadcrumb_parent(): void
+    {
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_by_parent')->willReturn([]);
+        $folderRepo->method('find_all_with_hierarchy')->willReturn([
+            [
+                'id' => 10,
+                'name' => 'Restricted',
+                'slug' => 'restricted',
+                'parent_id' => null,
+                'has_children' => true,
+                'children' => [[
+                    'id' => 20,
+                    'name' => 'Shared',
+                    'slug' => 'shared',
+                    'parent_id' => 10,
+                    'has_children' => false,
+                    'children' => [],
+                ]],
+            ],
+        ]);
+        $folderRepo->method('get_breadcrumb_data')->willReturn([
+            ['id' => 10, 'name' => 'Restricted'],
+            ['id' => 20, 'name' => 'Shared'],
+        ]);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('get_count')->willReturn(1);
+        $filesRepo->method('find_by_folder_paginated')->willReturn([
+            'items' => [],
+            'pagination' => $this->emptyPagination(),
+        ]);
+
+        $permissions = $this->getMockBuilder(MSTV_Permissions::class)->disableOriginalConstructor()->getMock();
+        $permissions->method('current_user_can')->willReturn(true);
+        $permissions->method('ruled_folder_ids')->willReturn([]);
+        $permissions->method('user_can')->willReturnCallback(
+            static fn ($userId, $folderId, $action): bool => (int) $folderId === 20
+        );
+
+        $auth = $this->createMock(MSTV_Auth::class);
+        $auth->method('get_current_user_id')->willReturn(7);
+        $storage = $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock();
+        $storage->method('get_storage_stats')->willReturn(['plugin_used_bytes' => 0, 'plugin_used_formatted' => '0 B']);
+
+        $controller = new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $auth,
+            $storage,
+            $this->createMock(MSTV_Validator::class),
+            $folderRepo,
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class),
+            $permissions
+        );
+
+        $response = $controller->get_browser_data(new WP_REST_Request(['folder_id' => 20]));
+        $tree = $response->data['data']['folder_tree'];
+
+        self::assertCount(1, $tree);
+        self::assertSame(20, $tree[0]['id']);
+        self::assertNull($tree[0]['parent_id']);
+        self::assertTrue($tree[0]['is_shared_root']);
+        self::assertSame([['id' => 20, 'name' => 'Shared']], $response->data['data']['breadcrumb']);
     }
 
     private function emptyPagination(): array

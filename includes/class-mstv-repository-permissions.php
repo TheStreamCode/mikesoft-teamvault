@@ -67,11 +67,18 @@ class MSTV_Repository_Permissions
      *
      * @param array $rules each: ['principal_type' => 'user'|'group', 'principal_id' => int, 'actions' => string[]]
      */
-    public function set_rules(int $folderId, array $rules, int $createdBy): void
+    public function set_rules(int $folderId, array $rules, int $createdBy): bool
     {
         global $wpdb;
 
-        $wpdb->delete($this->table, ['folder_id' => $folderId], ['%d']);
+        if ($wpdb->query('START TRANSACTION') === false) {
+            return false;
+        }
+
+        if ($wpdb->delete($this->table, ['folder_id' => $folderId], ['%d']) === false) {
+            $wpdb->query('ROLLBACK');
+            return false;
+        }
 
         foreach ($rules as $rule) {
             $principalType = ($rule['principal_type'] ?? '') === 'group' ? 'group' : 'user';
@@ -87,30 +94,42 @@ class MSTV_Repository_Permissions
                     continue;
                 }
 
-                $wpdb->insert($this->table, [
+                $inserted = $wpdb->insert($this->table, [
                     'folder_id' => $folderId,
                     'principal_type' => $principalType,
                     'principal_id' => $principalId,
                     'action' => $action,
                     'created_by' => $createdBy,
                 ], ['%d', '%s', '%d', '%s', '%d']);
+
+                if ($inserted === false) {
+                    $wpdb->query('ROLLBACK');
+                    return false;
+                }
             }
         }
+
+        if ($wpdb->query('COMMIT') === false) {
+            $wpdb->query('ROLLBACK');
+            return false;
+        }
+
+        return true;
     }
 
-    public function delete_for_folder(int $folderId): void
+    public function delete_for_folder(int $folderId): bool
     {
         global $wpdb;
 
-        $wpdb->delete($this->table, ['folder_id' => $folderId], ['%d']);
+        return $wpdb->delete($this->table, ['folder_id' => $folderId], ['%d']) !== false;
     }
 
-    public function delete_for_principal(string $principalType, int $principalId): void
+    public function delete_for_principal(string $principalType, int $principalId): bool
     {
         global $wpdb;
 
         $principalType = $principalType === 'group' ? 'group' : 'user';
-        $wpdb->delete($this->table, ['principal_type' => $principalType, 'principal_id' => $principalId], ['%s', '%d']);
+        return $wpdb->delete($this->table, ['principal_type' => $principalType, 'principal_id' => $principalId], ['%s', '%d']) !== false;
     }
 }
 

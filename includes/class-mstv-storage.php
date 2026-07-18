@@ -100,8 +100,18 @@ class MSTV_Storage
             'files_skipped' => 0,
         ];
 
-        $this->reindex_directory('', $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
+        $reindexed = $this->reindex_directory('', $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
         $this->invalidate_storage_usage_cache();
+
+        if (!$reindexed) {
+            return [
+                'success' => false,
+                'error' => __('Unable to save the changes. Please try again.', 'mikesoft-teamvault'),
+                'folders_created' => $stats['folders_created'],
+                'files_created' => $stats['files_created'],
+                'files_skipped' => $stats['files_skipped'],
+            ];
+        }
 
         return [
             'success' => true,
@@ -304,17 +314,43 @@ class MSTV_Storage
             ];
         }
 
-        $deleted = $this->filesystem->delete_file($files->relative_path);
-        if (!$deleted) {
+        $trashDirectory = '.mstv-trash';
+        if (!$this->filesystem->create_directory($trashDirectory)) {
             return [
                 'success' => false,
                 'error' => __('Unable to delete the files from the filesystem.', 'mikesoft-teamvault'),
             ];
         }
 
-        $this->invalidate_storage_usage_cache();
+        $stagedRelativePath = $trashDirectory . '/' . bin2hex(random_bytes(16)) . '.trash';
+        if (!$this->filesystem->move_file((string) $files->relative_path, $stagedRelativePath)) {
+            return [
+                'success' => false,
+                'error' => __('Unable to delete the files from the filesystem.', 'mikesoft-teamvault'),
+            ];
+        }
 
-        return ['success' => true];
+        return [
+            'success' => true,
+            'original_relative_path' => (string) $files->relative_path,
+            'staged_relative_path' => $stagedRelativePath,
+        ];
+    }
+
+    public function restore_staged_file(string $stagedRelativePath, string $originalRelativePath): bool
+    {
+        return $this->filesystem->move_file($stagedRelativePath, $originalRelativePath);
+    }
+
+    public function finalize_staged_file_deletion(string $stagedRelativePath): bool
+    {
+        $deleted = $this->filesystem->delete_file($stagedRelativePath);
+
+        if ($deleted) {
+            $this->invalidate_storage_usage_cache();
+        }
+
+        return $deleted;
     }
 
     public function move_file(
@@ -510,7 +546,7 @@ class MSTV_Storage
         array &$fileMap,
         int $createdBy,
         array &$stats
-    ): void {
+    ): bool {
         foreach ($this->filesystem->list_directory($relativePath) as $item) {
             if ($this->should_skip_reindex_item($relativePath, $item)) {
                 continue;
@@ -530,11 +566,18 @@ class MSTV_Storage
                         'relative_path' => $itemRelativePath,
                         'created_by' => $createdBy,
                     ]);
+
+                    if ($folderId <= 0) {
+                        return false;
+                    }
+
                     $folderMap[$itemRelativePath] = $folderId;
                     $stats['folders_created']++;
                 }
 
-                $this->reindex_directory($itemRelativePath, $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats);
+                if (!$this->reindex_directory($itemRelativePath, $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats)) {
+                    return false;
+                }
                 continue;
             }
 
@@ -552,7 +595,7 @@ class MSTV_Storage
                 continue;
             }
 
-            $filesRepo->create([
+            $fileId = $filesRepo->create([
                 'folder_id' => $parentPath === '' ? null : ($folderMap[$parentPath] ?? null),
                 'original_name' => $item,
                 'stored_name' => $item,
@@ -565,9 +608,15 @@ class MSTV_Storage
                 'created_by' => $createdBy,
             ]);
 
+            if ($fileId <= 0) {
+                return false;
+            }
+
             $fileMap[$itemRelativePath] = true;
             $stats['files_created']++;
         }
+
+        return true;
     }
 
     private function should_skip_reindex_item(string $relativePath, string $item): bool
@@ -576,7 +625,7 @@ class MSTV_Storage
             return false;
         }
 
-        return in_array($item, ['.htaccess', 'web.config', 'index.php', '.mstv-storage'], true);
+        return in_array($item, ['.htaccess', 'web.config', 'index.php', '.mstv-storage', '.mstv-trash'], true);
     }
 
     private function is_reindexable_file(string $relativePath, string $extension, string $mimeType): bool
@@ -587,7 +636,8 @@ class MSTV_Storage
         }
 
         $validator = new MSTV_Validator($this->settings);
-        if (!$validator->validate_extension($extension) || !$validator->validate_mime_type($mimeType)) {
+        if (!$validator->validate_extension($extension)
+            || !$validator->validate_extension_mime_pair($extension, $mimeType)) {
             return false;
         }
 

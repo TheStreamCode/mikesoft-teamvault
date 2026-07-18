@@ -11,9 +11,9 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.2.2`.
+Version actuelle du plugin : `3.2.3`.
 
-**Plus de 2 000 téléchargements au total** sur WordPress.org, avec des dizaines de nouveaux téléchargements chaque jour.
+Disponible directement sur WordPress.org et maintenu pour les versions actuelles de WordPress.
 
 Si TeamVault vous est utile, envisagez de [parrainer le projet sur GitHub](https://github.com/sponsors/TheStreamCode) — il est développé et maintenu gratuitement, et les parrainages contribuent à le faire vivre.
 
@@ -60,6 +60,8 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
 
 ## Dernière version
+
+La version `3.2.3` renforce la validation des téléversements et des aperçus intégrés, rend transactionnelles les mises à jour des autorisations et des groupes, et préserve la cohérence des opérations sur les fichiers, dossiers, quotas et exports lorsqu'une écriture dans le stockage ou la base de données échoue. Les dossiers enfants partagés explicitement restent accessibles lorsque leur parent est masqué, les exports CSV du journal sont plus sûrs à ouvrir dans un tableur, les nouvelles installations utilisent de nouveau la langue Automatique par défaut et l'écran des extensions identifie désormais l'auteur simplement comme Mikesoft.
 
 La version `3.2.2` renouvelle les **icônes de type de fichier** dans tout le gestionnaire de fichiers : les fichiers PDF, Word, Excel, PowerPoint, CSV, texte, archive, audio, vidéo et image affichent désormais des badges colorés clairs et reconnaissables avec l'étiquette du format — dans la grille, la vue en liste et l'aperçu du panneau de détails — à la place des anciens glyphes monochromes.
 

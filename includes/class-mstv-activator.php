@@ -261,7 +261,7 @@ class MSTV_Activator
     private static function set_default_options(): void
     {
         $defaults = [
-            'mstv_interface_language' => 'en',
+            'mstv_interface_language' => 'auto',
             'mstv_storage_path' => '',
             'mstv_allowed_extensions' => implode(',', [
                 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',

@@ -34,6 +34,7 @@ README.it.md export-ignore
 README.fr.md export-ignore
 README.es.md export-ignore
 README.de.md export-ignore
+COPYRIGHT.md export-ignore
 SECURITY.md export-ignore
 composer.json export-ignore
 composer.lock export-ignore
