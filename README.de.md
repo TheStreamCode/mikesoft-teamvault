@@ -11,9 +11,9 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.2.2`.
+Aktuelle Plugin-Version: `3.2.3`.
 
-**Über 2.000 Downloads insgesamt** auf WordPress.org, mit täglich Dutzenden neuer Downloads.
+Direkt über WordPress.org verfügbar und für aktuelle WordPress-Versionen gepflegt.
 
 Wenn TeamVault für Sie nützlich ist, ziehen Sie in Betracht, [das Projekt auf GitHub zu unterstützen](https://github.com/sponsors/TheStreamCode) — es wird kostenlos entwickelt und gepflegt, und Förderungen helfen, es am Leben zu erhalten.
 
@@ -60,6 +60,8 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
 
 ## Neueste Version
+
+Version `3.2.3` verschärft die Validierung von Uploads und Inline-Vorschauen, führt Berechtigungs- und Gruppenänderungen transaktional aus und hält Datei-, Ordner-, Kontingent- und Exportvorgänge konsistent, wenn ein Schreibvorgang im Speicher oder in der Datenbank fehlschlägt. Explizit freigegebene Unterordner bleiben auffindbar, wenn ihr übergeordneter Ordner ausgeblendet ist, CSV-Exporte des Protokolls lassen sich sicherer in Tabellenkalkulationen öffnen, Neuinstallationen verwenden wieder standardmäßig die automatische Oberflächensprache und der Plugin-Bildschirm nennt als Autor nun einfach Mikesoft.
 
 Version `3.2.2` erneuert die **Dateityp-Symbole** im gesamten Dateimanager: PDF-, Word-, Excel-, PowerPoint-, CSV-, Text-, Archiv-, Audio-, Video- und Bilddateien zeigen jetzt klare, wiedererkennbare farbige Badges mit der Formatbezeichnung — im Raster, in der Listenansicht und in der Vorschau des Detailbereichs — anstelle der bisherigen einfarbigen Glyphen.
 

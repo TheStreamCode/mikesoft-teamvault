@@ -218,6 +218,10 @@ class MSTV_Filesystem
             return false;
         }
 
+        if (file_exists($to)) {
+            return false;
+        }
+
         $toDir = dirname($to);
         if (!is_dir($toDir)) {
             wp_mkdir_p($toDir);
@@ -230,7 +234,7 @@ class MSTV_Filesystem
 
         $wpFilesystem = $this->get_wp_filesystem();
 
-        if ($wpFilesystem && file_exists($from) && $wpFilesystem->move($from, $to, true)) {
+        if ($wpFilesystem && file_exists($from) && $wpFilesystem->move($from, $to, false)) {
             return !file_exists($from) && file_exists($to);
         }
 

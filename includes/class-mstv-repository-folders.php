@@ -76,7 +76,7 @@ class MSTV_Repository_Folders
     {
         global $wpdb;
 
-        $wpdb->insert($this->table, [
+        $inserted = $wpdb->insert($this->table, [
             'parent_id' => $data['parent_id'] ?? null,
             'name' => $data['name'],
             'slug' => $data['slug'],
@@ -86,7 +86,7 @@ class MSTV_Repository_Folders
 
         $this->flush_cache();
 
-        return (int) $wpdb->insert_id;
+        return $inserted === false ? 0 : (int) $wpdb->insert_id;
     }
 
     public function update(int $id, array $data): bool
@@ -186,14 +186,21 @@ class MSTV_Repository_Folders
         return $tree;
     }
 
-    public function update_relative_paths(int $folderId, string $newRelativePath): void
+    public function update_relative_paths(int $folderId, string $newRelativePath): bool
     {
         $children = $this->find_by_parent($folderId);
         foreach ($children as $child) {
             $childNewPath = rtrim($newRelativePath, '/\\') . '/' . $child->slug;
-            $this->update((int) $child->id, ['relative_path' => $childNewPath]);
-            $this->update_relative_paths((int) $child->id, $childNewPath);
+            if (!$this->update((int) $child->id, ['relative_path' => $childNewPath])) {
+                return false;
+            }
+
+            if (!$this->update_relative_paths((int) $child->id, $childNewPath)) {
+                return false;
+            }
         }
+
+        return true;
     }
 
     private function flush_cache(): void

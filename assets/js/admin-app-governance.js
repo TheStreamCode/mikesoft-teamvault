@@ -612,7 +612,7 @@
                         </table>
                     </div>`;
             } catch (e) {
-                body.innerHTML = `<p class="pdm-perm-empty">${e.message || i18n.errorGeneric}</p>`;
+                body.innerHTML = `<p class="pdm-perm-empty">${this.escapeHtml(e.message || i18n.errorGeneric)}</p>`;
             } finally {
                 if (applyBtn) applyBtn.disabled = false;
             }

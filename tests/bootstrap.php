@@ -5,6 +5,9 @@ declare(strict_types=1);
 if ( ! defined( 'ABSPATH' ) ) {
     define( 'ABSPATH', __DIR__ . '/../' );
 }
+if ( ! defined( 'MSTV_VERSION' ) ) {
+    define( 'MSTV_VERSION', 'test' );
+}
 define('MINUTE_IN_SECONDS', 60);
 
 $GLOBALS['pdm_test_options'] = [];
@@ -74,6 +77,14 @@ function sanitize_text_field($text)
     $text = preg_replace('/[\r\n\t\0]+/', '', $text);
 
     return trim(wp_strip_all_tags($text));
+}
+
+function sanitize_title($title)
+{
+    $title = strtolower(sanitize_text_field($title));
+    $title = preg_replace('/[^a-z0-9]+/', '-', $title);
+
+    return trim((string) $title, '-');
 }
 
 function absint($value)

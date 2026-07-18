@@ -141,6 +141,17 @@ class MSTV_Export
             );
         }
 
+        if ($folderId && $this->permissions && !$this->permissions->current_user_can(
+            $folderId,
+            MSTV_Permissions::ACTION_DOWNLOAD
+        )) {
+            wp_die(
+                esc_html__('Access denied.', 'mikesoft-teamvault'),
+                esc_html__('Error', 'mikesoft-teamvault'),
+                ['response' => 403]
+            );
+        }
+
         $zipName = $zipName ?: ($folder ? $this->sanitize_zip_name($folder->name) : 'documents-export');
         $zipPath = $this->create_temp_zip_path($zipName);
 
@@ -194,20 +205,28 @@ class MSTV_Export
 
     private function add_folder_to_zip(ZipArchive $zip, ?int $folderId, string $basePath): void
     {
+        $canDownloadCurrent = !$this->permissions || $this->permissions->current_user_can(
+            $folderId !== null && $folderId > 0 ? $folderId : null,
+            MSTV_Permissions::ACTION_DOWNLOAD
+        );
         $folders = $this->folderRepo->find_by_parent($folderId);
 
         foreach ($folders as $folder) {
-            $folderPath = $this->build_unique_folder_archive_path($basePath, $folder->name);
-            $zip->addEmptyDir($folderPath);
+            $canDownloadFolder = !$this->permissions || $this->permissions->current_user_can(
+                (int) $folder->id,
+                MSTV_Permissions::ACTION_DOWNLOAD
+            );
+            $folderPath = $basePath;
+
+            if ($canDownloadFolder) {
+                $folderPath = $this->build_unique_folder_archive_path($basePath, $folder->name);
+                $zip->addEmptyDir($folderPath);
+            }
+
             $this->add_folder_to_zip($zip, $folder->id, $folderPath);
         }
 
-        // Per-folder download gate: skip a folder's files when the user cannot download
-        // them (e.g. preview-only access), so a parent export never leaks restricted children.
-        if ($this->permissions && !$this->permissions->current_user_can(
-            $folderId !== null && $folderId > 0 ? $folderId : null,
-            MSTV_Permissions::ACTION_DOWNLOAD
-        )) {
+        if (!$canDownloadCurrent) {
             return;
         }
 
@@ -255,6 +274,13 @@ class MSTV_Export
 
         foreach ($folderIds as $folderId) {
             if (!isset($folderMap[$folderId])) {
+                continue;
+            }
+
+            if ($this->permissions && !$this->permissions->current_user_can(
+                $folderId,
+                MSTV_Permissions::ACTION_DOWNLOAD
+            )) {
                 continue;
             }
 

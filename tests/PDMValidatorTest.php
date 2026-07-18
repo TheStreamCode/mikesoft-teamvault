@@ -6,6 +6,23 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMValidatorTest extends TestCase
 {
+    public function test_previewable_extension_requires_matching_mime_type(): void
+    {
+        self::assertTrue(MSTV_Helpers::is_previewable('jpg', 'image/jpeg'));
+        self::assertFalse(MSTV_Helpers::is_previewable('jpg', 'text/html'));
+        self::assertFalse(MSTV_Helpers::is_previewable('txt', 'image/jpeg'));
+    }
+
+    public function test_validator_requires_mime_to_match_extension(): void
+    {
+        $validator = new MSTV_Validator(new MSTV_Settings());
+
+        self::assertTrue($validator->validate_extension_mime_pair('pdf', 'application/pdf'));
+        self::assertTrue($validator->validate_extension_mime_pair('docx', 'application/zip'));
+        self::assertFalse($validator->validate_extension_mime_pair('jpg', 'text/html'));
+        self::assertFalse($validator->validate_extension_mime_pair('pdf', 'image/jpeg'));
+    }
+
     protected function setUp(): void
     {
         $GLOBALS['pdm_test_options'] = [];

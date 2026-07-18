@@ -20,6 +20,8 @@ This guide describes the local repository workflow for maintaining Mikesoft Team
 
 Keep the source checkout separate from the installed runtime folder used by WordPress.
 
+Before testing, confirm that the runtime plugin directory is either a junction to the source checkout or a freshly synchronized release payload. Do not test against historical `build/` or `.deploy/github-release/` directories.
+
 ## Linking the Plugin into WordPress
 
 ### Windows PowerShell
@@ -102,6 +104,10 @@ In any local WordPress install with the plugin active:
 wp plugin install plugin-check --activate
 wp plugin check mikesoft-teamvault
 ```
+
+On Windows with Local, run these commands from the site's **Open Site Shell**. Local adds the
+bundled ImageMagick runtime to `PATH`; invoking its `php.exe` directly without that shell can
+produce a misleading `php_imagick.dll` startup warning even though the extension is installed.
 
 A clean result prints `Success: Checks complete. No errors found.`
 

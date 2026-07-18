@@ -31,6 +31,11 @@ class MSTV_Validator
         'application/x-msdos-program',
         'application/x-msdownload',
         'application/x-dosexec',
+        'text/html',
+        'application/xhtml+xml',
+        'image/svg+xml',
+        'text/xml',
+        'application/xml',
     ];
 
     private const DANGEROUS_PATTERNS = [
@@ -241,6 +246,8 @@ class MSTV_Validator
 
         if (!$this->validate_mime_type($detectedMime)) {
             $errors[] = __('This file type is not allowed.', 'mikesoft-teamvault');
+        } elseif ($extension !== '' && !$this->validate_extension_mime_pair($extension, $detectedMime)) {
+            $errors[] = __('This file type is not allowed.', 'mikesoft-teamvault');
         }
 
         return [
@@ -250,6 +257,12 @@ class MSTV_Validator
             'mime_type' => $detectedMime,
             'size' => $files['size'],
         ];
+    }
+
+    public function validate_extension_mime_pair(string $extension, string $mimeType): bool
+    {
+        return $this->validate_mime_type($mimeType)
+            && MSTV_Helpers::mime_matches_extension($extension, $mimeType);
     }
 
     public function scan_file_content(string $filesPath, ?string $extension = null, ?string $mimeType = null): array

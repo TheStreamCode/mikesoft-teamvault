@@ -20,6 +20,7 @@ class MSTV_REST_Controller
     private MSTV_Logger $logger;
     private ?MSTV_Permissions $permissions;
     private ?MSTV_Quota $quota;
+    private bool $databaseTransactionActive = false;
 
     /** @var array<int,bool> set of folder ids that carry explicit permission rules */
     private array $ruledFolderIds = [];
@@ -81,21 +82,80 @@ class MSTV_REST_Controller
         return $file->folder_id ? (int) $file->folder_id : null;
     }
 
-    /**
-     * Remove governance data attached to a deleted folder: permission rules and any
-     * per-folder notification override. Quotas are principal-based, not folder-based.
-     */
-    private function cleanup_folder_governance(int $folderId): void
+    private function cleanup_folder_permissions(int $folderId): bool
     {
         if (class_exists('MSTV_Repository_Permissions')) {
-            (new MSTV_Repository_Permissions())->delete_for_folder($folderId);
+            if (!(new MSTV_Repository_Permissions())->delete_for_folder($folderId)) {
+                return false;
+            }
         }
 
+        return true;
+    }
+
+    private function cleanup_folder_notification_override(int $folderId): void
+    {
         $folderNotifications = get_option('mstv_folder_notifications', []);
         if (is_array($folderNotifications) && isset($folderNotifications[$folderId])) {
             unset($folderNotifications[$folderId]);
-            update_option('mstv_folder_notifications', $folderNotifications);
+            if (!update_option('mstv_folder_notifications', $folderNotifications)) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- The deleted folder is gone, but a stale inert notification override needs operator attention.
+                error_log('TeamVault: unable to remove the notification override for a deleted folder.');
+            }
         }
+    }
+
+    private function begin_database_transaction(): bool
+    {
+        global $wpdb;
+
+        if (!is_object($wpdb) || !method_exists($wpdb, 'query')) {
+            return true;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control for coordinated custom-table updates.
+        $this->databaseTransactionActive = $wpdb->query('START TRANSACTION') !== false;
+        return $this->databaseTransactionActive;
+    }
+
+    private function commit_database_transaction(): bool
+    {
+        global $wpdb;
+
+        if (!$this->databaseTransactionActive) {
+            return true;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control for coordinated custom-table updates.
+        $committed = $wpdb->query('COMMIT') !== false;
+
+        if (!$committed) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction recovery after a failed commit.
+            $wpdb->query('ROLLBACK');
+        }
+
+        $this->databaseTransactionActive = false;
+        return $committed;
+    }
+
+    private function rollback_database_transaction(): void
+    {
+        global $wpdb;
+
+        if ($this->databaseTransactionActive) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction recovery for coordinated custom-table updates.
+            $wpdb->query('ROLLBACK');
+            $this->databaseTransactionActive = false;
+        }
+    }
+
+    private function database_write_error(): \WP_Error
+    {
+        return new \WP_Error(
+            'database_error',
+            __('Unable to save the changes. Please try again.', 'mikesoft-teamvault'),
+            ['status' => 500]
+        );
     }
 
     public function register_routes(): void
@@ -407,7 +467,9 @@ class MSTV_REST_Controller
         $folders = $this->filter_folders_by_view($this->folderRepo->find_by_parent($folderId));
         $filesPage = $this->filesRepo->find_by_folder_paginated($folderId, $orderBy, $order, $page, $perPage);
         $allFolders = $this->filter_tree_by_view($this->folderRepo->find_all_with_hierarchy());
-        $breadcrumb = $folderId ? $this->folderRepo->get_breadcrumb_data($folderId) : [];
+        $breadcrumb = $folderId
+            ? $this->filter_breadcrumb_by_view($this->folderRepo->get_breadcrumb_data($folderId))
+            : [];
 
         $formattedFolders = array_map([$this, 'format_folder'], $folders);
         $formattedFiles = array_map([$this, 'format_file'], $filesPage['items']);
@@ -488,7 +550,8 @@ class MSTV_REST_Controller
     }
 
     /**
-     * Recursively drop tree nodes the current user cannot view (and their subtree).
+     * Recursively filter tree nodes without hiding explicitly shared descendants.
+     * Descendants of a hidden node are promoted to a redacted shared root.
      */
     private function filter_tree_by_view(array $nodes): array
     {
@@ -500,21 +563,43 @@ class MSTV_REST_Controller
         $filtered = [];
 
         foreach ($nodes as $node) {
+            $children = !empty($node['children'])
+                ? $this->filter_tree_by_view($node['children'])
+                : [];
+
             if (!$this->permissions->user_can($userId, (int) $node['id'], MSTV_Permissions::ACTION_VIEW)) {
+                foreach ($children as $child) {
+                    $child['parent_id'] = null;
+                    $child['is_shared_root'] = true;
+                    $filtered[] = $child;
+                }
                 continue;
             }
 
             $node['has_rules'] = isset($this->ruledFolderIds[(int) $node['id']]);
-
-            if (!empty($node['children'])) {
-                $node['children'] = $this->filter_tree_by_view($node['children']);
-                $node['has_children'] = !empty($node['children']);
-            }
+            $node['children'] = $children;
+            $node['has_children'] = !empty($children);
 
             $filtered[] = $node;
         }
 
         return $filtered;
+    }
+
+    private function filter_breadcrumb_by_view(array $items): array
+    {
+        if (!$this->permissions) {
+            return $items;
+        }
+
+        $userId = $this->auth->get_current_user_id();
+
+        return array_values(array_filter($items, function ($item) use ($userId): bool {
+            $folderId = is_array($item) ? (int) ($item['id'] ?? 0) : (int) ($item->id ?? 0);
+
+            return $folderId > 0
+                && $this->permissions->user_can($userId, $folderId, MSTV_Permissions::ACTION_VIEW);
+        }));
     }
 
     public function create_folder(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
@@ -550,6 +635,11 @@ class MSTV_REST_Controller
             'relative_path' => $result['relative_path'],
             'created_by' => $this->auth->get_current_user_id(),
         ]);
+
+        if ($folderId <= 0) {
+            $this->storage->get_filesystem()->delete_directory((string) $result['relative_path']);
+            return $this->database_write_error();
+        }
 
         $this->logger->log_folder_create($folderId, $name);
 
@@ -591,14 +681,28 @@ class MSTV_REST_Controller
             return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
         }
 
-        $this->folderRepo->update($id, [
+        if (!$this->begin_database_transaction()) {
+            $this->storage->get_filesystem()->rename_directory($result['new_relative_path'], (string) $folder->relative_path);
+            return $this->database_write_error();
+        }
+
+        $folderUpdated = $this->folderRepo->update($id, [
             'name' => $name,
             'slug' => $result['new_slug'],
             'relative_path' => $result['new_relative_path'],
         ]);
 
-        $this->filesRepo->update_relative_paths_for_folder_rename((string) $folder->relative_path, $result['new_relative_path']);
-        $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+        $filesUpdated = $folderUpdated
+            ? $this->filesRepo->update_relative_paths_for_folder_rename((string) $folder->relative_path, $result['new_relative_path'])
+            : -1;
+        $foldersUpdated = $filesUpdated >= 0
+            && $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+
+        if (!$folderUpdated || $filesUpdated < 0 || !$foldersUpdated || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            $this->storage->get_filesystem()->rename_directory($result['new_relative_path'], (string) $folder->relative_path);
+            return $this->database_write_error();
+        }
         $this->logger->log_rename('folder', $id, $folder->name, $name);
 
         if (class_exists('MSTV_Hooks')) {
@@ -624,13 +728,24 @@ class MSTV_REST_Controller
             return $denied;
         }
 
+        if (!$this->begin_database_transaction()) {
+            return $this->database_write_error();
+        }
+
         $result = $this->storage->delete_folder($id, $this->folderRepo, $this->filesRepo);
         if (!$result['success']) {
+            $this->rollback_database_transaction();
             return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
         }
 
-        $this->folderRepo->delete($id);
-        $this->cleanup_folder_governance($id);
+        if (!$this->folderRepo->delete($id)
+            || !$this->cleanup_folder_permissions($id)
+            || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            $this->storage->get_filesystem()->create_directory((string) $folder->relative_path);
+            return $this->database_write_error();
+        }
+        $this->cleanup_folder_notification_override($id);
         $this->logger->log_delete('folder', $id, $folder->name);
 
         if (class_exists('MSTV_Hooks')) {
@@ -667,16 +782,30 @@ class MSTV_REST_Controller
             return new \WP_Error('storage_error', $result['error'], ['status' => 400]);
         }
 
+        if (!$this->begin_database_transaction()) {
+            $this->storage->get_filesystem()->rename_directory($result['new_relative_path'], (string) $folder->relative_path);
+            return $this->database_write_error();
+        }
+
         $oldParentId = $folder->parent_id !== null ? (int) $folder->parent_id : null;
         $oldRelativePath = (string) $folder->relative_path;
 
-        $this->folderRepo->update($id, [
+        $folderUpdated = $this->folderRepo->update($id, [
             'parent_id' => $targetParentId,
             'relative_path' => $result['new_relative_path'],
         ]);
 
-        $this->filesRepo->update_relative_paths_for_folder_rename($oldRelativePath, $result['new_relative_path']);
-        $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+        $filesUpdated = $folderUpdated
+            ? $this->filesRepo->update_relative_paths_for_folder_rename($oldRelativePath, $result['new_relative_path'])
+            : -1;
+        $foldersUpdated = $filesUpdated >= 0
+            && $this->folderRepo->update_relative_paths($id, $result['new_relative_path']);
+
+        if (!$folderUpdated || $filesUpdated < 0 || !$foldersUpdated || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            $this->storage->get_filesystem()->rename_directory($result['new_relative_path'], $oldRelativePath);
+            return $this->database_write_error();
+        }
         $this->logger->log_folder_move($id, $folder->name, $oldParentId, $targetParentId);
 
         if (class_exists('MSTV_Hooks')) {
@@ -834,7 +963,14 @@ class MSTV_REST_Controller
         // cannot both pass the check before either row is committed and jointly exceed
         // the quota. The lock spans check→store→insert and is always released.
         if ($this->quota) {
-            $this->quota->acquire_upload_lock();
+            if (!$this->quota->acquire_upload_lock()) {
+                ob_end_clean();
+                return new \WP_Error(
+                    'quota_lock_unavailable',
+                    __('Unable to save the file.', 'mikesoft-teamvault'),
+                    ['status' => 503]
+                );
+            }
         }
 
         try {
@@ -866,6 +1002,12 @@ class MSTV_REST_Controller
                 'checksum' => $result['checksum'],
                 'created_by' => $this->auth->get_current_user_id(),
             ]);
+
+            if ($fileId <= 0) {
+                $this->storage->get_filesystem()->delete_file((string) $result['relative_path']);
+                ob_end_clean();
+                return $this->database_write_error();
+            }
         } finally {
             if ($this->quota) {
                 $this->quota->release_upload_lock();
@@ -918,7 +1060,9 @@ class MSTV_REST_Controller
         }
 
         $oldName = $files->display_name;
-        $this->filesRepo->rename($id, $displayName);
+        if (!$this->filesRepo->rename($id, $displayName)) {
+            return $this->database_write_error();
+        }
         $this->logger->log_rename('file', $id, $oldName, $displayName);
 
         if (class_exists('MSTV_Hooks')) {
@@ -949,7 +1093,24 @@ class MSTV_REST_Controller
             return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
         }
 
-        $this->filesRepo->delete($id);
+        if (!$this->filesRepo->delete($id)) {
+            $restored = $this->storage->restore_staged_file(
+                (string) $result['staged_relative_path'],
+                (string) $result['original_relative_path']
+            );
+
+            if (!$restored) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Recovery failure requires an operator-visible server diagnostic.
+                error_log('TeamVault: unable to restore a staged file after a database deletion failure.');
+            }
+
+            return $this->database_write_error();
+        }
+
+        if (!$this->storage->finalize_staged_file_deletion((string) $result['staged_relative_path'])) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- The file is logically deleted but private-storage cleanup needs attention.
+            error_log('TeamVault: unable to finalize a staged file deletion.');
+        }
         $this->logger->log_delete('file', $id, $files->display_name);
 
         if (class_exists('MSTV_Hooks')) {
@@ -991,7 +1152,10 @@ class MSTV_REST_Controller
         }
 
         $oldFolderId = $files->folder_id;
-        $this->filesRepo->move_to_folder($id, $targetFolderId, $result['new_relative_path']);
+        if (!$this->filesRepo->move_to_folder($id, $targetFolderId, $result['new_relative_path'])) {
+            $this->storage->get_filesystem()->move_file($result['new_relative_path'], (string) $files->relative_path);
+            return $this->database_write_error();
+        }
         $this->logger->log_move($id, $files->display_name, $oldFolderId, $targetFolderId);
 
         if (class_exists('MSTV_Hooks')) {
@@ -1132,11 +1296,15 @@ class MSTV_REST_Controller
             return;
         }
 
-        $this->storage->reindex_storage_records(
+        $result = $this->storage->reindex_storage_records(
             $this->folderRepo,
             $this->filesRepo,
             $this->auth->get_current_user_id()
         );
+
+        if (empty($result['success'])) {
+            delete_transient($transientKey);
+        }
     }
 
     public function get_settings(\WP_REST_Request $request): \WP_REST_Response

@@ -27,6 +27,15 @@ final class PDMActivatorTest extends TestCase
         self::assertFalse($GLOBALS['pdm_test_roles']['editor']->has_cap('manage_private_documents'));
     }
 
+    public function test_new_install_defaults_interface_language_to_auto(): void
+    {
+        $GLOBALS['pdm_test_options'] = [];
+        $method = new ReflectionMethod(MSTV_Activator::class, 'set_default_options');
+        $method->invoke(null);
+
+        self::assertSame('auto', get_option('mstv_interface_language'));
+    }
+
     public function test_normalize_logs_table_name_accepts_expected_table_only(): void
     {
         self::assertSame(

@@ -13,7 +13,7 @@ final class PDMStorageTest extends TestCase
         $this->storagePath = sys_get_temp_dir() . '/mstv-storage-test-' . bin2hex(random_bytes(6));
         mkdir($this->storagePath, 0777, true);
 
-        file_put_contents($this->storagePath . '/contract.pdf', str_repeat('a', 12));
+        file_put_contents($this->storagePath . '/contract.pdf', "%PDF-1.4\nabc");
         mkdir($this->storagePath . '/nested', 0777, true);
         file_put_contents($this->storagePath . '/nested/brief.txt', str_repeat('b', 5));
 
@@ -128,6 +128,7 @@ final class PDMStorageTest extends TestCase
     public function test_reindex_skips_files_that_violate_upload_policy(): void
     {
         file_put_contents($this->storagePath . '/shell.php', '<?php echo "bad";');
+        file_put_contents($this->storagePath . '/mislabeled.pdf', 'plain text');
 
         $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
         $folderRepo->method('find_all')->willReturn([]);
@@ -147,8 +148,25 @@ final class PDMStorageTest extends TestCase
 
         self::assertTrue($result['success']);
         self::assertSame(2, $result['files_created']);
-        self::assertSame(1, $result['files_skipped']);
+        self::assertSame(2, $result['files_skipped']);
         self::assertSame(['contract.pdf', 'nested/brief.txt'], array_column($createdFiles, 'relative_path'));
+    }
+
+    public function test_reindex_reports_metadata_insert_failure(): void
+    {
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find_all')->willReturn([]);
+        $folderRepo->method('create')->willReturn(1);
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_all')->willReturn([]);
+        $filesRepo->method('create')->willReturn(0);
+
+        $result = (new MSTV_Storage(new MSTV_Settings()))->reindex_storage_records($folderRepo, $filesRepo, 7);
+
+        self::assertFalse($result['success']);
+        self::assertSame('Unable to save the changes. Please try again.', $result['error']);
+        self::assertSame(0, $result['files_created']);
     }
 
     private function deleteDirectory(string $path): void

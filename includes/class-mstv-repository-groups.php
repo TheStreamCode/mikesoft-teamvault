@@ -52,14 +52,14 @@ class MSTV_Repository_Groups
     {
         global $wpdb;
 
-        $wpdb->insert($this->groupsTable, [
+        $inserted = $wpdb->insert($this->groupsTable, [
             'name' => $data['name'],
             'slug' => $data['slug'],
             'description' => $data['description'] ?? '',
             'created_by' => $data['created_by'],
         ], ['%s', '%s', '%s', '%d']);
 
-        return (int) $wpdb->insert_id;
+        return $inserted === false ? 0 : (int) $wpdb->insert_id;
     }
 
     public function update(int $id, array $data): bool
@@ -69,13 +69,28 @@ class MSTV_Repository_Groups
         return $wpdb->update($this->groupsTable, $data, ['id' => $id]) !== false;
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id, bool $manageTransaction = true): bool
     {
         global $wpdb;
 
-        $wpdb->delete($this->membersTable, ['group_id' => $id], ['%d']);
+        if ($manageTransaction && $wpdb->query('START TRANSACTION') === false) {
+            return false;
+        }
 
-        return $wpdb->delete($this->groupsTable, ['id' => $id], ['%d']) !== false;
+        if ($wpdb->delete($this->membersTable, ['group_id' => $id], ['%d']) === false
+            || $wpdb->delete($this->groupsTable, ['id' => $id], ['%d']) === false) {
+            if ($manageTransaction) {
+                $wpdb->query('ROLLBACK');
+            }
+            return false;
+        }
+
+        if ($manageTransaction && $wpdb->query('COMMIT') === false) {
+            $wpdb->query('ROLLBACK');
+            return false;
+        }
+
+        return true;
     }
 
     public function find_members(int $groupId): array
@@ -127,17 +142,38 @@ class MSTV_Repository_Groups
         return $wpdb->delete($this->membersTable, ['group_id' => $groupId, 'user_id' => $userId], ['%d', '%d']) !== false;
     }
 
-    public function set_members(int $groupId, array $userIds): void
+    public function set_members(int $groupId, array $userIds, bool $manageTransaction = true): bool
     {
         global $wpdb;
 
         $userIds = array_values(array_unique(array_filter(array_map('absint', $userIds))));
 
-        $wpdb->delete($this->membersTable, ['group_id' => $groupId], ['%d']);
+        if ($manageTransaction && $wpdb->query('START TRANSACTION') === false) {
+            return false;
+        }
+
+        if ($wpdb->delete($this->membersTable, ['group_id' => $groupId], ['%d']) === false) {
+            if ($manageTransaction) {
+                $wpdb->query('ROLLBACK');
+            }
+            return false;
+        }
 
         foreach ($userIds as $userId) {
-            $this->add_member($groupId, $userId);
+            if (!$this->add_member($groupId, $userId)) {
+                if ($manageTransaction) {
+                    $wpdb->query('ROLLBACK');
+                }
+                return false;
+            }
         }
+
+        if ($manageTransaction && $wpdb->query('COMMIT') === false) {
+            $wpdb->query('ROLLBACK');
+            return false;
+        }
+
+        return true;
     }
 
     public function delete_memberships_for_user(int $userId): void

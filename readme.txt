@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.2.2
+Stable tag: 3.2.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,6 +159,12 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.2.3 =
+* Improved: upload and inline-preview validation now require the detected file type to match the extension and reject active markup formats.
+* Improved: permission, group membership, file, folder, and quota updates now fail consistently when database or storage writes cannot be completed.
+* Fixed: explicitly shared child folders remain visible when their parent is hidden, audit CSV exports neutralize spreadsheet formulas, and restricted folder names stay out of exports and breadcrumbs.
+* Fixed: new installations again default the interface language to Automatic, and the Plugins screen now identifies the author simply as Mikesoft.
+
 = 3.2.2 =
 * Improved: file-type icons across the file manager. PDF, Word, Excel, PowerPoint, CSV, text, archive, audio, video, and image files now show clear, recognizable colored badges with the format label — in the file grid, the list view, and the details preview — replacing the previous monochrome glyphs.
 
@@ -277,6 +283,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.2.3 =
+
+Strengthens file validation and makes permissions, quotas, storage operations, exports, and shared-folder discovery more reliable. No configuration changes are required.
 
 = 3.2.2 =
 

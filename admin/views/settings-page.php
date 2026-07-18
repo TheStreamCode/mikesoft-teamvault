@@ -100,7 +100,7 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                 <label class="pdm-field-label" for="mstv_interface_language">
                     <?php esc_html_e('Interface language', 'mikesoft-teamvault'); ?>
                 </label>
-                <p class="pdm-field-desc"><?php esc_html_e('Choose the plugin interface language. The default language is English.', 'mikesoft-teamvault'); ?></p>
+                <p class="pdm-field-desc"><?php esc_html_e('Choose the plugin interface language. Automatic follows the WordPress language.', 'mikesoft-teamvault'); ?></p>
                 <select id="mstv_interface_language" name="mstv_interface_language" class="pdm-select">
                     <option value="auto" <?php selected($mstv_interface_language, 'auto'); ?>><?php esc_html_e('Automatic (match WordPress language)', 'mikesoft-teamvault'); ?></option>
                     <option value="en" <?php selected($mstv_interface_language, 'en'); ?>><?php esc_html_e('English', 'mikesoft-teamvault'); ?></option>

@@ -144,8 +144,12 @@ final class PDMFolderMoveTest extends TestCase
             ->method('update')
             ->with(5, self::callback(static function (array $data): bool {
                 return $data['parent_id'] === 9 && $data['relative_path'] === 'dest/child';
-            }));
-        $folderRepo->expects(self::once())->method('update_relative_paths')->with(5, 'dest/child');
+            }))
+            ->willReturn(true);
+        $folderRepo->expects(self::once())
+            ->method('update_relative_paths')
+            ->with(5, 'dest/child')
+            ->willReturn(true);
 
         $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
         $filesRepo->expects(self::once())

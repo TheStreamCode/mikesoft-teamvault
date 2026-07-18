@@ -16,6 +16,7 @@ class MSTV_REST_Governance_Controller
     private MSTV_Repository_Folders $folderRepo;
     private MSTV_Permissions $permissions;
     private ?MSTV_Quota $quota;
+    private bool $databaseTransactionActive = false;
 
     public function __construct(
         MSTV_Auth $auth,
@@ -155,6 +156,10 @@ class MSTV_REST_Governance_Controller
 
         $slug = $this->unique_slug(sanitize_title($name));
 
+        if (!$this->begin_database_transaction()) {
+            return $this->database_write_error();
+        }
+
         $groupId = $this->groupsRepo->create([
             'name' => $name,
             'slug' => $slug,
@@ -162,9 +167,16 @@ class MSTV_REST_Governance_Controller
             'created_by' => $this->auth->get_current_user_id(),
         ]);
 
+        if ($groupId <= 0) {
+            $this->rollback_database_transaction();
+            return $this->database_write_error();
+        }
+
         $members = $this->sanitize_ids($request->get_param('members'));
-        if (!empty($members)) {
-            $this->groupsRepo->set_members($groupId, $members);
+        if ((!empty($members) && !$this->groupsRepo->set_members($groupId, $members, false))
+            || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            return $this->database_write_error();
         }
 
         return new \WP_REST_Response(['success' => true, 'data' => ['id' => $groupId]]);
@@ -192,13 +204,22 @@ class MSTV_REST_Governance_Controller
             $data['description'] = sanitize_text_field((string) $description);
         }
 
-        if (!empty($data)) {
-            $this->groupsRepo->update($id, $data);
+        $members = $request->get_param('members');
+        if (empty($data) && !is_array($members)) {
+            return new \WP_REST_Response(['success' => true]);
         }
 
-        $members = $request->get_param('members');
-        if (is_array($members)) {
-            $this->groupsRepo->set_members($id, $this->sanitize_ids($members));
+        if (!$this->begin_database_transaction()) {
+            return $this->database_write_error();
+        }
+
+        $groupUpdated = empty($data) || $this->groupsRepo->update($id, $data);
+        $membersUpdated = !is_array($members)
+            || $this->groupsRepo->set_members($id, $this->sanitize_ids($members), false);
+
+        if (!$groupUpdated || !$membersUpdated || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            return $this->database_write_error();
         }
 
         return new \WP_REST_Response(['success' => true]);
@@ -212,9 +233,21 @@ class MSTV_REST_Governance_Controller
             return new \WP_Error('not_found', __('Group not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
-        $this->groupsRepo->delete($id);
-        $this->permissionsRepo->delete_for_principal('group', $id);
-        $this->remove_group_quota($id);
+        if (!$this->begin_database_transaction()) {
+            return $this->database_write_error();
+        }
+
+        if (!$this->groupsRepo->delete($id, false)
+            || !$this->permissionsRepo->delete_for_principal('group', $id)
+            || !$this->commit_database_transaction()) {
+            $this->rollback_database_transaction();
+            return $this->database_write_error();
+        }
+
+        if (!$this->remove_group_quota($id)) {
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- The deleted group is gone, but a stale inert quota needs operator attention.
+            error_log('TeamVault: unable to remove the quota for a deleted group.');
+        }
 
         return new \WP_REST_Response(['success' => true]);
     }
@@ -227,7 +260,9 @@ class MSTV_REST_Governance_Controller
             return new \WP_Error('not_found', __('Group not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
-        $this->groupsRepo->set_members($id, $this->sanitize_ids($request->get_param('members')));
+        if (!$this->groupsRepo->set_members($id, $this->sanitize_ids($request->get_param('members')))) {
+            return $this->database_write_error();
+        }
 
         return new \WP_REST_Response(['success' => true]);
     }
@@ -500,7 +535,9 @@ class MSTV_REST_Governance_Controller
             }
         }
 
-        $this->permissionsRepo->set_rules($folderId, $rules, $this->auth->get_current_user_id());
+        if (!$this->permissionsRepo->set_rules($folderId, $rules, $this->auth->get_current_user_id())) {
+            return $this->database_write_error();
+        }
 
         return new \WP_REST_Response(['success' => true]);
     }
@@ -513,7 +550,9 @@ class MSTV_REST_Governance_Controller
             return $denied;
         }
 
-        $this->permissionsRepo->delete_for_folder($folderId);
+        if (!$this->permissionsRepo->delete_for_folder($folderId)) {
+            return $this->database_write_error();
+        }
 
         return new \WP_REST_Response(['success' => true]);
     }
@@ -538,6 +577,54 @@ class MSTV_REST_Governance_Controller
         }
 
         return null;
+    }
+
+    private function database_write_error(): \WP_Error
+    {
+        return new \WP_Error(
+            'database_error',
+            __('Unable to save the changes. Please try again.', 'mikesoft-teamvault'),
+            ['status' => 500]
+        );
+    }
+
+    private function begin_database_transaction(): bool
+    {
+        global $wpdb;
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control for coordinated governance updates.
+        $this->databaseTransactionActive = $wpdb->query('START TRANSACTION') !== false;
+        return $this->databaseTransactionActive;
+    }
+
+    private function commit_database_transaction(): bool
+    {
+        global $wpdb;
+
+        if (!$this->databaseTransactionActive) {
+            return true;
+        }
+
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction control for coordinated governance updates.
+        $committed = $wpdb->query('COMMIT') !== false;
+        if (!$committed) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction recovery after a failed commit.
+            $wpdb->query('ROLLBACK');
+        }
+
+        $this->databaseTransactionActive = false;
+        return $committed;
+    }
+
+    private function rollback_database_transaction(): void
+    {
+        global $wpdb;
+
+        if ($this->databaseTransactionActive) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Transaction recovery for coordinated governance updates.
+            $wpdb->query('ROLLBACK');
+            $this->databaseTransactionActive = false;
+        }
     }
 
     private function unique_slug(string $base, int $excludeId = 0): string
@@ -591,14 +678,16 @@ class MSTV_REST_Governance_Controller
         return $user ? $user->display_name : ('#' . $id);
     }
 
-    private function remove_group_quota(int $groupId): void
+    private function remove_group_quota(int $groupId): bool
     {
         $quotas = get_option('mstv_quotas', []);
         $key = 'group:' . $groupId;
 
         if (is_array($quotas) && isset($quotas[$key])) {
             unset($quotas[$key]);
-            update_option('mstv_quotas', $quotas);
+            return update_option('mstv_quotas', $quotas);
         }
+
+        return true;
     }
 }

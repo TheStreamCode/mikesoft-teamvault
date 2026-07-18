@@ -115,4 +115,90 @@ final class PDMQuotaTest extends TestCase
 
         self::assertNull($this->quota([1 => 9999])->check_upload(1, 9999));
     }
+
+    public function test_upload_lock_reports_timeout_and_is_not_released(): void
+    {
+        $wpdb = new class {
+            public int $releaseCalls = 0;
+            public string $prefix = 'wp_';
+
+            public function prepare(string $query, ...$args): array
+            {
+                return ['query' => $query, 'args' => $args];
+            }
+
+            public function get_var(array $prepared): string
+            {
+                if (str_contains($prepared['query'], 'RELEASE_LOCK')) {
+                    $this->releaseCalls++;
+                }
+
+                return '0';
+            }
+        };
+        $GLOBALS['wpdb'] = $wpdb;
+        $quota = $this->quota();
+
+        self::assertFalse($quota->acquire_upload_lock());
+        $quota->release_upload_lock();
+        self::assertSame(0, $wpdb->releaseCalls);
+    }
+
+    public function test_upload_lock_is_released_after_successful_acquisition(): void
+    {
+        $wpdb = new class {
+            public int $releaseCalls = 0;
+            public string $prefix = 'wp_';
+
+            public function prepare(string $query, ...$args): array
+            {
+                return ['query' => $query, 'args' => $args];
+            }
+
+            public function get_var(array $prepared): string
+            {
+                if (str_contains($prepared['query'], 'RELEASE_LOCK')) {
+                    $this->releaseCalls++;
+                }
+
+                return '1';
+            }
+        };
+        $GLOBALS['wpdb'] = $wpdb;
+        $quota = $this->quota();
+
+        self::assertTrue($quota->acquire_upload_lock());
+        $quota->release_upload_lock();
+        self::assertSame(1, $wpdb->releaseCalls);
+    }
+
+    public function test_upload_lock_is_released_even_if_quotas_are_disabled_after_acquisition(): void
+    {
+        $wpdb = new class {
+            public int $releaseCalls = 0;
+            public string $prefix = 'wp_';
+
+            public function prepare(string $query, ...$args): array
+            {
+                return ['query' => $query, 'args' => $args];
+            }
+
+            public function get_var(array $prepared): string
+            {
+                if (str_contains($prepared['query'], 'RELEASE_LOCK')) {
+                    $this->releaseCalls++;
+                }
+
+                return '1';
+            }
+        };
+        $GLOBALS['wpdb'] = $wpdb;
+        $quota = $this->quota();
+
+        self::assertTrue($quota->acquire_upload_lock());
+        $GLOBALS['pdm_test_options']['mstv_quotas_enabled'] = false;
+        $quota->release_upload_lock();
+
+        self::assertSame(1, $wpdb->releaseCalls);
+    }
 }

@@ -38,6 +38,15 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
+    public function testHtmlEscaperAlsoEncodesQuotedAttributeDelimiters(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString("'\"': '&quot;'", $source);
+        self::assertStringContainsString("\"'\": '&#039;'", $source);
+        self::assertStringContainsString('replace(/[&<>"\']/', $source);
+    }
+
     public function testResponsiveViewportHelpersUseSeparateSidebarAndDetailsBreakpoints(): void
     {
         $source = $this->adminAppSource();

@@ -82,6 +82,17 @@ final class PDMFilesystemSecurityTest extends TestCase
         self::assertSame('inside', file_get_contents($this->basePath . '/nested/moved.txt'));
     }
 
+    public function test_move_file_never_overwrites_an_existing_destination(): void
+    {
+        mkdir($this->basePath . '/nested');
+        file_put_contents($this->basePath . '/nested/existing.txt', 'existing');
+        $filesystem = new MSTV_Filesystem($this->basePath);
+
+        self::assertFalse($filesystem->move_file('inside.txt', 'nested/existing.txt'));
+        self::assertSame('inside', file_get_contents($this->basePath . '/inside.txt'));
+        self::assertSame('existing', file_get_contents($this->basePath . '/nested/existing.txt'));
+    }
+
     public function test_list_directory_omits_symlinks(): void
     {
         $linkPath = $this->basePath . '/external-link.txt';
