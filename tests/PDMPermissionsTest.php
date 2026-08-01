@@ -12,6 +12,7 @@ final class FakePermFolderRepo extends MSTV_Repository_Folders
 {
     /** @var array<int,?int> id => parent_id */
     public array $parents = [];
+    public array $findCalls = [];
 
     public function __construct(array $parents = [])
     {
@@ -21,6 +22,8 @@ final class FakePermFolderRepo extends MSTV_Repository_Folders
 
     public function find(int $id): ?object
     {
+        $this->findCalls[$id] = ($this->findCalls[$id] ?? 0) + 1;
+
         if (!array_key_exists($id, $this->parents)) {
             return null;
         }
@@ -33,6 +36,7 @@ final class FakePermRulesRepo extends MSTV_Repository_Permissions
 {
     /** @var array<int,array<array{principal_type:string,principal_id:int,action:string}>> */
     public array $rulesByFolder = [];
+    public array $findCalls = [];
 
     public function __construct(array $rulesByFolder = [])
     {
@@ -41,6 +45,8 @@ final class FakePermRulesRepo extends MSTV_Repository_Permissions
 
     public function find_rules_for_folder(int $folderId): array
     {
+        $this->findCalls[$folderId] = ($this->findCalls[$folderId] ?? 0) + 1;
+
         return array_map(
             static fn($r) => (object) $r,
             $this->rulesByFolder[$folderId] ?? []
@@ -52,6 +58,7 @@ final class FakePermGroupsRepo extends MSTV_Repository_Groups
 {
     /** @var array<int,int[]> userId => groupIds */
     public array $groupsByUser = [];
+    public array $findCalls = [];
 
     public function __construct(array $groupsByUser = [])
     {
@@ -60,6 +67,8 @@ final class FakePermGroupsRepo extends MSTV_Repository_Groups
 
     public function find_groups_for_user(int $userId): array
     {
+        $this->findCalls[$userId] = ($this->findCalls[$userId] ?? 0) + 1;
+
         return $this->groupsByUser[$userId] ?? [];
     }
 }
@@ -221,5 +230,23 @@ final class PDMPermissionsTest extends TestCase
 
         self::assertTrue($engine->user_can(5, null, MSTV_Permissions::ACTION_VIEW));
         self::assertFalse($engine->user_can(5, null, MSTV_Permissions::ACTION_UPLOAD));
+    }
+
+    public function test_shared_ancestors_rules_and_groups_are_loaded_once_per_request(): void
+    {
+        $this->user(5, [MSTV_Capabilities::CAP_MANAGE => true]);
+        $folderRepo = new FakePermFolderRepo([10 => null, 20 => 10, 30 => 10]);
+        $groupsRepo = new FakePermGroupsRepo([5 => [3]]);
+        $rulesRepo = new FakePermRulesRepo([
+            10 => [$this->rule('group', 3, MSTV_Permissions::ACTION_VIEW)],
+        ]);
+        $engine = new MSTV_Permissions($folderRepo, $groupsRepo, $rulesRepo, new MSTV_Settings());
+
+        self::assertTrue($engine->user_can(5, 20, MSTV_Permissions::ACTION_VIEW));
+        self::assertTrue($engine->user_can(5, 30, MSTV_Permissions::ACTION_VIEW));
+
+        self::assertSame(1, $folderRepo->findCalls[10] ?? 0);
+        self::assertSame(1, $rulesRepo->findCalls[10] ?? 0);
+        self::assertSame(1, $groupsRepo->findCalls[5] ?? 0);
     }
 }

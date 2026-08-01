@@ -4,3 +4,4 @@ This directory contains repository documentation that should not be shipped insi
 
 - `developer/` contains extension and integration notes.
 - `maintainer/` contains local development and release workflow notes.
+- `maintainer/security-review.md` records the latest repository security assessment and residual risks.

@@ -37,6 +37,15 @@ class MSTV_Permissions
     /** @var array<string,array<string,bool>> request-scoped cache keyed by "userId:folderId" */
     private array $cache = [];
 
+    /** @var array<int,?int> request-scoped folder parent cache */
+    private array $folderParentCache = [];
+
+    /** @var array<int,object[]> request-scoped explicit rule cache */
+    private array $folderRulesCache = [];
+
+    /** @var array<int,int[]> request-scoped group membership cache */
+    private array $groupIdsCache = [];
+
     public function __construct(
         MSTV_Repository_Folders $folderRepo,
         MSTV_Repository_Groups $groupsRepo,
@@ -125,7 +134,11 @@ class MSTV_Permissions
             return $this->all();
         }
 
-        $groupIds = $this->groupsRepo->find_groups_for_user($userId);
+        if (!array_key_exists($userId, $this->groupIdsCache)) {
+            $this->groupIdsCache[$userId] = $this->groupsRepo->find_groups_for_user($userId);
+        }
+
+        $groupIds = $this->groupIdsCache[$userId];
         $granted = $this->none();
 
         foreach ($rules as $rule) {
@@ -157,7 +170,11 @@ class MSTV_Permissions
     private function nearest_rules(?int $folderId): ?array
     {
         foreach ($this->ancestry_chain($folderId) as $fid) {
-            $rules = $this->permissionsRepo->find_rules_for_folder($fid);
+            if (!array_key_exists($fid, $this->folderRulesCache)) {
+                $this->folderRulesCache[$fid] = $this->permissionsRepo->find_rules_for_folder($fid);
+            }
+
+            $rules = $this->folderRulesCache[$fid];
 
             if (!empty($rules)) {
                 return $rules;
@@ -178,8 +195,15 @@ class MSTV_Permissions
 
         while ($current !== null && $current > 0 && $guard++ < 1000) {
             $chain[] = $current;
-            $folder = $this->folderRepo->find($current);
-            $current = ($folder && $folder->parent_id !== null) ? (int) $folder->parent_id : null;
+
+            if (!array_key_exists($current, $this->folderParentCache)) {
+                $folder = $this->folderRepo->find($current);
+                $this->folderParentCache[$current] = ($folder && $folder->parent_id !== null)
+                    ? (int) $folder->parent_id
+                    : null;
+            }
+
+            $current = $this->folderParentCache[$current];
         }
 
         $chain[] = 0; // virtual root: rules placed on folder 0 apply to root-level items.

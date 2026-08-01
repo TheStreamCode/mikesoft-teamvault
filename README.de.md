@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.2.3`.
+Aktuelle Plugin-Version: `3.2.4`.
 
 Direkt über WordPress.org verfügbar und für aktuelle WordPress-Versionen gepflegt.
 
@@ -60,6 +60,8 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
 
 ## Neueste Version
+
+Version `3.2.4` härtet die Auslieferung privater Dateien, indem No-Cache-Header beibehalten und Speicherpfade aus Diagnoseprotokollen ferngehalten werden. Browserziele sind auf HTTP(S)-URLs gleichen Ursprungs beschränkt, die Spracheinstellung verwendet eine ausdrückliche Positivliste und wiederholte Berechtigungsprüfungen nutzen während einer Anfrage zwischengespeicherte Ordner-, Regel- und Gruppenabfragen. CI, Paketfilter, Sicherheitshinweise sowie Entwicklungs- und Veröffentlichungsdokumentation wurden ebenfalls verbessert. Es sind keine Konfigurationsänderungen erforderlich.
 
 Version `3.2.3` verschärft die Validierung von Uploads und Inline-Vorschauen, führt Berechtigungs- und Gruppenänderungen transaktional aus und hält Datei-, Ordner-, Kontingent- und Exportvorgänge konsistent, wenn ein Schreibvorgang im Speicher oder in der Datenbank fehlschlägt. Explizit freigegebene Unterordner bleiben auffindbar, wenn ihr übergeordneter Ordner ausgeblendet ist, CSV-Exporte des Protokolls lassen sich sicherer in Tabellenkalkulationen öffnen, Neuinstallationen verwenden wieder standardmäßig die automatische Oberflächensprache und der Plugin-Bildschirm nennt als Autor nun einfach Mikesoft.
 

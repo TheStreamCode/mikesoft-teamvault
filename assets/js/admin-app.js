@@ -41,6 +41,20 @@
             return String(text ?? '').replace(/[&<>"']/g, character => characters[character]);
         },
 
+        normalizeSameOriginUrl(value) {
+            try {
+                const url = new URL(String(value || ''), window.location.href);
+
+                if (!['http:', 'https:'].includes(url.protocol) || url.origin !== window.location.origin) {
+                    return '';
+                }
+
+                return url.toString();
+            } catch (error) {
+                return '';
+            }
+        },
+
         formatBytes(bytes) {
             if (bytes === 0) return '0 B';
             const k = 1024;
@@ -101,7 +115,7 @@
                         if (response.success && response.data.length > 0) {
                             userResults.innerHTML = response.data.map(user => `
                                 <div class="pdm-user-result" data-user-id="${user.id}" data-user-login="${this.escapeHtml(user.login)}" data-user-name="${this.escapeHtml(user.display_name)}">
-                                    <div class="pdm-user-result-avatar">${user.display_name.charAt(0).toUpperCase()}</div>
+                                    <div class="pdm-user-result-avatar">${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}</div>
                                     <div class="pdm-user-result-info">
                                         <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>
                                         <div class="pdm-user-result-login">${this.escapeHtml(user.login)}</div>
@@ -303,12 +317,18 @@
         startExport(options = {}) {
             const mode = options.mode || 'all';
             const folderIds = Array.isArray(options.folderIds) ? options.folderIds : [];
+            const actionUrl = this.normalizeSameOriginUrl(mstvConfig.actionUrl);
+
+            if (!actionUrl) {
+                this.showToast(mstvConfig.i18n.errorGeneric, 'error');
+                return;
+            }
 
             this.showToast(mstvConfig.i18n.exporting, 'info');
 
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = mstvConfig.actionUrl;
+            form.action = actionUrl;
             form.target = '_blank';
             form.style.display = 'none';
 

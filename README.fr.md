@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.2.3`.
+Version actuelle du plugin : `3.2.4`.
 
 Disponible directement sur WordPress.org et maintenu pour les versions actuelles de WordPress.
 
@@ -60,6 +60,8 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
 
 ## Dernière version
+
+La version `3.2.4` renforce la distribution des fichiers privés en conservant les en-têtes no-cache et en empêchant l'apparition des chemins de stockage dans les journaux de diagnostic. Les destinations du navigateur sont limitées aux URL HTTP(S) de même origine, le réglage de la langue utilise une liste d'autorisation explicite et les contrôles d'autorisation répétés réutilisent, pendant la requête, les recherches de dossiers, de règles et de groupes. La CI, les filtres de paquetage, les consignes de sécurité et la documentation de développement et de publication ont également été renforcés. Aucune modification de configuration n'est nécessaire.
 
 La version `3.2.3` renforce la validation des téléversements et des aperçus intégrés, rend transactionnelles les mises à jour des autorisations et des groupes, et préserve la cohérence des opérations sur les fichiers, dossiers, quotas et exports lorsqu'une écriture dans le stockage ou la base de données échoue. Les dossiers enfants partagés explicitement restent accessibles lorsque leur parent est masqué, les exports CSV du journal sont plus sûrs à ouvrir dans un tableur, les nouvelles installations utilisent de nouveau la langue Automatique par défaut et l'écran des extensions identifie désormais l'auteur simplement comme Mikesoft.
 

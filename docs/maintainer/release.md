@@ -26,14 +26,16 @@ The deploy script already validates plugin version and stable tag alignment.
 2. Update `Stable tag` and the current release entry in `readme.txt`.
 3. Add the full release entry to `changelog.txt`.
 4. Update the current plugin version and latest release summary in `README.md`.
-5. Run `composer ci` from `mikesoft-teamvault-src/`.
-6. Run WordPress Plugin Check against the clean runtime payload.
-7. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
-8. Confirm `.wordpress-org/assets/` contains the expected public assets.
-9. Build the release ZIP and verify that repository-only files are absent.
-10. Commit the release, push `main`, and publish the matching GitHub tag and release with the ZIP attached.
-11. Run the WordPress.org deployment script from the workspace root.
-12. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
+5. Run `composer validate --strict`, `composer audit --locked`, and `composer ci` from `mikesoft-teamvault-src/`.
+6. Run the JavaScript syntax checks and `node --test tests/plugin-check-output.test.mjs`.
+7. Run `Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1` from the workspace root.
+8. Run WordPress Plugin Check against the clean runtime payload.
+9. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
+10. Confirm `.wordpress-org/assets/` contains the expected public assets.
+11. Build the release ZIP and verify that repository-only files and sensitive local files are absent.
+12. Commit the release, push `main`, and publish the matching GitHub tag and release with the ZIP attached.
+13. Run the WordPress.org deployment script from the workspace root.
+14. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
 
 ## Changelog Policy
 
@@ -54,7 +56,7 @@ For Italian listing copy, translate the plugin readme strings in the plugin's De
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 3.2.3 -Username thestreamcode
+.\deployment\deploy-to-wordpress.ps1 -Version 3.2.4 -Username thestreamcode
 ```
 
 The script never accepts or forwards an SVN password. Authenticate through SVN's interactive prompt or its operating-system credential store so credentials are not exposed in native process arguments.
@@ -89,6 +91,7 @@ Repository-only material must stay out of the WordPress.org package, including:
 - `SECURITY.md`
 - `docs/`
 - tests, vendor source control artifacts, and other development-only files
+- `.env`, `.env.*`, `auth.json`, caches, coverage output, `node_modules/`, and generated ZIP files
 
 ## Branding Asset Rules
 
