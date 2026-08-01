@@ -330,9 +330,11 @@ class MSTV_Admin
             $userIds = array_values(array_filter(array_map('absint', (array) wp_unslash($_POST['pdm_allowed_users']))));
         }
 
-        $interfaceLanguage = isset($_POST['mstv_interface_language'])
-            ? sanitize_text_field(wp_unslash($_POST['mstv_interface_language']))
-            : 'auto';
+        $interfaceLanguage = MSTV_I18n::sanitize_language(
+            isset($_POST['mstv_interface_language'])
+                ? sanitize_text_field(wp_unslash($_POST['mstv_interface_language']))
+                : 'auto'
+        );
 
         $rawAllowedExtensions = isset($_POST['mstv_allowed_extensions'])
             ? sanitize_text_field(wp_unslash($_POST['mstv_allowed_extensions']))

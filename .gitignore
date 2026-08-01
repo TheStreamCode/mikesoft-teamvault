@@ -10,10 +10,17 @@ mikesoft-teamvault-*.zip
 /vendor/
 /node_modules/
 
+# Local environment and credentials
+/.env
+/.env.*
+!/.env.example
+/auth.json
+
 # Tests
 /phpunit.xml*
 /.phpunit.cache/
 /.phpunit.result.cache
+/coverage/
 
 # Local working areas
 /.worktrees/

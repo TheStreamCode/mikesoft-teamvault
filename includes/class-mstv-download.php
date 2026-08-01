@@ -94,7 +94,8 @@ class MSTV_Download
             $fullPath,
             $downloadFilename,
             $mimeType ?: (string) $files->mime_type,
-            $fileSize > 0 ? $fileSize : (int) $files->file_size
+            $fileSize > 0 ? $fileSize : (int) $files->file_size,
+            $fileId
         );
     }
 
@@ -103,11 +104,11 @@ class MSTV_Download
         return MSTV_Helpers::build_safe_download_filename($displayName, $extension);
     }
 
-    private function stream_file(string $path, string $filename, string $mimeType, int $fileSize): void
+    private function stream_file(string $path, string $filename, string $mimeType, int $fileSize, int $fileId): void
     {
         if (!is_readable($path)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
-            error_log('TeamVault: file not readable for download: ' . $path);
+            error_log('TeamVault: file ' . $fileId . ' is not readable for download.');
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -121,15 +122,12 @@ class MSTV_Download
         header('Content-Type: ' . $safeMime);
         header('Content-Disposition: attachment; filename="' . $this->sanitize_filename($filename) . '"');
         header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Expires: 0');
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
 
         if (!$this->stream_binary($path, $fileSize)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
-            error_log('TeamVault: stream failed for download: ' . $path);
+            error_log('TeamVault: stream failed for file ' . $fileId . ' during download.');
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),

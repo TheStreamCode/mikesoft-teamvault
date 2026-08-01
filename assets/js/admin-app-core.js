@@ -548,8 +548,9 @@
             });
 
             this.state.files.forEach(files => {
-                const iconContent = files.exists_on_disk && files.is_image
-                    ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
+                const previewUrl = this.normalizeSameOriginUrl(files.preview_url);
+                const iconContent = files.exists_on_disk && files.is_image && previewUrl
+                    ? `<img src="${this.escapeHtml(previewUrl)}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
                     : this.getFileIconSvg(files.icon);
                 const availabilityBadge = files.exists_on_disk
                     ? ''
@@ -592,8 +593,9 @@
             });
 
             this.state.files.forEach(files => {
-                const iconContent = files.exists_on_disk && files.is_image
-                    ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
+                const previewUrl = this.normalizeSameOriginUrl(files.preview_url);
+                const iconContent = files.exists_on_disk && files.is_image && previewUrl
+                    ? `<img src="${this.escapeHtml(previewUrl)}" alt="${this.escapeHtml(files.display_name)}" loading="lazy">`
                     : this.getFileIconSvg(files.icon, 32);
                 const statusText = files.exists_on_disk ? '' : ` · ${mstvConfig.i18n.fileMissingShort}`;
                 
@@ -857,6 +859,7 @@
 
         renderFileDetails(files) {
             const isAvailable = this.isFileAvailable(files);
+            const previewUrl = this.normalizeSameOriginUrl(files.preview_url);
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-header-top">
@@ -867,8 +870,8 @@
                         </button>
                     </div>
                     <div class="pdm-details-preview">
-                        ${isAvailable && files.is_previewable && files.icon === 'image'
-                            ? `<img src="${files.preview_url}" alt="${this.escapeHtml(files.display_name)}">`
+                        ${isAvailable && files.is_previewable && files.icon === 'image' && previewUrl
+                            ? `<img src="${this.escapeHtml(previewUrl)}" alt="${this.escapeHtml(files.display_name)}">`
                             : this.getFileIconSvg(files.icon, 64)
                         }
                     </div>
@@ -1483,15 +1486,18 @@
             const files = this.state.files.find(f => f.id === fileId);
             if (!files) return;
 
-            if (!this.isFileAvailable(files) || !files.download_url) {
+            const downloadUrl = this.normalizeSameOriginUrl(files.download_url);
+
+            if (!this.isFileAvailable(files) || !downloadUrl) {
                 this.showToast(mstvConfig.i18n.fileMissingDesc, 'warning');
                 return;
             }
 
             const link = document.createElement('a');
-            link.href = files.download_url;
+            link.href = downloadUrl;
             link.download = files.display_name;
             link.target = '_blank';
+            link.rel = 'noopener noreferrer';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1501,7 +1507,9 @@
             const files = this.state.files.find(f => f.id === fileId);
             if (!files || !files.is_previewable) return;
 
-            if (!this.isFileAvailable(files) || !files.preview_url) {
+            const previewUrl = this.normalizeSameOriginUrl(files.preview_url);
+
+            if (!this.isFileAvailable(files) || !previewUrl) {
                 this.showToast(mstvConfig.i18n.fileMissingDesc, 'warning');
                 return;
             }
@@ -1510,14 +1518,14 @@
 
             if (files.mime_type === 'application/pdf') {
                 const iframe = document.createElement('iframe');
-                iframe.src = files.preview_url;
+                iframe.src = previewUrl;
                 iframe.style.width = '100%';
                 iframe.style.height = '100%';
                 iframe.style.border = 'none';
                 this.elements.previewContainer.appendChild(iframe);
             } else {
                 const img = document.createElement('img');
-                img.src = files.preview_url;
+                img.src = previewUrl;
                 img.alt = files.display_name;
                 this.elements.previewContainer.appendChild(img);
             }

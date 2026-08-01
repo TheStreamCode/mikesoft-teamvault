@@ -110,15 +110,16 @@ class MSTV_Preview
             $files->display_name,
             $files->extension,
             $mimeType ?: (string) $files->mime_type,
-            $fileSize > 0 ? $fileSize : (int) $files->file_size
+            $fileSize > 0 ? $fileSize : (int) $files->file_size,
+            $fileId
         );
     }
 
-    private function stream_preview(string $path, string $filename, string $extension, string $mimeType, int $fileSize): void
+    private function stream_preview(string $path, string $filename, string $extension, string $mimeType, int $fileSize, int $fileId): void
     {
         if (!is_readable($path)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
-            error_log('TeamVault: file not readable for preview: ' . $path);
+            error_log('TeamVault: file ' . $fileId . ' is not readable for preview.');
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),
@@ -140,8 +141,6 @@ class MSTV_Preview
 
         header('Content-Type: ' . $safeMime);
         header('Content-Disposition: inline; filename="' . $this->sanitize_filename($filename) . '"');
-        header('Cache-Control: private, max-age=0, must-revalidate');
-        header('Pragma: public');
         header('X-Content-Type-Options: nosniff');
         header('X-Robots-Tag: noindex, nofollow');
 
@@ -151,7 +150,7 @@ class MSTV_Preview
 
         if (!$this->stream_binary($path, $fileSize)) {
             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Server-side diagnostic; not exposed to users.
-            error_log('TeamVault: stream failed for preview: ' . $path);
+            error_log('TeamVault: stream failed for file ' . $fileId . ' during preview.');
             wp_die(
                 esc_html__('Unable to read the file.', 'mikesoft-teamvault'),
                 esc_html__('Error', 'mikesoft-teamvault'),

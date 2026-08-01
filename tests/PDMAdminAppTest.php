@@ -47,6 +47,36 @@ final class PDMAdminAppTest extends TestCase
         self::assertStringContainsString('replace(/[&<>"\']/', $source);
     }
 
+    public function testUserAvatarInitialIsEscapedBeforeHtmlInsertion(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            '${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}',
+            $source
+        );
+        self::assertStringNotContainsString(
+            '>${user.display_name.charAt(0).toUpperCase()}</div>',
+            $source
+        );
+    }
+
+    public function testDownloadAndPreviewUrlsAreRestrictedToSameOriginHttp(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString('normalizeSameOriginUrl(value)', $source);
+        self::assertStringContainsString("!['http:', 'https:'].includes(url.protocol)", $source);
+        self::assertStringContainsString('url.origin !== window.location.origin', $source);
+        self::assertStringContainsString('link.href = downloadUrl;', $source);
+        self::assertStringContainsString('iframe.src = previewUrl;', $source);
+        self::assertStringContainsString('img.src = previewUrl;', $source);
+        self::assertStringContainsString('form.action = actionUrl;', $source);
+        self::assertStringNotContainsString('link.href = files.download_url;', $source);
+        self::assertStringNotContainsString('iframe.src = files.preview_url;', $source);
+        self::assertStringNotContainsString('form.action = mstvConfig.actionUrl;', $source);
+    }
+
     public function testResponsiveViewportHelpersUseSeparateSidebarAndDetailsBreakpoints(): void
     {
         $source = $this->adminAppSource();

@@ -11,10 +11,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   php-lint:
     name: PHP lint (${{ matrix.php }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     strategy:
       fail-fast: false
@@ -28,10 +33,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # 2.37.0
         with:
           php-version: ${{ matrix.php }}
           coverage: none
@@ -42,6 +49,7 @@ jobs:
   unit-tests:
     name: PHPUnit (${{ matrix.php }})
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     strategy:
       fail-fast: false
@@ -53,10 +61,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # 2.37.0
         with:
           php-version: ${{ matrix.php }}
           coverage: none
@@ -71,13 +81,40 @@ jobs:
       - name: Run PHPUnit
         run: composer test
 
-  plugin-check:
-    name: WordPress Plugin Check
+  dependency-audit:
+    name: Composer dependency audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # 2.37.0
+        with:
+          php-version: '8.4'
+          coverage: none
+          tools: composer:v2
+
+      - name: Validate Composer metadata
+        run: composer validate --strict
+
+      - name: Audit locked dependencies
+        run: composer audit --locked --no-interaction
+
+  plugin-check:
+    name: WordPress Plugin Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Build runtime plugin directory
         run: |
@@ -88,10 +125,13 @@ jobs:
             --exclude='.gitignore' \
             --exclude='.gitattributes' \
             --exclude='.editorconfig' \
+            --exclude='.env*' \
             --exclude='.phpunit.cache' \
+            --exclude='.phpunit.result.cache' \
             --exclude='.wordpress-org' \
             --exclude='.worktrees' \
             --exclude='AGENTS.md' \
+            --exclude='auth.json' \
             --exclude='CODE_OF_CONDUCT.md' \
             --exclude='CONTRIBUTING.md' \
             --exclude='README.md' \
@@ -100,11 +140,14 @@ jobs:
             --exclude='composer.json' \
             --exclude='composer.lock' \
             --exclude='docs' \
+            --exclude='coverage' \
+            --exclude='node_modules' \
             --exclude='plugin-check-build' \
             --exclude='screenshots' \
             --exclude='tests' \
             --exclude='tools' \
-            --exclude='vendor'
+            --exclude='vendor' \
+            --exclude='*.zip'
 
       # Plugin Check is run inline instead of via wordpress/plugin-check-action@v1.
       # That action injects plugin-check as a URL plugin in .wp-env.json, which triggers an
@@ -113,22 +156,30 @@ jobs:
       # "Environment not initialized". Installing plugin-check via WP-CLI after wp-env start
       # avoids the broken URL-download path. See WordPress/plugin-check-action#579.
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: '24'
 
       - name: Test Plugin Check output parser
         run: node --test tests/plugin-check-output.test.mjs
 
+      - name: Check JavaScript syntax
+        run: |
+          node --check assets/js/admin-app-core.js
+          node --check assets/js/admin-app-governance.js
+          node --check assets/js/admin-app.js
+          node --check assets/js/admin-notice-dismiss.js
+          node --check tools/parse-plugin-check-output.mjs
+
       - name: Configure wp-env (no URL plugins)
         run: |
           PLUGIN_DIR="$(realpath plugin-check-build/mikesoft-teamvault)"
           printf '{ "core": null, "plugins": [], "mappings": { "wp-content/plugins/mikesoft-teamvault": "%s" } }\n' "$PLUGIN_DIR" > .wp-env.json
           cat .wp-env.json
-          npm -g --no-fund install @wordpress/env
+          npm -g --no-fund install @wordpress/env@11.12.0
 
       - name: Start wp-env
-        uses: nick-fields/retry@v4
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4
         with:
           timeout_minutes: 10
           max_attempts: 3

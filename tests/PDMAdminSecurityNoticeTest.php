@@ -71,4 +71,11 @@ final class PDMAdminSecurityNoticeTest extends TestCase
 
         self::assertSame('', $notice);
     }
+
+    public function test_settings_handler_uses_the_interface_language_allowlist(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../includes/class-mstv-admin.php');
+
+        self::assertStringContainsString('MSTV_I18n::sanitize_language(', $source);
+    }
 }

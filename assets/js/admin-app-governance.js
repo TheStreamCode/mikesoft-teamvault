@@ -620,6 +620,13 @@
 
         downloadAuditCsv() {
             const f = this.reportFilters();
+            const actionUrl = this.normalizeSameOriginUrl(mstvConfig.actionUrl);
+
+            if (!actionUrl) {
+                this.showToast(mstvConfig.i18n.errorGeneric, 'error');
+                return;
+            }
+
             const params = new URLSearchParams({
                 action: 'mstv_export_audit_csv',
                 mstv_audit_csv_nonce: mstvConfig.auditCsvNonce,
@@ -628,7 +635,9 @@
             if (f.date_to) params.set('date_to', f.date_to);
             // The report "action" select is preview/download; pass it through as a log action filter.
             if (f.action) params.set('action', f.action);
-            window.location.href = `${mstvConfig.actionUrl}?${params}`;
+            const url = new URL(actionUrl);
+            params.forEach((value, key) => url.searchParams.set(key, value));
+            window.location.href = url.toString();
         },
 
         // ----- Notifications admin page -------------------------------------

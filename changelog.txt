@@ -2,6 +2,14 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.4 - 2026-08-01
+- Security: private downloads, previews, and ZIP exports now retain WordPress no-cache headers; file-stream diagnostics identify records without disclosing absolute storage paths.
+- Security: browser preview, download, export, and audit destinations are restricted to same-origin HTTP(S) URLs, user-derived avatar text is escaped, and the interface-language setting uses the supported-language allowlist.
+- Performance: repeated permission checks now reuse request-scoped group membership, folder-rule, and parent-folder lookups.
+- Release tooling: CI actions are pinned to immutable commits, Composer dependency auditing and JavaScript syntax checks run automatically, and runtime packaging excludes local environment files, credentials, caches, coverage, Node dependencies, and generated archives.
+- Documentation: expanded configuration, usage, development, build, deployment, security-review, and AI-agent guidance.
+- Tests: added regression coverage for private response caching, path-safe diagnostics, URL handling, settings validation, and permission-query caching.
+
 ## 3.2.3 - 2026-07-18
 - Security: upload validation now requires the detected MIME signature to match the file extension, inline preview requires the same explicit extension/MIME pair, and active markup MIME types are rejected.
 - Security: admin HTML escaping now covers quoted attribute delimiters, audit CSV exports neutralize spreadsheet formulas, and restricted folder names are omitted from exports and breadcrumbs.

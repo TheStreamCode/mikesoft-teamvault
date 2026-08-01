@@ -416,9 +416,6 @@ class MSTV_Export
         header('Content-Disposition: attachment; filename="' . $safeZipName . '.zip"');
         header('Content-Length: ' . $filesize);
         header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Expires: 0');
         header('X-Content-Type-Options: nosniff');
 
         if (!$this->stream_zip_file($zipPath)) {

@@ -7,10 +7,11 @@ This guide describes the local repository workflow for maintaining Mikesoft Team
 ## Prerequisites
 
 - WordPress local environment
-- PHP 8.0 or later
-- Composer dependencies installed from the tracked lockfile
+- PHP 8.0 or later for the plugin; PHP 8.2 or later to run the PHPUnit 11 suite
+- Composer 2 with dependencies installed from the tracked lockfile
+- Node.js 24 for the JavaScript checks and local `wp-env` parity
 - Git
-- PowerShell on Windows for the release tooling in this repository
+- PowerShell with Pester on Windows for the workspace-level release tooling
 
 ## Recommended Workspace Layout
 
@@ -46,11 +47,24 @@ From `mikesoft-teamvault-src/`:
 
 ```powershell
 composer install
+composer validate --strict
+composer audit --locked
 composer lint
 composer test
 ```
 
 Use `composer ci` to run lint and PHPUnit together.
+
+Validate JavaScript without introducing a separate package installation:
+
+```powershell
+node --check assets/js/admin-app-core.js
+node --check assets/js/admin-app-governance.js
+node --check assets/js/admin-app.js
+node --check assets/js/admin-notice-dismiss.js
+node --check tools/parse-plugin-check-output.mjs
+node --test tests/plugin-check-output.test.mjs
+```
 
 ### PHPUnit
 
@@ -82,7 +96,11 @@ If you are working from a standalone clone of `mikesoft-teamvault-src`, these wo
 
 - **PHP lint** on PHP 8.0–8.4 (`tools/lint-php.php`).
 - **PHPUnit** on PHP 8.2–8.4 (`composer test`).
+- **Composer audit** against the locked dependency set.
+- **JavaScript syntax and parser tests** on Node.js 24.
 - **WordPress Plugin Check** against a clean runtime build (development-only files excluded).
+
+Third-party actions are pinned to immutable commit SHAs. Update the accompanying version comment whenever a pin is deliberately refreshed.
 
 ### Why Plugin Check runs inline
 
@@ -110,6 +128,14 @@ bundled ImageMagick runtime to `PATH`; invoking its `php.exe` directly without t
 produce a misleading `php_imagick.dll` startup warning even though the extension is installed.
 
 A clean result prints `Success: Checks complete. No errors found.`
+
+## Configuration and Secrets
+
+TeamVault uses WordPress options for runtime settings and does not require a repository `.env` file. Configure access, retention, interface language, uninstall behavior, and maintenance settings in **TeamVault → Settings**.
+
+Do not store WordPress credentials, salts, Composer authentication, deployment credentials, database exports, or production documents in this repository. `.env*` and `auth.json` are ignored and excluded from release packages; use local host configuration, CI secrets, or the operating-system credential store instead.
+
+An advanced custom storage root is operator-provisioned rather than entered in the settings UI. It must be writable by WordPress, remain inside the intended deployment boundary, and be protected from direct web access.
 
 ## Manual QA Focus
 

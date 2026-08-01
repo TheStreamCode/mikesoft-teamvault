@@ -1,38 +1,78 @@
-# Repository Guidelines
+# AGENTS.md
 
-## Project Structure & Module Organization
+## Scope and Source of Truth
 
-This repository contains the public source for the Mikesoft TeamVault WordPress plugin. The plugin entry point is `mikesoft-teamvault.php`. Runtime PHP classes live in `includes/`, admin views live in `admin/views/`, and browser assets live in `assets/css/` and `assets/js/`. WordPress.org listing assets are kept in `.wordpress-org/assets/` and must not be shipped inside the runtime plugin package. Tests live in `tests/`. Maintainer and developer notes live in `docs/`.
+These instructions apply to the entire `mikesoft-teamvault-src` repository. This repository is the source of truth for the public Mikesoft TeamVault WordPress plugin; generated packages, `.deploy/` directories, installed WordPress copies, and the WordPress.org SVN checkout are outputs, not editable sources.
 
-## Build, Test, and Development Commands
+Before changing code, inspect `git status`, preserve unrelated work, and read the nearest documentation for the area being modified. Do not commit, push, tag, publish a GitHub release, or deploy to WordPress.org unless the user explicitly requests it.
 
-Run commands from the repository root:
+## Repository Map
+
+- `mikesoft-teamvault.php`: plugin bootstrap, metadata, constants, activation hooks.
+- `includes/`: PHP domain, REST, storage, permission, audit, export, and lifecycle classes.
+- `admin/views/`: server-rendered admin views. Escape output at the last responsible point.
+- `assets/js/` and `assets/css/`: admin application behavior and presentation. Preserve the existing `pdm-` compatibility prefix.
+- `tests/`: PHPUnit regression tests and JavaScript parser tests.
+- `tools/`: local validation helpers used by Composer and CI.
+- `.wordpress-org/assets/`: WordPress.org listing assets; these are not runtime plugin files.
+- `docs/`: maintainer and integration documentation; exclude it from release packages.
+
+The full maintainer workspace may also contain sibling `deployment/` and `mikesoft-teamvault-svn/` directories. Their release automation and published history are separate from this Git repository.
+
+## Change Rules
+
+- Preserve existing functionality, public hooks, REST routes, option names, database schema, and response shapes unless a breaking change is explicitly approved.
+- Use the `MSTV_` PHP class prefix and `mstv_` hooks/options. Existing `PDM...Test.php` and `pdm-` UI names are compatibility conventions, not rename targets.
+- Keep changes focused. Do not reformat unrelated files or overwrite concurrent/untracked work.
+- Do not change design, icons, screenshots, logos, or other visual assets unless the task explicitly requires it.
+- Treat public methods and hooks as extension points even when repository-local usage is not apparent.
+- Keep `mikesoft-teamvault.php`, `readme.txt`, `changelog.txt`, and README release metadata aligned when preparing a release. Do not bump versions for unreleased maintenance work unless requested.
+
+## Security Requirements
+
+- Pair every privileged action with the appropriate WordPress capability check and nonce or REST permission callback.
+- Sanitize and validate input at ingress; use strict allowlists for enum-like values. Escape HTML, attributes, URLs, and JavaScript data for the output context.
+- Use `$wpdb->prepare()` for values and explicit allowlists for identifiers or sort directions.
+- Preserve storage-root containment, `realpath` checks, and symlink defenses for every filesystem operation.
+- Serve private documents with no-cache/private semantics. Never log absolute private paths, credentials, tokens, file contents, or personal data.
+- Validate browser destinations before assigning them to `href`, `src`, `window.location`, or `window.open`; application-generated file URLs must remain same-origin HTTP(S).
+- Add a regression test whenever fixing an authorization, validation, path-handling, output-escaping, or data-integrity issue.
+
+## Environment and Secrets
+
+TeamVault runtime configuration is stored in WordPress options; the plugin does not require a repository `.env` file. Advanced custom storage roots are operator-provisioned and must remain writable by WordPress while being protected from direct web access.
+
+Never commit `.env*`, `auth.json`, Composer credentials, WordPress salts, database dumps, API keys, deployment credentials, generated archives, or production data. Keep real secrets in the host, CI secret store, or operating-system credential manager. The `.gitignore` exception for `.env.example` is reserved for a future sanitized template only.
+
+## Validation Commands
+
+Run commands from the repository root. Install exact locked development dependencies first:
 
 ```bash
-composer install
-composer lint
-composer test
+composer install --no-interaction --prefer-dist
+composer validate --strict
+composer audit --locked
 composer ci
+node --check assets/js/admin-app-core.js
+node --check assets/js/admin-app-governance.js
+node --check assets/js/admin-app.js
+node --check assets/js/admin-notice-dismiss.js
+node --check tools/parse-plugin-check-output.mjs
+node --test tests/plugin-check-output.test.mjs
 ```
 
-`composer lint` checks PHP syntax across repository PHP files outside generated dependencies. `composer test` runs the PHPUnit suite with `tests/bootstrap.php`. `composer ci` runs lint and tests together, matching the local verification flow used before releases.
+`composer ci` runs PHP lint and PHPUnit. The plugin supports PHP 8.0+, while PHPUnit 11 requires PHP 8.2+; CI therefore lints PHP 8.0-8.4 and runs unit tests on PHP 8.2-8.4.
 
-GitHub Actions also runs WordPress Plugin Check against a clean runtime build. Keep repository-only files out of that build.
+When the full maintainer workspace is available, also run:
 
-Release packaging and WordPress.org deployment tooling lives in the sibling workspace `deployment/`, not inside this public plugin package.
+```powershell
+Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1
+```
 
-## Coding Style & Naming Conventions
+For release-sensitive changes, run WordPress Plugin Check against a clean filtered payload and perform manual WordPress QA for permissions, whitelist mode, upload, preview, download, rename, move, delete, ZIP export, maintenance tools, and uninstall behavior.
 
-Use PHP 8-compatible syntax and keep WordPress APIs behind explicit capability, nonce, sanitization, and escaping checks. Plugin PHP classes use the `MSTV_` prefix, plugin options and hooks use the `mstv_` prefix, and CSS/JS UI selectors generally use the existing `pdm-` interface prefix. Prefer small focused classes and follow the existing procedural bootstrap pattern.
+## Packaging and Pull Requests
 
-## Testing Guidelines
+Runtime packages must exclude repository metadata, tests, docs, Composer files, CI configuration, `.wordpress-org/`, `.env*`, `auth.json`, caches, coverage, `node_modules`, `vendor`, and prebuilt ZIP files. WordPress.org listing assets are synchronized separately.
 
-Tests use PHPUnit 11 with lightweight WordPress stubs in `tests/bootstrap.php`. Name new tests after the behavior or class under test, following the existing `PDM...Test.php` pattern. Add regression tests for access control, validation, storage behavior, REST responses, translation coverage, and release-sensitive packaging behavior when relevant.
-
-## Commit & Pull Request Guidelines
-
-Keep commit messages short and imperative, for example `Release version 2.0.2` or `Improve GitHub project setup`. Pull requests should include a concise summary, verification commands, screenshots for UI changes, and notes about version/readme alignment when release metadata changes. `main` is protected; changes should pass all required CI checks before merge.
-
-## Security & Release Notes
-
-Do not expose private document paths or user data unnecessarily. Keep `mikesoft-teamvault.php`, `readme.txt`, and `changelog.txt` aligned for every release. Repository-only files such as `README.md`, `docs/`, `tests/`, `.github/`, and Composer tooling must stay out of the WordPress.org package.
+Use concise imperative commit messages. Pull requests should state behavior affected, security or data implications, verification commands and results, manual QA performed, and screenshots only when the UI intentionally changed. Keep CI green and call out any check that could not be run locally.

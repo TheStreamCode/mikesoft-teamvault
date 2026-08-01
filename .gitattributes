@@ -38,3 +38,7 @@ COPYRIGHT.md export-ignore
 SECURITY.md export-ignore
 composer.json export-ignore
 composer.lock export-ignore
+auth.json export-ignore
+.env export-ignore
+.env.* export-ignore
+*.zip export-ignore
