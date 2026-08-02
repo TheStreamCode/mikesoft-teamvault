@@ -61,6 +61,22 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
+    public function testFileExtensionIsEscapedBeforeHtmlInsertion(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "\${this.escapeHtml(String(files.extension || '').toUpperCase())}",
+            $source,
+            'The details panel must escape the stored file extension before HTML interpolation.'
+        );
+        self::assertStringNotContainsString(
+            '${files.extension.toUpperCase()}',
+            $source,
+            'The stored file extension must never reach an HTML sink unescaped.'
+        );
+    }
+
     public function testDownloadAndPreviewUrlsAreRestrictedToSameOriginHttp(): void
     {
         $source = $this->adminAppSource();

@@ -11,7 +11,7 @@
 
 Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
 
-Current plugin version: `3.2.4`.
+Current plugin version: `3.2.5`.
 
 Available directly from WordPress.org and maintained against current WordPress releases.
 
@@ -60,6 +60,8 @@ Governance capabilities (all free, since 2.6):
 - email notifications for upload, download, delete, and access-denied events
 
 ## Latest Release
+
+Version `3.2.5` completes the output-encoding pass started in 3.2.4: the file details panel now escapes the stored file extension before rendering it. The value is already restricted to `[a-z0-9]` by upload and reindex validation, so this is defense in depth rather than a fixed exploit. No configuration changes are required.
 
 Version `3.2.4` hardens private file delivery by preserving no-cache headers and keeping storage paths out of diagnostic logs. Browser destinations are restricted to same-origin HTTP(S), the interface-language setting uses an explicit allowlist, and repeated permission checks reuse request-scoped folder, rule, and group lookups. CI, packaging filters, security guidance, and development/release documentation have also been strengthened. No configuration changes are required.
 

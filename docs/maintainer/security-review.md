@@ -1,4 +1,4 @@
-# Security Review — 2026-08-01
+# Security Review — 2026-08-02
 
 ## Scope and Method
 
@@ -59,6 +59,17 @@ No critical issue was identified. The findings below were fixed in the reviewed 
 - Impact: crafted requests could persist unsupported configuration and create inconsistent fallback behavior.
 - Resolution: the handler now uses `MSTV_I18n::sanitize_language()`. A regression test asserts that the allowlist path is used.
 - False-positive notes: nonce and capability checks already protected the action; this finding concerns validation and configuration integrity.
+
+### SEC-006 — Stored file extension reached an HTML sink unescaped
+
+- Severity: Low
+- Status: Fixed in 3.2.5
+- Location: `assets/js/admin-app-core.js` (file details panel)
+- Rule: `web-frontend-xss-dom-001`
+- Evidence: the details panel interpolated `files.extension` into an `innerHTML` template literal without contextual escaping, while every neighbouring value in the same block used the shared HTML escaper.
+- Impact: no exploit path was demonstrated. `MSTV_Validator::validate_extension()` restricts the stored value to `^[a-z0-9]+$` plus the configured allowlist on both the upload and the storage-reindex paths, so the field cannot currently carry markup. The gap was an inconsistent output boundary, not a confirmed stored XSS.
+- Resolution: the value is coerced to a string and passed through the existing escaper before interpolation. A regression test asserts the escaped form is present and the raw form is absent.
+- False-positive notes: this is the same class as SEC-001 and completes the 3.2.4 output-encoding pass; after this change no server-derived value in the admin JavaScript reaches an HTML sink unescaped.
 
 ## Residual Risks and Recommendations
 
