@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.2.4
+Stable tag: 3.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,6 +159,9 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.2.5 =
+* Security: the file details panel now escapes the stored file extension before rendering it, completing the output-encoding pass started in 3.2.4.
+
 = 3.2.4 =
 * Security: private downloads, previews, and ZIP exports now retain no-cache headers, and diagnostics no longer disclose absolute storage paths.
 * Security: browser file destinations are restricted to same-origin HTTP(S), user-derived avatar text is escaped, and the interface-language setting uses an explicit allowlist.
@@ -289,6 +292,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.2.5 =
+
+Defense-in-depth output encoding for the file details panel. No configuration changes are required.
 
 = 3.2.4 =
 

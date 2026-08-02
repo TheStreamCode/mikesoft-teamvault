@@ -2,6 +2,11 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.5 - 2026-08-02
+- Security: the file details panel escapes the stored file extension before HTML interpolation. The value is already constrained to `[a-z0-9]` by upload and reindex validation, so this is defense in depth rather than a fixed exploit; it closes the last unescaped server-derived value in the admin JavaScript after the 3.2.4 output-encoding pass.
+- Release metadata: aligned the plugin header, stable tag, localized repository documentation, WordPress.org changelog and upgrade notice with the real release date.
+- Tests: added regression coverage for the file-extension output boundary and release metadata consistency.
+
 ## 3.2.4 - 2026-08-01
 - Security: private downloads, previews, and ZIP exports now retain WordPress no-cache headers; file-stream diagnostics identify records without disclosing absolute storage paths.
 - Security: browser preview, download, export, and audit destinations are restricted to same-origin HTTP(S) URLs, user-derived avatar text is escaped, and the interface-language setting uses the supported-language allowlist.

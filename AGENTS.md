@@ -26,7 +26,8 @@ The full maintainer workspace may also contain sibling `deployment/` and `mikeso
 - Keep changes focused. Do not reformat unrelated files or overwrite concurrent/untracked work.
 - Do not change design, icons, screenshots, logos, or other visual assets unless the task explicitly requires it.
 - Treat public methods and hooks as extension points even when repository-local usage is not apparent.
-- Keep `mikesoft-teamvault.php`, `readme.txt`, `changelog.txt`, and README release metadata aligned when preparing a release. Do not bump versions for unreleased maintenance work unless requested.
+- Keep `mikesoft-teamvault.php`, the `readme.txt` stable tag/changelog/upgrade notice, `changelog.txt`, localized README release metadata, and dated security review aligned when preparing a release. Do not bump versions for unreleased maintenance work unless requested.
+- Preserve untracked maintainer strategy documents. They are not public release inputs and must never be staged implicitly.
 
 ## Security Requirements
 
@@ -71,8 +72,8 @@ Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1
 
 For release-sensitive changes, run WordPress Plugin Check against a clean filtered payload and perform manual WordPress QA for permissions, whitelist mode, upload, preview, download, rename, move, delete, ZIP export, maintenance tools, and uninstall behavior.
 
-## Packaging and Pull Requests
+## Packaging and Publication
 
 Runtime packages must exclude repository metadata, tests, docs, Composer files, CI configuration, `.wordpress-org/`, `.env*`, `auth.json`, caches, coverage, `node_modules`, `vendor`, and prebuilt ZIP files. WordPress.org listing assets are synchronized separately.
 
-Use concise imperative commit messages. Pull requests should state behavior affected, security or data implications, verification commands and results, manual QA performed, and screenshots only when the UI intentionally changed. Keep CI green and call out any check that could not be run locally.
+Use concise imperative commit messages. This public source mirror does not accept external pull requests; maintainer changes may land directly on `main` only after the complete release gate passes and the remote branch is still aligned. Never force-push or bypass failed checks. Keep CI green and call out any check that could not be run locally.

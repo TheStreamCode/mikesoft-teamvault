@@ -11,7 +11,7 @@
 
 Spazio di lavoro documentale privato per team, agenzie e reparti operativi WordPress che hanno bisogno di condividere file in modo controllato al di fuori della Libreria Media.
 
-Versione attuale del plugin: `3.2.4`.
+Versione attuale del plugin: `3.2.5`.
 
 Disponibile direttamente su WordPress.org e mantenuto per le versioni correnti di WordPress.
 
@@ -60,6 +60,8 @@ Funzionalità di governance (tutte gratuite, dalla versione 2.6):
 - notifiche email per gli eventi di caricamento, download, eliminazione e accesso negato
 
 ## Ultima versione
+
+La versione `3.2.5` completa il lavoro di codifica dell'output iniziato con la 3.2.4: il pannello dei dettagli file applica ora l'escaping all'estensione memorizzata prima di visualizzarla. Il valore è già limitato a `[a-z0-9]` dalla validazione di upload e reindicizzazione, quindi si tratta di difesa in profondità e non della correzione di una vulnerabilità sfruttabile. Non sono richieste modifiche alla configurazione.
 
 La versione `3.2.4` rafforza la distribuzione dei file privati mantenendo gli header no-cache ed evitando che i percorsi dello storage compaiano nei log diagnostici. Le destinazioni del browser sono limitate a URL HTTP(S) same-origin, l'impostazione della lingua usa una allowlist esplicita e i controlli ripetuti dei permessi riutilizzano, per la durata della richiesta, le query su cartelle, regole e gruppi. Sono stati inoltre migliorati CI, filtri di packaging, indicazioni di sicurezza e documentazione di sviluppo e rilascio. Non sono richieste modifiche alla configurazione.
 

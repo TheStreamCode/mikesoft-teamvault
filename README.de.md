@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.2.4`.
+Aktuelle Plugin-Version: `3.2.5`.
 
 Direkt über WordPress.org verfügbar und für aktuelle WordPress-Versionen gepflegt.
 
@@ -60,6 +60,8 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
 
 ## Neueste Version
+
+Version `3.2.5` schließt die in 3.2.4 begonnene Ausgabekodierung ab: Das Detailfenster maskiert die gespeicherte Dateiendung nun vor der Darstellung. Der Wert ist durch die Upload- und Reindex-Validierung bereits auf `[a-z0-9]` beschränkt; es handelt sich also um Verteidigung in der Tiefe und nicht um die Behebung einer ausnutzbaren Schwachstelle. Konfigurationsänderungen sind nicht erforderlich.
 
 Version `3.2.4` härtet die Auslieferung privater Dateien, indem No-Cache-Header beibehalten und Speicherpfade aus Diagnoseprotokollen ferngehalten werden. Browserziele sind auf HTTP(S)-URLs gleichen Ursprungs beschränkt, die Spracheinstellung verwendet eine ausdrückliche Positivliste und wiederholte Berechtigungsprüfungen nutzen während einer Anfrage zwischengespeicherte Ordner-, Regel- und Gruppenabfragen. CI, Paketfilter, Sicherheitshinweise sowie Entwicklungs- und Veröffentlichungsdokumentation wurden ebenfalls verbessert. Es sind keine Konfigurationsänderungen erforderlich.
 

@@ -892,7 +892,7 @@
                         </div>
                         <div class="pdm-details-row">
                             <span class="pdm-details-row-label">${mstvConfig.i18n.type}</span>
-                            <span class="pdm-details-row-value">.${files.extension.toUpperCase()}</span>
+                            <span class="pdm-details-row-value">.${this.escapeHtml(String(files.extension || '').toUpperCase())}</span>
                         </div>
                         <div class="pdm-details-row">
                             <span class="pdm-details-row-label">${mstvConfig.i18n.size}</span>

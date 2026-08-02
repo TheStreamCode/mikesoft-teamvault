@@ -15,8 +15,10 @@ Before releasing, confirm these values match:
 - plugin header version in `mikesoft-teamvault.php`
 - `MSTV_VERSION` constant in `mikesoft-teamvault.php`
 - `Stable tag` in `readme.txt`
+- current release and upgrade notice in `readme.txt`
 - current release entry in `changelog.txt`
-- current plugin version in `README.md`
+- current plugin version in every localized `README*.md`
+- real review/release date in `docs/maintainer/security-review.md` and `changelog.txt`
 
 The deploy script already validates plugin version and stable tag alignment.
 
@@ -25,7 +27,7 @@ The deploy script already validates plugin version and stable tag alignment.
 1. Update the version in `mikesoft-teamvault.php`.
 2. Update `Stable tag` and the current release entry in `readme.txt`.
 3. Add the full release entry to `changelog.txt`.
-4. Update the current plugin version and latest release summary in `README.md`.
+4. Update the current plugin version and latest release summary in every localized `README*.md`.
 5. Run `composer validate --strict`, `composer audit --locked`, and `composer ci` from `mikesoft-teamvault-src/`.
 6. Run the JavaScript syntax checks and `node --test tests/plugin-check-output.test.mjs`.
 7. Run `Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1` from the workspace root.
@@ -56,7 +58,7 @@ For Italian listing copy, translate the plugin readme strings in the plugin's De
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 3.2.4 -Username thestreamcode
+.\deployment\deploy-to-wordpress.ps1 -Version 3.2.5 -Username thestreamcode
 ```
 
 The script never accepts or forwards an SVN password. Authenticate through SVN's interactive prompt or its operating-system credential store so credentials are not exposed in native process arguments.
@@ -101,5 +103,7 @@ Repository-only material must stay out of the WordPress.org package, including:
 - Keep `assets/logo-teamvault.svg` reserved for the plugin admin experience.
 
 The deploy script copies runtime plugin files and WordPress.org listing assets from separate source locations.
+
+Build the GitHub ZIP from the committed release revision with `git archive`. Before publishing, compare its runtime file list and per-file hashes with the filtered payload staged for WordPress.org; the two plugin payloads must match even if ZIP container metadata differs.
 
 In the full maintainer workspace, the filter logic lives in the sibling `deployment/DeployWordPressOrg.psm1` module and is covered by `deployment/DeployWordPressOrg.Tests.ps1`.

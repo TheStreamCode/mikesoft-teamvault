@@ -11,7 +11,7 @@
 
 Espacio de trabajo de documentos privados para equipos, agencias y operaciones de WordPress que necesitan compartir archivos de forma controlada fuera de la Biblioteca de medios.
 
-Versión actual del plugin: `3.2.4`.
+Versión actual del plugin: `3.2.5`.
 
 Disponible directamente en WordPress.org y mantenido para las versiones actuales de WordPress.
 
@@ -60,6 +60,8 @@ Capacidades de gobernanza (todas gratuitas, desde la versión 2.6):
 - notificaciones por correo electrónico para los eventos de subida, descarga, eliminación y acceso denegado
 
 ## Última versión
+
+La versión `3.2.5` completa el trabajo de codificación de salida iniciado en la 3.2.4: el panel de detalles del archivo ahora escapa la extensión almacenada antes de mostrarla. El valor ya está limitado a `[a-z0-9]` por la validación de subida y reindexación, por lo que se trata de defensa en profundidad y no de la corrección de una vulnerabilidad explotable. No se requieren cambios de configuración.
 
 La versión `3.2.4` refuerza la entrega de archivos privados al conservar las cabeceras no-cache y evitar que las rutas de almacenamiento aparezcan en los registros de diagnóstico. Los destinos del navegador se limitan a URL HTTP(S) del mismo origen, el ajuste de idioma utiliza una lista permitida explícita y las comprobaciones repetidas de permisos reutilizan durante la petición las consultas de carpetas, reglas y grupos. También se han reforzado la CI, los filtros de empaquetado, las indicaciones de seguridad y la documentación de desarrollo y publicación. No se requieren cambios de configuración.
 
