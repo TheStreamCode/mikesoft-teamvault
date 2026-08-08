@@ -76,4 +76,4 @@ For release-sensitive changes, run WordPress Plugin Check against a clean filter
 
 Runtime packages must exclude repository metadata, tests, docs, Composer files, CI configuration, `.wordpress-org/`, `.env*`, `auth.json`, caches, coverage, `node_modules`, `vendor`, and prebuilt ZIP files. WordPress.org listing assets are synchronized separately.
 
-Use concise imperative commit messages. This public source mirror does not accept external pull requests; maintainer changes may land directly on `main` only after the complete release gate passes and the remote branch is still aligned. Never force-push or bypass failed checks. Keep CI green and call out any check that could not be run locally.
+Use concise imperative commit messages. This public source mirror does not accept external pull requests; maintainer changes use internal pull requests so protected-branch checks and CodeQL complete before merge. Never force-push, bypass failed checks, or disable protection to land a release. Keep CI green and call out any check that could not be run locally.

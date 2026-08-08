@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.2.5`.
+Version actuelle du plugin : `3.2.6`.
 
 Disponible directement sur WordPress.org et maintenu pour les versions actuelles de WordPress.
 
@@ -60,6 +60,8 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
 
 ## Dernière version
+
+La version `3.2.6` renforce le confinement des téléversements et la fiabilité des exports ZIP, corrige des cas limites dans les réglages de gouvernance REST et l'activation multisite, et maintient les actions de la barre d'outils accessibles dans les dispositions de bureau WordPress courantes. Elle améliore également la présentation et la gouvernance du dépôt. Aucune modification de configuration n'est nécessaire.
 
 La version `3.2.5` achève le travail d'encodage des sorties entamé en 3.2.4 : le panneau de détails du fichier échappe désormais l'extension enregistrée avant de l'afficher. Cette valeur est déjà limitée à `[a-z0-9]` par la validation de téléversement et de réindexation ; il s'agit donc d'une défense en profondeur et non de la correction d'une faille exploitable. Aucune modification de configuration n'est nécessaire.
 

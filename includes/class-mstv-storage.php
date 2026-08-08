@@ -163,9 +163,9 @@ class MSTV_Storage
         
         $folderPath = $this->get_folder_path($folderId, $folderRepo);
         $relativePath = $this->build_file_path($folderPath, $storedName);
-        $fullPath = $this->filesystem->resolve($relativePath);
+        $fullPath = $this->filesystem->get_verified_path($relativePath, true);
 
-        if (!$this->filesystem->is_path_within_base($fullPath)) {
+        if ($fullPath === false) {
             return [
                 'success' => false,
                 'error' => __('Invalid destination path.', 'mikesoft-teamvault'),

@@ -57,7 +57,9 @@
         },
 
         isDetailsDrawerViewport() {
-            return window.innerWidth <= 1200;
+            // WordPress keeps a 160px admin menu beside the plugin. Switch the details
+            // panel to a drawer before that reduced content viewport can cover toolbar actions.
+            return window.innerWidth <= 1360;
         },
 
         cacheElements() {

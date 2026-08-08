@@ -169,6 +169,34 @@ final class PDMStorageTest extends TestCase
         self::assertSame(0, $result['files_created']);
     }
 
+    public function test_upload_rejects_a_destination_that_fails_verified_path_checks(): void
+    {
+        $filesystem = $this->createMock(MSTV_Filesystem::class);
+        $filesystem->method('get_base_path')->willReturn($this->storagePath);
+        $filesystem->method('is_writable')->willReturn(true);
+        $filesystem->expects(self::once())
+            ->method('get_verified_path')
+            ->with(self::callback(static fn (string $path): bool => str_starts_with($path, 'linked/')), true)
+            ->willReturn(false);
+        $filesystem->expects(self::never())->method('resolve');
+
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('find')->with(9)->willReturn((object) ['relative_path' => 'linked']);
+
+        $storage = new MSTV_Storage(new MSTV_Settings());
+        $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
+        $filesystemProperty->setAccessible(true);
+        $filesystemProperty->setValue($storage, $filesystem);
+
+        $result = $storage->store_uploaded_file([
+            'name' => 'contract.pdf',
+            'tmp_name' => $this->storagePath . '/contract.pdf',
+        ], 9, $folderRepo);
+
+        self::assertFalse($result['success']);
+        self::assertSame('Invalid destination path.', $result['error']);
+    }
+
     private function deleteDirectory(string $path): void
     {
         if (!is_dir($path)) {

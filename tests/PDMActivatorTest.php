@@ -11,6 +11,7 @@ final class PDMActivatorTest extends TestCase
         parent::setUp();
 
         $GLOBALS['pdm_test_roles'] = [];
+        $GLOBALS['pdm_test_network_active_plugins'] = [];
     }
 
     public function test_register_capabilities_grants_document_access_only_to_administrators_by_default(): void
@@ -79,5 +80,17 @@ final class PDMActivatorTest extends TestCase
                 'where' => ['target_type' => 'files'],
             ],
         ], $wpdb->updates);
+    }
+
+    public function test_new_site_initialization_requires_network_activation(): void
+    {
+        $bootstrap = MSTV_Bootstrap::instance();
+        $method = new ReflectionMethod(MSTV_Bootstrap::class, 'is_network_active');
+
+        self::assertFalse($method->invoke($bootstrap));
+
+        $GLOBALS['pdm_test_network_active_plugins'][MSTV_PLUGIN_BASENAME] = true;
+
+        self::assertTrue($method->invoke($bootstrap));
     }
 }

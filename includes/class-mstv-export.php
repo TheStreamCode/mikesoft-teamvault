@@ -14,6 +14,7 @@ class MSTV_Export
     private string $currentZipPath = '';
     private int $currentFileCount = 0;
     private array $reservedArchivePaths = [];
+    private array $visitedFolderIds = [];
 
     public function __construct(
         MSTV_Storage $storage,
@@ -68,6 +69,7 @@ class MSTV_Export
         $this->currentZipPath = $zipPath;
         $this->currentFileCount = 0;
         $this->reservedArchivePaths = [];
+        $this->visitedFolderIds = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
         if (class_exists('MSTV_Hooks')) {
@@ -91,12 +93,16 @@ class MSTV_Export
 
             foreach ($selectedFolders as $folder) {
                 $folderPath = $this->build_unique_zip_path($folder->name, $usedPaths);
-                $zip->addEmptyDir($folderPath);
+                if (!$zip->addEmptyDir($folderPath)) {
+                    throw new \RuntimeException('Unable to add folder to export');
+                }
                 $this->add_folder_to_zip($zip, (int) $folder->id, $folderPath);
             }
 
-            $zip->close();
-        } catch (\Exception $e) {
+            if (!$zip->close()) {
+                throw new \RuntimeException('Unable to finalize export');
+            }
+        } catch (\Throwable $e) {
             $zip->close();
             wp_delete_file($zipPath);
             wp_die(
@@ -158,6 +164,7 @@ class MSTV_Export
         $this->currentZipPath = $zipPath;
         $this->currentFileCount = 0;
         $this->reservedArchivePaths = [];
+        $this->visitedFolderIds = [];
         register_shutdown_function([$this, 'cleanup_zip']);
 
         if (class_exists('MSTV_Hooks')) {
@@ -178,8 +185,10 @@ class MSTV_Export
 
         try {
             $this->add_folder_to_zip($zip, $folderId, '');
-            $zip->close();
-        } catch (\Exception $e) {
+            if (!$zip->close()) {
+                throw new \RuntimeException('Unable to finalize export');
+            }
+        } catch (\Throwable $e) {
             $zip->close();
             wp_delete_file($zipPath);
             wp_die(
@@ -205,6 +214,14 @@ class MSTV_Export
 
     private function add_folder_to_zip(ZipArchive $zip, ?int $folderId, string $basePath): void
     {
+        if ($folderId !== null) {
+            if (isset($this->visitedFolderIds[$folderId])) {
+                return;
+            }
+
+            $this->visitedFolderIds[$folderId] = true;
+        }
+
         $canDownloadCurrent = !$this->permissions || $this->permissions->current_user_can(
             $folderId !== null && $folderId > 0 ? $folderId : null,
             MSTV_Permissions::ACTION_DOWNLOAD
@@ -212,18 +229,26 @@ class MSTV_Export
         $folders = $this->folderRepo->find_by_parent($folderId);
 
         foreach ($folders as $folder) {
+            $childFolderId = (int) $folder->id;
+
+            if (isset($this->visitedFolderIds[$childFolderId])) {
+                continue;
+            }
+
             $canDownloadFolder = !$this->permissions || $this->permissions->current_user_can(
-                (int) $folder->id,
+                $childFolderId,
                 MSTV_Permissions::ACTION_DOWNLOAD
             );
             $folderPath = $basePath;
 
             if ($canDownloadFolder) {
                 $folderPath = $this->build_unique_folder_archive_path($basePath, $folder->name);
-                $zip->addEmptyDir($folderPath);
+                if (!$zip->addEmptyDir($folderPath)) {
+                    throw new \RuntimeException('Unable to add folder to export');
+                }
             }
 
-            $this->add_folder_to_zip($zip, $folder->id, $folderPath);
+            $this->add_folder_to_zip($zip, $childFolderId, $folderPath);
         }
 
         if (!$canDownloadCurrent) {
@@ -241,7 +266,9 @@ class MSTV_Export
 
             if ($filesPath !== false && file_exists($filesPath) && is_readable($filesPath)) {
                 $zipPath = $this->build_unique_file_archive_path($basePath, $files);
-                $zip->addFile($filesPath, $zipPath);
+                if (!$zip->addFile($filesPath, $zipPath)) {
+                    throw new \RuntimeException('Unable to add file to export');
+                }
                 $this->currentFileCount++;
             }
         }
