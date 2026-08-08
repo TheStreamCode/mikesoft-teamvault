@@ -166,11 +166,21 @@ final class MSTV_Bootstrap
 
     public function initialize_site(\WP_Site $newSite): void
     {
-        if (empty($newSite->blog_id)) {
+        if (empty($newSite->blog_id) || !$this->is_network_active()) {
             return;
         }
 
         MSTV_Activator::initialize_site((int) $newSite->blog_id);
+    }
+
+    private function is_network_active(): bool
+    {
+        if (!function_exists('is_plugin_active_for_network')) {
+            require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        return function_exists('is_plugin_active_for_network')
+            && is_plugin_active_for_network(MSTV_PLUGIN_BASENAME);
     }
 
     /**

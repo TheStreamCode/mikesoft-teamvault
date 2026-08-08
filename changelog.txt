@@ -2,6 +2,15 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.2.6 - 2026-08-08
+- Security: upload destinations now pass through the shared storage-boundary and intermediate-symlink verifier before any destination stream is opened.
+- Reliability: ZIP exports check directory, file, and finalization results, clean up on any throwable failure, and bound recursive traversal when corrupt folder metadata contains a cycle.
+- Governance: REST boolean strings are normalized with WordPress semantics, and group updates reject names that become empty after sanitization.
+- Multisite: new-site initialization runs only when TeamVault is active network-wide, preventing site-local activation from provisioning unrelated sites.
+- Admin UI: the details panel becomes an off-canvas drawer at 1360px so the WordPress desktop admin menu cannot make it cover Upload or other toolbar actions.
+- Repository: the GitHub README now leads with the product, installation, security, and visual proof; repository metadata, dependency automation, citation data, and vulnerability-reporting guidance were refreshed.
+- Tests: added regression coverage for verified upload paths, governance normalization, multisite activation scope, corrupt export cycles, and the responsive details-panel threshold.
+
 ## 3.2.5 - 2026-08-02
 - Security: the file details panel escapes the stored file extension before HTML interpolation. The value is already constrained to `[a-z0-9]` by upload and reindex validation, so this is defense in depth rather than a fixed exploit; it closes the last unescaped server-derived value in the admin JavaScript after the 3.2.4 output-encoding pass.
 - Release metadata: aligned the plugin header, stable tag, localized repository documentation, WordPress.org changelog and upgrade notice with the real release date.

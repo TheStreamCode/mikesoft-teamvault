@@ -195,8 +195,14 @@ class MSTV_REST_Governance_Controller
 
         $name = $request->get_param('name');
         if (is_string($name) && $name !== '') {
-            $data['name'] = sanitize_text_field($name);
-            $data['slug'] = $this->unique_slug(sanitize_title($name), $id);
+            $sanitizedName = sanitize_text_field($name);
+
+            if ($sanitizedName === '') {
+                return new \WP_Error('validation_error', __('The group name cannot be empty.', 'mikesoft-teamvault'), ['status' => 400]);
+            }
+
+            $data['name'] = $sanitizedName;
+            $data['slug'] = $this->unique_slug(sanitize_title($sanitizedName), $id);
         }
 
         $description = $request->get_param('description');
@@ -305,7 +311,7 @@ class MSTV_REST_Governance_Controller
 
     public function update_notifications(\WP_REST_Request $request): \WP_REST_Response
     {
-        update_option('mstv_notify_enabled', (bool) $request->get_param('enabled'));
+        update_option('mstv_notify_enabled', wp_validate_boolean($request->get_param('enabled')));
 
         $allowedEvents = ['upload', 'download', 'delete', 'access_denied'];
         $events = array_values(array_intersect($allowedEvents, (array) $request->get_param('events')));
@@ -315,7 +321,7 @@ class MSTV_REST_Governance_Controller
         $recipients = is_array($recipients) ? $recipients : [];
 
         update_option('mstv_notify_recipients', [
-            'admins' => !empty($recipients['admins']),
+            'admins' => wp_validate_boolean($recipients['admins'] ?? false),
             'users' => array_values(array_unique(array_filter(array_map('absint', (array) ($recipients['users'] ?? []))))),
             'groups' => array_values(array_unique(array_filter(array_map('absint', (array) ($recipients['groups'] ?? []))))),
         ]);
@@ -421,7 +427,7 @@ class MSTV_REST_Governance_Controller
 
     public function update_quotas(\WP_REST_Request $request): \WP_REST_Response
     {
-        update_option('mstv_quotas_enabled', (bool) $request->get_param('enabled'));
+        update_option('mstv_quotas_enabled', wp_validate_boolean($request->get_param('enabled')));
 
         $rawItems = $request->get_param('items');
         $map = [];

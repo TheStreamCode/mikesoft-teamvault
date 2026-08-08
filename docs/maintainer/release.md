@@ -35,7 +35,7 @@ The deploy script already validates plugin version and stable tag alignment.
 9. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
 10. Confirm `.wordpress-org/assets/` contains the expected public assets.
 11. Build the release ZIP and verify that repository-only files and sensitive local files are absent.
-12. Commit the release, push `main`, and publish the matching GitHub tag and release with the ZIP attached.
+12. Commit the release on a maintainer branch, open an internal pull request, wait for required CI and CodeQL checks, merge into protected `main`, and publish the matching GitHub tag and release with the ZIP attached.
 13. Run the WordPress.org deployment script from the workspace root.
 14. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
 
@@ -58,7 +58,7 @@ For Italian listing copy, translate the plugin readme strings in the plugin's De
 From the workspace root:
 
 ```powershell
-.\deployment\deploy-to-wordpress.ps1 -Version 3.2.5 -Username thestreamcode
+.\deployment\deploy-to-wordpress.ps1 -Version 3.2.6 -Username thestreamcode
 ```
 
 The script never accepts or forwards an SVN password. Authenticate through SVN's interactive prompt or its operating-system credential store so credentials are not exposed in native process arguments.

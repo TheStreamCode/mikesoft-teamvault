@@ -1,30 +1,47 @@
-# Mikesoft TeamVault
+<p align="center">
+  <img src=".wordpress-org/assets/banner-772x250.png" alt="TeamVault" width="772">
+</p>
 
-[![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
-[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
-[![WordPress Tested](https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to)](https://wordpress.org/plugins/mikesoft-teamvault/)
-[![PHP](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
-[![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](LICENSE)
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
+<h1 align="center">Mikesoft TeamVault</h1>
 
-**English** · [Italiano](README.it.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md)
+<p align="center"><strong>Private document management for WordPress teams, with protected storage and granular access control.</strong></p>
 
-Private document workspace for WordPress teams, agencies, and operations that need controlled file sharing outside the Media Library.
+<p align="center">
+  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><strong>Install from WordPress.org</strong></a> ·
+  <a href="docs/README.md"><strong>Documentation</strong></a> ·
+  <a href="SECURITY.md"><strong>Security</strong></a> ·
+  <a href="https://wordpress.org/support/plugin/mikesoft-teamvault/"><strong>Support</strong></a>
+</p>
 
-Current plugin version: `3.2.5`.
+<p align="center">
+  <a href="https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml"><img src="https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org" alt="WordPress Plugin Version"></a>
+  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to" alt="WordPress Tested"></a>
+  <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&amp;logoColor=white" alt="PHP 8.0+"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg" alt="GPL v2 or later"></a>
+</p>
 
-Available directly from WordPress.org and maintained against current WordPress releases.
+<p align="center"><strong>English</strong> · <a href="README.it.md">Italiano</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a></p>
 
-If TeamVault is useful to you, consider [sponsoring the project on GitHub](https://github.com/sponsors/TheStreamCode) — it is developed and maintained for free, and sponsorships help keep it going.
+> [!NOTE]
+> This is the public source mirror for TeamVault. Installations and updates are distributed through [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/); user support is handled in the [official support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-## Overview
-
-Mikesoft TeamVault adds a private document workspace inside the WordPress admin.
-It is designed for teams that need to organize, preview, export, and share sensitive files without exposing them through normal Media Library URLs.
-
-Files are stored in protected storage and delivered through authenticated WordPress handlers instead of public media URLs.
+Current plugin version: `3.2.6`.
 
 ![TeamVault file manager — folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
+
+## Why TeamVault
+
+TeamVault gives internal teams, agencies, and operations a dedicated private workspace inside WordPress instead of mixing sensitive documents with public Media Library assets.
+
+- **Protected delivery:** files are served through authenticated WordPress handlers instead of normal public media URLs.
+- **Granular governance:** groups and inheritable per-folder rules control view, upload, download, delete, and management actions.
+- **Operational visibility:** quotas, access reports, activity logs, CSV export, and email notifications support accountable workflows.
+- **Practical file management:** drag-and-drop upload, search, previews, folder operations, and ZIP export live in one focused interface.
+
+Typical uses include internal company documents, agency-to-client delivery, partner exchanges, and back-office archives.
+
+## Product Tour
 
 | Per-folder permissions | Search across the vault | Storage quotas |
 | :---: | :---: | :---: |
@@ -32,58 +49,25 @@ Files are stored in protected storage and delivered through authenticated WordPr
 | **Groups** | **Activity log** | **Settings** |
 | [![User groups](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin settings](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
-Typical use cases include:
-
-- internal company documents
-- agency-to-client document delivery from WordPress admin
-- partner or vendor file exchanges
-- back-office archives that should stay out of the public Media Library
-
-Core capabilities include:
+## Capabilities
 
 - private storage outside the normal Media Library workflow
-- shared access for authorized internal users
-- folder creation, rename, move, and delete operations
-- drag-and-drop uploads with file validation
-- inline preview for supported file types, including PDFs
-- ZIP export for folders or the full document library
-- activity logging for operational traceability
-- maintenance tools for orphan cleanup and storage reindex
-
-Governance capabilities (all free, since 2.6):
-
-- TeamVault groups to organize users into departments or teams, independent from WordPress roles
-- per-folder permissions with granular actions (view, upload, download, delete, manage) for users and groups, with inheritance and explicit child overrides
-- preview-only access that allows viewing without download or ZIP export
+- capability, optional whitelist, user, group, and per-folder access controls
+- folder creation, rename, move, delete, inheritance, and explicit child overrides
+- validated drag-and-drop uploads and inline previews, including PDFs
+- preview-only access that blocks downloads and ZIP exports
 - per-user and per-group storage quotas enforced before upload
-- access reports (who viewed or downloaded what) with filters and a CSV export of the activity log
-- email notifications for upload, download, delete, and access-denied events
+- access reports, activity logging, CSV export, and event notifications
+- ZIP export plus orphan cleanup and storage reindex maintenance tools
+- English, Italian, French, Spanish, and German admin interfaces
+
+All governance capabilities are included in the free plugin.
 
 ## Latest Release
 
-Version `3.2.5` completes the output-encoding pass started in 3.2.4: the file details panel now escapes the stored file extension before rendering it. The value is already restricted to `[a-z0-9]` by upload and reindex validation, so this is defense in depth rather than a fixed exploit. No configuration changes are required.
+Version `3.2.6` hardens upload containment and ZIP export reliability, corrects REST governance and multisite activation edge cases, and keeps toolbar actions accessible on common WordPress desktop layouts. It also refreshes repository presentation and release governance. No configuration changes are required.
 
-Version `3.2.4` hardens private file delivery by preserving no-cache headers and keeping storage paths out of diagnostic logs. Browser destinations are restricted to same-origin HTTP(S), the interface-language setting uses an explicit allowlist, and repeated permission checks reuse request-scoped folder, rule, and group lookups. CI, packaging filters, security guidance, and development/release documentation have also been strengthened. No configuration changes are required.
-
-Version `3.2.3` strengthens upload and inline-preview validation, makes permission and group updates transactional, and keeps file, folder, quota, and export operations consistent when storage or database writes fail. Explicitly shared child folders remain discoverable when a parent is hidden, audit CSV exports are safer to open in spreadsheet applications, new installations again default to the Automatic interface language, and the Plugins screen now identifies the author simply as Mikesoft.
-
-Version `3.2.2` refreshes the **file-type icons** throughout the file manager. PDF, Word, Excel, PowerPoint, CSV, text, archive, audio, video, and image files now show clear, recognizable colored badges with the format label — in the file grid, the list view, and the details preview — replacing the previous monochrome glyphs.
-
-Version `3.2.0` improves the file manager and streamlines the settings. Folders that carry their own permission rules now show a **lock badge** so restricted areas are recognizable at a glance, the **empty-folder view** offers a clear drop zone with quick upload / new-folder actions, and the interface received accessibility improvements (higher-contrast text, labeled icon buttons, screen-reader announcements). The **white-label branding option was removed** to keep TeamVault focused on secure document management; the plugin now always uses its standard identity and any previously saved brand settings are cleaned up on update.
-
-Version `3.1.1` makes the interface language **follow the WordPress language automatically**. The new default "Automatic" mode matches the WordPress site/admin locale — Italian, French, Spanish, or German when supported, English otherwise — so the plugin speaks the same language as the rest of the dashboard with no configuration. A specific language can still be forced in the settings.
-
-Version `3.1.0` adds a fully translated plugin admin interface: the interface language selector now offers **Italian, French, Spanish, and German** in addition to English, covering every screen, label, warning, and error message. This README is also available in those languages via the links at the top.
-
-Version `3.0.0` is a security and reliability milestone. Search results are now filtered through the per-folder permission engine, so restricted users can no longer discover file names or metadata from folders they cannot view. The generated storage `.htaccess` denies direct access on Apache 2.4 in addition to Apache 2.2 and IIS, and storage quotas are enforced with a database lock so concurrent uploads cannot jointly exceed a limit. Downloads and inline previews gain HTTP Range support (`Accept-Ranges` / `206 Partial Content`) for resumable transfers and range-seeking PDF viewers on large files. The folder permissions dialog now warns when rules exist but the root has none, the admin menu icon matches native WordPress styling, and the admin JavaScript was split into focused modules with no change in behavior.
-
-Version `2.6` introduced the free document **governance suite**: TeamVault groups, per-folder permissions with inheritance and granular actions (view, upload, download, delete, manage), preview-only access, per-user and per-group storage quotas, access reports with CSV export, and email notifications. Existing installs are unaffected because folders with no rules keep the prior behavior.
-
-Why teams adopt TeamVault:
-
-- it creates a dedicated private document area instead of overloading the Media Library
-- it adds capability-based access control with an optional whitelist layer, plus per-folder permissions and groups for finer governance
-- it keeps export, maintenance, and recovery workflows focused on operational files
+See the [full changelog](changelog.txt) and [GitHub releases](https://github.com/TheStreamCode/mikesoft-teamvault/releases) for complete history.
 
 ## Requirements
 
@@ -235,6 +219,7 @@ This repository is the public source mirror for the plugin.
 - `.wordpress-org/assets/icon-256x256.png` is the primary full-color icon for the WordPress.org listing.
 - `.wordpress-org/assets/icon.svg` is the scalable companion asset for the WordPress.org listing.
 - `.wordpress-org/assets/screenshot-1.jpg` … `screenshot-7.jpg` are the WordPress.org listing screenshots, also used in this README.
+- `.github/social-preview.png` is the dedicated 1280×640 GitHub social preview; upload this file in the repository's social preview settings after brand changes.
 - `assets/logo-teamvault.svg` is the in-plugin admin logo used inside the TeamVault interface.
 
 These assets serve different surfaces and should stay aligned to the same brand without forcing the runtime plugin UI to match WordPress.org packaging constraints.

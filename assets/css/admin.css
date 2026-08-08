@@ -1224,7 +1224,9 @@
     box-shadow: inset 0 0 0 1px var(--pdm-color-primary);
 }
 
-@media (max-width: 1200px) {
+/* The WordPress desktop admin menu consumes 160px of the viewport. Moving the details
+   panel off-canvas at 1360px preserves the app's intended 1200px content threshold. */
+@media (max-width: 1360px) {
     .pdm-details {
         position: fixed;
         right: 0;

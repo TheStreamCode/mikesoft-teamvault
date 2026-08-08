@@ -113,9 +113,9 @@ final class PDMAdminAppTest extends TestCase
             'The details drawer must use its own wider breakpoint helper.'
         );
         self::assertStringContainsString(
-            'return window.innerWidth <= 1200;',
+            'return window.innerWidth <= 1360;',
             $source,
-            'The details drawer must open at 1200px and below.'
+            'The details drawer must account for the WordPress desktop admin menu.'
         );
         self::assertStringNotContainsString(
             'isMobileViewport()',
@@ -124,7 +124,7 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
-    public function testDetailsDrawerCssStartsAtTwelveHundredPixelsAndRespectsAdminBarOffsets(): void
+    public function testDetailsDrawerCssAccountsForTheAdminMenuAndRespectsAdminBarOffsets(): void
     {
         $source = (string) file_get_contents(dirname(__DIR__) . '/assets/css/admin.css');
 
@@ -139,9 +139,9 @@ final class PDMAdminAppTest extends TestCase
             'Fixed admin drawers must use the taller mobile WordPress admin bar offset.'
         );
         self::assertStringContainsString(
-            '@media (max-width: 1200px)',
+            '@media (max-width: 1360px)',
             $source,
-            'The details panel responsive threshold must remain at 1200px.'
+            'The details panel threshold must preserve 1200px of app space beside the WordPress admin menu.'
         );
         self::assertStringContainsString(
             'top: var(--pdm-admin-bar-offset);',
@@ -156,12 +156,12 @@ final class PDMAdminAppTest extends TestCase
         self::assertStringContainsString(
             'transform: translateX(100%);',
             $source,
-            'The details panel must move off-canvas instead of shrinking at 1200px.'
+            'The details panel must move off-canvas instead of covering toolbar actions.'
         );
         self::assertStringNotContainsString(
             'width: 280px;',
             $source,
-            'The 1200px details behavior must not leave a cramped inline details panel.'
+            'The responsive details behavior must not leave a cramped inline details panel.'
         );
     }
 }
