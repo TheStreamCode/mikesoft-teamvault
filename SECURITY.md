@@ -12,6 +12,7 @@ Do not disclose security issues in public support forums or public issue tracker
 
 Report vulnerabilities privately to:
 
+- [GitHub Private Vulnerability Reporting](https://github.com/TheStreamCode/mikesoft-teamvault/security/advisories/new) (preferred)
 - `teamvault@mikesoft.it`
 
 Include the following details when possible:
@@ -25,8 +26,10 @@ Include the following details when possible:
 
 ## Response Expectations
 
-- Reports are reviewed privately.
-- Confirmed issues are prioritized for a maintenance release.
+- We aim to acknowledge complete reports within 3 business days.
+- We aim to provide an initial assessment within 7 business days.
+- Confirmed issues are prioritized for a coordinated maintenance release; remediation timing depends on severity and complexity.
+- Reporters receive status updates when the assessment or expected release window changes.
 - Public disclosure should wait until a fix is available to users.
 
 ## Security Scope

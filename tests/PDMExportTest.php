@@ -85,6 +85,48 @@ final class PDMExportTest extends TestCase
         self::assertContains('Shared/', $entries);
     }
 
+    public function test_corrupt_folder_cycles_do_not_recurse_indefinitely(): void
+    {
+        if (!class_exists('ZipArchive')) {
+            self::markTestSkipped('ZipArchive is not available in this environment.');
+        }
+
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->expects(self::exactly(2))
+            ->method('find_by_parent')
+            ->willReturnCallback(static function ($parentId): array {
+                if ((int) $parentId === 10) {
+                    return [(object) ['id' => 20, 'name' => 'Child']];
+                }
+
+                return [(object) ['id' => 10, 'name' => 'Parent']];
+            });
+
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('find_by_folder')->willReturn([]);
+
+        $export = new MSTV_Export(
+            $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
+            $filesRepo,
+            $folderRepo,
+            $this->createMock(MSTV_Auth::class)
+        );
+        $path = wp_tempnam('teamvault-export-cycle-test.zip');
+        $zip = new ZipArchive();
+        self::assertTrue($zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE));
+
+        $method = new ReflectionMethod(MSTV_Export::class, 'add_folder_to_zip');
+        $method->setAccessible(true);
+        $method->invoke($export, $zip, 10, 'Parent/');
+        self::assertTrue($zip->close());
+
+        self::assertTrue($zip->open($path));
+        self::assertNotFalse($zip->locateName('Parent/Child/'));
+        self::assertFalse($zip->locateName('Parent/Child/Parent/'));
+        $zip->close();
+        wp_delete_file($path);
+    }
+
     private function buildExport(): MSTV_Export
     {
         return new MSTV_Export(

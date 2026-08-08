@@ -6,8 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMReleaseMetadataTest extends TestCase
 {
-    private const RELEASE_VERSION = '3.2.5';
-    private const RELEASE_DATE = '2026-08-02';
+    private const RELEASE_VERSION = '3.2.6';
+    private const RELEASE_DATE = '2026-08-08';
     private const TESTED_UP_TO = '7.0';
     private const CONTACT_EMAIL = 'teamvault@mikesoft.it';
     private const PLUGIN_AUTHOR = 'Mikesoft';
@@ -58,5 +58,28 @@ final class PDMReleaseMetadataTest extends TestCase
         self::assertStringContainsString(self::CONTACT_EMAIL, $readme);
         self::assertStringContainsString(self::CONTACT_EMAIL, $githubReadme);
         self::assertStringContainsString(self::CONTACT_EMAIL, $securityPolicy);
+    }
+
+    public function test_repository_presentation_metadata_is_release_ready(): void
+    {
+        $root = dirname(__DIR__);
+        $citation = (string) file_get_contents($root . '/CITATION.cff');
+        $dependabot = (string) file_get_contents($root . '/.github/dependabot.yml');
+        $securityPolicy = (string) file_get_contents($root . '/SECURITY.md');
+        $socialPreview = $root . '/.github/social-preview.png';
+
+        self::assertStringContainsString('version: "' . self::RELEASE_VERSION . '"', $citation);
+        self::assertStringContainsString('date-released: "' . self::RELEASE_DATE . '"', $citation);
+        self::assertStringContainsString('license: GPL-2.0-or-later', $citation);
+        self::assertStringContainsString('package-ecosystem: composer', $dependabot);
+        self::assertStringContainsString('package-ecosystem: github-actions', $dependabot);
+        self::assertStringContainsString('/security/advisories/new', $securityPolicy);
+        self::assertFileExists($socialPreview);
+
+        $dimensions = getimagesize($socialPreview);
+
+        self::assertIsArray($dimensions);
+        self::assertSame(1280, $dimensions[0]);
+        self::assertSame(640, $dimensions[1]);
     }
 }

@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 3.2.5
+Stable tag: 3.2.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -159,6 +159,13 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.2.6 =
+* Security: upload destinations now use the complete symlink-aware storage verifier before any file is written.
+* Reliability: ZIP exports fail closed when an archive entry or finalization fails and stop safely when corrupt folder metadata contains a cycle.
+* Fixed: REST boolean strings are normalized correctly, sanitized-empty group names are rejected, and new multisite sites are initialized only for network-wide activation.
+* Fixed: the details panel switches to a drawer before the WordPress admin menu can make it cover toolbar actions on common desktop viewports.
+* Improved: repository presentation, release metadata, dependency automation, and security-reporting guidance were refreshed.
+
 = 3.2.5 =
 * Security: the file details panel now escapes the stored file extension before rendering it, completing the output-encoding pass started in 3.2.4.
 
@@ -292,6 +299,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.2.6 =
+
+Hardens upload containment and ZIP reliability, corrects governance and multisite edge cases, and keeps toolbar actions accessible on common desktop viewports. No configuration changes are required.
 
 = 3.2.5 =
 

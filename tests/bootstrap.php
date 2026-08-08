@@ -19,6 +19,7 @@ $GLOBALS['pdm_test_users'] = [];
 $GLOBALS['pdm_test_user_meta'] = [];
 $GLOBALS['pdm_test_transients'] = [];
 $GLOBALS['pdm_test_roles'] = [];
+$GLOBALS['pdm_test_network_active_plugins'] = [];
 
 function __($text, $domain = null)
 {
@@ -121,6 +122,20 @@ function wp_delete_file($path)
 function is_multisite()
 {
     return false;
+}
+
+function is_plugin_active_for_network($plugin)
+{
+    return !empty($GLOBALS['pdm_test_network_active_plugins'][(string) $plugin]);
+}
+
+function wp_validate_boolean($value)
+{
+    if (is_string($value) && strtolower($value) === 'false') {
+        $value = false;
+    }
+
+    return (bool) $value;
 }
 
 function get_sites(array $args = [])
@@ -461,6 +476,16 @@ class WP_REST_Response
     }
 }
 
+class WP_Site
+{
+    public int $blog_id;
+
+    public function __construct(int $blogId)
+    {
+        $this->blog_id = $blogId;
+    }
+}
+
 class FakePDMUser
 {
     public int $ID;
@@ -547,3 +572,9 @@ require_once __DIR__ . '/../includes/class-mstv-logger.php';
 require_once __DIR__ . '/../includes/class-mstv-activator.php';
 require_once __DIR__ . '/../includes/class-mstv-admin.php';
 require_once __DIR__ . '/../includes/class-mstv-assets.php';
+
+if (!defined('MSTV_PLUGIN_BASENAME')) {
+    define('MSTV_PLUGIN_BASENAME', 'mikesoft-teamvault/mikesoft-teamvault.php');
+}
+
+require_once __DIR__ . '/../includes/class-mstv-bootstrap.php';

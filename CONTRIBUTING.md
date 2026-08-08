@@ -11,6 +11,7 @@ This repository is a public source mirror for the Mikesoft TeamVault plugin.
 - External pull requests are not accepted.
 - GitHub Issues are not the support channel for the plugin.
 - End-user support and bug reports should go through the [official WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
+- Maintainer changes use internal pull requests so required CI and security checks run before protected `main` is updated.
 
 ## What This Repository Is For
 
