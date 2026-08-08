@@ -11,6 +11,12 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # PHPUnit 13 requires PHP >= 8.4, while TeamVault intentionally tests and
+      # supports older PHP versions. Revisit this when the PHP floor is raised.
+      - dependency-name: phpunit/phpunit
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
