@@ -64,15 +64,13 @@ final class PDMReleaseMetadataTest extends TestCase
     {
         $root = dirname(__DIR__);
         $citation = (string) file_get_contents($root . '/CITATION.cff');
-        $dependabot = (string) file_get_contents($root . '/.github/dependabot.yml');
         $securityPolicy = (string) file_get_contents($root . '/SECURITY.md');
         $socialPreview = $root . '/.github/social-preview.png';
 
         self::assertStringContainsString('version: "' . self::RELEASE_VERSION . '"', $citation);
         self::assertStringContainsString('date-released: "' . self::RELEASE_DATE . '"', $citation);
         self::assertStringContainsString('license: GPL-2.0-or-later', $citation);
-        self::assertStringContainsString('package-ecosystem: composer', $dependabot);
-        self::assertStringContainsString('package-ecosystem: github-actions', $dependabot);
+        self::assertFileDoesNotExist($root . '/.github/dependabot.yml');
         self::assertStringContainsString('/security/advisories/new', $securityPolicy);
         self::assertFileExists($socialPreview);
 
