@@ -233,4 +233,4 @@ These assets serve different surfaces and should stay aligned to the same brand 
 
 ## License
 
-GPL v2 or later. See [LICENSE](LICENSE).
+This project is licensed under the [GNU General Public License v2.0](LICENSE), or (at your option) any later version.
