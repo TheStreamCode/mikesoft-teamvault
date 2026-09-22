@@ -1263,6 +1263,15 @@ class MSTV_I18n
 
     public function init(): void
     {
+        // Standard WordPress.org loading so GlotPress language packs in
+        // languages/ are picked up. Runs on `init` (via MSTV_Bootstrap::init_services).
+        // __FILE__ is includes/class-mstv-i18n.php, hence dirname levels: 2.
+        if (function_exists('load_plugin_textdomain')) {
+            load_plugin_textdomain('mikesoft-teamvault', false, dirname(plugin_basename(__FILE__), 2) . '/languages');
+        }
+
+        // Runtime fallback: in-admin maps below keep the bundled it/fr/es/de
+        // interface working when no language pack is installed (see docs/developer/i18n.md).
         add_filter('gettext', [$this, 'filter_gettext'], 20, 3);
     }
 
