@@ -6,7 +6,7 @@
  * Version: 3.2.6
  * Author: Mikesoft
  * Author URI: https://mikesoft.it
- * License: GPL v2 or later
+ * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: mikesoft-teamvault
  * Domain Path: /languages

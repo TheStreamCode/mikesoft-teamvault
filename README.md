@@ -18,7 +18,7 @@
   <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org" alt="WordPress Plugin Version"></a>
   <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to" alt="WordPress Tested"></a>
   <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&amp;logoColor=white" alt="PHP 8.0+"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg" alt="GPL v2 or later"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg" alt="GPL-2.0-or-later"></a>
 </p>
 
 <p align="center"><strong>English</strong> · <a href="README.it.md">Italiano</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a></p>
@@ -227,10 +227,11 @@ These assets serve different surfaces and should stay aligned to the same brand 
 ## Documentation Map
 
 - [`docs/developer/hooks.md`](docs/developer/hooks.md) - developer hooks and filters
+- [`docs/developer/i18n.md`](docs/developer/i18n.md) - translation workflow (textdomain, POT, GlotPress handoff)
 - [`docs/maintainer/local-development.md`](docs/maintainer/local-development.md) - local development workflow
 - [`docs/maintainer/release.md`](docs/maintainer/release.md) - WordPress.org release process
 - [`docs/maintainer/security-review.md`](docs/maintainer/security-review.md) - latest repository security review and residual risks
 
 ## License
 
-This project is licensed under the [GNU General Public License v2.0](LICENSE), or (at your option) any later version.
+This project is licensed under `GPL-2.0-or-later` — the [GNU General Public License v2.0](LICENSE), or (at your option) any later version.
