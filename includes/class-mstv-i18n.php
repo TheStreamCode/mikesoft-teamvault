@@ -1263,6 +1263,13 @@ class MSTV_I18n
 
     public function init(): void
     {
+        // No load_plugin_textdomain() call: this plugin is hosted on
+        // wordpress.org with "Requires at least: 6.0" (well above 4.6), so
+        // WordPress auto-loads GlotPress language packs from WP_LANG_DIR.
+        // See https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/#plugins-on-wordpress-org
+
+        // Runtime fallback: in-admin maps below keep the bundled it/fr/es/de
+        // interface working when no language pack is installed (see docs/developer/i18n.md).
         add_filter('gettext', [$this, 'filter_gettext'], 20, 3);
     }
 
