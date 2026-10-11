@@ -164,4 +164,36 @@ final class PDMAdminAppTest extends TestCase
             'The responsive details behavior must not leave a cramped inline details panel.'
         );
     }
+
+    public function testDeleteAndMutationErrorsSurfaceServerMessages(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "apiErrorMessage(error, 'deleteError')",
+            $source,
+            'Delete failures must surface the server-provided message instead of a generic error.'
+        );
+        self::assertStringContainsString(
+            'isApiError: true',
+            $source,
+            'API errors must be marked so network failures can fall back to the generic message.'
+        );
+    }
+
+    public function testAuditCsvFilterTravelsUnderADedicatedKey(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "params.set('log_action', f.action);",
+            $source,
+            'The report action filter must not overwrite the admin-post routing parameter.'
+        );
+        self::assertStringNotContainsString(
+            "params.set('action', f.action);",
+            $source,
+            'The audit CSV export must not reuse the routing parameter name for filters.'
+        );
+    }
 }

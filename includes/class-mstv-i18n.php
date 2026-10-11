@@ -141,7 +141,6 @@ class MSTV_I18n
         'Error while uploading the file.' => 'Errore durante il caricamento del file.',
         'Uploading...' => 'Caricamento in corso...',
         'Upload cancelled.' => 'Caricamento annullato.',
-        'Entries' => 'voci',
         'Export' => 'Esporta',
         'Export All' => 'Esporta tutto',
         'Create a ZIP archive with the full private document library.' => 'Crea un archivio ZIP con l\'intera libreria privata di documenti.',
@@ -278,6 +277,7 @@ class MSTV_I18n
         'The name cannot be empty.' => 'Il nome non può essere vuoto.',
         'The new name is identical to the current name.' => 'Il nuovo nome è identico al nome attuale.',
         'This file type is not allowed.' => 'Tipo di file non consentito.',
+        'The file content does not match its extension: the file appears to be %1$s but is named .%2$s.' => 'Il contenuto del file non corrisponde alla sua estensione: il file sembra essere %1$s ma è denominato .%2$s.',
         'This folder is empty' => 'Questa cartella è vuota',
         'This name is reserved by the system.' => 'Questo nome è riservato dal sistema.',
         'Total' => 'Totale',
@@ -323,6 +323,9 @@ class MSTV_I18n
         'German' => 'Tedesco',
         'English' => 'Inglese',
         'Custom permissions' => 'Permessi personalizzati',
+        'Showing %1$d-%2$d of %3$d entries' => 'Visualizzazione %1$d-%2$d di %3$d voci',
+        'Page %1$d of %2$d' => 'Pagina %1$d di %2$d',
+        'No entries' => 'Nessuna voce',
     ];
 
     private const FRENCH_MAP = [
@@ -453,7 +456,6 @@ class MSTV_I18n
         'Error while uploading the file.' => 'Erreur lors du téléversement du fichier.',
         'Uploading...' => 'Téléversement en cours...',
         'Upload cancelled.' => 'Téléversement annulé.',
-        'Entries' => 'entrées',
         'Export' => 'Exporter',
         'Export All' => 'Tout exporter',
         'Create a ZIP archive with the full private document library.' => 'Créez une archive ZIP contenant l\'intégralité de la bibliothèque de documents privés.',
@@ -590,6 +592,7 @@ class MSTV_I18n
         'The name cannot be empty.' => 'Le nom ne peut pas être vide.',
         'The new name is identical to the current name.' => 'Le nouveau nom est identique au nom actuel.',
         'This file type is not allowed.' => 'Ce type de fichier n\'est pas autorisé.',
+        'The file content does not match its extension: the file appears to be %1$s but is named .%2$s.' => 'Le contenu du fichier ne correspond pas à son extension : le fichier semble être %1$s mais il est nommé .%2$s.',
         'This folder is empty' => 'Ce dossier est vide',
         'This name is reserved by the system.' => 'Ce nom est réservé par le système.',
         'Total' => 'Total',
@@ -635,6 +638,9 @@ class MSTV_I18n
         'German' => 'Allemand',
         'English' => 'Anglais',
         'Custom permissions' => 'Autorisations personnalisées',
+        'Showing %1$d-%2$d of %3$d entries' => 'Affichage de %1$d-%2$d sur %3$d entrées',
+        'Page %1$d of %2$d' => 'Page %1$d sur %2$d',
+        'No entries' => 'Aucune entrée',
     ];
 
     private const SPANISH_MAP = [
@@ -765,7 +771,6 @@ class MSTV_I18n
         'Error while uploading the file.' => 'Error al subir el archivo.',
         'Uploading...' => 'Subiendo...',
         'Upload cancelled.' => 'Subida cancelada.',
-        'Entries' => 'entradas',
         'Export' => 'Exportar',
         'Export All' => 'Exportar todo',
         'Create a ZIP archive with the full private document library.' => 'Crea un archivo ZIP con toda la biblioteca de documentos privados.',
@@ -902,6 +907,7 @@ class MSTV_I18n
         'The name cannot be empty.' => 'El nombre no puede estar vacío.',
         'The new name is identical to the current name.' => 'El nuevo nombre es idéntico al nombre actual.',
         'This file type is not allowed.' => 'Este tipo de archivo no está permitido.',
+        'The file content does not match its extension: the file appears to be %1$s but is named .%2$s.' => 'El contenido del archivo no coincide con su extensión: el archivo parece ser %1$s pero se llama .%2$s.',
         'This folder is empty' => 'Esta carpeta está vacía',
         'This name is reserved by the system.' => 'Este nombre está reservado por el sistema.',
         'Total' => 'Total',
@@ -947,6 +953,9 @@ class MSTV_I18n
         'German' => 'Alemán',
         'English' => 'Inglés',
         'Custom permissions' => 'Permisos personalizados',
+        'Showing %1$d-%2$d of %3$d entries' => 'Mostrando %1$d-%2$d de %3$d entradas',
+        'Page %1$d of %2$d' => 'Página %1$d de %2$d',
+        'No entries' => 'Sin entradas',
     ];
 
     private const GERMAN_MAP = [
@@ -1077,7 +1086,6 @@ class MSTV_I18n
         'Error while uploading the file.' => 'Fehler beim Hochladen der Datei.',
         'Uploading...' => 'Wird hochgeladen...',
         'Upload cancelled.' => 'Upload abgebrochen.',
-        'Entries' => 'Einträge',
         'Export' => 'Exportieren',
         'Export All' => 'Alle exportieren',
         'Create a ZIP archive with the full private document library.' => 'Erstellen Sie ein ZIP-Archiv mit der gesamten privaten Dokumentbibliothek.',
@@ -1214,6 +1222,7 @@ class MSTV_I18n
         'The name cannot be empty.' => 'Der Name darf nicht leer sein.',
         'The new name is identical to the current name.' => 'Der neue Name ist mit dem aktuellen Namen identisch.',
         'This file type is not allowed.' => 'Dieser Dateityp ist nicht erlaubt.',
+        'The file content does not match its extension: the file appears to be %1$s but is named .%2$s.' => 'Der Dateiinhalt stimmt nicht mit der Endung überein: Die Datei scheint %1$s zu sein, ist aber mit .%2$s benannt.',
         'This folder is empty' => 'Dieser Ordner ist leer',
         'This name is reserved by the system.' => 'Dieser Name ist vom System reserviert.',
         'Total' => 'Gesamt',
@@ -1259,6 +1268,9 @@ class MSTV_I18n
         'German' => 'Deutsch',
         'English' => 'Englisch',
         'Custom permissions' => 'Benutzerdefinierte Berechtigungen',
+        'Showing %1$d-%2$d of %3$d entries' => 'Zeige %1$d-%2$d von %3$d Einträgen',
+        'Page %1$d of %2$d' => 'Seite %1$d von %2$d',
+        'No entries' => 'Keine Einträge',
     ];
 
     public function init(): void

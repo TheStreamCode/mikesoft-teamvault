@@ -73,6 +73,7 @@ final class PDMViewsEscapingTest extends TestCase
         self::assertStringNotContainsString('<script>alert(2)', $html);
         self::assertStringNotContainsString('" onmouseover="', $html);
         self::assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;', $html);
+        self::assertStringContainsString('Showing 1-1 of 1 entries', $html);
     }
 
     public function test_logs_page_renders_empty_state_without_log_rows(): void

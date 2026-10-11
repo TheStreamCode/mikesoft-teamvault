@@ -175,7 +175,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -192,7 +192,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -390,7 +390,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -406,7 +406,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -555,7 +555,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -633,8 +633,10 @@
             });
             if (f.date_from) params.set('date_from', f.date_from);
             if (f.date_to) params.set('date_to', f.date_to);
-            // The report "action" select is preview/download; pass it through as a log action filter.
-            if (f.action) params.set('action', f.action);
+            // The report "action" select is preview/download; pass it through as
+            // a log action filter. It must not collide with the admin-post routing
+            // parameter, so it travels under a dedicated key.
+            if (f.action) params.set('log_action', f.action);
             const url = new URL(actionUrl);
             params.forEach((value, key) => url.searchParams.set(key, value));
             window.location.href = url.toString();
@@ -790,7 +792,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -800,7 +802,10 @@
             if (contentType.includes('application/json')) {
                 const data = await response.json();
                 if (!response.ok && !data.success) {
-                    throw new Error(data.message || `HTTP ${response.status}`);
+                    throw Object.assign(
+                        new Error(data.message || `HTTP ${response.status}`),
+                        { isApiError: true }
+                    );
                 }
                 return data;
             }
@@ -811,7 +816,10 @@
                 .replace(/\s+/g, ' ')
                 .trim();
 
-            throw new Error(message || `HTTP ${response.status}`);
+            throw Object.assign(
+                new Error(message || `HTTP ${response.status}`),
+                { isApiError: true }
+            );
         },
     });
 })();

@@ -1340,7 +1340,7 @@
                     this.showToast(response.message || mstvConfig.i18n.folderCreateError, 'error');
                 }
             } catch (error) {
-                this.showToast(error.message || mstvConfig.i18n.folderCreateError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'folderCreateError'), 'error');
                 console.error('Create folder error:', error);
             }
         },
@@ -1357,7 +1357,7 @@
                     this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.renameError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'renameError'), 'error');
                 console.error('Rename folder error:', error);
             }
         },
@@ -1379,7 +1379,7 @@
                     this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.deleteError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'deleteError'), 'error');
                 console.error('Delete folder error:', error);
             }
         },
@@ -1396,7 +1396,7 @@
                     this.showToast(response.message || mstvConfig.i18n.renameError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.renameError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'renameError'), 'error');
                 console.error('Rename files error:', error);
             }
         },
@@ -1419,7 +1419,7 @@
                     this.showToast(response.message || mstvConfig.i18n.deleteError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.deleteError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'deleteError'), 'error');
                 console.error('Delete files error:', error);
             }
         },
@@ -1443,7 +1443,7 @@
                     this.showToast(response.message || mstvConfig.i18n.moveError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.moveError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'moveError'), 'error');
                 console.error('Move files error:', error);
             }
         },
@@ -1467,7 +1467,7 @@
                     this.showToast(response.message || mstvConfig.i18n.folderMoveError, 'error');
                 }
             } catch (error) {
-                this.showToast(mstvConfig.i18n.folderMoveError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'folderMoveError'), 'error');
                 console.error('Move folder error:', error);
             }
         },
@@ -1702,7 +1702,7 @@
                 if (error.name === 'AbortError') {
                     return false;
                 }
-                this.showToast(error.message || mstvConfig.i18n.uploadError, 'error');
+                this.showToast(this.apiErrorMessage(error, 'uploadError'), 'error');
                 console.error('Upload error:', error);
                 return false;
             }
@@ -2354,6 +2354,15 @@
                 return perms.can_manage_rules;
             }
             return this.folderCan(folder, 'manage');
+        },
+
+        apiErrorMessage(error, i18nKey) {
+            // Only server-provided API messages reach the user; network and
+            // programming errors fall back to the localized generic string.
+            if (error && error.isApiError && typeof error.message === 'string' && error.message) {
+                return error.message;
+            }
+            return mstvConfig.i18n[i18nKey] || mstvConfig.i18n.errorGeneric;
         },
 
         applyToolbarPermissions() {
