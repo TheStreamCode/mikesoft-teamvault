@@ -27,13 +27,23 @@ class MSTV_Assets
             MSTV_VERSION
         );
 
-        // admin-app is split into three files loaded in order: core (state + file
-        // browser + shared utilities) exposes window.PDM, then governance and the
-        // settings/export/bootstrap layer augment it via Object.assign.
+        // admin-app is split across helper + core + governance + app files loaded in
+        // order: helpers expose window.PDMHelpers (pure, node-testable), then core
+        // (state + file browser + shared utilities) exposes window.PDM, then
+        // governance and the settings/export/bootstrap layer augment it via
+        // Object.assign.
+        wp_enqueue_script(
+            'mstv-admin-helpers',
+            MSTV_PLUGIN_URL . 'assets/js/admin-app-helpers.js',
+            [],
+            MSTV_VERSION,
+            true
+        );
+
         wp_enqueue_script(
             'mstv-admin-core',
             MSTV_PLUGIN_URL . 'assets/js/admin-app-core.js',
-            [],
+            ['mstv-admin-helpers'],
             MSTV_VERSION,
             true
         );
@@ -71,7 +81,6 @@ class MSTV_Assets
         wp_localize_script('mstv-admin-core', 'mstvConfig', [
             'restUrl' => trailingslashit(rest_url('mstv/v1')),
             'restNonce' => wp_create_nonce('wp_rest'),
-            'adminUrl' => admin_url('admin.php'),
             'actionUrl' => admin_url('admin-post.php'),
             'streamNonce' => wp_create_nonce('mstv_stream_action'),
             'exportSelectionNonce' => wp_create_nonce('mstv_export_selection'),
@@ -82,7 +91,6 @@ class MSTV_Assets
                 (string) ini_get('post_max_size'),
                 (string) ini_get('upload_max_filesize')
             ),
-            'allowedExtensions' => $this->settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),
                 'confirmDeleteFolder' => __('Are you sure you want to delete this folder? It must be empty.', 'mikesoft-teamvault'),
@@ -153,6 +161,7 @@ class MSTV_Assets
                 'selectDestination' => __('Select destination', 'mikesoft-teamvault'),
                 'loading' => __('Loading...', 'mikesoft-teamvault'),
                 'errorGeneric' => __('An error occurred. Please try again.', 'mikesoft-teamvault'),
+                'sessionExpired' => __('Your session has expired. Reload the page to continue.', 'mikesoft-teamvault'),
                 'noResults' => __('No results found', 'mikesoft-teamvault'),
                 'searchNoResultsDesc' => __('Try a different keyword or clear the search.', 'mikesoft-teamvault'),
                 'fileMissing' => __('File missing from storage', 'mikesoft-teamvault'),
@@ -181,7 +190,6 @@ class MSTV_Assets
                 'exportSelectedFoldersDesc' => __('Choose one or more folders to include in the ZIP archive.', 'mikesoft-teamvault'),
                 'exportNoFoldersSelected' => __('Select at least one folder to export.', 'mikesoft-teamvault'),
                 'exporting' => __('Exporting...', 'mikesoft-teamvault'),
-                'exportSuccess' => __('Export completed', 'mikesoft-teamvault'),
                 'noFoldersAvailable' => __('No folders available for selective export.', 'mikesoft-teamvault'),
                 'exportError' => __('Error during export', 'mikesoft-teamvault'),
                 // Governance: folder permissions.

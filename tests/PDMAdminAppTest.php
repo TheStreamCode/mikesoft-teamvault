@@ -22,25 +22,29 @@ final class PDMAdminAppTest extends TestCase
         ));
     }
 
-    public function testApiUrlBuilderSupportsPlainPermalinkRestUrls(): void
+    public function testAdminAppRoutesSharedHelpersThroughThePureHelpersModule(): void
     {
         $source = $this->adminAppSource();
 
+        // Behavioral coverage lives in tests/pdm-helpers.test.mjs; this guards
+        // the wiring so the app cannot silently reimplement the helpers.
         self::assertStringContainsString(
-            "base.includes('?')",
-            $source,
-            'The admin API URL builder must detect query-style REST bases generated when pretty permalinks are disabled.'
+            'window.PDMHelpers.buildApiUrl(endpoint, mstvConfig.restUrl)',
+            $source
         );
         self::assertStringContainsString(
-            'return `${base}/${path.substring(0, qIdx)}&${path.substring(qIdx + 1)}`;',
-            $source,
-            'Endpoint query arguments must be appended with & after the rest_route query variable.'
+            'window.PDMHelpers.escapeHtml(text)',
+            $source
+        );
+        self::assertStringContainsString(
+            'window.PDMHelpers.normalizeSameOriginUrl(value, window.location.href)',
+            $source
         );
     }
 
-    public function testHtmlEscaperAlsoEncodesQuotedAttributeDelimiters(): void
+    public function testHelpersModuleEscapesBothQuoteTypesForAttributeContexts(): void
     {
-        $source = $this->adminAppSource();
+        $source = (string) file_get_contents(__DIR__ . '/../assets/js/admin-app-helpers.js');
 
         self::assertStringContainsString("'\"': '&quot;'", $source);
         self::assertStringContainsString("\"'\": '&#039;'", $source);
@@ -77,13 +81,12 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
-    public function testDownloadAndPreviewUrlsAreRestrictedToSameOriginHttp(): void
+    public function testDownloadAndPreviewSinksGoThroughTheSameOriginNormalizer(): void
     {
         $source = $this->adminAppSource();
 
-        self::assertStringContainsString('normalizeSameOriginUrl(value)', $source);
-        self::assertStringContainsString("!['http:', 'https:'].includes(url.protocol)", $source);
-        self::assertStringContainsString('url.origin !== window.location.origin', $source);
+        // Normalizer behavior is covered by tests/pdm-helpers.test.mjs; this
+        // guards that every browser destination still passes through it.
         self::assertStringContainsString('link.href = downloadUrl;', $source);
         self::assertStringContainsString('iframe.src = previewUrl;', $source);
         self::assertStringContainsString('img.src = previewUrl;', $source);
@@ -162,6 +165,93 @@ final class PDMAdminAppTest extends TestCase
             'width: 280px;',
             $source,
             'The responsive details behavior must not leave a cramped inline details panel.'
+        );
+    }
+
+    public function testDeleteAndMutationErrorsSurfaceServerMessages(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "apiErrorMessage(error, 'deleteError')",
+            $source,
+            'Delete failures must surface the server-provided message instead of a generic error.'
+        );
+        self::assertStringContainsString(
+            'isApiError: true',
+            $source,
+            'API errors must be marked so network failures can fall back to the generic message.'
+        );
+    }
+
+    public function testAuditCsvFilterTravelsUnderADedicatedKey(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "params.set('log_action', f.action);",
+            $source,
+            'The report action filter must not overwrite the admin-post routing parameter.'
+        );
+        self::assertStringNotContainsString(
+            "params.set('action', f.action);",
+            $source,
+            'The audit CSV export must not reuse the routing parameter name for filters.'
+        );
+    }
+
+    public function testModalConfirmButtonsGuardAgainstDoubleSubmits(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            'bindModalConfirm(handler)',
+            $source,
+            'Modal confirm buttons must share a double-submit guard.'
+        );
+        self::assertSame(
+            3,
+            substr_count($source, 'this.bindModalConfirm(async'),
+            'The text-prompt factory plus the two move modals must route their confirm handlers through the guard.'
+        );
+        self::assertStringContainsString(
+            'showTextPromptModal({ title, initial',
+            $source,
+            'Create-folder and rename modals must share the text prompt factory.'
+        );
+    }
+
+    public function testUserSearchesDiscardStaleResponses(): void
+    {
+        $source = $this->adminAppSource();
+
+        // All user searches share one widget; the sequence guard must live in
+        // the widget and every site must route through it.
+        self::assertStringContainsString(
+            'bindUserSearch({ input, results, render, renderEmpty = null, onPick, onShown = null })',
+            $source,
+            'The shared user-search widget must carry the stale-response guard.'
+        );
+        self::assertSame(
+            5,
+            substr_count($source, 'this.bindUserSearch({'),
+            'All five user-search sites must route through the shared widget.'
+        );
+        self::assertSame(
+            1,
+            substr_count($source, 'users/search?q='),
+            'Only the shared widget may query the users/search endpoint.'
+        );
+    }
+
+    public function testExpiredSessionErrorsSuggestReloadingThePage(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "error.code === 'rest_cookie_invalid_nonce'",
+            $source,
+            'An expired REST nonce must surface the dedicated session-expired message.'
         );
     }
 }

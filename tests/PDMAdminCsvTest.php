@@ -27,4 +27,19 @@ final class PDMAdminCsvTest extends TestCase
         self::assertSame("'=external-reference", $row[6]);
         self::assertSame('editor', $row[1]);
     }
+
+    public function test_audit_csv_handler_reads_the_action_filter_under_log_action(): void
+    {
+        $source = (string) file_get_contents(__DIR__ . '/../includes/class-mstv-admin.php');
+
+        self::assertStringContainsString(
+            "['date_from', 'date_to', 'log_action', 'file_type']",
+            $source,
+            'The audit CSV handler must read the action filter under log_action so it cannot collide with the admin-post routing parameter.'
+        );
+        self::assertStringNotContainsString(
+            "foreach (['date_from', 'date_to', 'action', 'file_type'] as \$key)",
+            $source
+        );
+    }
 }

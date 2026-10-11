@@ -399,10 +399,13 @@ class MSTV_Export
 
     private function create_temp_zip_path(string $name): string
     {
-        $tempDir = sys_get_temp_dir();
+        // WordPress core concatenates the provided directory as-is inside wp_tempnam(),
+        // so it must already carry a trailing slash: sys_get_temp_dir() and the
+        // storage base path are returned without one.
+        $tempDir = trailingslashit(sys_get_temp_dir());
 
         if (!wp_is_writable($tempDir)) {
-            $tempDir = $this->storage->get_base_path();
+            $tempDir = trailingslashit($this->storage->get_base_path());
         }
 
         $safeName = $this->sanitize_zip_name($name);
@@ -412,7 +415,7 @@ class MSTV_Export
             return $tempPath;
         }
 
-        return $tempDir . DIRECTORY_SEPARATOR . $safeName . '-' . bin2hex(random_bytes(8)) . '.zip';
+        return $tempDir . $safeName . '-' . bin2hex(random_bytes(8)) . '.zip';
     }
 
     private function stream_zip(string $zipPath, string $zipName): void

@@ -54,12 +54,14 @@ composer install --no-interaction --prefer-dist
 composer validate --strict
 composer audit --locked
 composer ci
+node --check assets/js/admin-app-helpers.js
 node --check assets/js/admin-app-core.js
 node --check assets/js/admin-app-governance.js
 node --check assets/js/admin-app.js
 node --check assets/js/admin-notice-dismiss.js
 node --check tools/parse-plugin-check-output.mjs
 node --test tests/plugin-check-output.test.mjs
+node --test tests/pdm-helpers.test.mjs
 ```
 
 `composer ci` runs PHP lint and PHPUnit. The plugin supports PHP 8.0+, while PHPUnit 11 requires PHP 8.2+; CI therefore lints PHP 8.0-8.4 and runs unit tests on PHP 8.2-8.4.

@@ -2,6 +2,18 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.3.0 - 2026-10-11
+- Security: permission-rule management is now restricted to administrators or users whose manage grant comes from an explicit folder rule; the capability-based free fallback no longer delegates rule management, and the interface hides the rule editor accordingly.
+- Fix: ZIP exports build their temporary archive through a correctly separated temp directory path, restoring folder and library exports on servers where the previous malformed path could not be created.
+- Fix: the audit CSV export applies the report action filter again without colliding with the admin-post routing parameter.
+- Fix: delete, rename, and move failures surface the specific server message (for example why a non-empty folder cannot be deleted) instead of a generic error, and expired sessions get a dedicated reload hint.
+- Feature: search returns matching folders alongside files, honoring the per-folder view scope.
+- Improvement: uploads rejected for a content/extension mismatch explain the detected content type and the declared extension.
+- Improvement: bundled interface translations defer to installed GlotPress language packs and only fall back when no pack translation exists; the logs pagination uses complete translatable sentences.
+- Improvement: modal confirm buttons guard against double submits, debounced user searches drop stale responses, concurrent upload batches are serialized, Escape closes context menus, and a failed folder load no longer shows stale items.
+- Hardening: localized strings and server-derived enum values reaching HTML attributes are escaped mechanically, and the runtime payload no longer ships repository-only metadata files.
+- Tests: the regression suite grows to 186 PHPUnit tests plus behavioral node tests for the shared admin helpers; admin views, REST permission wiring, nonce rejection paths, admin handler guards, and the i18n runtime are covered for the first time.
+
 ## 3.2.6 - 2026-08-08
 - Security: upload destinations now pass through the shared storage-boundary and intermediate-symlink verifier before any destination stream is opened.
 - Reliability: ZIP exports check directory, file, and finalization results, clean up on any throwable failure, and bound recursive traversal when corrupt folder metadata contains a cycle.

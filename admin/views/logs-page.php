@@ -47,9 +47,15 @@ if (!function_exists('mstv_get_log_target_label')) {
     <div class="pdm-logs-toolbar">
         <div class="pdm-pagination-summary">
             <?php if ($mstv_pagination['total_items'] > 0) : ?>
-                <?php echo esc_html($mstv_pagination['from_item'] . '-' . $mstv_pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
+                <?php echo esc_html(sprintf(
+                                        /* translators: 1: first entry shown, 2: last entry shown, 3: total entries. */
+                                        __('Showing %1$d-%2$d of %3$d entries', 'mikesoft-teamvault'),
+                                        (int) $mstv_pagination['from_item'],
+                                        (int) $mstv_pagination['to_item'],
+                                        (int) $mstv_pagination['total_items']
+                                    )); ?>
             <?php else : ?>
-                <?php echo esc_html('0 ' . __('Entries', 'mikesoft-teamvault')); ?>
+                <?php echo esc_html(__('No entries', 'mikesoft-teamvault')); ?>
             <?php endif; ?>
         </div>
 
@@ -133,7 +139,13 @@ if (!function_exists('mstv_get_log_target_label')) {
             <?php if ($mstv_pagination['total_pages'] > 1) : ?>
                 <div class="pdm-pagination">
                     <div class="pdm-pagination-summary">
-                        <?php echo esc_html($mstv_pagination['from_item'] . '-' . $mstv_pagination['to_item'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_items'] . ' ' . __('Entries', 'mikesoft-teamvault')); ?>
+                        <?php echo esc_html(sprintf(
+                                                /* translators: 1: first entry shown, 2: last entry shown, 3: total entries. */
+                                                __('Showing %1$d-%2$d of %3$d entries', 'mikesoft-teamvault'),
+                                                (int) $mstv_pagination['from_item'],
+                                                (int) $mstv_pagination['to_item'],
+                                                (int) $mstv_pagination['total_items']
+                                            )); ?>
                     </div>
                     <div class="pdm-pagination-controls">
                         <?php if ($mstv_pagination['has_prev']) : ?>
@@ -145,7 +157,12 @@ if (!function_exists('mstv_get_log_target_label')) {
                         <?php endif; ?>
 
                         <span class="pdm-pagination-status">
-                            <?php echo esc_html(__('Page', 'mikesoft-teamvault') . ' ' . $mstv_pagination['page'] . ' ' . __('of', 'mikesoft-teamvault') . ' ' . $mstv_pagination['total_pages']); ?>
+                            <?php echo esc_html(sprintf(
+                                                        /* translators: 1: current page number, 2: total number of pages. */
+                                                        __('Page %1$d of %2$d', 'mikesoft-teamvault'),
+                                                        (int) $mstv_pagination['page'],
+                                                        (int) $mstv_pagination['total_pages']
+                                                    )); ?>
                         </span>
 
                         <?php if ($mstv_pagination['has_next']) : ?>

@@ -134,6 +134,17 @@ class MSTV_Permissions
             return $this->all();
         }
 
+        return $this->resolve_from_rules($userId, $rules);
+    }
+
+    /**
+     * Evaluate a set of explicit rules for a user (union of user and group grants).
+     *
+     * @param object[] $rules
+     * @return array<string,bool> map action => granted
+     */
+    private function resolve_from_rules(int $userId, array $rules): array
+    {
         if (!array_key_exists($userId, $this->groupIdsCache)) {
             $this->groupIdsCache[$userId] = $this->groupsRepo->find_groups_for_user($userId);
         }
@@ -159,6 +170,23 @@ class MSTV_Permissions
         }
 
         return $granted;
+    }
+
+    /**
+     * Whether the user's 'manage' action on a folder comes from an explicit rule
+     * (the nearest ancestor carrying rules) rather than the capability-based
+     * free fallback. Used to gate permission-rule management, which is never
+     * delegated by the free fallback.
+     */
+    public function has_rule_based_manage(int $userId, ?int $folderId): bool
+    {
+        $rules = $this->nearest_rules($folderId);
+
+        if ($rules === null) {
+            return false;
+        }
+
+        return !empty($this->resolve_from_rules($userId, $rules)[self::ACTION_MANAGE]);
     }
 
     /**

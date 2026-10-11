@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 3.2.6
+Stable tag: 3.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,7 +103,15 @@ Apache/LiteSpeed can enforce the generated `.htaccess`, IIS can enforce `web.con
 
 = Can non-admin users access TeamVault? =
 
-Yes, if they have the required capability and, when whitelist mode is enabled, they are explicitly allowed in the plugin settings.
+Yes, if they have the required capability and, when whitelist mode is enabled, they are explicitly allowed in the plugin settings. You can grant the `manage_private_documents` capability to another role with a role-management plugin, add individual users through whitelist mode, or use the public `MSTV_Capabilities::add_capability_to_role()` API. Only administrators can manage groups, quotas, notifications, reports, and permission rules unless a folder rule explicitly grants a user the manage action.
+
+= Why was my upload rejected even though the extension is allowed? =
+
+TeamVault verifies the actual file content, not just the extension: the detected content signature must match the declared extension, and files with dangerous content (such as scripts or active markup) are rejected. A ".doc" file circulated via email is often not a real Word document internally (it may be HTML, RTF, or a renamed .docx); in that case the upload is refused and the message explains the mismatch.
+
+= Why can I not delete a folder? =
+
+Folders must be empty before they can be deleted: remove the files and subfolders inside first. The interface shows the specific server message when a deletion is refused.
 
 = How do groups and per-folder permissions work? =
 
@@ -158,6 +166,14 @@ For direct contact, email teamvault@mikesoft.it.
 7. Settings: interface language, allowed file types, maximum upload size, and preview options.
 
 == Changelog ==
+
+= 3.3.0 =
+* Security: permission-rule management is restricted to administrators or users with an explicit manage rule on the folder; the capability-based free fallback no longer delegates it and the interface hides the rule editor accordingly.
+* Fixed: ZIP exports work again on servers where the temporary archive path could not be created.
+* Fixed: the audit CSV export honors the report action filter again, and failed delete/rename/move actions show the specific server message instead of a generic error.
+* Added: search returns matching folders alongside files.
+* Improved: content/extension upload rejections explain the mismatch; bundled translations defer to GlotPress language packs; the logs pagination is fully translatable.
+* Improved: double-submit guards, stale-response guards for user searches, serialized upload batches, Escape closing context menus, and honest export feedback.
 
 = 3.2.6 =
 * Security: upload destinations now use the complete symlink-aware storage verifier before any file is written.
@@ -299,6 +315,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.3.0 =
+
+Folder permission rules can now be managed only by administrators or users with an explicit manage rule on the folder. ZIP exports work again on servers where the temporary archive path could not be created. No configuration changes are required.
 
 = 3.2.6 =
 

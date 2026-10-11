@@ -491,15 +491,25 @@ class MSTV_REST_Controller
 
     /**
      * Effective actions of the current user on a folder, as a JS-friendly map.
-     * When no engine is wired (tests), every action is granted (prior behavior).
+     * `can_manage_rules` gates the folder-permission editor in the UI: only
+     * administrators or users with an explicit manage rule may manage rules,
+     * mirroring the governance REST guard. When no engine is wired (tests),
+     * every action is granted (prior behavior).
      */
     private function permissions_for(?int $folderId): array
     {
         if (!$this->permissions) {
-            return array_fill_keys(MSTV_Permissions::ACTIONS, true);
+            return array_fill_keys(MSTV_Permissions::ACTIONS, true) + ['can_manage_rules' => true];
         }
 
-        return $this->permissions->effective_actions($this->auth->get_current_user_id(), $folderId);
+        $userId = $this->auth->get_current_user_id();
+        $user = $userId > 0 ? get_user_by('id', $userId) : null;
+        $isAdmin = $user && $user->has_cap('manage_options');
+
+        return $this->permissions->effective_actions($userId, $folderId) + [
+            'can_manage_rules' => $isAdmin
+                || $this->permissions->has_rule_based_manage($userId, $folderId),
+        ];
     }
 
     /**
@@ -1226,7 +1236,7 @@ class MSTV_REST_Controller
             ]));
         }
 
-        $folders = [];
+        $folders = $this->filter_folders_by_view($this->folderRepo->search_by_name($query));
         $scope = $this->viewable_folder_scope();
         $filesPage = $scope === null
             ? $this->filesRepo->search_paginated($query, null, $orderBy, $order, $page, $perPage)
@@ -1235,7 +1245,7 @@ class MSTV_REST_Controller
         return $this->with_no_store(new \WP_REST_Response([
             'success' => true,
             'data' => [
-                'folders' => $folders,
+                'folders' => array_map([$this, 'format_folder'], $folders),
                 'files' => array_map([$this, 'format_file'], $filesPage['items']),
                 'pagination' => $filesPage['pagination'],
             ],
