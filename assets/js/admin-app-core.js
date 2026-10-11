@@ -878,7 +878,7 @@
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-header-top">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${mstvConfig.i18n.close}">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${this.escapeHtml(mstvConfig.i18n.close)}">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
@@ -1008,7 +1008,7 @@
             const html = `
                 <div class="pdm-details-header">
                     <div class="pdm-details-header-top">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${mstvConfig.i18n.close}">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-details-close" aria-label="${this.escapeHtml(mstvConfig.i18n.close)}">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M18 6L6 18M6 6l12 12"/>
                             </svg>
@@ -1139,7 +1139,7 @@
             const html = `
                 <div class="pdm-field">
                     <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${mstvConfig.i18n.untitledFolder}" autofocus>
+                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${this.escapeHtml(mstvConfig.i18n.untitledFolder)}" autofocus>
                 </div>
             `;
 
@@ -1565,7 +1565,9 @@
                 this.elements.previewContainer.appendChild(img);
             }
 
-            this.elements.previewDownload.onclick = () => this.downloadFile(fileId);
+            if (this.elements.previewDownload) {
+                this.elements.previewDownload.onclick = () => this.downloadFile(fileId);
+            }
             this.elements.previewModal.classList.add('active');
         },
 

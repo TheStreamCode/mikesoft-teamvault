@@ -176,7 +176,8 @@
             }
         },
 
-        addUserTag(userId, userName, userLogin) {
+        addUserTag(rawUserId, userName, userLogin) {
+            const userId = parseInt(rawUserId, 10);
             const allowedUsersContainer = document.getElementById('pdm-allowed-users');
             const noUsersMsg = document.getElementById('pdm-no-users');
 
@@ -187,7 +188,7 @@
             tag.dataset.userId = userId;
             tag.innerHTML = `
                 <span class="pdm-user-name">${this.escapeHtml(userName)} (${this.escapeHtml(userLogin)})</span>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${mstvConfig.i18n.remove}" aria-label="${mstvConfig.i18n.remove}">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${this.escapeHtml(mstvConfig.i18n.remove)}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>

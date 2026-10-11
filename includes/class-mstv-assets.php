@@ -71,7 +71,6 @@ class MSTV_Assets
         wp_localize_script('mstv-admin-core', 'mstvConfig', [
             'restUrl' => trailingslashit(rest_url('mstv/v1')),
             'restNonce' => wp_create_nonce('wp_rest'),
-            'adminUrl' => admin_url('admin.php'),
             'actionUrl' => admin_url('admin-post.php'),
             'streamNonce' => wp_create_nonce('mstv_stream_action'),
             'exportSelectionNonce' => wp_create_nonce('mstv_export_selection'),
@@ -82,7 +81,6 @@ class MSTV_Assets
                 (string) ini_get('post_max_size'),
                 (string) ini_get('upload_max_filesize')
             ),
-            'allowedExtensions' => $this->settings->get_allowed_extensions(),
             'i18n' => [
                 'confirmDelete' => __('Are you sure you want to delete this item?', 'mikesoft-teamvault'),
                 'confirmDeleteFolder' => __('Are you sure you want to delete this folder? It must be empty.', 'mikesoft-teamvault'),

@@ -18,7 +18,7 @@
                 manage: i18n.permManage,
             };
 
-            const head = p.actions.map(a => `<th>${actionLabels[a] || a}</th>`).join('');
+            const head = p.actions.map(a => `<th>${this.escapeHtml(actionLabels[a] || a)}</th>`).join('');
 
             const rows = p.rules.length ? p.rules.map((rule, idx) => {
                 const cells = p.actions.map(a => `
@@ -222,7 +222,7 @@
                         <div class="pdm-modal-content">
                             <div class="pdm-modal-header">
                                 <h3 class="pdm-modal-title" id="pdm-modal-title"></h3>
-                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close" aria-label="${mstvConfig.i18n.close}">
+                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close" aria-label="${this.escapeHtml(mstvConfig.i18n.close)}">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -367,7 +367,7 @@
             const wrap = this.elements.modal.querySelector('.mstv-group-chips');
             if (!wrap) return;
             wrap.innerHTML = this._groupMembers.map(m =>
-                `<span class="mstv-chip">${this.escapeHtml(m.display_name)} <button type="button" class="mstv-chip-remove" data-id="${m.id}" aria-label="${mstvConfig.i18n.remove}"><span aria-hidden="true">&times;</span></button></span>`
+                `<span class="mstv-chip">${this.escapeHtml(m.display_name)} <button type="button" class="mstv-chip-remove" data-id="${m.id}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}"><span aria-hidden="true">&times;</span></button></span>`
             ).join('');
             wrap.querySelectorAll('.mstv-chip-remove').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -681,8 +681,8 @@
 
             const eventBoxes = n.available_events.map(ev => `
                 <label class="pdm-checkbox-label">
-                    <input type="checkbox" class="mstv-notif-event" value="${ev}" ${n.events.includes(ev) ? 'checked' : ''}>
-                    <span class="pdm-checkbox-text">${eventLabels[ev] || ev}</span>
+                    <input type="checkbox" class="mstv-notif-event" value="${this.escapeHtml(ev)}" ${n.events.includes(ev) ? 'checked' : ''}>
+                    <span class="pdm-checkbox-text">${this.escapeHtml(eventLabels[ev] || ev)}</span>
                 </label>`).join('');
 
             const groupBoxes = (n.groups || []).map(g => `
@@ -778,7 +778,7 @@
             const wrap = this._notifRoot.querySelector('.mstv-notif-chips');
             const n = this._notif;
             wrap.innerHTML = n.recipients.users.map(u =>
-                `<span class="mstv-chip">${this.escapeHtml(u.display_name)} <button type="button" class="mstv-chip-remove" data-id="${u.id}" aria-label="${mstvConfig.i18n.remove}"><span aria-hidden="true">&times;</span></button></span>`
+                `<span class="mstv-chip">${this.escapeHtml(u.display_name)} <button type="button" class="mstv-chip-remove" data-id="${u.id}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}"><span aria-hidden="true">&times;</span></button></span>`
             ).join('');
             wrap.querySelectorAll('.mstv-chip-remove').forEach(btn => btn.addEventListener('click', () => {
                 const id = parseInt(btn.dataset.id, 10);

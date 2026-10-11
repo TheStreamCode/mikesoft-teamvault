@@ -131,6 +131,8 @@ jobs:
             --exclude='.wordpress-org' \
             --exclude='.worktrees' \
             --exclude='AGENTS.md' \
+            --exclude='CITATION.cff' \
+            --exclude='COPYRIGHT.md' \
             --exclude='auth.json' \
             --exclude='CODE_OF_CONDUCT.md' \
             --exclude='CONTRIBUTING.md' \

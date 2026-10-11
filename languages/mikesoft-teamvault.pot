@@ -280,10 +280,6 @@ msgstr ""
 msgid "English"
 msgstr ""
 
-#: admin/views/logs-page.php:136 admin/views/logs-page.php:50 admin/views/logs-page.php:52
-msgid "Entries"
-msgstr ""
-
 #: includes/class-mstv-admin.php:428 includes/class-mstv-admin.php:442 includes/class-mstv-admin.php:495 includes/class-mstv-admin.php:581 includes/class-mstv-download.php:114 includes/class-mstv-download.php:133 includes/class-mstv-download.php:33 includes/class-mstv-download.php:42 includes/class-mstv-download.php:53 includes/class-mstv-download.php:64 includes/class-mstv-download.php:72 includes/class-mstv-export.php:110 includes/class-mstv-export.php:127 includes/class-mstv-export.php:135 includes/class-mstv-export.php:145 includes/class-mstv-export.php:156 includes/class-mstv-export.php:181 includes/class-mstv-export.php:196 includes/class-mstv-export.php:424 includes/class-mstv-export.php:43 includes/class-mstv-export.php:434 includes/class-mstv-export.php:453 includes/class-mstv-export.php:51 includes/class-mstv-export.php:61 includes/class-mstv-export.php:86 includes/class-mstv-preview.php:125 includes/class-mstv-preview.php:137 includes/class-mstv-preview.php:156 includes/class-mstv-preview.php:36 includes/class-mstv-preview.php:45 includes/class-mstv-preview.php:56 includes/class-mstv-preview.php:67 includes/class-mstv-preview.php:75 includes/class-mstv-preview.php:89
 msgid "Error"
 msgstr ""
@@ -334,10 +330,6 @@ msgstr ""
 
 #: includes/class-mstv-assets.php:177
 msgid "Export All"
-msgstr ""
-
-#: includes/class-mstv-assets.php:184
-msgid "Export completed"
 msgstr ""
 
 #: admin/views/reports-page.php:42
@@ -648,6 +640,10 @@ msgstr ""
 msgid "No explicit rules. Default access applies."
 msgstr ""
 
+#: admin/views/logs-page.php:58
+msgid "No entries"
+msgstr ""
+
 #: includes/class-mstv-rest-controller.php:911 includes/class-mstv-validator.php:374
 msgid "No file uploaded."
 msgstr ""
@@ -754,6 +750,11 @@ msgstr ""
 
 #: admin/views/reports-page.php:36
 msgid "Preview and download"
+msgstr ""
+
+#: admin/views/logs-page.php:162
+#. translators: 1: current page number, 2: total number of pages.
+msgid "Page %1$d of %2$d"
 msgstr ""
 
 #: includes/class-mstv-preview.php:136 includes/class-mstv-preview.php:88
@@ -1052,6 +1053,11 @@ msgstr ""
 msgid "The new name is identical to the current name."
 msgstr ""
 
+#: admin/views/logs-page.php:52 admin/views/logs-page.php:144
+#. translators: 1: first entry shown, 2: last entry shown, 3: total entries.
+msgid "Showing %1$d-%2$d of %3$d entries"
+msgstr ""
+
 #: includes/class-mstv-validator.php:248 includes/class-mstv-validator.php:250
 msgid "This file type is not allowed."
 msgstr ""
@@ -1224,8 +1230,17 @@ msgstr ""
 msgid "View"
 msgstr ""
 
+#: includes/class-mstv-validator.php:252
+#. translators: 1: content type detected inside the file, 2: file extension.
+msgid "The file content does not match its extension: the file appears to be %1$s but is named .%2$s."
+msgstr ""
+
 #: admin/views/settings-page.php:295
 msgid "Warning:"
+msgstr ""
+
+#: includes/class-mstv-assets.php:154
+msgid "Your session has expired. Reload the page to continue."
 msgstr ""
 
 #: includes/class-mstv-storage.php:486

@@ -103,7 +103,15 @@ Apache/LiteSpeed can enforce the generated `.htaccess`, IIS can enforce `web.con
 
 = Can non-admin users access TeamVault? =
 
-Yes, if they have the required capability and, when whitelist mode is enabled, they are explicitly allowed in the plugin settings.
+Yes, if they have the required capability and, when whitelist mode is enabled, they are explicitly allowed in the plugin settings. You can grant the `manage_private_documents` capability to another role with a role-management plugin, add individual users through whitelist mode, or use the public `MSTV_Capabilities::add_capability_to_role()` API. Only administrators can manage groups, quotas, notifications, reports, and permission rules unless a folder rule explicitly grants a user the manage action.
+
+= Why was my upload rejected even though the extension is allowed? =
+
+TeamVault verifies the actual file content, not just the extension: the detected content signature must match the declared extension, and files with dangerous content (such as scripts or active markup) are rejected. A ".doc" file circulated via email is often not a real Word document internally (it may be HTML, RTF, or a renamed .docx); in that case the upload is refused and the message explains the mismatch.
+
+= Why can I not delete a folder? =
+
+Folders must be empty before they can be deleted: remove the files and subfolders inside first. The interface shows the specific server message when a deletion is refused.
 
 = How do groups and per-folder permissions work? =
 
