@@ -220,10 +220,22 @@ final class PDMAdminAppTest extends TestCase
     {
         $source = $this->adminAppSource();
 
+        // All user searches share one widget; the sequence guard must live in
+        // the widget and every site must route through it.
+        self::assertStringContainsString(
+            'bindUserSearch({ input, results, render, renderEmpty = null, onPick, onShown = null })',
+            $source,
+            'The shared user-search widget must carry the stale-response guard.'
+        );
         self::assertSame(
             5,
-            substr_count($source, 'if (seq !== this._userSearchSeq) return;'),
-            'Every debounced user search must drop responses that are no longer the latest request.'
+            substr_count($source, 'this.bindUserSearch({'),
+            'All five user-search sites must route through the shared widget.'
+        );
+        self::assertSame(
+            1,
+            substr_count($source, 'users/search?q='),
+            'Only the shared widget may query the users/search endpoint.'
         );
     }
 

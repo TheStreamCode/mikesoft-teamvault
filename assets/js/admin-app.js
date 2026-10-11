@@ -69,59 +69,31 @@
             }
 
             if (userSearch && userResults) {
-                userSearch.addEventListener('input', this.debounce(async (e) => {
-                    const query = e.target.value.trim();
-                    this._userSearchSeq = (this._userSearchSeq || 0) + 1;
-                    const seq = this._userSearchSeq;
+                this.bindUserSearch({
+                    input: userSearch,
+                    results: userResults,
+                    render: user => `
+                        <div class="pdm-user-result" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}" data-user-login="${this.escapeHtml(user.login)}">
+                            <div class="pdm-user-result-avatar">${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}</div>
+                            <div class="pdm-user-result-info">
+                                <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>
+                                <div class="pdm-user-result-login">${this.escapeHtml(user.login)}</div>
+                            </div>
+                        </div>
+                    `,
+                    renderEmpty: () => `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${mstvConfig.i18n.userNotFound}</div>`,
+                    onShown: shown => userResults.classList.toggle('active', shown),
+                    onPick: (id, label, option) => {
+                        if (allowedUsersContainer.querySelector(`[data-user-id="${id}"]`)) {
+                            alert(mstvConfig.i18n.userAlreadyInList);
+                            return;
+                        }
 
-                    if (query.length < 2) {
+                        this.addUserTag(id, label, option.dataset.userLogin || '');
+                        userSearch.value = '';
                         userResults.classList.remove('active');
                         userResults.innerHTML = '';
-                        return;
                     }
-
-                    try {
-                        const response = await this.apiGet(`users/search?q=${encodeURIComponent(query)}`);
-                        if (seq !== this._userSearchSeq) return;
-
-                        
-                        if (response.success && response.data.length > 0) {
-                            userResults.innerHTML = response.data.map(user => `
-                                <div class="pdm-user-result" data-user-id="${user.id}" data-user-login="${this.escapeHtml(user.login)}" data-user-name="${this.escapeHtml(user.display_name)}">
-                                    <div class="pdm-user-result-avatar">${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}</div>
-                                    <div class="pdm-user-result-info">
-                                        <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>
-                                        <div class="pdm-user-result-login">${this.escapeHtml(user.login)}</div>
-                                    </div>
-                                </div>
-                            `).join('');
-                            userResults.classList.add('active');
-                        } else {
-                            userResults.innerHTML = `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${mstvConfig.i18n.userNotFound}</div>`;
-                            userResults.classList.add('active');
-                        }
-                    } catch (error) {
-                        console.error('User search error:', error);
-                    }
-                }, 300));
-
-                userResults.addEventListener('click', (e) => {
-                    const result = e.target.closest('.pdm-user-result');
-                    if (!result) return;
-
-                    const userId = result.dataset.userId;
-                    const userLogin = result.dataset.userLogin;
-                    const userName = result.dataset.userName;
-
-                    if (allowedUsersContainer.querySelector(`[data-user-id="${userId}"]`)) {
-                        alert(mstvConfig.i18n.userAlreadyInList);
-                        return;
-                    }
-
-                    this.addUserTag(userId, userName, userLogin);
-                    userSearch.value = '';
-                    userResults.classList.remove('active');
-                    userResults.innerHTML = '';
                 });
 
                 document.addEventListener('click', (e) => {

@@ -1135,6 +1135,63 @@
             });
         },
 
+        /**
+         * Shared debounced user-search widget.
+         *
+         * Renders one result element per user through `render(user)` (the markup
+         * must carry data-pdm-user-id and, when the pick needs the display name,
+         * data-pdm-user-label), drops stale responses via a global sequence
+         * counter, and calls `onPick(id, label, option, ctx)` on a result click.
+         * `onShown(shown)` reports whether a result list (possibly the empty
+         * state) is currently rendered.
+         */
+        bindUserSearch({ input, results, render, renderEmpty = null, onPick, onShown = null }) {
+            if (!input || !results || typeof render !== 'function' || typeof onPick !== 'function') {
+                return;
+            }
+
+            const runSearch = this.debounce(async () => {
+                const query = input.value.trim();
+
+                if (query.length < 2) {
+                    results.innerHTML = '';
+                    if (onShown) {
+                        onShown(false);
+                    }
+                    return;
+                }
+
+                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                const seq = this._userSearchSeq;
+
+                try {
+                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(query)}`);
+                    if (seq !== this._userSearchSeq) return;
+
+                    const users = res.data || [];
+                    results.innerHTML = users.length > 0
+                        ? users.map(user => render(user)).join('')
+                        : (renderEmpty ? renderEmpty() : '');
+                    if (onShown) {
+                        onShown(true);
+                    }
+
+                    results.querySelectorAll('[data-pdm-user-id]').forEach(option => {
+                        option.addEventListener('click', () => {
+                            onPick(
+                                parseInt(option.dataset.pdmUserId, 10),
+                                option.dataset.pdmUserLabel || '',
+                                option,
+                                { input, results }
+                            );
+                        });
+                    });
+                } catch (e) { /* ignore search errors */ }
+            }, 300);
+
+            input.addEventListener('input', runSearch);
+        },
+
         showNewFolderModal() {
             const html = `
                 <div class="pdm-field">

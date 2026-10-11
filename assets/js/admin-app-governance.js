@@ -115,28 +115,12 @@
                 groupBox?.classList.toggle('pdm-is-hidden', !isGroup);
             });
 
-            const userSearch = modal.querySelector('.pdm-perm-user-search');
-            const results = modal.querySelector('.pdm-perm-user-results');
-            const runSearch = this.debounce(async () => {
-                const q = userSearch.value.trim();
-                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
-                const seq = this._userSearchSeq;
-
-                if (q.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
-                    if (seq !== this._userSearchSeq) return;
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)} <span class="pdm-perm-type">${this.escapeHtml(u.login)}</span></button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => {
-                            this.addPermissionPrincipal('user', parseInt(opt.dataset.id, 10), opt.dataset.label);
-                        });
-                    });
-                } catch (e) { /* ignore search errors */ }
-            }, 300);
-            userSearch?.addEventListener('input', runSearch);
+            this.bindUserSearch({
+                input: modal.querySelector('.pdm-perm-user-search'),
+                results: modal.querySelector('.pdm-perm-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)} <span class="pdm-perm-type">${this.escapeHtml(user.login)}</span></button>`,
+                onPick: (id, label) => this.addPermissionPrincipal('user', id, label)
+            });
 
             modal.querySelector('.pdm-perm-add-group-btn')?.addEventListener('click', () => {
                 const sel = modal.querySelector('.pdm-perm-group-select');
@@ -331,34 +315,19 @@
             modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
             this.renderGroupChips();
 
-            const search = modal.querySelector('.mstv-group-user-search');
-            const results = modal.querySelector('.mstv-group-user-results');
-            const run = this.debounce(async () => {
-                const q = search.value.trim();
-                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
-                const seq = this._userSearchSeq;
-
-                if (q.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
-                    if (seq !== this._userSearchSeq) return;
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => {
-                            const id = parseInt(opt.dataset.id, 10);
-                            if (!this._groupMembers.some(m => m.id === id)) {
-                                this._groupMembers.push({ id, display_name: opt.dataset.label });
-                                this.renderGroupChips();
-                            }
-                            search.value = '';
-                            results.innerHTML = '';
-                        });
-                    });
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search?.addEventListener('input', run);
+            this.bindUserSearch({
+                input: modal.querySelector('.mstv-group-user-search'),
+                results: modal.querySelector('.mstv-group-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label, option, ctx) => {
+                    if (!this._groupMembers.some(m => m.id === id)) {
+                        this._groupMembers.push({ id, display_name: label });
+                        this.renderGroupChips();
+                    }
+                    ctx.input.value = '';
+                    ctx.results.innerHTML = '';
+                }
+            });
 
             modal.querySelector('.mstv-group-save')?.addEventListener('click', () => this.saveGroup(group ? group.id : null));
         },
@@ -510,25 +479,12 @@
                 root.querySelector('.mstv-quota-group-box').classList.toggle('pdm-is-hidden', !isGroup);
             });
 
-            const search = root.querySelector('.mstv-quota-user-search');
-            const results = root.querySelector('.mstv-quota-user-results');
-            const run = this.debounce(async () => {
-                const term = search.value.trim();
-                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
-                const seq = this._userSearchSeq;
-                if (term.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
-                    if (seq !== this._userSearchSeq) return;
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => this.addQuotaItem('user', parseInt(opt.dataset.id, 10), opt.dataset.label));
-                    });
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search.addEventListener('input', run);
+            this.bindUserSearch({
+                input: root.querySelector('.mstv-quota-user-search'),
+                results: root.querySelector('.mstv-quota-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label) => this.addQuotaItem('user', id, label)
+            });
 
             root.querySelector('.mstv-quota-add-group-btn')?.addEventListener('click', () => {
                 const sel = root.querySelector('.mstv-quota-group-select');
@@ -746,30 +702,19 @@
 
             this.renderNotifChips();
 
-            const search = root.querySelector('.mstv-notif-user-search');
-            const results = root.querySelector('.mstv-notif-user-results');
-            const run = this.debounce(async () => {
-                const term = search.value.trim();
-                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
-                const seq = this._userSearchSeq;
-                if (term.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
-                    if (seq !== this._userSearchSeq) return;
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => opt.addEventListener('click', () => {
-                        const id = parseInt(opt.dataset.id, 10);
-                        if (!n.recipients.users.some(u => u.id === id)) {
-                            n.recipients.users.push({ id, display_name: opt.dataset.label });
-                            this.renderNotifChips();
-                        }
-                        search.value = ''; results.innerHTML = '';
-                    }));
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search.addEventListener('input', run);
+            this.bindUserSearch({
+                input: root.querySelector('.mstv-notif-user-search'),
+                results: root.querySelector('.mstv-notif-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label, option, ctx) => {
+                    if (!n.recipients.users.some(u => u.id === id)) {
+                        n.recipients.users.push({ id, display_name: label });
+                        this.renderNotifChips();
+                    }
+                    ctx.input.value = '';
+                    ctx.results.innerHTML = '';
+                }
+            });
 
             root.querySelector('.mstv-notif-save').addEventListener('click', () => this.saveNotifications());
         },
