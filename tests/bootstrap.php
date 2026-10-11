@@ -8,6 +8,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! defined( 'MSTV_VERSION' ) ) {
     define( 'MSTV_VERSION', 'test' );
 }
+if ( ! defined( 'MSTV_PLUGIN_DIR' ) ) {
+    define( 'MSTV_PLUGIN_DIR', __DIR__ . '/../' );
+}
+if ( ! defined( 'MSTV_PLUGIN_URL' ) ) {
+    define( 'MSTV_PLUGIN_URL', 'https://example.test/wp-content/plugins/mikesoft-teamvault/' );
+}
 define('MINUTE_IN_SECONDS', 60);
 
 $GLOBALS['pdm_test_options'] = [];
@@ -20,6 +26,10 @@ $GLOBALS['pdm_test_user_meta'] = [];
 $GLOBALS['pdm_test_transients'] = [];
 $GLOBALS['pdm_test_roles'] = [];
 $GLOBALS['pdm_test_network_active_plugins'] = [];
+$GLOBALS['pdm_test_actions'] = [];
+$GLOBALS['pdm_test_verified_nonce_actions'] = [];
+$GLOBALS['pdm_test_rest_routes'] = [];
+$GLOBALS['pdm_test_redirects'] = [];
 
 function __($text, $domain = null)
 {
@@ -28,12 +38,116 @@ function __($text, $domain = null)
 
 function esc_html__($text, $domain = null)
 {
-    return $text;
+    return esc_html(__($text, $domain));
+}
+
+function esc_html_e($text, $domain = null)
+{
+    echo esc_html(__($text, $domain));
 }
 
 function esc_html($text)
 {
     return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+}
+
+function esc_attr($text)
+{
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+}
+
+function esc_attr__($text, $domain = null)
+{
+    return esc_attr(__($text, $domain));
+}
+
+function esc_attr_e($text, $domain = null)
+{
+    echo esc_attr(__($text, $domain));
+}
+
+function esc_url($url)
+{
+    $url = (string) $url;
+
+    if (preg_match('/^\s*(javascript|data|vbscript)\s*:/i', $url)) {
+        return '';
+    }
+
+    return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+}
+
+function esc_textarea($text)
+{
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+}
+
+function wp_json_encode($data, $flags = 0)
+{
+    $encoded = json_encode($data, $flags);
+
+    return $encoded === false ? '' : $encoded;
+}
+
+function selected($checked, $current = true)
+{
+    return (string) $checked === (string) $current ? " selected='selected'" : '';
+}
+
+function checked($checked, $current = true)
+{
+    return (string) $checked === (string) $current ? " checked='checked'" : '';
+}
+
+function disabled($checked, $current = true)
+{
+    return (string) $checked === (string) $current ? " disabled='disabled'" : '';
+}
+
+function wp_nonce_field($action = -1, $name = '_wpnonce', $referer = true, $echo = true)
+{
+    $name = (string) $name;
+    $html = '<input type="hidden" id="' . esc_attr($name) . '" name="' . esc_attr($name)
+        . '" value="' . esc_attr(wp_create_nonce($action)) . '">';
+
+    if ((bool) $referer) {
+        $html .= '<input type="hidden" name="_wp_http_referer" value="' . esc_attr('/test/') . '">';
+    }
+
+    if ((bool) $echo) {
+        echo $html;
+    }
+
+    return $html;
+}
+
+function submit_button($text = '', $type = 'primary', $name = 'submit', $wrap = true, $other_attributes = null)
+{
+    $text = $text !== '' ? (string) $text : 'Save Changes';
+
+    echo '<input type="submit" name="' . esc_attr((string) $name) . '" class="button" value="' . esc_attr($text) . '">';
+}
+
+function mysql2date($format, $value)
+{
+    return (string) $value;
+}
+
+function wp_max_upload_size()
+{
+    return 52428800;
+}
+
+function wp_safe_redirect($location, $status = 302)
+{
+    $GLOBALS['pdm_test_redirects'][] = $location;
+
+    throw new RuntimeException('redirect: ' . $location);
+}
+
+function determine_locale()
+{
+    return 'en_US';
 }
 
 function esc_js($text)
@@ -64,6 +178,20 @@ function add_filter($hook, $callback, $priority = 10, $accepted_args = 1)
 
 function apply_filters($hook, $value, ...$args)
 {
+    $filters = $GLOBALS['pdm_test_actions'][$hook] ?? [];
+
+    usort($filters, static function ($a, $b) {
+        return $a['priority'] <=> $b['priority'];
+    });
+
+    foreach ($filters as $filter) {
+        if (!is_callable($filter['callback'])) {
+            continue;
+        }
+
+        $value = call_user_func_array($filter['callback'], array_merge([$value], $args));
+    }
+
     return $value;
 }
 
@@ -327,7 +455,9 @@ function wp_roles()
         ];
     }
 
-    return (object) ['roles' => $roles];
+    $GLOBALS['wp_roles'] = (object) ['roles' => $roles];
+
+    return $GLOBALS['wp_roles'];
 }
 
 function get_avatar_url($userId, array $args = [])
@@ -363,12 +493,50 @@ function wp_mail($to, $subject, $message, $headers = '', $attachments = [])
 
 function wp_verify_nonce($nonce, $action)
 {
+    $GLOBALS['pdm_test_verified_nonce_actions'][] = (string) $action;
+
     return $nonce === 'valid-nonce';
 }
 
 function check_ajax_referer($action, $query_arg = false, $die = true)
 {
-    return 1;
+    $nonce = null;
+
+    if (is_string($query_arg) && isset($_REQUEST[$query_arg])) {
+        $nonce = $_REQUEST[$query_arg];
+    } elseif (isset($_REQUEST['_ajax_nonce'])) {
+        $nonce = $_REQUEST['_ajax_nonce'];
+    } elseif (isset($_REQUEST['_wpnonce'])) {
+        $nonce = $_REQUEST['_wpnonce'];
+    }
+
+    $result = wp_verify_nonce($nonce, $action);
+
+    if (!$result && (bool) $die) {
+        wp_die('Invalid security token.', '', ['response' => 403]);
+    }
+
+    return $result ? 1 : false;
+}
+
+function check_admin_referer($action = -1, $query_arg = '_wpnonce')
+{
+    $nonce = isset($_REQUEST[$query_arg]) ? $_REQUEST[$query_arg] : null;
+
+    $result = wp_verify_nonce($nonce, $action);
+
+    if (!$result) {
+        wp_die('Are you sure you want to do this?', '', ['response' => 400]);
+    }
+
+    return $result;
+}
+
+function register_rest_route($namespace, $route, $args = [], $override = false)
+{
+    $GLOBALS['pdm_test_rest_routes'][$namespace . $route][] = $args;
+
+    return true;
 }
 
 function wp_upload_dir()
@@ -510,6 +678,20 @@ class FakePDMUser
     public function has_cap(string $cap): bool
     {
         return !empty($this->caps[$cap]);
+    }
+}
+
+class FakePDMViewUser
+{
+    public int $ID;
+    public string $display_name;
+    public string $user_login;
+
+    public function __construct(int $id, string $displayName, string $login)
+    {
+        $this->ID = $id;
+        $this->display_name = $displayName;
+        $this->user_login = $login;
     }
 }
 
