@@ -288,15 +288,18 @@ function esc_sql($data)
 
 function wp_tempnam($filename = '', $dir = '')
 {
-    $dir = $dir !== '' ? (string) $dir : sys_get_temp_dir();
-    $extension = pathinfo((string) $filename, PATHINFO_EXTENSION);
-    $prefix = pathinfo((string) $filename, PATHINFO_FILENAME);
-    $prefix = $prefix !== '' ? $prefix : 'wp-temp';
-    $path = $dir . DIRECTORY_SEPARATOR . $prefix . '-' . bin2hex(random_bytes(8));
-
-    if ($extension !== '') {
-        $path .= '.' . $extension;
+    if ($dir === '') {
+        $dir = trailingslashit(sys_get_temp_dir());
     }
+
+    $filename = (string) $filename;
+    $prefix = pathinfo($filename, PATHINFO_FILENAME);
+    $prefix = $prefix !== '' ? $prefix : 'wp-temp';
+
+    // Mirror WordPress core: the caller-provided directory is concatenated
+    // as-is, without adding a directory separator. The suffix matches the
+    // core naming scheme (random suffix, .tmp extension).
+    $path = $dir . $prefix . '-' . bin2hex(random_bytes(3)) . '.tmp';
 
     return touch($path) ? $path : false;
 }

@@ -17,8 +17,8 @@ final class PDMExportTest extends TestCase
 
         try {
             self::assertNotSame($first, $second);
-            self::assertStringEndsWith('.zip', $first);
-            self::assertStringEndsWith('.zip', $second);
+            self::assertStringEndsWith('.tmp', $first);
+            self::assertStringEndsWith('.tmp', $second);
         } finally {
             if (is_string($first) && file_exists($first)) {
                 wp_delete_file($first);
@@ -26,6 +26,38 @@ final class PDMExportTest extends TestCase
 
             if (is_string($second) && file_exists($second)) {
                 wp_delete_file($second);
+            }
+        }
+    }
+
+    public function test_temp_zip_path_stays_inside_the_temp_directory(): void
+    {
+        if (!wp_is_writable(trailingslashit(sys_get_temp_dir()))) {
+            self::markTestSkipped('The system temp directory is not writable in this environment.');
+        }
+
+        $export = $this->buildExport();
+        $method = new ReflectionMethod(MSTV_Export::class, 'create_temp_zip_path');
+        $method->setAccessible(true);
+
+        $path = $method->invoke($export, 'documents-export');
+
+        try {
+            self::assertIsString($path);
+            self::assertFileExists($path);
+            self::assertStringStartsWith(
+                trailingslashit(wp_normalize_path(sys_get_temp_dir())),
+                trailingslashit(wp_normalize_path($path)),
+                'The export temp file must live directly inside the temp directory.'
+            );
+            self::assertStringEndsWith(
+                '.tmp',
+                $path,
+                'The export temp file must use the core wp_tempnam() naming scheme.'
+            );
+        } finally {
+            if (is_string($path) && file_exists($path)) {
+                wp_delete_file($path);
             }
         }
     }
