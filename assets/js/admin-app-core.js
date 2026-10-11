@@ -1192,11 +1192,16 @@
             input.addEventListener('input', runSearch);
         },
 
-        showNewFolderModal() {
+        /**
+         * Shared single-line text prompt modal (create folder, rename folder,
+         * rename file). The confirm handler runs through the double-submit
+         * guard and only fires for a non-empty trimmed value.
+         */
+        showTextPromptModal({ title, initial = '', onConfirm }) {
             const html = `
                 <div class="pdm-field">
                     <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${this.escapeHtml(mstvConfig.i18n.untitledFolder)}" autofocus>
+                    <input type="text" class="pdm-input" id="pdm-text-prompt-input" value="${this.escapeHtml(initial)}" autofocus>
                 </div>
             `;
 
@@ -1205,17 +1210,25 @@
                 <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
             `;
 
-            this.showModal(mstvConfig.i18n.newFolder, html, footer);
+            this.showModal(title, html, footer);
 
-            const nameInput = document.getElementById('pdm-folder-name');
-            nameInput?.select();
+            const input = document.getElementById('pdm-text-prompt-input');
+            input?.select();
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
             this.bindModalConfirm(async () => {
-                const name = nameInput?.value?.trim();
-                if (name) {
-                    await this.createFolder(name);
+                const value = input?.value?.trim();
+                if (value) {
+                    await onConfirm(value);
                 }
+            });
+        },
+
+        showNewFolderModal() {
+            this.showTextPromptModal({
+                title: mstvConfig.i18n.newFolder,
+                initial: mstvConfig.i18n.untitledFolder,
+                onConfirm: name => this.createFolder(name)
             });
         },
 
@@ -1223,29 +1236,10 @@
             const folder = this.state.folders.find(f => f.id === folderId);
             if (!folder) return;
 
-            const html = `
-                <div class="pdm-field">
-                    <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-folder-name" value="${this.escapeHtml(folder.name)}" autofocus>
-                </div>
-            `;
-
-            const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
-            `;
-
-            this.showModal(mstvConfig.i18n.rename, html, footer);
-
-            const nameInput = document.getElementById('pdm-folder-name');
-            nameInput?.select();
-
-            this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.bindModalConfirm(async () => {
-                const name = nameInput?.value?.trim();
-                if (name) {
-                    await this.renameFolder(folderId, name);
-                }
+            this.showTextPromptModal({
+                title: mstvConfig.i18n.rename,
+                initial: folder.name,
+                onConfirm: name => this.renameFolder(folderId, name)
             });
         },
 
@@ -1256,31 +1250,11 @@
             const fallbackName = files.original_name
                 ? files.original_name.replace(/\.[^/.]+$/, '')
                 : '';
-            const initialName = (files.display_name || fallbackName || '').trim();
 
-            const html = `
-                <div class="pdm-field">
-                    <label class="pdm-field-label">${mstvConfig.i18n.name}</label>
-                    <input type="text" class="pdm-input" id="pdm-files-name" value="${this.escapeHtml(initialName)}" autofocus>
-                </div>
-            `;
-
-            const footer = `
-                <button type="button" class="pdm-btn pdm-btn-secondary pdm-modal-cancel">${mstvConfig.i18n.cancel}</button>
-                <button type="button" class="pdm-btn pdm-btn-primary pdm-modal-confirm">${mstvConfig.i18n.confirm}</button>
-            `;
-
-            this.showModal(mstvConfig.i18n.rename, html, footer);
-
-            const nameInput = document.getElementById('pdm-files-name');
-            nameInput?.select();
-
-            this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.bindModalConfirm(async () => {
-                const name = nameInput?.value?.trim();
-                if (name) {
-                    await this.renameFile(fileId, name);
-                }
+            this.showTextPromptModal({
+                title: mstvConfig.i18n.rename,
+                initial: (files.display_name || fallbackName || '').trim(),
+                onConfirm: name => this.renameFile(fileId, name)
             });
         },
 

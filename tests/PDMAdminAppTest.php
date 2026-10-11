@@ -210,9 +210,14 @@ final class PDMAdminAppTest extends TestCase
             'Modal confirm buttons must share a double-submit guard.'
         );
         self::assertSame(
-            5,
+            3,
             substr_count($source, 'this.bindModalConfirm(async'),
-            'All five plain modals must route their confirm handlers through the guard.'
+            'The text-prompt factory plus the two move modals must route their confirm handlers through the guard.'
+        );
+        self::assertStringContainsString(
+            'showTextPromptModal({ title, initial',
+            $source,
+            'Create-folder and rename modals must share the text prompt factory.'
         );
     }
 
