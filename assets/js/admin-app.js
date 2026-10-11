@@ -7,20 +7,7 @@
 
     Object.assign(window.PDM, {
         buildApiUrl(endpoint) {
-            const base = String(mstvConfig.restUrl || '').replace(/\/+$/, '');
-            const path = String(endpoint || '').replace(/^\/+/, '');
-
-            if (base.includes('?')) {
-                const qIdx = path.indexOf('?');
-
-                if (qIdx === -1) {
-                    return `${base}/${path}`;
-                }
-
-                return `${base}/${path.substring(0, qIdx)}&${path.substring(qIdx + 1)}`;
-            }
-
-            return `${base}/${path}`;
+            return window.PDMHelpers.buildApiUrl(endpoint, mstvConfig.restUrl);
         },
 
         buildFreshApiUrl(endpoint) {
@@ -30,29 +17,11 @@
         },
 
         escapeHtml(text) {
-            const characters = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-
-            return String(text ?? '').replace(/[&<>"']/g, character => characters[character]);
+            return window.PDMHelpers.escapeHtml(text);
         },
 
         normalizeSameOriginUrl(value) {
-            try {
-                const url = new URL(String(value || ''), window.location.href);
-
-                if (!['http:', 'https:'].includes(url.protocol) || url.origin !== window.location.origin) {
-                    return '';
-                }
-
-                return url.toString();
-            } catch (error) {
-                return '';
-            }
+            return window.PDMHelpers.normalizeSameOriginUrl(value, window.location.href);
         },
 
         formatBytes(bytes) {

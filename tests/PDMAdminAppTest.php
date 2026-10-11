@@ -22,25 +22,29 @@ final class PDMAdminAppTest extends TestCase
         ));
     }
 
-    public function testApiUrlBuilderSupportsPlainPermalinkRestUrls(): void
+    public function testAdminAppRoutesSharedHelpersThroughThePureHelpersModule(): void
     {
         $source = $this->adminAppSource();
 
+        // Behavioral coverage lives in tests/pdm-helpers.test.mjs; this guards
+        // the wiring so the app cannot silently reimplement the helpers.
         self::assertStringContainsString(
-            "base.includes('?')",
-            $source,
-            'The admin API URL builder must detect query-style REST bases generated when pretty permalinks are disabled.'
+            'window.PDMHelpers.buildApiUrl(endpoint, mstvConfig.restUrl)',
+            $source
         );
         self::assertStringContainsString(
-            'return `${base}/${path.substring(0, qIdx)}&${path.substring(qIdx + 1)}`;',
-            $source,
-            'Endpoint query arguments must be appended with & after the rest_route query variable.'
+            'window.PDMHelpers.escapeHtml(text)',
+            $source
+        );
+        self::assertStringContainsString(
+            'window.PDMHelpers.normalizeSameOriginUrl(value, window.location.href)',
+            $source
         );
     }
 
-    public function testHtmlEscaperAlsoEncodesQuotedAttributeDelimiters(): void
+    public function testHelpersModuleEscapesBothQuoteTypesForAttributeContexts(): void
     {
-        $source = $this->adminAppSource();
+        $source = (string) file_get_contents(__DIR__ . '/../assets/js/admin-app-helpers.js');
 
         self::assertStringContainsString("'\"': '&quot;'", $source);
         self::assertStringContainsString("\"'\": '&#039;'", $source);
@@ -77,13 +81,12 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
-    public function testDownloadAndPreviewUrlsAreRestrictedToSameOriginHttp(): void
+    public function testDownloadAndPreviewSinksGoThroughTheSameOriginNormalizer(): void
     {
         $source = $this->adminAppSource();
 
-        self::assertStringContainsString('normalizeSameOriginUrl(value)', $source);
-        self::assertStringContainsString("!['http:', 'https:'].includes(url.protocol)", $source);
-        self::assertStringContainsString('url.origin !== window.location.origin', $source);
+        // Normalizer behavior is covered by tests/pdm-helpers.test.mjs; this
+        // guards that every browser destination still passes through it.
         self::assertStringContainsString('link.href = downloadUrl;', $source);
         self::assertStringContainsString('iframe.src = previewUrl;', $source);
         self::assertStringContainsString('img.src = previewUrl;', $source);

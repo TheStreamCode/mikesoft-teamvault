@@ -163,10 +163,13 @@ jobs:
           node-version: '24'
 
       - name: Test Plugin Check output parser
-        run: node --test tests/plugin-check-output.test.mjs
+        run: |
+          node --test tests/plugin-check-output.test.mjs
+          node --test tests/pdm-helpers.test.mjs
 
       - name: Check JavaScript syntax
         run: |
+          node --check assets/js/admin-app-helpers.js
           node --check assets/js/admin-app-core.js
           node --check assets/js/admin-app-governance.js
           node --check assets/js/admin-app.js

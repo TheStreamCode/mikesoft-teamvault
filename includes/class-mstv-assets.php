@@ -27,13 +27,23 @@ class MSTV_Assets
             MSTV_VERSION
         );
 
-        // admin-app is split into three files loaded in order: core (state + file
-        // browser + shared utilities) exposes window.PDM, then governance and the
-        // settings/export/bootstrap layer augment it via Object.assign.
+        // admin-app is split across helper + core + governance + app files loaded in
+        // order: helpers expose window.PDMHelpers (pure, node-testable), then core
+        // (state + file browser + shared utilities) exposes window.PDM, then
+        // governance and the settings/export/bootstrap layer augment it via
+        // Object.assign.
+        wp_enqueue_script(
+            'mstv-admin-helpers',
+            MSTV_PLUGIN_URL . 'assets/js/admin-app-helpers.js',
+            [],
+            MSTV_VERSION,
+            true
+        );
+
         wp_enqueue_script(
             'mstv-admin-core',
             MSTV_PLUGIN_URL . 'assets/js/admin-app-core.js',
-            [],
+            ['mstv-admin-helpers'],
             MSTV_VERSION,
             true
         );
