@@ -2035,45 +2035,28 @@
             }, 5000);
         },
 
-        showFolderContextMenu(e, folderId) {
+        /**
+         * Shared context-menu factory: renders the given items, clamps the menu
+         * inside the viewport, hides any previous menu, and dispatches clicks.
+         * Items are { key, label, icon, className?, onClick? } or { divider: true }.
+         */
+        buildContextMenu(e, items) {
             this.hideContextMenu();
 
             const menu = document.createElement('div');
             menu.className = 'context-menu';
-            menu.innerHTML = `
-                <div class="context-menu-item pdm-context-open">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    ${mstvConfig.i18n.folder}
-                </div>
-                <div class="context-menu-item pdm-context-rename">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    ${mstvConfig.i18n.rename}
-                </div>
-                <div class="context-menu-item pdm-context-move">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="5 9 2 12 5 15"/>
-                        <polyline points="9 5 12 2 15 5"/>
-                        <polyline points="15 19 12 22 9 19"/>
-                        <polyline points="19 9 22 12 19 15"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <line x1="12" y1="2" x2="12" y2="22"/>
-                    </svg>
-                    ${mstvConfig.i18n.move}
-                </div>
-                <div class="context-menu-divider"></div>
-                <div class="context-menu-item context-menu-item--danger pdm-context-delete">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                    ${mstvConfig.i18n.delete}
-                </div>
-            `;
+            menu.innerHTML = items.map(item => {
+                if (item.divider) {
+                    return '<div class="context-menu-divider"></div>';
+                }
+
+                return `
+                    <div class="context-menu-item ${item.className || ''}" data-context-action="${item.key}">
+                        ${item.icon}
+                        ${item.label}
+                    </div>
+                `;
+            }).join('');
 
             menu.style.left = `${e.pageX}px`;
             menu.style.top = `${e.pageY}px`;
@@ -2087,125 +2070,117 @@
                 menu.style.top = `${window.innerHeight - rect.height - 10}px`;
             }
 
-            menu.querySelector('.pdm-context-open')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.loadBrowser(folderId, 1, { clearSearchInput: true });
-            });
+            items.forEach(item => {
+                if (item.divider || !item.onClick) {
+                    return;
+                }
 
-            menu.querySelector('.pdm-context-rename')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.showRenameFolderModal(folderId);
-            });
-
-            menu.querySelector('.pdm-context-move')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.showMoveFolderModal(folderId);
-            });
-
-            menu.querySelector('.pdm-context-delete')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.deleteFolder(folderId);
+                menu.querySelector(`[data-context-action="${item.key}"]`)?.addEventListener('click', () => {
+                    this.hideContextMenu();
+                    item.onClick();
+                });
             });
 
             document.addEventListener('click', this._boundHideContextMenu);
+        },
+
+        contextMenuIcon(name) {
+            const icons = {
+                open: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',
+                preview: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+                download: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+                rename: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+                move: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 9 2 12 5 15"/><polyline points="9 5 12 2 15 5"/><polyline points="15 19 12 22 9 19"/><polyline points="19 9 22 12 19 15"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/></svg>',
+                delete: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>'
+            };
+
+            return icons[name] || '';
+        },
+
+        showFolderContextMenu(e, folderId) {
+            const icon = name => this.contextMenuIcon(name);
+
+            this.buildContextMenu(e, [
+                {
+                    key: 'open',
+                    label: mstvConfig.i18n.folder,
+                    icon: icon('open'),
+                    onClick: () => this.loadBrowser(folderId, 1, { clearSearchInput: true })
+                },
+                {
+                    key: 'rename',
+                    label: mstvConfig.i18n.rename,
+                    icon: icon('rename'),
+                    onClick: () => this.showRenameFolderModal(folderId)
+                },
+                {
+                    key: 'move',
+                    label: mstvConfig.i18n.move,
+                    icon: icon('move'),
+                    onClick: () => this.showMoveFolderModal(folderId)
+                },
+                { divider: true },
+                {
+                    key: 'delete',
+                    label: mstvConfig.i18n.delete,
+                    icon: icon('delete'),
+                    className: 'context-menu-item--danger',
+                    onClick: () => this.deleteFolder(folderId)
+                }
+            ]);
         },
 
         showFileContextMenu(e, fileId) {
-            this.hideContextMenu();
-
             const files = this.state.files.find(f => f.id === fileId);
             if (!files) return;
+
             const isAvailable = this.isFileAvailable(files);
+            const icon = name => this.contextMenuIcon(name);
+            const items = [];
 
-            const menu = document.createElement('div');
-            menu.className = 'context-menu';
-            menu.innerHTML = `
-                ${files.is_previewable ? `
-                    <div class="context-menu-item pdm-context-preview">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        ${mstvConfig.i18n.preview}
-                    </div>
-                ` : ''}
-                <div class="context-menu-item pdm-context-download ${isAvailable ? '' : 'context-menu-item--disabled'}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="7 10 12 15 17 10"/>
-                        <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                    ${mstvConfig.i18n.download}
-                </div>
-                <div class="context-menu-item pdm-context-rename">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    ${mstvConfig.i18n.rename}
-                </div>
-                <div class="context-menu-item pdm-context-move">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="5 9 2 12 5 15"/>
-                        <polyline points="9 5 12 2 15 5"/>
-                        <polyline points="15 19 12 22 9 19"/>
-                        <polyline points="19 9 22 12 19 15"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <line x1="12" y1="2" x2="12" y2="22"/>
-                    </svg>
-                    ${mstvConfig.i18n.move}
-                </div>
-                <div class="context-menu-divider"></div>
-                <div class="context-menu-item context-menu-item--danger pdm-context-delete">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"/>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                    ${mstvConfig.i18n.delete}
-                </div>
-            `;
-
-            menu.style.left = `${e.pageX}px`;
-            menu.style.top = `${e.pageY}px`;
-            document.body.appendChild(menu);
-
-            const rect = menu.getBoundingClientRect();
-            if (rect.right > window.innerWidth) {
-                menu.style.left = `${window.innerWidth - rect.width - 10}px`;
-            }
-            if (rect.bottom > window.innerHeight) {
-                menu.style.top = `${window.innerHeight - rect.height - 10}px`;
+            if (files.is_previewable) {
+                items.push({
+                    key: 'preview',
+                    label: mstvConfig.i18n.preview,
+                    icon: icon('preview'),
+                    onClick: () => this.previewFile(fileId)
+                });
             }
 
-            menu.querySelector('.pdm-context-preview')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.previewFile(fileId);
-            });
+            items.push(
+                {
+                    key: 'download',
+                    label: mstvConfig.i18n.download,
+                    icon: icon('download'),
+                    className: isAvailable ? '' : 'context-menu-item--disabled',
+                    onClick: isAvailable ? () => this.downloadFile(fileId) : null
+                },
+                {
+                    key: 'rename',
+                    label: mstvConfig.i18n.rename,
+                    icon: icon('rename'),
+                    onClick: () => this.showRenameFileModal(fileId)
+                },
+                {
+                    key: 'move',
+                    label: mstvConfig.i18n.move,
+                    icon: icon('move'),
+                    onClick: () => this.showMoveFileModal(fileId)
+                },
+                { divider: true },
+                {
+                    key: 'delete',
+                    label: mstvConfig.i18n.delete,
+                    icon: icon('delete'),
+                    className: 'context-menu-item--danger',
+                    onClick: () => this.deleteFile(fileId)
+                }
+            );
 
-            menu.querySelector('.pdm-context-download')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.downloadFile(fileId);
-            });
-
-            menu.querySelector('.pdm-context-rename')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.showRenameFileModal(fileId);
-            });
-
-            menu.querySelector('.pdm-context-move')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.showMoveFileModal(fileId);
-            });
-
-            menu.querySelector('.pdm-context-delete')?.addEventListener('click', () => {
-                this.hideContextMenu();
-                this.deleteFile(fileId);
-            });
-
-            document.addEventListener('click', this._boundHideContextMenu);
+            this.buildContextMenu(e, items);
         },
 
-        hideContextMenu() {
+                hideContextMenu() {
             document.querySelectorAll('.context-menu').forEach(menu => menu.remove());
             document.removeEventListener('click', this._boundHideContextMenu);
         },
