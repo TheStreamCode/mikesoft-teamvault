@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 3.2.6
+Stable tag: 3.3.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,14 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.3.0 =
+* Security: permission-rule management is restricted to administrators or users with an explicit manage rule on the folder; the capability-based free fallback no longer delegates it and the interface hides the rule editor accordingly.
+* Fixed: ZIP exports work again on servers where the temporary archive path could not be created.
+* Fixed: the audit CSV export honors the report action filter again, and failed delete/rename/move actions show the specific server message instead of a generic error.
+* Added: search returns matching folders alongside files.
+* Improved: content/extension upload rejections explain the mismatch; bundled translations defer to GlotPress language packs; the logs pagination is fully translatable.
+* Improved: double-submit guards, stale-response guards for user searches, serialized upload batches, Escape closing context menus, and honest export feedback.
+
 = 3.2.6 =
 * Security: upload destinations now use the complete symlink-aware storage verifier before any file is written.
 * Reliability: ZIP exports fail closed when an archive entry or finalization fails and stop safely when corrupt folder metadata contains a cycle.
@@ -307,6 +315,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.3.0 =
+
+Folder permission rules can now be managed only by administrators or users with an explicit manage rule on the folder. ZIP exports work again on servers where the temporary archive path could not be created. No configuration changes are required.
 
 = 3.2.6 =
 
