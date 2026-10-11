@@ -26,7 +26,7 @@
 > [!NOTE]
 > This is the public source mirror for TeamVault. Installations and updates are distributed through [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/); user support is handled in the [official support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-Current plugin version: `3.2.6`.
+Current plugin version: `3.3.0`.
 
 ![TeamVault file manager — folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
 
@@ -65,7 +65,7 @@ All governance capabilities are included in the free plugin.
 
 ## Latest Release
 
-Version `3.2.6` hardens upload containment and ZIP export reliability, corrects REST governance and multisite activation edge cases, and keeps toolbar actions accessible on common WordPress desktop layouts. It also refreshes repository presentation and release governance. No configuration changes are required.
+Version `3.3.0` restricts permission-rule management to administrators or users with an explicit manage rule, fixes ZIP exports on servers where the temporary archive path could not be created, surfaces specific server messages on failed actions, and adds folder results to search. No configuration changes are required.
 
 See the [full changelog](changelog.txt) and [GitHub releases](https://github.com/TheStreamCode/mikesoft-teamvault/releases) for complete history.
 

@@ -502,9 +502,10 @@ class MSTV_Admin
 
         // phpcs:disable WordPress.Security.NonceVerification.Recommended -- Nonce verified above; reading read-only filter values.
         $filters = [];
-        foreach (['date_from', 'date_to', 'action', 'file_type'] as $key) {
+        foreach (['date_from', 'date_to', 'log_action', 'file_type'] as $key) {
             if (isset($_GET[$key]) && $_GET[$key] !== '') {
-                $filters[$key] = sanitize_text_field(wp_unslash($_GET[$key]));
+                $filterKey = $key === 'log_action' ? 'action' : $key;
+                $filters[$filterKey] = sanitize_text_field(wp_unslash($_GET[$key]));
             }
         }
         if (isset($_GET['user_id']) && $_GET['user_id'] !== '') {

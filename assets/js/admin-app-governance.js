@@ -18,7 +18,7 @@
                 manage: i18n.permManage,
             };
 
-            const head = p.actions.map(a => `<th>${actionLabels[a] || a}</th>`).join('');
+            const head = p.actions.map(a => `<th>${this.escapeHtml(actionLabels[a] || a)}</th>`).join('');
 
             const rows = p.rules.length ? p.rules.map((rule, idx) => {
                 const cells = p.actions.map(a => `
@@ -115,24 +115,12 @@
                 groupBox?.classList.toggle('pdm-is-hidden', !isGroup);
             });
 
-            const userSearch = modal.querySelector('.pdm-perm-user-search');
-            const results = modal.querySelector('.pdm-perm-user-results');
-            const runSearch = this.debounce(async () => {
-                const q = userSearch.value.trim();
-                if (q.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)} <span class="pdm-perm-type">${this.escapeHtml(u.login)}</span></button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => {
-                            this.addPermissionPrincipal('user', parseInt(opt.dataset.id, 10), opt.dataset.label);
-                        });
-                    });
-                } catch (e) { /* ignore search errors */ }
-            }, 300);
-            userSearch?.addEventListener('input', runSearch);
+            this.bindUserSearch({
+                input: modal.querySelector('.pdm-perm-user-search'),
+                results: modal.querySelector('.pdm-perm-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)} <span class="pdm-perm-type">${this.escapeHtml(user.login)}</span></button>`,
+                onPick: (id, label) => this.addPermissionPrincipal('user', id, label)
+            });
 
             modal.querySelector('.pdm-perm-add-group-btn')?.addEventListener('click', () => {
                 const sel = modal.querySelector('.pdm-perm-group-select');
@@ -175,7 +163,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -192,7 +180,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -218,7 +206,7 @@
                         <div class="pdm-modal-content">
                             <div class="pdm-modal-header">
                                 <h3 class="pdm-modal-title" id="pdm-modal-title"></h3>
-                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close" aria-label="${mstvConfig.i18n.close}">
+                                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-modal-close" aria-label="${this.escapeHtml(mstvConfig.i18n.close)}">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                                 </button>
                             </div>
@@ -327,30 +315,19 @@
             modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
             this.renderGroupChips();
 
-            const search = modal.querySelector('.mstv-group-user-search');
-            const results = modal.querySelector('.mstv-group-user-results');
-            const run = this.debounce(async () => {
-                const q = search.value.trim();
-                if (q.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => {
-                            const id = parseInt(opt.dataset.id, 10);
-                            if (!this._groupMembers.some(m => m.id === id)) {
-                                this._groupMembers.push({ id, display_name: opt.dataset.label });
-                                this.renderGroupChips();
-                            }
-                            search.value = '';
-                            results.innerHTML = '';
-                        });
-                    });
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search?.addEventListener('input', run);
+            this.bindUserSearch({
+                input: modal.querySelector('.mstv-group-user-search'),
+                results: modal.querySelector('.mstv-group-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label, option, ctx) => {
+                    if (!this._groupMembers.some(m => m.id === id)) {
+                        this._groupMembers.push({ id, display_name: label });
+                        this.renderGroupChips();
+                    }
+                    ctx.input.value = '';
+                    ctx.results.innerHTML = '';
+                }
+            });
 
             modal.querySelector('.mstv-group-save')?.addEventListener('click', () => this.saveGroup(group ? group.id : null));
         },
@@ -359,7 +336,7 @@
             const wrap = this.elements.modal.querySelector('.mstv-group-chips');
             if (!wrap) return;
             wrap.innerHTML = this._groupMembers.map(m =>
-                `<span class="mstv-chip">${this.escapeHtml(m.display_name)} <button type="button" class="mstv-chip-remove" data-id="${m.id}" aria-label="${mstvConfig.i18n.remove}"><span aria-hidden="true">&times;</span></button></span>`
+                `<span class="mstv-chip">${this.escapeHtml(m.display_name)} <button type="button" class="mstv-chip-remove" data-id="${m.id}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}"><span aria-hidden="true">&times;</span></button></span>`
             ).join('');
             wrap.querySelectorAll('.mstv-chip-remove').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -390,7 +367,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -406,7 +383,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -502,22 +479,12 @@
                 root.querySelector('.mstv-quota-group-box').classList.toggle('pdm-is-hidden', !isGroup);
             });
 
-            const search = root.querySelector('.mstv-quota-user-search');
-            const results = root.querySelector('.mstv-quota-user-results');
-            const run = this.debounce(async () => {
-                const term = search.value.trim();
-                if (term.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => {
-                        opt.addEventListener('click', () => this.addQuotaItem('user', parseInt(opt.dataset.id, 10), opt.dataset.label));
-                    });
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search.addEventListener('input', run);
+            this.bindUserSearch({
+                input: root.querySelector('.mstv-quota-user-search'),
+                results: root.querySelector('.mstv-quota-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label) => this.addQuotaItem('user', id, label)
+            });
 
             root.querySelector('.mstv-quota-add-group-btn')?.addEventListener('click', () => {
                 const sel = root.querySelector('.mstv-quota-group-select');
@@ -555,7 +522,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -633,8 +600,10 @@
             });
             if (f.date_from) params.set('date_from', f.date_from);
             if (f.date_to) params.set('date_to', f.date_to);
-            // The report "action" select is preview/download; pass it through as a log action filter.
-            if (f.action) params.set('action', f.action);
+            // The report "action" select is preview/download; pass it through as
+            // a log action filter. It must not collide with the admin-post routing
+            // parameter, so it travels under a dedicated key.
+            if (f.action) params.set('log_action', f.action);
             const url = new URL(actionUrl);
             params.forEach((value, key) => url.searchParams.set(key, value));
             window.location.href = url.toString();
@@ -668,8 +637,8 @@
 
             const eventBoxes = n.available_events.map(ev => `
                 <label class="pdm-checkbox-label">
-                    <input type="checkbox" class="mstv-notif-event" value="${ev}" ${n.events.includes(ev) ? 'checked' : ''}>
-                    <span class="pdm-checkbox-text">${eventLabels[ev] || ev}</span>
+                    <input type="checkbox" class="mstv-notif-event" value="${this.escapeHtml(ev)}" ${n.events.includes(ev) ? 'checked' : ''}>
+                    <span class="pdm-checkbox-text">${this.escapeHtml(eventLabels[ev] || ev)}</span>
                 </label>`).join('');
 
             const groupBoxes = (n.groups || []).map(g => `
@@ -733,27 +702,19 @@
 
             this.renderNotifChips();
 
-            const search = root.querySelector('.mstv-notif-user-search');
-            const results = root.querySelector('.mstv-notif-user-results');
-            const run = this.debounce(async () => {
-                const term = search.value.trim();
-                if (term.length < 2) { results.innerHTML = ''; return; }
-                try {
-                    const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
-                    results.innerHTML = (res.data || []).map(u =>
-                        `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
-                    ).join('');
-                    results.querySelectorAll('.pdm-perm-user-option').forEach(opt => opt.addEventListener('click', () => {
-                        const id = parseInt(opt.dataset.id, 10);
-                        if (!n.recipients.users.some(u => u.id === id)) {
-                            n.recipients.users.push({ id, display_name: opt.dataset.label });
-                            this.renderNotifChips();
-                        }
-                        search.value = ''; results.innerHTML = '';
-                    }));
-                } catch (e) { /* ignore */ }
-            }, 300);
-            search.addEventListener('input', run);
+            this.bindUserSearch({
+                input: root.querySelector('.mstv-notif-user-search'),
+                results: root.querySelector('.mstv-notif-user-results'),
+                render: user => `<button type="button" class="pdm-perm-user-option" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}">${this.escapeHtml(user.display_name)}</button>`,
+                onPick: (id, label, option, ctx) => {
+                    if (!n.recipients.users.some(u => u.id === id)) {
+                        n.recipients.users.push({ id, display_name: label });
+                        this.renderNotifChips();
+                    }
+                    ctx.input.value = '';
+                    ctx.results.innerHTML = '';
+                }
+            });
 
             root.querySelector('.mstv-notif-save').addEventListener('click', () => this.saveNotifications());
         },
@@ -762,7 +723,7 @@
             const wrap = this._notifRoot.querySelector('.mstv-notif-chips');
             const n = this._notif;
             wrap.innerHTML = n.recipients.users.map(u =>
-                `<span class="mstv-chip">${this.escapeHtml(u.display_name)} <button type="button" class="mstv-chip-remove" data-id="${u.id}" aria-label="${mstvConfig.i18n.remove}"><span aria-hidden="true">&times;</span></button></span>`
+                `<span class="mstv-chip">${this.escapeHtml(u.display_name)} <button type="button" class="mstv-chip-remove" data-id="${u.id}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}"><span aria-hidden="true">&times;</span></button></span>`
             ).join('');
             wrap.querySelectorAll('.mstv-chip-remove').forEach(btn => btn.addEventListener('click', () => {
                 const id = parseInt(btn.dataset.id, 10);
@@ -790,7 +751,7 @@
                     this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 }
             } catch (e) {
-                this.showToast(e.message || mstvConfig.i18n.errorGeneric, 'error');
+                this.showToast(this.apiErrorMessage(e, 'errorGeneric'), 'error');
             }
         },
 
@@ -800,7 +761,10 @@
             if (contentType.includes('application/json')) {
                 const data = await response.json();
                 if (!response.ok && !data.success) {
-                    throw new Error(data.message || `HTTP ${response.status}`);
+                    throw Object.assign(
+                        new Error(data.message || `HTTP ${response.status}`),
+                        { isApiError: true, code: data.code || '' }
+                    );
                 }
                 return data;
             }
@@ -811,7 +775,10 @@
                 .replace(/\s+/g, ' ')
                 .trim();
 
-            throw new Error(message || `HTTP ${response.status}`);
+            throw Object.assign(
+                new Error(message || `HTTP ${response.status}`),
+                { isApiError: true }
+            );
         },
     });
 })();

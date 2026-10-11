@@ -574,7 +574,15 @@ class MSTV_REST_Governance_Controller
             return new \WP_Error('not_found', __('Folder not found.', 'mikesoft-teamvault'), ['status' => 404]);
         }
 
-        if (!$this->permissions->current_user_can($target, MSTV_Permissions::ACTION_MANAGE)) {
+        // Permission rules are a governance surface: only administrators or users
+        // whose 'manage' grant comes from an explicit folder rule may read or change
+        // them. The capability-based free fallback never delegates rule management.
+        $userId = get_current_user_id();
+        $user = $userId > 0 ? get_user_by('id', $userId) : null;
+
+        if (!$user
+            || (!$user->has_cap('manage_options')
+                && !$this->permissions->has_rule_based_manage($userId, $target))) {
             return new \WP_Error(
                 'mstv_forbidden',
                 __('You do not have permission to manage this folder.', 'mikesoft-teamvault'),

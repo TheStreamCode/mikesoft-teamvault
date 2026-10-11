@@ -247,7 +247,12 @@ class MSTV_Validator
         if (!$this->validate_mime_type($detectedMime)) {
             $errors[] = __('This file type is not allowed.', 'mikesoft-teamvault');
         } elseif ($extension !== '' && !$this->validate_extension_mime_pair($extension, $detectedMime)) {
-            $errors[] = __('This file type is not allowed.', 'mikesoft-teamvault');
+            $errors[] = sprintf(
+                /* translators: 1: content type detected inside the file, 2: file extension. */
+                __('The file content does not match its extension: the file appears to be %1$s but is named .%2$s.', 'mikesoft-teamvault'),
+                $detectedMime,
+                $extension
+            );
         }
 
         return [

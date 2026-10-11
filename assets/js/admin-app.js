@@ -7,20 +7,7 @@
 
     Object.assign(window.PDM, {
         buildApiUrl(endpoint) {
-            const base = String(mstvConfig.restUrl || '').replace(/\/+$/, '');
-            const path = String(endpoint || '').replace(/^\/+/, '');
-
-            if (base.includes('?')) {
-                const qIdx = path.indexOf('?');
-
-                if (qIdx === -1) {
-                    return `${base}/${path}`;
-                }
-
-                return `${base}/${path.substring(0, qIdx)}&${path.substring(qIdx + 1)}`;
-            }
-
-            return `${base}/${path}`;
+            return window.PDMHelpers.buildApiUrl(endpoint, mstvConfig.restUrl);
         },
 
         buildFreshApiUrl(endpoint) {
@@ -30,29 +17,11 @@
         },
 
         escapeHtml(text) {
-            const characters = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-
-            return String(text ?? '').replace(/[&<>"']/g, character => characters[character]);
+            return window.PDMHelpers.escapeHtml(text);
         },
 
         normalizeSameOriginUrl(value) {
-            try {
-                const url = new URL(String(value || ''), window.location.href);
-
-                if (!['http:', 'https:'].includes(url.protocol) || url.origin !== window.location.origin) {
-                    return '';
-                }
-
-                return url.toString();
-            } catch (error) {
-                return '';
-            }
+            return window.PDMHelpers.normalizeSameOriginUrl(value, window.location.href);
         },
 
         formatBytes(bytes) {
@@ -100,55 +69,31 @@
             }
 
             if (userSearch && userResults) {
-                userSearch.addEventListener('input', this.debounce(async (e) => {
-                    const query = e.target.value.trim();
-                    
-                    if (query.length < 2) {
+                this.bindUserSearch({
+                    input: userSearch,
+                    results: userResults,
+                    render: user => `
+                        <div class="pdm-user-result" data-pdm-user-id="${user.id}" data-pdm-user-label="${this.escapeHtml(user.display_name)}" data-user-login="${this.escapeHtml(user.login)}">
+                            <div class="pdm-user-result-avatar">${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}</div>
+                            <div class="pdm-user-result-info">
+                                <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>
+                                <div class="pdm-user-result-login">${this.escapeHtml(user.login)}</div>
+                            </div>
+                        </div>
+                    `,
+                    renderEmpty: () => `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${mstvConfig.i18n.userNotFound}</div>`,
+                    onShown: shown => userResults.classList.toggle('active', shown),
+                    onPick: (id, label, option) => {
+                        if (allowedUsersContainer.querySelector(`[data-user-id="${id}"]`)) {
+                            alert(mstvConfig.i18n.userAlreadyInList);
+                            return;
+                        }
+
+                        this.addUserTag(id, label, option.dataset.userLogin || '');
+                        userSearch.value = '';
                         userResults.classList.remove('active');
                         userResults.innerHTML = '';
-                        return;
                     }
-
-                    try {
-                        const response = await this.apiGet(`users/search?q=${encodeURIComponent(query)}`);
-                        
-                        if (response.success && response.data.length > 0) {
-                            userResults.innerHTML = response.data.map(user => `
-                                <div class="pdm-user-result" data-user-id="${user.id}" data-user-login="${this.escapeHtml(user.login)}" data-user-name="${this.escapeHtml(user.display_name)}">
-                                    <div class="pdm-user-result-avatar">${this.escapeHtml(user.display_name.charAt(0).toUpperCase())}</div>
-                                    <div class="pdm-user-result-info">
-                                        <div class="pdm-user-result-name">${this.escapeHtml(user.display_name)}</div>
-                                        <div class="pdm-user-result-login">${this.escapeHtml(user.login)}</div>
-                                    </div>
-                                </div>
-                            `).join('');
-                            userResults.classList.add('active');
-                        } else {
-                            userResults.innerHTML = `<div class="pdm-user-result" style="pointer-events: none; opacity: 0.6;">${mstvConfig.i18n.userNotFound}</div>`;
-                            userResults.classList.add('active');
-                        }
-                    } catch (error) {
-                        console.error('User search error:', error);
-                    }
-                }, 300));
-
-                userResults.addEventListener('click', (e) => {
-                    const result = e.target.closest('.pdm-user-result');
-                    if (!result) return;
-
-                    const userId = result.dataset.userId;
-                    const userLogin = result.dataset.userLogin;
-                    const userName = result.dataset.userName;
-
-                    if (allowedUsersContainer.querySelector(`[data-user-id="${userId}"]`)) {
-                        alert(mstvConfig.i18n.userAlreadyInList);
-                        return;
-                    }
-
-                    this.addUserTag(userId, userName, userLogin);
-                    userSearch.value = '';
-                    userResults.classList.remove('active');
-                    userResults.innerHTML = '';
                 });
 
                 document.addEventListener('click', (e) => {
@@ -172,7 +117,8 @@
             }
         },
 
-        addUserTag(userId, userName, userLogin) {
+        addUserTag(rawUserId, userName, userLogin) {
+            const userId = parseInt(rawUserId, 10);
             const allowedUsersContainer = document.getElementById('pdm-allowed-users');
             const noUsersMsg = document.getElementById('pdm-no-users');
 
@@ -183,7 +129,7 @@
             tag.dataset.userId = userId;
             tag.innerHTML = `
                 <span class="pdm-user-name">${this.escapeHtml(userName)} (${this.escapeHtml(userLogin)})</span>
-                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${mstvConfig.i18n.remove}" aria-label="${mstvConfig.i18n.remove}">
+                <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-remove-user" title="${this.escapeHtml(mstvConfig.i18n.remove)}" aria-label="${this.escapeHtml(mstvConfig.i18n.remove)}">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="18" y1="6" x2="6" y2="18"/>
                         <line x1="6" y1="6" x2="18" y2="18"/>
@@ -356,11 +302,11 @@
 
             document.body.appendChild(form);
             form.submit();
+            document.body.removeChild(form);
 
-            setTimeout(() => {
-                document.body.removeChild(form);
-                this.showToast(mstvConfig.i18n.exportSuccess, 'success');
-            }, 2000);
+            // The download streams in a new tab with no feedback channel:
+            // report that the export started rather than a fake success.
+            this.showToast(mstvConfig.i18n.exporting, 'info');
         },
     });
 
