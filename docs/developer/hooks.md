@@ -280,3 +280,9 @@ add_filter('mstv_upload_validation', function (array $result, array $files): arr
 
 - These hooks are intended for WordPress customizations and must be used from site code, custom plugins, or mu-plugins.
 - Hook payloads reflect the current implementation and may expand in future releases.
+- Since 3.3.0, folder permission rules can only be read or changed through the
+  governance REST endpoints by administrators or users whose `manage` grant
+  comes from an explicit folder rule (`MSTV_Permissions::has_rule_based_manage()`).
+  The browser payload exposes this as a `can_manage_rules` flag alongside the
+  per-folder action map, and the `mstv/v1/search` response now includes
+  matching folders (filtered by the view scope) in addition to files.
