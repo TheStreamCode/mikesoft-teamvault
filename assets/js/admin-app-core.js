@@ -174,6 +174,7 @@
                 if (e.key === 'Escape') {
                     this.closeMobilePanels();
                     this.elements.filtersDropdown?.classList.remove('active');
+                    this.hideContextMenu();
                     this.hideModal();
                     this.hidePreview();
                     this.hideUploadOverlay();
@@ -287,6 +288,18 @@
                     this.applyToolbarPermissions();
                 }
             } catch (error) {
+                // Do not leave the previous folder's items visible under the
+                // new folder heading when the request fails.
+                if (seq === this.state._loadSeq) {
+                    this.state.folders = [];
+                    this.state.files = [];
+                    this.state.pagination = this.normalizePagination({
+                        page: 1,
+                        per_page: this.state.pagination.perPage,
+                        total_items: 0,
+                        total_pages: 0,
+                    });
+                }
                 this.showToast(mstvConfig.i18n.errorGeneric, 'error');
                 console.error('Load browser error:', error);
             } finally {
@@ -1102,6 +1115,26 @@
             this.openMobileDetails();
         },
 
+        bindModalConfirm(handler) {
+            const button = this.elements.modal?.querySelector('.pdm-modal-confirm');
+            if (!button) return;
+
+            let inFlight = false;
+            button.addEventListener('click', async () => {
+                if (inFlight || button.disabled) return;
+                inFlight = true;
+                button.disabled = true;
+                try {
+                    await handler();
+                } finally {
+                    inFlight = false;
+                    if (button.isConnected && this.elements.modal?.classList.contains('active')) {
+                        button.disabled = false;
+                    }
+                }
+            });
+        },
+
         showNewFolderModal() {
             const html = `
                 <div class="pdm-field">
@@ -1121,7 +1154,7 @@
             nameInput?.select();
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+            this.bindModalConfirm(async () => {
                 const name = nameInput?.value?.trim();
                 if (name) {
                     await this.createFolder(name);
@@ -1151,7 +1184,7 @@
             nameInput?.select();
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+            this.bindModalConfirm(async () => {
                 const name = nameInput?.value?.trim();
                 if (name) {
                     await this.renameFolder(folderId, name);
@@ -1186,7 +1219,7 @@
             nameInput?.select();
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+            this.bindModalConfirm(async () => {
                 const name = nameInput?.value?.trim();
                 if (name) {
                     await this.renameFile(fileId, name);
@@ -1239,7 +1272,7 @@
             });
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+            this.bindModalConfirm(async () => {
                 await this.moveFile(fileId, selectedFolderId);
             });
         },
@@ -1291,7 +1324,7 @@
             });
 
             this.elements.modal.querySelector('.pdm-modal-cancel')?.addEventListener('click', () => this.hideModal());
-            this.elements.modal.querySelector('.pdm-modal-confirm')?.addEventListener('click', async () => {
+            this.bindModalConfirm(async () => {
                 await this.moveFolder(folderId, selectedParentId);
             });
         },
@@ -1576,6 +1609,10 @@
                     this.state.folders = response.data.folders;
                     this.state.files = response.data.files;
                     this.state.pagination = this.normalizePagination(response.data.pagination);
+                    // Search results span folders; the previous folder's
+                    // permission map must not keep gating the toolbar.
+                    this.state.permissions = null;
+                    this.applyToolbarPermissions();
                     this.syncPerPageSelect();
                 }
             } catch (error) {
@@ -1635,7 +1672,9 @@
 
         async handleFileSelect(files) {
             if (!files || files.length === 0) return;
+            if (this.state.isUploading) return;
 
+            this.state.isUploading = true;
             this.hideUploadOverlay();
 
             const fileList = Array.from(files);
@@ -1655,6 +1694,7 @@
                 }
             } finally {
                 this.hideUploadProgress();
+                this.state.isUploading = false;
             }
 
             if (anySuccess) {
@@ -2359,8 +2399,13 @@
         apiErrorMessage(error, i18nKey) {
             // Only server-provided API messages reach the user; network and
             // programming errors fall back to the localized generic string.
-            if (error && error.isApiError && typeof error.message === 'string' && error.message) {
-                return error.message;
+            if (error && error.isApiError) {
+                if (error.code === 'rest_cookie_invalid_nonce' && mstvConfig.i18n.sessionExpired) {
+                    return mstvConfig.i18n.sessionExpired;
+                }
+                if (typeof error.message === 'string' && error.message) {
+                    return error.message;
+                }
             }
             return mstvConfig.i18n[i18nKey] || mstvConfig.i18n.errorGeneric;
         },

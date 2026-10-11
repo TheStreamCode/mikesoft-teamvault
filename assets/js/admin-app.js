@@ -102,7 +102,9 @@
             if (userSearch && userResults) {
                 userSearch.addEventListener('input', this.debounce(async (e) => {
                     const query = e.target.value.trim();
-                    
+                    this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                    const seq = this._userSearchSeq;
+
                     if (query.length < 2) {
                         userResults.classList.remove('active');
                         userResults.innerHTML = '';
@@ -111,6 +113,8 @@
 
                     try {
                         const response = await this.apiGet(`users/search?q=${encodeURIComponent(query)}`);
+                        if (seq !== this._userSearchSeq) return;
+
                         
                         if (response.success && response.data.length > 0) {
                             userResults.innerHTML = response.data.map(user => `
@@ -356,11 +360,11 @@
 
             document.body.appendChild(form);
             form.submit();
+            document.body.removeChild(form);
 
-            setTimeout(() => {
-                document.body.removeChild(form);
-                this.showToast(mstvConfig.i18n.exportSuccess, 'success');
-            }, 2000);
+            // The download streams in a new tab with no feedback channel:
+            // report that the export started rather than a fake success.
+            this.showToast(mstvConfig.i18n.exporting, 'info');
         },
     });
 

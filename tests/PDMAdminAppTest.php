@@ -196,4 +196,42 @@ final class PDMAdminAppTest extends TestCase
             'The audit CSV export must not reuse the routing parameter name for filters.'
         );
     }
+
+    public function testModalConfirmButtonsGuardAgainstDoubleSubmits(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            'bindModalConfirm(handler)',
+            $source,
+            'Modal confirm buttons must share a double-submit guard.'
+        );
+        self::assertSame(
+            5,
+            substr_count($source, 'this.bindModalConfirm(async'),
+            'All five plain modals must route their confirm handlers through the guard.'
+        );
+    }
+
+    public function testUserSearchesDiscardStaleResponses(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertSame(
+            5,
+            substr_count($source, 'if (seq !== this._userSearchSeq) return;'),
+            'Every debounced user search must drop responses that are no longer the latest request.'
+        );
+    }
+
+    public function testExpiredSessionErrorsSuggestReloadingThePage(): void
+    {
+        $source = $this->adminAppSource();
+
+        self::assertStringContainsString(
+            "error.code === 'rest_cookie_invalid_nonce'",
+            $source,
+            'An expired REST nonce must surface the dedicated session-expired message.'
+        );
+    }
 }

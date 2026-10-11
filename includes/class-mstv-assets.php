@@ -153,6 +153,7 @@ class MSTV_Assets
                 'selectDestination' => __('Select destination', 'mikesoft-teamvault'),
                 'loading' => __('Loading...', 'mikesoft-teamvault'),
                 'errorGeneric' => __('An error occurred. Please try again.', 'mikesoft-teamvault'),
+                'sessionExpired' => __('Your session has expired. Reload the page to continue.', 'mikesoft-teamvault'),
                 'noResults' => __('No results found', 'mikesoft-teamvault'),
                 'searchNoResultsDesc' => __('Try a different keyword or clear the search.', 'mikesoft-teamvault'),
                 'fileMissing' => __('File missing from storage', 'mikesoft-teamvault'),
@@ -181,7 +182,6 @@ class MSTV_Assets
                 'exportSelectedFoldersDesc' => __('Choose one or more folders to include in the ZIP archive.', 'mikesoft-teamvault'),
                 'exportNoFoldersSelected' => __('Select at least one folder to export.', 'mikesoft-teamvault'),
                 'exporting' => __('Exporting...', 'mikesoft-teamvault'),
-                'exportSuccess' => __('Export completed', 'mikesoft-teamvault'),
                 'noFoldersAvailable' => __('No folders available for selective export.', 'mikesoft-teamvault'),
                 'exportError' => __('Error during export', 'mikesoft-teamvault'),
                 // Governance: folder permissions.

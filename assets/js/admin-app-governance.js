@@ -119,9 +119,13 @@
             const results = modal.querySelector('.pdm-perm-user-results');
             const runSearch = this.debounce(async () => {
                 const q = userSearch.value.trim();
+                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                const seq = this._userSearchSeq;
+
                 if (q.length < 2) { results.innerHTML = ''; return; }
                 try {
                     const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
+                    if (seq !== this._userSearchSeq) return;
                     results.innerHTML = (res.data || []).map(u =>
                         `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)} <span class="pdm-perm-type">${this.escapeHtml(u.login)}</span></button>`
                     ).join('');
@@ -331,9 +335,13 @@
             const results = modal.querySelector('.mstv-group-user-results');
             const run = this.debounce(async () => {
                 const q = search.value.trim();
+                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                const seq = this._userSearchSeq;
+
                 if (q.length < 2) { results.innerHTML = ''; return; }
                 try {
                     const res = await this.apiGet(`users/search?q=${encodeURIComponent(q)}`);
+                    if (seq !== this._userSearchSeq) return;
                     results.innerHTML = (res.data || []).map(u =>
                         `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
                     ).join('');
@@ -506,9 +514,12 @@
             const results = root.querySelector('.mstv-quota-user-results');
             const run = this.debounce(async () => {
                 const term = search.value.trim();
+                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                const seq = this._userSearchSeq;
                 if (term.length < 2) { results.innerHTML = ''; return; }
                 try {
                     const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
+                    if (seq !== this._userSearchSeq) return;
                     results.innerHTML = (res.data || []).map(u =>
                         `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
                     ).join('');
@@ -739,9 +750,12 @@
             const results = root.querySelector('.mstv-notif-user-results');
             const run = this.debounce(async () => {
                 const term = search.value.trim();
+                this._userSearchSeq = (this._userSearchSeq || 0) + 1;
+                const seq = this._userSearchSeq;
                 if (term.length < 2) { results.innerHTML = ''; return; }
                 try {
                     const res = await this.apiGet(`users/search?q=${encodeURIComponent(term)}`);
+                    if (seq !== this._userSearchSeq) return;
                     results.innerHTML = (res.data || []).map(u =>
                         `<button type="button" class="pdm-perm-user-option" data-id="${u.id}" data-label="${this.escapeHtml(u.display_name)}">${this.escapeHtml(u.display_name)}</button>`
                     ).join('');
@@ -804,7 +818,7 @@
                 if (!response.ok && !data.success) {
                     throw Object.assign(
                         new Error(data.message || `HTTP ${response.status}`),
-                        { isApiError: true }
+                        { isApiError: true, code: data.code || '' }
                     );
                 }
                 return data;
