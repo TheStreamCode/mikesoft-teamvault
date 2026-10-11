@@ -58,12 +58,14 @@ Use `composer ci` to run lint and PHPUnit together.
 Validate JavaScript without introducing a separate package installation:
 
 ```powershell
+node --check assets/js/admin-app-helpers.js
 node --check assets/js/admin-app-core.js
 node --check assets/js/admin-app-governance.js
 node --check assets/js/admin-app.js
 node --check assets/js/admin-notice-dismiss.js
 node --check tools/parse-plugin-check-output.mjs
 node --test tests/plugin-check-output.test.mjs
+node --test tests/pdm-helpers.test.mjs
 ```
 
 ### PHPUnit
