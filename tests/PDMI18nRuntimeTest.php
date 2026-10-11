@@ -55,6 +55,18 @@ final class PDMI18nRuntimeTest extends TestCase
         );
     }
 
+    public function test_gettext_filter_respects_installed_language_packs(): void
+    {
+        $i18n = new MSTV_I18n();
+        $i18n->init();
+
+        // A GlotPress translation must win over the bundled fallback map.
+        self::assertSame(
+            'Pacchetti di lingua',
+            apply_filters('gettext', 'Pacchetti di lingua', 'Notifications', 'mikesoft-teamvault')
+        );
+    }
+
     public function test_auto_language_falls_back_to_english_for_unsupported_locale(): void
     {
         $GLOBALS['pdm_test_options']['mstv_interface_language'] = 'auto';

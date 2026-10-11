@@ -791,4 +791,133 @@ final class PDMRestControllerTest extends TestCase
             $logger
         );
     }
+
+    public function test_permissions_map_denies_rule_management_on_free_fallback_access(): void
+    {
+        $controller = $this->build_controller_with_permissions(
+            userId: 5,
+            userCaps: [MSTV_Capabilities::CAP_MANAGE => true],
+            ruleManage: false
+        );
+
+        $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
+        $method->setAccessible(true);
+
+        $map = $method->invoke($controller, null);
+
+        self::assertTrue($map['manage']);
+        self::assertFalse($map['can_manage_rules']);
+    }
+
+    public function test_permissions_map_grants_rule_management_with_an_explicit_manage_rule(): void
+    {
+        $controller = $this->build_controller_with_permissions(
+            userId: 5,
+            userCaps: [MSTV_Capabilities::CAP_MANAGE => true],
+            ruleManage: true
+        );
+
+        $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
+        $method->setAccessible(true);
+
+        $map = $method->invoke($controller, null);
+
+        self::assertTrue($map['can_manage_rules']);
+    }
+
+    public function test_permissions_map_grants_rule_management_to_administrators(): void
+    {
+        $controller = $this->build_controller_with_permissions(
+            userId: 5,
+            userCaps: ['manage_options' => true],
+            ruleManage: false
+        );
+
+        $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
+        $method->setAccessible(true);
+
+        $map = $method->invoke($controller, null);
+
+        self::assertTrue($map['can_manage_rules']);
+    }
+
+    public function test_search_returns_matching_folders(): void
+    {
+        $folderRepo = $this->getMockBuilder(MSTV_Repository_Folders::class)->disableOriginalConstructor()->getMock();
+        $folderRepo->method('search_by_name')->willReturn([
+            (object) [
+                'id' => 9,
+                'parent_id' => null,
+                'name' => 'QA Folder',
+                'slug' => 'QA-Folder',
+                'created_at' => '2026-01-01 00:00:00',
+            ],
+        ]);
+        $folderRepo->method('count_children')->willReturn(0);
+
+        $controller = $this->build_controller_with_files_repo($folderRepo);
+        $response = $controller->search(new WP_REST_Request(['q' => 'QA']));
+
+        $folders = $response->data['data']['folders'];
+
+        self::assertCount(1, $folders);
+        self::assertSame('QA Folder', $folders[0]['name']);
+        self::assertSame(9, $folders[0]['id']);
+    }
+
+    private function build_controller_with_permissions(int $userId, array $userCaps, bool $ruleManage): MSTV_REST_Controller
+    {
+        $GLOBALS['pdm_test_users'] = [5 => new FakePDMUser($userId, $userCaps)];
+        $GLOBALS['pdm_test_current_user_id'] = $userId;
+
+        $auth = $this->createMock(MSTV_Auth::class);
+        $auth->method('get_current_user_id')->willReturn($userId);
+
+        $permissions = $this->getMockBuilder(MSTV_Permissions::class)->disableOriginalConstructor()->getMock();
+        $permissions->method('effective_actions')->willReturn(array_fill_keys(MSTV_Permissions::ACTIONS, true));
+        $permissions->method('has_rule_based_manage')->willReturn($ruleManage);
+
+        return new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $auth,
+            $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Validator::class),
+            $this->createMock(MSTV_Repository_Folders::class),
+            $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class),
+            $permissions
+        );
+    }
+
+    private function build_controller_with_files_repo(MSTV_Repository_Folders $folderRepo): MSTV_REST_Controller
+    {
+        $filesRepo = $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock();
+        $filesRepo->method('search_paginated')->willReturn([
+            'items' => [],
+            'pagination' => [
+                'page' => 1,
+                'per_page' => 50,
+                'total_items' => 0,
+                'total_pages' => 0,
+                'has_prev' => false,
+                'has_next' => false,
+                'from_item' => 0,
+                'to_item' => 0,
+            ],
+        ]);
+
+        return new MSTV_REST_Controller(
+            new MSTV_Settings(),
+            $this->createMock(MSTV_Auth::class),
+            $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Validator::class),
+            $folderRepo,
+            $filesRepo,
+            $this->getMockBuilder(MSTV_Download::class)->disableOriginalConstructor()->getMock(),
+            $this->getMockBuilder(MSTV_Preview::class)->disableOriginalConstructor()->getMock(),
+            $this->createMock(MSTV_Logger::class)
+        );
+    }
 }

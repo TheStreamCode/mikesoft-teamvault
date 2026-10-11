@@ -1034,7 +1034,7 @@
                         </svg>
                         ${mstvConfig.i18n.open}
                     </button>
-                    ${this.folderCan(folder, 'manage') ? `
+                    ${this.folderCanManageRules(folder) ? `
                     <button type="button" class="pdm-btn pdm-btn-secondary pdm-details-permissions-folder-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
@@ -2346,6 +2346,14 @@
         folderCan(folder, action) {
             const perms = folder && folder.permissions;
             return !perms || perms[action] !== false;
+        },
+
+        folderCanManageRules(folder) {
+            const perms = folder && folder.permissions;
+            if (perms && typeof perms.can_manage_rules === 'boolean') {
+                return perms.can_manage_rules;
+            }
+            return this.folderCan(folder, 'manage');
         },
 
         applyToolbarPermissions() {

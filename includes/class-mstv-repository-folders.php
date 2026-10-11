@@ -45,6 +45,26 @@ class MSTV_Repository_Folders
         );
     }
 
+    /**
+     * Folders whose name matches the query, ordered by name, bounded for UI use.
+     *
+     * @return object[]
+     */
+    public function search_by_name(string $query, int $limit = 20): array
+    {
+        global $wpdb;
+
+        $like = '%' . $wpdb->esc_like($query) . '%';
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->table} WHERE name LIKE %s ORDER BY name ASC LIMIT %d",
+                $like,
+                $limit
+            )
+        ) ?: [];
+    }
+
     public function find_all(): array
     {
         global $wpdb;

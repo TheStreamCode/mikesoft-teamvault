@@ -1279,6 +1279,12 @@ class MSTV_I18n
             return $translation;
         }
 
+        // Respect installed GlotPress language packs: the bundled map is a fallback
+        // for when no language-pack translation is available, not an override.
+        if ($translation !== $text) {
+            return $translation;
+        }
+
         $map = self::map_for(self::get_language());
 
         return $map[$text] ?? $translation;
