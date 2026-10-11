@@ -2051,7 +2051,7 @@
                 }
 
                 return `
-                    <div class="context-menu-item ${item.className || ''}" data-context-action="${item.key}">
+                    <div class="context-menu-item pdm-context-${item.key} ${item.className || ''}" data-context-action="${item.key}">
                         ${item.icon}
                         ${item.label}
                     </div>
