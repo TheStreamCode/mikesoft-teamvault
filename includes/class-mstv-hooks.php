@@ -26,6 +26,7 @@ class MSTV_Hooks
     public const FILTER_STORAGE_PATH = 'mstv_storage_path';
     public const FILTER_FILE_NAME = 'mstv_file_name';
     public const FILTER_UPLOAD_VALIDATION = 'mstv_upload_validation';
+    public const FILTER_NOTIFICATION_RECIPIENTS = 'mstv_notification_recipients';
 
     public static function do_file_uploaded(int $fileId, array $fileData): void
     {
@@ -133,5 +134,15 @@ class MSTV_Hooks
     {
         // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is prefixed in constant value.
         return apply_filters(self::FILTER_UPLOAD_VALIDATION, $result, $files);
+    }
+
+    /**
+     * @param string[] $emails
+     * @return string[]
+     */
+    public static function filter_notification_recipients(array $emails, string $event, ?int $folderId): array
+    {
+        // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Hook name is prefixed in constant value.
+        return apply_filters(self::FILTER_NOTIFICATION_RECIPIENTS, $emails, $event, $folderId);
     }
 }

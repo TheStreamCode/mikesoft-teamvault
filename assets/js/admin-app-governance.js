@@ -623,6 +623,7 @@
                 this._notif = res.success ? res.data : null;
                 if (this._notif) {
                     this._notif.recipients = this._notif.recipients || { admins: true, users: [], groups: [] };
+                    this._notif.folder_aware = this._notif.folder_aware !== false;
                     this.renderNotifications();
                 }
             } catch (e) {
@@ -664,6 +665,10 @@
                         <input type="checkbox" id="mstv-notif-admins" ${n.recipients.admins ? 'checked' : ''}>
                         <span class="pdm-checkbox-text">${i18n.notifAdmins}</span>
                     </label>
+                    <label class="pdm-checkbox-label">
+                        <input type="checkbox" id="mstv-notif-folder-aware" ${n.folder_aware ? 'checked' : ''}>
+                        <span class="pdm-checkbox-text">${i18n.notifFolderAware}</span>
+                    </label>
                     <div class="pdm-field">
                         <label class="pdm-field-label">${i18n.notifUsers}</label>
                         <div class="pdm-perm-add-user" style="max-width:360px">
@@ -692,6 +697,7 @@
 
             root.querySelector('#mstv-notif-enabled').addEventListener('change', e => { n.enabled = e.target.checked; });
             root.querySelector('#mstv-notif-admins').addEventListener('change', e => { n.recipients.admins = e.target.checked; });
+            root.querySelector('#mstv-notif-folder-aware').addEventListener('change', e => { n.folder_aware = e.target.checked; });
 
             root.querySelectorAll('.mstv-notif-event').forEach(cb => cb.addEventListener('change', () => {
                 n.events = Array.from(root.querySelectorAll('.mstv-notif-event:checked')).map(c => c.value);
@@ -736,6 +742,7 @@
             const n = this._notif;
             const payload = {
                 enabled: !!n.enabled,
+                folder_aware: n.folder_aware !== false,
                 events: n.events,
                 recipients: {
                     admins: !!n.recipients.admins,

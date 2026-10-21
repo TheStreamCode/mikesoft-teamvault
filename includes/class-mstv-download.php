@@ -81,6 +81,7 @@ class MSTV_Download
         if (class_exists('MSTV_Hooks')) {
             MSTV_Hooks::do_file_downloaded($fileId, [
                 'display_name' => $files->display_name,
+                'folder_id' => $files->folder_id ? (int) $files->folder_id : null,
                 'extension' => $files->extension,
                 'mime_type' => $files->mime_type,
             ]);

@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 3.3.0
+Stable tag: 3.4.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,7 +35,7 @@ What you can do with TeamVault:
 * Allow preview-only access without download for sensitive documents
 * Set per-user or per-group storage quotas
 * Review access reports and export the activity log to CSV
-* Send email notifications on key document events
+* Send email notifications on key document events, with folder-aware recipients
 
 Why use TeamVault instead of the Media Library?
 
@@ -61,7 +61,7 @@ Key features:
 * Preview-only access that blocks download and ZIP export
 * Per-user and per-group storage quotas enforced before upload
 * Access reports by user, file, or folder, with CSV export of the activity log
-* Email notifications for upload, download, delete, and access-denied events
+* Email notifications for upload, download, delete, and access-denied events, restricted to recipients who can view the folder unless the site owner opts out
 * Folder create, rename, move, and delete operations
 * Drag-and-drop uploads with upload validation and clear error messages
 * Inline preview for supported files, including PDFs
@@ -166,6 +166,12 @@ For direct contact, email teamvault@mikesoft.it.
 7. Settings: interface language, allowed file types, maximum upload size, and preview options.
 
 == Changelog ==
+
+= 3.4.0 =
+* Added: folder-aware email notifications. Selected users and groups receive an upload, download, delete, or access-denied event only when they can view the folder that produced it; administrators remain included when the administrator recipient option is enabled.
+* Added: a Notifications setting to restore the previous global recipient behavior, and the `mstv_notification_recipients` filter for site-specific routing.
+* Improved: download notifications now carry folder context, and events are grouped by recipient set so files from folders with different access rules are never combined in one email.
+* Tests: added regression coverage for folder filtering, administrator bypass, direct recipients, downloads, opt-out, and cross-folder batching.
 
 = 3.3.0 =
 * Security: permission-rule management is restricted to administrators or users with an explicit manage rule on the folder; the capability-based free fallback no longer delegates it and the interface hides the rule editor accordingly.
@@ -315,6 +321,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.4.0 =
+
+Email notifications now default to folder-aware delivery: selected users and groups receive an event only if they can view the folder, while administrators remain included when enabled. A Notifications setting restores the previous global behavior. No other configuration changes are required.
 
 = 3.3.0 =
 

@@ -295,6 +295,7 @@ class MSTV_REST_Governance_Controller
             'success' => true,
             'data' => [
                 'enabled' => (bool) get_option('mstv_notify_enabled', false),
+                'folder_aware' => (bool) get_option('mstv_notify_folder_aware', true),
                 'events' => array_values($events),
                 'available_events' => ['upload', 'download', 'delete', 'access_denied'],
                 'recipients' => [
@@ -312,6 +313,11 @@ class MSTV_REST_Governance_Controller
     public function update_notifications(\WP_REST_Request $request): \WP_REST_Response
     {
         update_option('mstv_notify_enabled', wp_validate_boolean($request->get_param('enabled')));
+
+        $folderAware = $request->get_param('folder_aware');
+        if ($folderAware !== null) {
+            update_option('mstv_notify_folder_aware', wp_validate_boolean($folderAware));
+        }
 
         $allowedEvents = ['upload', 'download', 'delete', 'access_denied'];
         $events = array_values(array_intersect($allowedEvents, (array) $request->get_param('events')));

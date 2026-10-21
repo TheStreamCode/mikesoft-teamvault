@@ -5,22 +5,28 @@ defined('ABSPATH') || exit;
 /**
  * Email notifications for document events (upload, download, delete, access-denied).
  *
- * Native and restrained: events are collected during the request and a single email
- * per event type is sent on `shutdown`, so uploads/downloads are never slowed on the
- * request path and bursts within one request are summarized instead of one-per-file.
- * Recipients are resolved to administrators, selected users, and/or TeamVault groups.
+ * Events are collected during the request and sent on `shutdown`, so document
+ * operations are never slowed on the request path and bursts within one request
+ * are summarized instead of sent one-per-file.
+ *
+ * Recipients are resolved to administrators, selected users, and/or TeamVault
+ * groups. When folder-aware delivery is enabled, non-administrator recipients
+ * must also be able to view the folder that produced the event; otherwise a
+ * document name could be disclosed to a group that has no access to it.
  */
 class MSTV_Notifications
 {
     private MSTV_Repository_Groups $groupsRepo;
+    private ?MSTV_Permissions $permissions;
 
-    /** @var array<string,string[]> event => human lines */
+    /** @var array<int,array{event:string,line:string,folder_id:?int}> */
     private array $queue = [];
     private bool $shutdownHooked = false;
 
-    public function __construct(MSTV_Repository_Groups $groupsRepo)
+    public function __construct(MSTV_Repository_Groups $groupsRepo, ?MSTV_Permissions $permissions = null)
     {
         $this->groupsRepo = $groupsRepo;
+        $this->permissions = $permissions;
     }
 
     public function register(): void
@@ -51,7 +57,7 @@ class MSTV_Notifications
             /* translators: %s: file name. */
             __('Uploaded: %s', 'mikesoft-teamvault'),
             $name
-        ));
+        ), $this->folder_id_from_data($data));
     }
 
     public function on_file_downloaded($fileId, $data): void
@@ -61,7 +67,7 @@ class MSTV_Notifications
             /* translators: %s: file name. */
             __('Downloaded: %s', 'mikesoft-teamvault'),
             $name
-        ));
+        ), $this->folder_id_from_data($data));
     }
 
     public function on_file_deleted($fileId, $data): void
@@ -71,7 +77,7 @@ class MSTV_Notifications
             /* translators: %s: file name. */
             __('Deleted: %s', 'mikesoft-teamvault'),
             $name
-        ));
+        ), $this->folder_id_from_data($data));
     }
 
     public function on_access_denied($userId, $folderId, $action): void
@@ -84,16 +90,20 @@ class MSTV_Notifications
             $who,
             (string) $action,
             $folderId !== null ? (string) $folderId : 'root'
-        ));
+        ), $folderId !== null ? (int) $folderId : null);
     }
 
-    private function enqueue(string $event, string $line): void
+    private function enqueue(string $event, string $line, ?int $folderId): void
     {
         if (!$this->is_enabled() || !in_array($event, $this->enabled_events(), true)) {
             return;
         }
 
-        $this->queue[$event][] = $line;
+        $this->queue[] = [
+            'event' => $event,
+            'line' => $line,
+            'folder_id' => $folderId,
+        ];
 
         if (!$this->shutdownHooked) {
             add_action('shutdown', [$this, 'flush'], 100);
@@ -107,30 +117,47 @@ class MSTV_Notifications
             return;
         }
 
-        $recipients = $this->recipient_emails();
-        if (empty($recipients)) {
-            $this->queue = [];
+        // Group by event and recipient set: a single email must never mix files
+        // from folders with different access rules.
+        $batches = [];
+        foreach ($this->queue as $item) {
+            $recipients = $this->recipient_emails($item['event'], $item['folder_id']);
+            if (empty($recipients)) {
+                continue;
+            }
+
+            $key = $item['event'] . ':' . implode('|', $recipients);
+            if (!isset($batches[$key])) {
+                $batches[$key] = [
+                    'event' => $item['event'],
+                    'recipients' => $recipients,
+                    'lines' => [],
+                ];
+            }
+
+            $batches[$key]['lines'][] = $item['line'];
+        }
+
+        $this->queue = [];
+
+        if (empty($batches)) {
             return;
         }
 
         $siteName = (string) get_bloginfo('name');
 
-        foreach ($this->queue as $event => $lines) {
+        foreach ($batches as $batch) {
             $subject = sprintf(
                 /* translators: 1: site name, 2: number of events, 3: event label. */
                 __('[%1$s] TeamVault: %2$d %3$s event(s)', 'mikesoft-teamvault'),
                 $siteName,
-                count($lines),
-                $this->event_label($event)
+                count($batch['lines']),
+                $this->event_label($batch['event'])
             );
 
-            $body = implode("\n", $lines);
-
             // wp_mail failures are non-fatal here; notifications must never break a request.
-            wp_mail($recipients, $subject, $body);
+            wp_mail($batch['recipients'], $subject, implode("\n", $batch['lines']));
         }
-
-        $this->queue = [];
     }
 
     private function event_label(string $event): string
@@ -150,18 +177,30 @@ class MSTV_Notifications
     }
 
     /**
+     * Resolve recipient emails for one event.
+     *
+     * Administrators are always kept when the relevant option is enabled. Other
+     * recipients are filtered against the folder that produced the event when
+     * folder-aware delivery is on, so the notification cannot reveal a document
+     * name to someone who cannot view that folder.
+     *
      * @return string[] unique recipient email addresses
      */
-    private function recipient_emails(): array
+    private function recipient_emails(string $event, ?int $folderId): array
     {
         $config = get_option('mstv_notify_recipients', ['admins' => true, 'users' => [], 'groups' => []]);
         $config = is_array($config) ? $config : [];
 
         $userIds = [];
+        $adminIds = [];
 
         if (!empty($config['admins'])) {
-            foreach (get_users(['role' => 'administrator', 'fields' => 'ID']) as $adminId) {
-                $userIds[] = (int) $adminId;
+            foreach (get_users(['role' => 'administrator', 'fields' => 'ID']) as $admin) {
+                $adminId = is_object($admin) ? (int) ($admin->ID ?? 0) : (int) $admin;
+                if ($adminId > 0) {
+                    $userIds[] = $adminId;
+                    $adminIds[] = $adminId;
+                }
             }
         }
 
@@ -175,14 +214,52 @@ class MSTV_Notifications
             }
         }
 
+        $enforceFolderAccess = $this->is_folder_aware() && $this->permissions !== null;
         $emails = [];
+
         foreach (array_unique(array_filter($userIds)) as $uid) {
             $user = get_userdata($uid);
-            if ($user && is_email($user->user_email)) {
-                $emails[] = $user->user_email;
+            if (!$user || !is_email($user->user_email)) {
+                continue;
+            }
+
+            if ($enforceFolderAccess
+                && !in_array($uid, $adminIds, true)
+                && !$this->permissions->user_can($uid, $folderId, MSTV_Permissions::ACTION_VIEW)) {
+                continue;
+            }
+
+            $emails[] = $user->user_email;
+        }
+
+        $emails = array_values(array_unique($emails));
+
+        if (class_exists('MSTV_Hooks')) {
+            $filtered = MSTV_Hooks::filter_notification_recipients($emails, $event, $folderId);
+            if (is_array($filtered)) {
+                $emails = $filtered;
             }
         }
 
-        return array_values(array_unique($emails));
+        $emails = array_values(array_unique(array_filter(
+            array_map('strval', $emails),
+            static fn($email): bool => is_string($email) && is_email($email) !== false
+        )));
+
+        return $emails;
+    }
+
+    private function is_folder_aware(): bool
+    {
+        return (bool) get_option('mstv_notify_folder_aware', true);
+    }
+
+    private function folder_id_from_data(mixed $data): ?int
+    {
+        if (!is_array($data) || empty($data['folder_id'])) {
+            return null;
+        }
+
+        return (int) $data['folder_id'];
     }
 }

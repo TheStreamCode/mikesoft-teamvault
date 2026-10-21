@@ -87,6 +87,34 @@ final class PDMGovernanceAtomicityTest extends TestCase
         self::assertFalse(get_option('mstv_notify_recipients')['admins']);
     }
 
+    public function test_notification_folder_aware_boolean_is_normalized_before_storage(): void
+    {
+        $controller = $this->buildController();
+
+        $controller->update_notifications(new WP_REST_Request([
+            'enabled' => true,
+            'folder_aware' => 'false',
+            'events' => ['upload'],
+            'recipients' => ['admins' => true],
+        ]));
+
+        self::assertFalse(get_option('mstv_notify_folder_aware'));
+    }
+
+    public function test_notification_folder_aware_is_preserved_when_omitted_by_old_clients(): void
+    {
+        update_option('mstv_notify_folder_aware', false);
+        $controller = $this->buildController();
+
+        $controller->update_notifications(new WP_REST_Request([
+            'enabled' => true,
+            'events' => ['upload'],
+            'recipients' => ['admins' => true],
+        ]));
+
+        self::assertFalse(get_option('mstv_notify_folder_aware'));
+    }
+
     public function test_quota_boolean_strings_are_normalized_before_storage(): void
     {
         $groups = $this->getMockBuilder(MSTV_Repository_Groups::class)->disableOriginalConstructor()->getMock();

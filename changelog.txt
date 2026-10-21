@@ -2,6 +2,12 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.4.0 - 2026-10-21
+- Feature: email notifications are folder-aware by default. Selected users and groups receive an upload, download, delete, or access-denied event only when they can view the folder that produced it, so a document name is not disclosed to a group without access. Administrators remain included when the administrator recipient option is enabled.
+- Feature: a Notifications setting restores the previous global recipient behavior; the `mstv_notification_recipients` filter lets site code refine the final recipient list.
+- Improvement: download notifications include folder context, and queued events are grouped by recipient set so files from folders with different access rules are never combined in one email.
+- Tests: expanded notification coverage for folder filtering, administrator bypass, direct recipients, download context, opt-out behavior, and cross-folder batching.
+
 ## 3.3.0 - 2026-10-11
 - Security: permission-rule management is now restricted to administrators or users whose manage grant comes from an explicit folder rule; the capability-based free fallback no longer delegates rule management, and the interface hides the rule editor accordingly.
 - Fix: ZIP exports build their temporary archive through a correctly separated temp directory path, restoring folder and library exports on servers where the previous malformed path could not be created.
