@@ -6,6 +6,14 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMRestControllerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        // Each test starts without persisted option state: the auto-reindex claim
+        // and other options must not leak between tests.
+        $GLOBALS['pdm_test_options'] = [];
+        $GLOBALS['pdm_test_transients'] = [];
+    }
+
     public function test_resolve_folder_id_returns_error_for_missing_folder(): void
     {
         $folderRepo = $this->createMock(MSTV_Repository_Folders::class);
