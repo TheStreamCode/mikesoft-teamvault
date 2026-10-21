@@ -364,8 +364,14 @@ function update_option($key, $value)
     return true;
 }
 
-function add_option($key, $value)
+function add_option($key, $value, $deprecated = '', $autoload = 'yes')
 {
+    if (array_key_exists($key, $GLOBALS['pdm_test_options'])) {
+        // WordPress add_option() fails on an existing option; callers rely on that
+        // for atomic claims.
+        return false;
+    }
+
     $GLOBALS['pdm_test_options'][$key] = $value;
 
     return true;
@@ -745,6 +751,7 @@ require_once __DIR__ . '/../includes/class-mstv-repository-logs.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-groups.php';
 require_once __DIR__ . '/../includes/class-mstv-repository-permissions.php';
 require_once __DIR__ . '/../includes/class-mstv-quota.php';
+require_once __DIR__ . '/../includes/class-mstv-reindex-lock.php';
 require_once __DIR__ . '/../includes/class-mstv-hooks.php';
 require_once __DIR__ . '/../includes/class-mstv-notifications.php';
 require_once __DIR__ . '/../includes/trait-mstv-binary-stream.php';

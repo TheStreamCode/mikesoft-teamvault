@@ -96,13 +96,21 @@ class MSTV_Repository_Folders
     {
         global $wpdb;
 
-        $inserted = $wpdb->insert($this->table, [
+        $record = [
             'parent_id' => $data['parent_id'] ?? null,
             'name' => $data['name'],
             'slug' => $data['slug'],
             'relative_path' => $data['relative_path'],
             'created_by' => $data['created_by'],
-        ], ['%d', '%s', '%s', '%s', '%d']);
+        ];
+        $formats = ['%d', '%s', '%s', '%s', '%d'];
+
+        if (self::parent_key_enabled()) {
+            $record['parent_key'] = (int) ($data['parent_id'] ?? 0);
+            $formats[] = '%d';
+        }
+
+        $inserted = $wpdb->insert($this->table, $record, $formats);
 
         $this->flush_cache();
 
@@ -112,6 +120,10 @@ class MSTV_Repository_Folders
     public function update(int $id, array $data): bool
     {
         global $wpdb;
+
+        if (self::parent_key_enabled() && array_key_exists('parent_id', $data)) {
+            $data['parent_key'] = (int) ($data['parent_id'] ?? 0);
+        }
 
         $result = $wpdb->update(
             $this->table,
@@ -137,6 +149,20 @@ class MSTV_Repository_Folders
         }
 
         return $result !== false;
+    }
+
+    public function find_by_relative_path(string $relativePath): ?object
+    {
+        global $wpdb;
+
+        $result = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->table} WHERE relative_path = %s ORDER BY id ASC LIMIT 1",
+                $relativePath
+            )
+        );
+
+        return is_object($result) ? $result : null;
     }
 
     public function exists_by_name_and_parent(string $name, ?int $parentId): bool
@@ -227,6 +253,15 @@ class MSTV_Repository_Folders
     {
         $this->allFoldersCache = null;
         $this->hierarchyCache = null;
+    }
+
+    /**
+     * Whether the parent_key column exists. The uniqueness migration adds it, and
+     * inserts must not reference it before that migration has run.
+     */
+    private static function parent_key_enabled(): bool
+    {
+        return class_exists('MSTV_Activator') && MSTV_Activator::schema_migration_applied('folder_parent_key');
     }
 }
 

@@ -624,7 +624,8 @@ final class PDMRestControllerTest extends TestCase
 
         $controller->get_browser_data(new WP_REST_Request());
 
-        self::assertFalse(get_transient('mstv_auto_reindex_1'));
+        // A failed scan releases the claim so the next request can retry.
+        self::assertFalse(get_option('mstv_auto_reindex_claim_1'));
     }
 
     public function test_create_folder_is_forbidden_without_manage_permission(): void
