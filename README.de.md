@@ -1,180 +1,165 @@
 # Mikesoft TeamVault
 
+Private Dokumentenverwaltung für WordPress-Teams, mit geschütztem Speicher und granularer Zugriffskontrolle
+
 [![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
-[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
-[![WordPress Tested](https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to)](https://wordpress.org/plugins/mikesoft-teamvault/)
-[![PHP](https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![WordPress.org](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
 [![License](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
-[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-db61a2?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/TheStreamCode)
+
+![TeamVault-Banner für den Plugin-Eintrag auf WordPress.org](.wordpress-org/assets/banner-772x250.png)
 
 [English](README.md) · [Italiano](README.it.md) · [Français](README.fr.md) · [Español](README.es.md) · **Deutsch**
 
-Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
+Mikesoft TeamVault fügt einen privaten Dokumenten-Arbeitsbereich im WordPress-Adminbereich hinzu, für Teams, Agenturen, Partner und Back-Office-Bereiche, die kontrollierten Zugriff auf gemeinsam genutzte Dateien benötigen. Dokumente werden außerhalb der Mediathek gespeichert und über authentifizierte WordPress-Handler statt über öffentliche Medien-URLs ausgeliefert. Dieses Repository ist der öffentliche Quellcode-Spiegel: Installationen und Updates kommen von [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/), und der Benutzersupport läuft über das [offizielle Support-Forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-Aktuelle Plugin-Version: `3.4.0`.
+Mikesoft TeamVault ist ein unabhängiges Plugin; es ist weder mit WordPress, Automattic oder der WordPress Foundation verbunden noch von ihnen gesponsert oder unterstützt.
 
-Direkt über WordPress.org verfügbar und für aktuelle WordPress-Versionen gepflegt.
+![TeamVault-Dateimanager mit Ordnerbaum, Dateikarten mit typbezogenen Symbolen und Bildvorschauen sowie dem Detailbereich mit Inline-Vorschau](.wordpress-org/assets/screenshot-1.jpg)
 
-Wenn TeamVault für Sie nützlich ist, ziehen Sie in Betracht, [das Projekt auf GitHub zu unterstützen](https://github.com/sponsors/TheStreamCode) — es wird kostenlos entwickelt und gepflegt, und Förderungen helfen, es am Leben zu erhalten.
+## Installation
 
-## Überblick
+1. Öffne im WordPress-Adminbereich `Plugins > Add New`.
+2. Suche nach `Mikesoft TeamVault`.
+3. Klicke auf `Install Now` und aktiviere das Plugin.
+4. Öffne `TeamVault > Settings`, um Zugriffs-, Speicher- und Dateiregeln zu prüfen.
 
-Mikesoft TeamVault fügt einen privaten Dokumenten-Arbeitsbereich innerhalb des WordPress-Adminbereichs hinzu.
-Es wurde für Teams konzipiert, die sensible Dateien organisieren, in der Vorschau anzeigen, exportieren und teilen müssen, ohne sie über die üblichen Mediathek-URLs preiszugeben.
+Manuelle Alternative: Lade das Versionspaket von [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/) herunter, lade es nach `wp-content/plugins/mikesoft-teamvault/` hoch und aktiviere das Plugin über den Plugin-Bildschirm.
 
-Dateien werden in geschütztem Speicher abgelegt und über authentifizierte WordPress-Handler ausgeliefert, anstatt über öffentliche Medien-URLs.
+## Schnellstart
 
-![TeamVault Dateimanager — Ordnerbaum, Dateikarten mit typbezogenen Symbolen und Miniaturansichten, Detailbereich mit Inline-Vorschau](.wordpress-org/assets/screenshot-1.jpg)
+1. Öffne `TeamVault > Settings` und prüfe den Speicherpfad, die erlaubten Dateitypen und das Upload-Limit.
+2. Vergib die Capability `manage_private_documents` nur an Rollen oder Benutzer, die Zugriff auf den Vault benötigen.
+3. Lege Gruppen an, wenn Berechtigungen Abteilungen oder Projektteams folgen sollen, und erstelle danach die Dokumentenordner.
+4. Lade eine Datei aus der Raster- oder Listenansicht hoch und prüfe Vorschau- und Download-Verhalten mit einem Nicht-Administrator-Konto.
+
+## Screenshots
 
 | Ordnerberechtigungen | Suche im Vault | Speicherkontingente |
 | :---: | :---: | :---: |
 | [![Ordnerbezogene Zugriffskontrolle](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Suche mit Dateityp-Badges](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Kontingente pro Benutzer und Gruppe](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
 | **Gruppen** | **Aktivitätsprotokoll** | **Einstellungen** |
-| [![Benutzergruppen](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit-Trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin-Einstellungen](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
+| [![Benutzergruppen](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit-Protokoll](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin-Einstellungen](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
-Typische Anwendungsfälle sind:
+## Funktionen
 
-- interne Unternehmensdokumente
-- Dokumentenübergabe von Agentur an Kunde aus dem WordPress-Adminbereich
-- Dateiaustausch mit Partnern oder Lieferanten
-- Back-Office-Archive, die aus der öffentlichen Mediathek herausgehalten werden sollen
+- Privater Speicher außerhalb des normalen Mediathek-Workflows.
+- Zugriffskontrollen über Capability, optionale Whitelist, Benutzer, Gruppen und Ordner, mit Vererbung und expliziten Überschreibungen in Unterordnern.
+- Ordneroperationen (Erstellen, Umbenennen, Verschieben, Löschen) und validierte Drag-and-Drop-Uploads mit Inline-Vorschauen, einschließlich PDFs.
+- Reiner Vorschauzugriff, der Downloads und ZIP-Exporte blockiert.
+- Speicherkontingente pro Benutzer und pro Gruppe, die vor dem Upload durchgesetzt werden.
+- Zugriffsberichte, Aktivitätsprotokollierung, CSV-Export und ordnerbewusste E-Mail-Benachrichtigungen für Uploads, Downloads, Löschungen und verweigerten Zugriff.
+- ZIP-Export, Bereinigung verwaister Dateien und Wartungswerkzeuge zur Neuindexierung des Speichers.
+- Admin-Oberflächen in Englisch, Italienisch, Französisch, Spanisch und Deutsch.
 
-Zu den Kernfunktionen gehören:
+Alle Governance-Funktionen sind im kostenlosen Plugin enthalten.
 
-- privater Speicher außerhalb des normalen Mediathek-Workflows
-- geteilter Zugriff für autorisierte interne Benutzer
-- Erstellen, Umbenennen, Verschieben und Löschen von Ordnern
-- Drag-and-Drop-Uploads mit Dateivalidierung
-- Inline-Vorschau für unterstützte Dateitypen, einschließlich PDFs
-- ZIP-Export für Ordner oder die gesamte Dokumentenbibliothek
-- Aktivitätsprotokollierung zur betrieblichen Nachvollziehbarkeit
-- Wartungswerkzeuge zur Bereinigung verwaister Dateien und zur Neuindexierung des Speichers
+## Voraussetzungen
 
-Governance-Funktionen (alle kostenlos, seit 2.6):
+- WordPress 6.0 oder neuer.
+- PHP 8.0 oder neuer.
+- Ein beschreibbarer Speicherpfad für private Dokumente.
+- `ZipArchive` auf dem Server für die Exportfunktionen.
 
-- TeamVault-Gruppen zur Organisation von Benutzern in Abteilungen oder Teams, unabhängig von WordPress-Rollen
-- ordnerbezogene Berechtigungen mit granularen Aktionen (Anzeigen, Hochladen, Herunterladen, Löschen, Verwalten) für Benutzer und Gruppen, mit Vererbung und expliziten Überschreibungen für untergeordnete Ordner
-- reiner Vorschauzugriff, der das Anzeigen ohne Herunterladen oder ZIP-Export erlaubt
-- Speicherkontingente pro Benutzer und pro Gruppe, die vor dem Hochladen durchgesetzt werden
-- Zugriffsberichte (wer was angesehen oder heruntergeladen hat) mit Filtern und einem CSV-Export des Aktivitätsprotokolls
-- E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
+## Konfiguration
 
-## Neueste Version
+Öffne `TeamVault > Settings` nach der Aktivierung. Die wichtigsten Einstellungen sind:
 
-Version `3.4.0` macht E-Mail-Benachrichtigungen ordnerbewusst: Ausgewählte Benutzer und Gruppen erhalten ein Ereignis nur, wenn sie den Ordner, in dem es entstanden ist, anzeigen dürfen; Administratoren bleiben eingeschlossen, wenn sie aktiviert sind. Eine neue Einstellung unter Benachrichtigungen stellt das bisherige globale Verhalten wieder her, und der Filter `mstv_notification_recipients` ermöglicht seitenspezifische Weiterleitungen. Weitere Konfigurationsänderungen sind nicht erforderlich.
+| Einstellung | Zweck | Standard |
+| --- | --- | --- |
+| Oberflächensprache | Folgt der WordPress-Sprache oder erzwingt eine unterstützte Sprache | Automatisch |
+| Benutzer-Whitelist | Fügt eine ausdrückliche Benutzerliste zusätzlich zur erforderlichen Capability hinzu | Deaktiviert |
+| Erlaubte Dateitypen | Beschränkt Uploads auf die konfigurierten Dokument-, Bild-, Archiv-, Audio- und Videotypen | Sichere integrierte Liste |
+| Maximale Dateigröße | Wendet ein Upload-Limit des Plugins zusätzlich zu PHP- und Webserver-Limits an | 50 MB |
+| PDF-Vorschau | Erlaubt authentifizierte Inline-PDF-Vorschauen | Aktiviert |
+| Aktivitätsprotokoll | Zeichnet Dokumentoperationen für Audit und Berichte auf | Aktiviert |
+| Daten bei Deinstallation löschen | Entfernt beim Deinstallieren Plugin-Tabellen, Optionen, Capabilities und markierten Speicher | Deaktiviert |
 
-Version `3.3.0` beschränkt die Verwaltung von Zugriffsregeln auf Administratoren oder Benutzer mit einer expliziten Verwaltungsregel, behebt ZIP-Exporte auf Servern, auf denen der temporäre Archivpfad nicht erstellt werden konnte, zeigt bei fehlgeschlagenen Aktionen die spezifischen Servermeldungen an und ergänzt Ordner in den Suchergebnissen. Konfigurationsänderungen sind nicht erforderlich.
+Gruppen, Ordnerberechtigungen, Kontingente, Berichte und Benachrichtigungen haben eigene Seiten im Adminbereich. Konfiguriere den Zugriff, bevor du Nicht-Administratoren einlädst.
 
-Version `3.2.5` schließt die in 3.2.4 begonnene Ausgabekodierung ab: Das Detailfenster maskiert die gespeicherte Dateiendung nun vor der Darstellung. Der Wert ist durch die Upload- und Reindex-Validierung bereits auf `[a-z0-9]` beschränkt; es handelt sich also um Verteidigung in der Tiefe und nicht um die Behebung einer ausnutzbaren Schwachstelle. Konfigurationsänderungen sind nicht erforderlich.
+Die Laufzeitkonfiguration liegt in WordPress-Optionen; TeamVault liest keine Einstellungen aus Umgebungsvariablen oder einer `.env`-Datei des Repositorys. Datenbank-Zugangsdaten und Salts gehören in die `wp-config.php` der Website.
 
-Version `3.2.4` härtet die Auslieferung privater Dateien, indem No-Cache-Header beibehalten und Speicherpfade aus Diagnoseprotokollen ferngehalten werden. Browserziele sind auf HTTP(S)-URLs gleichen Ursprungs beschränkt, die Spracheinstellung verwendet eine ausdrückliche Positivliste und wiederholte Berechtigungsprüfungen nutzen während einer Anfrage zwischengespeicherte Ordner-, Regel- und Gruppenabfragen. CI, Paketfilter, Sicherheitshinweise sowie Entwicklungs- und Veröffentlichungsdokumentation wurden ebenfalls verbessert. Es sind keine Konfigurationsänderungen erforderlich.
+## Datenschutz und Sicherheit
 
-Version `3.2.3` verschärft die Validierung von Uploads und Inline-Vorschauen, führt Berechtigungs- und Gruppenänderungen transaktional aus und hält Datei-, Ordner-, Kontingent- und Exportvorgänge konsistent, wenn ein Schreibvorgang im Speicher oder in der Datenbank fehlschlägt. Explizit freigegebene Unterordner bleiben auffindbar, wenn ihr übergeordneter Ordner ausgeblendet ist, CSV-Exporte des Protokolls lassen sich sicherer in Tabellenkalkulationen öffnen, Neuinstallationen verwenden wieder standardmäßig die automatische Oberflächensprache und der Plugin-Bildschirm nennt als Autor nun einfach Mikesoft.
+Private Dateien werden nie über öffentliche Medien-URLs ausgeliefert: Downloads und Vorschauen laufen über authentifizierte WordPress-Handler mit privaten No-Cache-Antworten.
 
-Version `3.2.2` erneuert die **Dateityp-Symbole** im gesamten Dateimanager: PDF-, Word-, Excel-, PowerPoint-, CSV-, Text-, Archiv-, Audio-, Video- und Bilddateien zeigen jetzt klare, wiedererkennbare farbige Badges mit der Formatbezeichnung — im Raster, in der Listenansicht und in der Vorschau des Detailbereichs — anstelle der bisherigen einfarbigen Glyphen.
-
-Version `3.0.0` ist ein Meilenstein für Sicherheit und Zuverlässigkeit. Suchergebnisse werden nun durch die ordnerbezogene Berechtigungs-Engine gefiltert, sodass eingeschränkte Benutzer keine Dateinamen oder Metadaten mehr aus Ordnern entdecken können, die sie nicht anzeigen dürfen. Die generierte `.htaccess` für den Speicher verweigert den direkten Zugriff auf Apache 2.4 zusätzlich zu Apache 2.2 und IIS, und Speicherkontingente werden mit einer Datenbanksperre durchgesetzt, damit gleichzeitige Uploads ein Limit nicht gemeinsam überschreiten können. Downloads und Inline-Vorschauen erhalten HTTP-Range-Unterstützung (`Accept-Ranges` / `206 Partial Content`) für fortsetzbare Übertragungen und PDF-Viewer mit Bereichssuche bei großen Dateien. Der Dialog für Ordnerberechtigungen warnt nun, wenn Regeln existieren, das Stammverzeichnis jedoch keine hat, das Symbol im Admin-Menü entspricht dem nativen WordPress-Design, und das Admin-JavaScript wurde ohne Verhaltensänderung in fokussierte Module aufgeteilt.
-
-Version `2.6` führte die kostenlose **Governance-Suite** für Dokumente ein: TeamVault-Gruppen, ordnerbezogene Berechtigungen mit Vererbung und granularen Aktionen (Anzeigen, Hochladen, Herunterladen, Löschen, Verwalten), reinen Vorschauzugriff, Speicherkontingente pro Benutzer und pro Gruppe, Zugriffsberichte mit CSV-Export, E-Mail-Benachrichtigungen. Bestehende Installationen sind nicht betroffen, da Ordner ohne Regeln das bisherige Verhalten beibehalten.
-
-Warum Teams TeamVault einsetzen:
-
-- es schafft einen dedizierten privaten Dokumentenbereich, anstatt die Mediathek zu überladen
-- es ergänzt eine fähigkeitsbasierte Zugriffskontrolle mit einer optionalen Whitelist-Ebene sowie ordnerbezogenen Berechtigungen und Gruppen für eine feinere Governance
-- es hält Export-, Wartungs- und Wiederherstellungsabläufe auf betriebliche Dateien fokussiert
-
-## Anforderungen
-
-- WordPress 6.0 oder neuer
-- PHP 8.0 oder neuer
-- Beschreibbarer Speicherpfad für private Dokumente
-- `ZipArchive` auf dem Server verfügbar für Exportfunktionen
-
-## Installation
-
-### Empfohlen
-
-Installieren Sie das Plugin aus dem [WordPress.org Plugin-Verzeichnis](https://wordpress.org/plugins/mikesoft-teamvault/), damit die Website standardmäßige Update-Benachrichtigungen erhält.
-
-1. Gehen Sie im WordPress-Adminbereich zu `Plugins > Installieren`.
-2. Suchen Sie nach `Mikesoft TeamVault`.
-3. Klicken Sie auf `Jetzt installieren` und aktivieren Sie das Plugin.
-4. Öffnen Sie `TeamVault > Einstellungen`, um Zugriffs-, Speicher- und Dateiregeln zu überprüfen.
-
-### Manuell
-
-1. Laden Sie das Release-Paket von WordPress.org herunter.
-2. Laden Sie es nach `wp-content/plugins/mikesoft-teamvault/` hoch.
-3. Aktivieren Sie das Plugin über den Plugins-Bildschirm.
-
-## Zugriffsmodell
-
-- Der Zugriff auf den Datei-Arbeitsbereich nutzt die Fähigkeit `manage_private_documents`.
-- Neue Aktivierungen gewähren diese Fähigkeit nur Administratoren.
-- Die Fähigkeit `manage_private_documents` gewährt vollen Zugriff auf den TeamVault-Arbeitsbereich, einschließlich der Aktionen Hochladen, Umbenennen, Verschieben, Herunterladen, Exportieren und Löschen.
+- Der Vault-Zugriff nutzt die Capability `manage_private_documents`; neue Aktivierungen vergeben sie nur an Administratoren.
 - Der optionale Whitelist-Modus fügt eine zweite Autorisierungsebene für ausgewählte Benutzer hinzu.
-- Ordnerbezogene Berechtigungen (seit 2.6) ergänzen die Fähigkeit um eine feingranulare Steuerung: Wenn ein Ordner explizite Regeln hat, ist der Zugriff auf die berechtigten Benutzer/Gruppen und Aktionen beschränkt, mit Vererbung von übergeordneten Ordnern; Ordner ohne Regeln behalten das fähigkeitsbasierte Verhalten. Administratoren behalten stets vollen Zugriff.
-- Einstellungen, Gruppen, Speicherkontingente, Benachrichtigungen, Berichte, Aktivitätsprotokolle, Whitelist-Verwaltung, Wartungswerkzeuge und Kontrollen für Daten bei der Deinstallation erfordern `manage_options`.
+- Ordnerberechtigungen beschränken den Zugriff auf die gewährten Benutzer, Gruppen und Aktionen, mit Vererbung von übergeordneten Ordnern. Ordner ohne Regeln behalten das capability-basierte Verhalten, und Administratoren behalten immer vollen Zugriff.
+- Einstellungen, Gruppen, Kontingente, Benachrichtigungen, Berichte, Protokolle, Whitelist-Verwaltung, Wartungswerkzeuge und Datenkontrollen bei der Deinstallation erfordern `manage_options`.
+- Der Standardspeicher ist `wp-content/uploads/private-documents/` und wird durch serverseitige Deny-Dateien geschützt: die generierte `.htaccess` unter Apache und LiteSpeed, die `web.config` unter IIS und eine äquivalente Nginx-Regel, die direkte Anfragen an diesen Pfad verweigert.
+- Für besonders sensible Deployments ist ein eigener Speicherpfad außerhalb des öffentlichen Webroots zu bevorzugen. Das Speicher-Widget zeigt nur die Nutzung durch TeamVault.
 
-Wenn der Whitelist-Modus aktiviert ist, behalten Sie das aktuelle Administrator-Konto in der Liste der erlaubten Benutzer, bevor Sie die Einstellungen speichern.
-Überprüfen Sie auf Websites, die von älteren Versionen aktualisiert wurden, die bestehenden Rollenfähigkeiten und Whitelist-Einstellungen, falls Redakteure zuvor Zugriff auf TeamVault hatten.
+Siehe [`SECURITY.md`](SECURITY.md) für die Meldung von Schwachstellen.
 
-## Speicher
+## Fehlerbehebung
 
-- Standard-Speicherpfad: `wp-content/uploads/private-documents/`
-- Das Plugin kann einen benutzerdefinierten, beschreibbaren Pfad verwenden, der in den Einstellungen konfiguriert wird.
-- Der Speicher wird dort, wo es unterstützt wird, mit Sperrdateien auf Serverebene geschützt.
-- Apache/LiteSpeed können die generierte `.htaccess` durchsetzen; IIS kann `web.config` durchsetzen; Nginx erfordert eine gleichwertige Serverregel, die direkte Anfragen an `/wp-content/uploads/private-documents/` verweigert.
-- Bevorzugen Sie für hochsensible Bereitstellungen einen benutzerdefinierten Speicherpfad außerhalb des öffentlichen Webroots.
-- Das Speicher-Widget in der Seitenleiste zeigt nur den von TeamVault-Dateien belegten Speicherplatz an, um zu vermeiden, dass irreführende Hosting-Kontingentwerte in geteilten Umgebungen preisgegeben werden.
+### ZIP-Export schlägt fehl
 
-Wenn eine Website migriert wird, ohne den privaten Speicherordner zu kopieren, können TeamVault-Datensätze in der Datenbank verbleiben, während die ursprünglichen Binärdateien fehlen. Der Einstellungsbildschirm enthält Bereinigungs- und Neuindexierungswerkzeuge für solche Szenarien.
+Der Export benötigt die PHP-Erweiterung `ZipArchive` und einen beschreibbaren Speicherpfad. Aktiviere die Erweiterung oder bitte den Hosting-Anbieter darum, und versuche es erneut.
 
-## Support
+### Ein Administrator ist nach Aktivierung der Whitelist ausgesperrt
 
-- Endbenutzer-Support: [WordPress.org Support-Forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
-- E-Mail: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
-- Website: [mikesoft.it](https://mikesoft.it)
-- Sicherheitsmeldungen: siehe [SECURITY.md](SECURITY.md)
-- Unterstützung der kontinuierlichen Open-Source-Pflege: [GitHub Sponsors](https://github.com/sponsors/TheStreamCode)
+Der Whitelist-Modus ist eine Positivliste. Halte das aktuelle Administrator-Konto in der Liste der erlaubten Benutzer, bevor du die Einstellungen speicherst.
 
-## Schnelle Entwicklungsprüfung
+### Nach einer Website-Migration fehlen Dateien
 
-Installieren Sie die Entwicklungsabhängigkeiten mit Composer und führen Sie dann die Standard-Validierungsbefehle aus:
+Eine ohne den privaten Speicherordner migrierte Website behält die TeamVault-Datensätze in der Datenbank, während die Originaldateien fehlen. Kopiere das Speicherverzeichnis bei Migrationen und nutze danach die Bereinigungs- und Neuindexierungswerkzeuge im Einstellungsbildschirm, nachdem du die Kopie geprüft hast.
+
+### Uploads werden abgelehnt
+
+Prüfe die erlaubten Dateitypen, die maximale Dateigröße und die PHP-Upload-Limits. TeamVault validiert Dateiendung, erkannten MIME-Typ, Größe und gefährliche Inhaltsmuster, bevor eine Datei gespeichert wird, und meldet den erkannten Inhaltstyp bei einer Abweichung.
+
+## Entwicklung
+
+Die Entwicklung erfordert PHP 8.2 oder neuer für PHPUnit 11, Composer 2, Node.js 24 für das JavaScript- und Plugin-Check-Tooling sowie Git; das Plugin selbst unterstützt PHP 8.0 oder neuer.
+
+Installiere die gesperrten Entwicklungsabhängigkeiten und führe die standardmäßigen PHP-Prüfungen aus:
 
 ```bash
-composer install
-composer lint
-composer test
+composer install --no-interaction --prefer-dist
+composer validate --strict
+composer audit --locked
 composer ci
 ```
 
-`composer lint` prüft alle PHP-Dateien des Repositorys außerhalb der generierten Abhängigkeiten. `composer test` führt die schlanke PHPUnit-Suite mit dem Repository-Bootstrap aus. GitHub Actions führt außerdem WordPress Plugin Check gegen einen sauberen Laufzeit-Build des Plugins aus.
+`composer ci` führt PHP-Lint und die PHPUnit-Suite aus. GitHub Actions führt zusätzlich WordPress Plugin Check gegen ein sauberes Laufzeitpaket aus.
 
-## Repository-Leitfaden
+Zusätzliche Prüfungen:
 
-Dieses Repository ist der öffentliche Quellcode-Spiegel für das Plugin.
+```bash
+node --check assets/js/admin-app-core.js
+node --check assets/js/admin-app-governance.js
+node --check assets/js/admin-app.js
+node --check assets/js/admin-notice-dismiss.js
+node --test tests/plugin-check-output.test.mjs
+```
 
-- Produkt- und Installationsinformationen für WordPress.org-Benutzer befinden sich in [`readme.txt`](readme.txt).
-- Die vollständige Versionshistorie befindet sich in [`changelog.txt`](changelog.txt).
-- Repository-Richtlinien befinden sich in [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) und [`SECURITY.md`](SECURITY.md).
-- Betreuer- und Entwicklernotizen befinden sich in [`docs/`](docs/).
+Es gibt keinen Asset-Kompilierungsschritt: Laufzeit-PHP, CSS und JavaScript werden als Quellcode versioniert. `git archive --format=zip --prefix=mikesoft-teamvault/ --output=mikesoft-teamvault.zip HEAD` erzeugt ein Paket aus einer committeten Revision unter Verwendung der Export-Ausschlüsse aus `.gitattributes`.
 
-## Branding-Ressourcen
+Hinweise für Maintainer und Entwickler:
 
-- `.wordpress-org/assets/icon-256x256.png` ist das primäre Vollfarb-Symbol für den WordPress.org-Eintrag.
-- `.wordpress-org/assets/icon.svg` ist die skalierbare Begleitressource für den WordPress.org-Eintrag.
-- `.wordpress-org/assets/screenshot-1.jpg` ist der primäre Screenshot des Dateimanagers, der für den WordPress.org-Eintrag und diese README verwendet wird.
-- `assets/logo-teamvault.svg` ist das Plugin-interne Admin-Logo, das innerhalb der TeamVault-Oberfläche verwendet wird.
+- [`docs/developer/hooks.md`](docs/developer/hooks.md) - Hooks und Filter
+- [`docs/developer/i18n.md`](docs/developer/i18n.md) - Übersetzungs-Workflow
+- [`docs/maintainer/local-development.md`](docs/maintainer/local-development.md) - lokale Entwicklung und manuelle QA
+- [`docs/maintainer/release.md`](docs/maintainer/release.md) - Release und WordPress.org-Deployment
+- [`docs/maintainer/security-review.md`](docs/maintainer/security-review.md) - letzte Sicherheitsüberprüfung
 
-Diese Ressourcen bedienen unterschiedliche Oberflächen und sollten auf dieselbe Marke abgestimmt bleiben, ohne die Laufzeit-Plugin-Oberfläche zu zwingen, sich an die Verpackungsvorgaben von WordPress.org anzupassen.
+## Support
 
-## Dokumentationsübersicht
+- Endbenutzer-Support: [WordPress.org-Support-Forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
+- E-Mail: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
+- Website: [mikesoft.it](https://mikesoft.it)
+- Sicherheitsmeldungen: siehe [`SECURITY.md`](SECURITY.md), niemals ein öffentliches Issue.
 
-- [`docs/developer/hooks.md`](docs/developer/hooks.md) - Entwickler-Hooks und -Filter
-- [`docs/maintainer/local-development.md`](docs/maintainer/local-development.md) - lokaler Entwicklungs-Workflow
-- [`docs/maintainer/release.md`](docs/maintainer/release.md) - WordPress.org-Release-Prozess
+## Mitwirken
+
+Dieses Repository ist der öffentliche Quellcode-Spiegel des Plugins. Externe Pull Requests werden nicht angenommen; siehe [`CONTRIBUTING.md`](CONTRIBUTING.md) für die Melde-Policy und den Maintainer-Workflow.
 
 ## Lizenz
 
-GPL v2 oder neuer. Siehe [LICENSE](LICENSE).
+GPL-2.0-or-later - siehe [`LICENSE`](LICENSE).
+
+---
+
+Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it). Wenn dieses Projekt für dich nützlich ist, erwäge, [seine Wartung zu unterstützen](https://github.com/sponsors/TheStreamCode).
+
