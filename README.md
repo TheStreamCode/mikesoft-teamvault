@@ -162,4 +162,3 @@ GPL-2.0-or-later - see [`LICENSE`](LICENSE).
 ---
 
 Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it). If this project is useful to you, consider [sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
-
