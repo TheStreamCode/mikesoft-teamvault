@@ -223,55 +223,129 @@ class MSTV_Helpers
         wp_send_json_success($data, $statusCode);
     }
 
+    /**
+     * Names and contents of the files that protect the private storage directory.
+     *
+     * The first three entries are required for the directory to be considered
+     * protected; the storage marker is informational and never blocks uploads.
+     *
+     * @return array<string,string>
+     */
+    public static function protection_file_contents(): array
+    {
+        // Cover Apache 2.4 (mod_authz_core), Apache 2.2 (mod_access_compat) and,
+        // as a last resort, mod_rewrite. On Apache 2.4 the legacy "Order/Deny"
+        // directives are inert unless mod_access_compat is loaded, so the native
+        // "Require all denied" must be emitted too.
+        $htaccess = "# Mikesoft TeamVault - Access Denied\n";
+        $htaccess .= "<IfModule mod_authz_core.c>\n";
+        $htaccess .= "  Require all denied\n";
+        $htaccess .= "</IfModule>\n";
+        $htaccess .= "<IfModule !mod_authz_core.c>\n";
+        $htaccess .= "  Order deny,allow\n";
+        $htaccess .= "  Deny from all\n";
+        $htaccess .= "</IfModule>\n";
+        $htaccess .= "<IfModule mod_rewrite.c>\n";
+        $htaccess .= "  RewriteEngine On\n";
+        $htaccess .= "  RewriteRule .* - [F]\n";
+        $htaccess .= "</IfModule>\n";
+
+        $webconfig = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+        $webconfig .= "<configuration>\n";
+        $webconfig .= "  <system.webServer>\n";
+        $webconfig .= "    <handlers>\n";
+        $webconfig .= "      <clear />\n";
+        $webconfig .= "    </handlers>\n";
+        $webconfig .= "    <httpProtocol>\n";
+        $webconfig .= "      <customHeaders>\n";
+        $webconfig .= "        <add name=\"X-Content-Type-Options\" value=\"nosniff\" />\n";
+        $webconfig .= "      </customHeaders>\n";
+        $webconfig .= "    </httpProtocol>\n";
+        $webconfig .= "  </system.webServer>\n";
+        $webconfig .= "</configuration>";
+
+        return [
+            '.htaccess' => $htaccess,
+            'web.config' => $webconfig,
+            'index.php' => "<?php // Silence is golden",
+            '.mstv-storage' => "Mikesoft TeamVault storage marker\n",
+        ];
+    }
+
+    /**
+     * Create the web-server protection files in a storage directory.
+     *
+     * Fail-closed contract: the result reports every file that could not be
+     * created so callers can refuse uploads instead of serving private documents
+     * from an unprotected directory. An existing non-empty file counts as
+     * protection even when the directory is not writable any more; an empty or
+     * missing file is rewritten and reported as failed when the write fails.
+     *
+     * @param string        $path   Absolute storage directory.
+     * @param callable|null $writer Optional writer receiving (string $file, string $content): bool,
+     *                              used by tests to simulate a failing filesystem.
+     * @return array{files: array<string,bool>, failed: string[], marker: bool, ok: bool}
+     */
+    public static function ensure_protection_files(string $path, ?callable $writer = null): array
+    {
+        $path = rtrim($path, '/\\');
+        $results = [
+            'files' => [],
+            'failed' => [],
+            'marker' => true,
+            'ok' => true,
+        ];
+
+        if ($path === '') {
+            // Never write protection files relative to the filesystem root.
+            $results['failed'] = ['.htaccess', 'web.config', 'index.php'];
+            $results['marker'] = false;
+            $results['ok'] = false;
+
+            return $results;
+        }
+
+        foreach (self::protection_file_contents() as $name => $content) {
+            $target = $path . '/' . $name;
+            $isMarker = $name === '.mstv-storage';
+            $exists = file_exists($target);
+
+            if ($exists && ($isMarker || $name === 'index.php' || filesize($target) > 0)) {
+                $results['files'][$name] = true;
+                continue;
+            }
+
+            $written = $writer !== null
+                ? (bool) call_user_func($writer, $target, $content)
+                : self::write_protection_file($target, $content);
+
+            $results['files'][$name] = $written;
+
+            if (!$written) {
+                if ($isMarker) {
+                    $results['marker'] = false;
+                } else {
+                    $results['failed'][] = $name;
+                }
+            }
+        }
+
+        $results['ok'] = $results['failed'] === [];
+
+        return $results;
+    }
+
+    /**
+     * Backward-compatible wrapper that only creates the protection files.
+     */
     public static function create_protection_files(string $path): void
     {
-        $htaccess = $path . '/.htaccess';
-        if (!file_exists($htaccess)) {
-            // Cover Apache 2.4 (mod_authz_core), Apache 2.2 (mod_access_compat) and,
-            // as a last resort, mod_rewrite. On Apache 2.4 the legacy "Order/Deny"
-            // directives are inert unless mod_access_compat is loaded, so the native
-            // "Require all denied" must be emitted too.
-            $content = "# Mikesoft TeamVault - Access Denied\n";
-            $content .= "<IfModule mod_authz_core.c>\n";
-            $content .= "  Require all denied\n";
-            $content .= "</IfModule>\n";
-            $content .= "<IfModule !mod_authz_core.c>\n";
-            $content .= "  Order deny,allow\n";
-            $content .= "  Deny from all\n";
-            $content .= "</IfModule>\n";
-            $content .= "<IfModule mod_rewrite.c>\n";
-            $content .= "  RewriteEngine On\n";
-            $content .= "  RewriteRule .* - [F]\n";
-            $content .= "</IfModule>\n";
-            @file_put_contents($htaccess, $content);
-        }
+        self::ensure_protection_files($path);
+    }
 
-        $webconfig = $path . '/web.config';
-        if (!file_exists($webconfig)) {
-            $content = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-            $content .= "<configuration>\n";
-            $content .= "  <system.webServer>\n";
-            $content .= "    <handlers>\n";
-            $content .= "      <clear />\n";
-            $content .= "    </handlers>\n";
-            $content .= "    <httpProtocol>\n";
-            $content .= "      <customHeaders>\n";
-            $content .= "        <add name=\"X-Content-Type-Options\" value=\"nosniff\" />\n";
-            $content .= "      </customHeaders>\n";
-            $content .= "    </httpProtocol>\n";
-            $content .= "  </system.webServer>\n";
-            $content .= "</configuration>";
-            @file_put_contents($webconfig, $content);
-        }
-
-        $index = $path . '/index.php';
-        if (!file_exists($index)) {
-            @file_put_contents($index, "<?php // Silence is golden");
-        }
-
-        $marker = $path . '/.mstv-storage';
-        if (!file_exists($marker)) {
-            @file_put_contents($marker, "Mikesoft TeamVault storage marker\n");
-        }
+    private static function write_protection_file(string $target, string $content): bool
+    {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Protection files live at the storage root and must be written even when WP_Filesystem is not initialized.
+        return @file_put_contents($target, $content) !== false;
     }
 }

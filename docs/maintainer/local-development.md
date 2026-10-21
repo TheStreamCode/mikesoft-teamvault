@@ -137,7 +137,7 @@ TeamVault uses WordPress options for runtime settings and does not require a rep
 
 Do not store WordPress credentials, salts, Composer authentication, deployment credentials, database exports, or production documents in this repository. `.env*` and `auth.json` are ignored and excluded from release packages; use local host configuration, CI secrets, or the operating-system credential store instead.
 
-An advanced custom storage root is operator-provisioned rather than entered in the settings UI. It must be writable by WordPress, remain inside the intended deployment boundary, and be protected from direct web access.
+An advanced custom storage root is operator-provisioned rather than entered in the settings UI. It must be writable by WordPress, remain inside the intended deployment boundary, and be protected from direct web access. The recommended deployment is a storage root outside the public webroot, especially on Nginx, which ignores the generated `.htaccess`. Uploads are refused while the required protection files (`.htaccess`, `web.config`, `index.php`) cannot be created in the storage directory.
 
 ## Manual QA Focus
 
