@@ -1,0 +1,57 @@
+name: Bug report
+description: Report a reproducible defect in the plugin source or repository
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a defect.
+        Use this form for reproducible defects in this repository's source or documentation.
+        Installation, configuration, and end-user support requests belong in the WordPress.org support forum linked on the previous screen.
+        For security issues use SECURITY.md, never a public issue.
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: Plugin version from the WordPress Plugins screen, or the release tag.
+      placeholder: "3.3.0"
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: WordPress version, PHP version, web server, and the theme or other plugins involved.
+      placeholder: "WordPress 6.8, PHP 8.2, Apache"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Smallest sequence that shows the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or error output
+      description: Redact tokens, cookies, absolute private paths, and personal data.
+      render: text
+    validations:
+      required: false
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched existing issues and the WordPress.org support forum for the same problem.
+          required: true
+        - label: This report does not contain credentials or personal data.
+          required: true

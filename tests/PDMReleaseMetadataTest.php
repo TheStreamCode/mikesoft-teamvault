@@ -25,7 +25,11 @@ final class PDMReleaseMetadataTest extends TestCase
         self::assertStringContainsString("define('MSTV_VERSION', '" . self::RELEASE_VERSION . "');", $pluginFile);
         self::assertMatchesRegularExpression('/^Stable tag:\s*' . preg_quote(self::RELEASE_VERSION, '/') . '\s*$/m', $readme);
         self::assertMatchesRegularExpression('/^Tested up to:\s*' . preg_quote(self::TESTED_UP_TO, '/') . '\s*$/m', $readme);
-        self::assertStringContainsString('Current plugin version: `' . self::RELEASE_VERSION . '`.', $githubReadme);
+        self::assertStringContainsString(
+            'https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault',
+            $githubReadme
+        );
+        self::assertStringNotContainsString('Current plugin version:', $githubReadme);
         self::assertMatchesRegularExpression('/^## ' . preg_quote(self::RELEASE_VERSION, '/') . ' - ' . preg_quote(self::RELEASE_DATE, '/') . '$/m', $changelog);
         self::assertStringContainsString('# Security Review — ' . self::RELEASE_DATE, $securityReview);
         self::assertMatchesRegularExpression(
@@ -33,18 +37,18 @@ final class PDMReleaseMetadataTest extends TestCase
             $readme
         );
 
-        $localizedVersions = [
-            'README.it.md' => 'Versione attuale del plugin: `' . self::RELEASE_VERSION . '`.',
-            'README.fr.md' => 'Version actuelle du plugin : `' . self::RELEASE_VERSION . '`.',
-            'README.es.md' => 'Versión actual del plugin: `' . self::RELEASE_VERSION . '`.',
-            'README.de.md' => 'Aktuelle Plugin-Version: `' . self::RELEASE_VERSION . '`.',
+        $localizedReadmes = [
+            'README.it.md',
+            'README.fr.md',
+            'README.es.md',
+            'README.de.md',
         ];
 
-        foreach ($localizedVersions as $file => $expectedLine) {
+        foreach ($localizedReadmes as $file) {
             self::assertStringContainsString(
-                $expectedLine,
+                '](README.md)',
                 (string) file_get_contents(__DIR__ . '/../' . $file),
-                $file . ' must expose the current release version.'
+                $file . ' must link back to the English README in its language switcher.'
             );
         }
     }
@@ -70,7 +74,13 @@ final class PDMReleaseMetadataTest extends TestCase
         self::assertStringContainsString('version: "' . self::RELEASE_VERSION . '"', $citation);
         self::assertStringContainsString('date-released: "' . self::RELEASE_DATE . '"', $citation);
         self::assertStringContainsString('license: GPL-2.0-or-later', $citation);
-        self::assertFileDoesNotExist($root . '/.github/dependabot.yml');
+        self::assertFileExists($root . '/.github/dependabot.yml');
+        self::assertFileExists($root . '/.github/CODEOWNERS');
+
+        $dependabot = (string) file_get_contents($root . '/.github/dependabot.yml');
+
+        self::assertStringContainsString('package-ecosystem: "composer"', $dependabot);
+        self::assertStringContainsString('package-ecosystem: "github-actions"', $dependabot);
         self::assertStringContainsString('/security/advisories/new', $securityPolicy);
         self::assertFileExists($socialPreview);
 
