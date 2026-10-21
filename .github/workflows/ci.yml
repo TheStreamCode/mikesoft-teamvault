@@ -122,6 +122,7 @@ jobs:
           rsync -a ./ plugin-check-build/mikesoft-teamvault/ \
             --exclude='.git' \
             --exclude='.github' \
+            --exclude='.markdownlint-cli2.jsonc' \
             --exclude='.gitignore' \
             --exclude='.gitattributes' \
             --exclude='.editorconfig' \
