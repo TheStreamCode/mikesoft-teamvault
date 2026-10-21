@@ -222,6 +222,20 @@ class MSTV_Repository_Files
         return $inserted === false ? 0 : (int) $wpdb->insert_id;
     }
 
+    public function find_by_relative_path(string $relativePath): ?object
+    {
+        global $wpdb;
+
+        $result = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$this->table} WHERE relative_path = %s ORDER BY id ASC LIMIT 1",
+                $relativePath
+            )
+        );
+
+        return is_object($result) ? $result : null;
+    }
+
     public function update(int $id, array $data): bool
     {
         global $wpdb;
