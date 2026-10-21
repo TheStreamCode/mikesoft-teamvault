@@ -1,47 +1,38 @@
-<p align="center">
-  <img src=".wordpress-org/assets/banner-772x250.png" alt="TeamVault" width="772">
-</p>
+# Mikesoft TeamVault
 
-<h1 align="center">Mikesoft TeamVault</h1>
+Private document management for WordPress teams, with protected storage and granular access control
 
-<p align="center"><strong>Private document management for WordPress teams, with protected storage and granular access control.</strong></p>
+[![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
+[![WordPress.org](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
+[![License](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
 
-<p align="center">
-  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><strong>Install from WordPress.org</strong></a> ·
-  <a href="docs/README.md"><strong>Documentation</strong></a> ·
-  <a href="SECURITY.md"><strong>Security</strong></a> ·
-  <a href="https://wordpress.org/support/plugin/mikesoft-teamvault/"><strong>Support</strong></a>
-</p>
+![TeamVault banner for the WordPress.org plugin listing](.wordpress-org/assets/banner-772x250.png)
 
-<p align="center">
-  <a href="https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml"><img src="https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org" alt="WordPress Plugin Version"></a>
-  <a href="https://wordpress.org/plugins/mikesoft-teamvault/"><img src="https://img.shields.io/wordpress/plugin/tested/mikesoft-teamvault?label=Tested%20up%20to" alt="WordPress Tested"></a>
-  <a href="https://www.php.net/"><img src="https://img.shields.io/badge/PHP-8.0%2B-777BB4?logo=php&amp;logoColor=white" alt="PHP 8.0+"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg" alt="GPL-2.0-or-later"></a>
-</p>
+English · [Italiano](README.it.md) · [Français](README.fr.md) · [Español](README.es.md) · [Deutsch](README.de.md)
 
-<p align="center"><strong>English</strong> · <a href="README.it.md">Italiano</a> · <a href="README.fr.md">Français</a> · <a href="README.es.md">Español</a> · <a href="README.de.md">Deutsch</a></p>
+Mikesoft TeamVault adds a private document workspace inside the WordPress admin for teams, agencies, partners, and back-office operations that need controlled access to shared files. Documents are stored outside the Media Library and delivered through authenticated WordPress handlers instead of public media URLs. This repository is the public source mirror: installations and updates come from [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/), and user support runs through the [official support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-> [!NOTE]
-> This is the public source mirror for TeamVault. Installations and updates are distributed through [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/); user support is handled in the [official support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
+Mikesoft TeamVault is an independent plugin; it is not affiliated with, sponsored by, or endorsed by WordPress, Automattic, or the WordPress Foundation.
 
-Current plugin version: `3.4.0`.
+![TeamVault file manager, with folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
 
-![TeamVault file manager — folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
+## Install
 
-## Why TeamVault
+1. In WordPress admin, go to `Plugins > Add New`.
+2. Search for `Mikesoft TeamVault`.
+3. Click `Install Now` and activate the plugin.
+4. Open `TeamVault > Settings` to review access, storage, and file rules.
 
-TeamVault gives internal teams, agencies, and operations a dedicated private workspace inside WordPress instead of mixing sensitive documents with public Media Library assets.
+Manual alternative: download the release package from [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/), upload it to `wp-content/plugins/mikesoft-teamvault/`, and activate it from the Plugins screen.
 
-- **Protected delivery:** files are served through authenticated WordPress handlers instead of normal public media URLs.
-- **Granular governance:** groups and inheritable per-folder rules control view, upload, download, delete, and management actions.
-- **Operational visibility:** quotas, access reports, activity logs, CSV export, and email notifications support accountable workflows.
-- **Practical file management:** drag-and-drop upload, search, previews, folder operations, and ZIP export live in one focused interface.
+## Quick start
 
-Typical uses include internal company documents, agency-to-client delivery, partner exchanges, and back-office archives.
+1. Open `TeamVault > Settings` and review the storage path, allowed extensions, and upload limit.
+2. Grant the `manage_private_documents` capability only to the roles or users that need vault access.
+3. Create groups when permissions should follow departments or project teams, then create the document folders.
+4. Upload a file from the grid or list view and confirm preview and download behavior with a non-administrator account.
 
-## Product Tour
+## Screenshots
 
 | Per-folder permissions | Search across the vault | Storage quotas |
 | :---: | :---: | :---: |
@@ -49,49 +40,25 @@ Typical uses include internal company documents, agency-to-client delivery, part
 | **Groups** | **Activity log** | **Settings** |
 | [![User groups](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin settings](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
-## Capabilities
+## Features
 
-- private storage outside the normal Media Library workflow
-- capability, optional whitelist, user, group, and per-folder access controls
-- folder creation, rename, move, delete, inheritance, and explicit child overrides
-- validated drag-and-drop uploads and inline previews, including PDFs
-- preview-only access that blocks downloads and ZIP exports
-- per-user and per-group storage quotas enforced before upload
-- access reports, activity logging, CSV export, and folder-aware event notifications
-- ZIP export plus orphan cleanup and storage reindex maintenance tools
-- English, Italian, French, Spanish, and German admin interfaces
+- Private storage outside the normal Media Library workflow.
+- Capability, optional whitelist, user, group, and per-folder access controls, with inheritance and explicit child overrides.
+- Folder operations (create, rename, move, delete) and validated drag-and-drop uploads with inline previews, including PDFs.
+- Preview-only access that blocks downloads and ZIP exports.
+- Per-user and per-group storage quotas, enforced before upload.
+- Access reports, activity logging, CSV export, and folder-aware email notifications for upload, download, delete, and denied-access events.
+- ZIP export plus orphan cleanup and storage reindex maintenance tools.
+- English, Italian, French, Spanish, and German admin interfaces.
 
 All governance capabilities are included in the free plugin.
 
-## Latest Release
-
-Version `3.4.0` makes email notifications folder-aware: selected users and groups receive an event only if they can view the folder that produced it, while administrators remain included when enabled. A new Notifications setting restores the previous global behavior, and the `mstv_notification_recipients` filter allows site-specific routing. No other configuration changes are required.
-
-See the [full changelog](changelog.txt) and [GitHub releases](https://github.com/TheStreamCode/mikesoft-teamvault/releases) for complete history.
-
 ## Requirements
 
-- WordPress 6.0 or later
-- PHP 8.0 or later
-- Writable storage path for private documents
-- `ZipArchive` available on the server for export features
-
-## Installation
-
-### Recommended
-
-Install the plugin from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/mikesoft-teamvault/) so the site receives standard update notifications.
-
-1. In WordPress admin, go to `Plugins > Add New`.
-2. Search for `Mikesoft TeamVault`.
-3. Click `Install Now` and activate the plugin.
-4. Open `TeamVault > Settings` to review access, storage, and file rules.
-
-### Manual
-
-1. Download the release package from WordPress.org.
-2. Upload it to `wp-content/plugins/mikesoft-teamvault/`.
-3. Activate the plugin from the Plugins screen.
+- WordPress 6.0 or later.
+- PHP 8.0 or later.
+- A writable storage path for private documents.
+- `ZipArchive` on the server for the export features.
 
 ## Configuration
 
@@ -99,76 +66,67 @@ Open `TeamVault > Settings` after activation. The main settings are:
 
 | Setting | Purpose | Default |
 | --- | --- | --- |
-| Interface language | Follows the current WordPress locale or forces English, Italian, French, Spanish, or German | Automatic |
+| Interface language | Follows the WordPress locale or forces a listed language | Automatic |
 | User whitelist | Adds an explicit user allowlist on top of the required capability | Disabled |
 | Allowed extensions | Restricts uploads to the configured document, image, archive, audio, and video types | Safe built-in list |
-| Maximum file size | Applies a plugin-level upload limit in addition to PHP and web-server limits | 50 MB |
+| Maximum file size | Applies a plugin upload limit on top of PHP and web-server limits | 50 MB |
 | PDF preview | Allows authenticated inline PDF previews | Enabled |
 | Activity log | Records document operations for audit and reporting | Enabled |
-| Delete data on uninstall | Removes plugin tables, options, capabilities, and marked storage when uninstalling | Disabled |
+| Delete data on uninstall | Removes plugin tables, options, capabilities, and marked storage on uninstall | Disabled |
 
-Groups, per-folder permissions, quotas, reports, and notifications have dedicated pages under the TeamVault admin menu. Administrators should configure access before inviting non-administrator users.
+Groups, per-folder permissions, quotas, reports, and notifications have dedicated admin pages. Configure access before inviting non-administrator users.
 
-TeamVault does not read application settings from environment variables or a repository `.env` file. Runtime configuration is stored through WordPress options. Keep WordPress database credentials and salts in the site-level `wp-config.php`; do not copy them into this repository.
+Runtime configuration is stored in WordPress options; TeamVault does not read settings from environment variables or a repository `.env` file. Keep database credentials and salts in the site-level `wp-config.php`.
 
-## Usage
+## Privacy and security
 
-1. Grant the `manage_private_documents` capability only to roles or users that need vault access.
-2. Create groups when permissions should follow departments or project teams.
-3. Create folders and, where needed, add explicit per-folder rules. Child folders inherit the nearest rule set unless they define their own.
-4. Upload files from the grid or list view. TeamVault validates the extension, detected MIME type, size, and dangerous content patterns before storing a file.
-5. Use previews, downloads, ZIP exports, reports, and the activity log according to the granted action permissions.
-6. Use cleanup and reindex only as maintenance tools after confirming that the private storage directory has been copied during migrations.
+Private files are never served through public media URLs: downloads and previews pass through authenticated WordPress handlers with private, no-cache responses.
 
-## Access Model
-
-- File workspace access uses the `manage_private_documents` capability.
-- New activations grant that capability to Administrators only.
-- The `manage_private_documents` capability grants full TeamVault workspace access, including upload, rename, move, download, export, and delete actions.
+- Vault access uses the `manage_private_documents` capability; new activations grant it to Administrators only.
 - Optional whitelist mode adds a second authorization layer for selected users.
-- Per-folder permissions (since 2.6) add fine-grained control on top of the capability: when a folder has explicit rules, access is limited to the granted users/groups and actions, with inheritance from parent folders; folders with no rules keep the capability-based behavior. Administrators always retain full access.
-- Settings, groups, quotas, notifications, reports, activity logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
+- Per-folder permissions limit access to the granted users, groups, and actions, with inheritance from parent folders. Folders without rules keep the capability-based behavior, and Administrators always keep full access.
+- Settings, groups, quotas, notifications, reports, logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
+- Storage defaults to `wp-content/uploads/private-documents/` and is protected with server-level deny files: the generated `.htaccess` on Apache and LiteSpeed, `web.config` on IIS, and an equivalent Nginx rule that denies direct requests to that path.
+- For high-sensitivity deployments, prefer a custom storage path outside the public webroot. The storage widget shows only TeamVault usage.
 
-When whitelist mode is enabled, keep the current administrator account in the allowed users list before saving settings.
-On sites upgraded from older releases, review existing role capabilities and whitelist settings if Editors previously had TeamVault access.
+See [`SECURITY.md`](SECURITY.md) for vulnerability reporting.
 
-## Storage
+## Troubleshooting
 
-- Default storage path: `wp-content/uploads/private-documents/`
-- The active storage directory is shown in `TeamVault > Settings`. An advanced custom path can be provisioned by the site operator and must be writable and marked as TeamVault storage.
-- Storage is protected with server-level deny files where supported.
-- Apache/LiteSpeed can enforce the generated `.htaccess`; IIS can enforce `web.config`; Nginx requires an equivalent server rule that denies direct requests to `/wp-content/uploads/private-documents/`.
-- For high-sensitivity deployments, prefer a custom storage path outside the public webroot.
-- The sidebar storage widget shows only the space used by TeamVault files, to avoid exposing misleading hosting quota values on shared environments.
+### ZIP export fails
 
-If a site is migrated without copying the private storage folder, TeamVault records may remain in the database while the original binaries are missing. The settings screen includes cleanup and reindex tools for those scenarios.
+The export requires the PHP `ZipArchive` extension and a writable storage path. Enable the extension or ask the hosting provider to enable it, then retry the export.
 
-## Support
+### An administrator is locked out after enabling the whitelist
 
-- End-user support: [WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
-- Email: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
-- Website: [mikesoft.it](https://mikesoft.it)
-- Security reports: see [SECURITY.md](SECURITY.md)
-- Support continued open-source maintenance: [GitHub Sponsors](https://github.com/sponsors/TheStreamCode)
+Whitelist mode is an allowlist. Keep the current administrator account in the allowed users list before saving settings.
+
+### Files are missing after a site migration
+
+A site migrated without the private storage folder keeps TeamVault records in the database while the original binaries are missing. Copy the storage directory during migrations, then use the cleanup and reindex tools in the settings screen after confirming the copy.
+
+### Uploads are rejected
+
+Check the allowed extensions, the maximum file size, and the PHP upload limits. TeamVault validates the extension, detected MIME type, size, and dangerous content patterns before storing a file, and reports the detected content type on a mismatch.
 
 ## Development
 
-Prerequisites for repository work are PHP 8.2 or later for PHPUnit 11, Composer 2, Node.js 24 for the JavaScript/Plugin Check tooling, and Git. The shipped plugin itself continues to support PHP 8.0 or later.
+Development requires PHP 8.2 or later for PHPUnit 11, Composer 2, Node.js 24 for the JavaScript and Plugin Check tooling, and Git; the plugin itself supports PHP 8.0 or later.
 
 Install the locked development dependencies and run the standard PHP checks:
 
 ```bash
 composer install --no-interaction --prefer-dist
-composer lint
-composer test
+composer validate --strict
+composer audit --locked
 composer ci
 ```
 
-Run the dependency and JavaScript checks separately:
+`composer ci` runs PHP lint and the PHPUnit suite. GitHub Actions also runs WordPress Plugin Check against a clean runtime package.
+
+Additional checks:
 
 ```bash
-composer validate --strict
-composer audit --locked
 node --check assets/js/admin-app-core.js
 node --check assets/js/admin-app-governance.js
 node --check assets/js/admin-app.js
@@ -176,62 +134,32 @@ node --check assets/js/admin-notice-dismiss.js
 node --test tests/plugin-check-output.test.mjs
 ```
 
-`composer lint` checks repository PHP files outside generated dependencies. `composer test` runs the lightweight PHPUnit suite with `tests/bootstrap.php`. GitHub Actions also runs WordPress Plugin Check against a clean runtime package. See [local development](docs/maintainer/local-development.md) for WordPress linking, manual QA, Pester packaging tests, and local Plugin Check instructions.
+There is no asset compilation step: runtime PHP, CSS, and JavaScript are committed as source. `git archive --format=zip --prefix=mikesoft-teamvault/ --output=mikesoft-teamvault.zip HEAD` builds a package from a committed revision using the `.gitattributes` export excludes.
 
-## Build
+Maintainer and developer notes:
 
-There is no asset compilation step: runtime PHP, CSS, and JavaScript are committed as source. For a package from a committed revision, Git attributes exclude repository-only files:
+- [`docs/developer/hooks.md`](docs/developer/hooks.md) - hooks and filters
+- [`docs/developer/i18n.md`](docs/developer/i18n.md) - translation workflow
+- [`docs/maintainer/local-development.md`](docs/maintainer/local-development.md) - local development and manual QA
+- [`docs/maintainer/release.md`](docs/maintainer/release.md) - release and WordPress.org deployment
+- [`docs/maintainer/security-review.md`](docs/maintainer/security-review.md) - latest security review
 
-```bash
-git archive --format=zip --prefix=mikesoft-teamvault/ --output=mikesoft-teamvault.zip HEAD
-tar -tf mikesoft-teamvault.zip
-```
+## Support
 
-Before publishing, verify that the archive contains one `mikesoft-teamvault/` root and excludes `.github/`, `.wordpress-org/`, `docs/`, `tests/`, `tools/`, Composer development files, credentials, and local environment files.
+- End-user support: [WordPress.org support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/)
+- Email: [teamvault@mikesoft.it](mailto:teamvault@mikesoft.it)
+- Website: [mikesoft.it](https://mikesoft.it)
+- Security reports: see [`SECURITY.md`](SECURITY.md), never a public issue.
 
-## Deployment
+## Contributing
 
-Publishing is a maintainer-only operation. The full maintainer workspace provides the sibling PowerShell deployment tooling and the WordPress.org SVN working copy; they are intentionally not part of a standalone source clone.
-
-The release sequence is:
-
-1. align version metadata and changelogs;
-2. run all PHP, JavaScript, packaging, and Plugin Check gates;
-3. build and inspect the runtime ZIP;
-4. commit and tag the validated revision;
-5. publish the GitHub release asset;
-6. deploy the same payload to WordPress.org SVN;
-7. verify the public plugin API and downloadable ZIP.
-
-Exact commands, safety constraints, and package boundaries are documented in the [release process](docs/maintainer/release.md). SVN credentials must come from the interactive client or operating-system credential store, never command arguments or `.env` files.
-
-## Repository Guide
-
-This repository is the public source mirror for the plugin.
-
-- Product and installation information for WordPress.org users lives in [`readme.txt`](readme.txt).
-- Full release history lives in [`changelog.txt`](changelog.txt).
-- Repository policies live in [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), and [`SECURITY.md`](SECURITY.md).
-- Maintainer and developer notes live in [`docs/`](docs/).
-
-## Branding Assets
-
-- `.wordpress-org/assets/icon-256x256.png` is the primary full-color icon for the WordPress.org listing.
-- `.wordpress-org/assets/icon.svg` is the scalable companion asset for the WordPress.org listing.
-- `.wordpress-org/assets/screenshot-1.jpg` … `screenshot-7.jpg` are the WordPress.org listing screenshots, also used in this README.
-- `.github/social-preview.png` is the dedicated 1280×640 GitHub social preview; upload this file in the repository's social preview settings after brand changes.
-- `assets/logo-teamvault.svg` is the in-plugin admin logo used inside the TeamVault interface.
-
-These assets serve different surfaces and should stay aligned to the same brand without forcing the runtime plugin UI to match WordPress.org packaging constraints.
-
-## Documentation Map
-
-- [`docs/developer/hooks.md`](docs/developer/hooks.md) - developer hooks and filters
-- [`docs/developer/i18n.md`](docs/developer/i18n.md) - translation workflow (textdomain, POT, GlotPress handoff)
-- [`docs/maintainer/local-development.md`](docs/maintainer/local-development.md) - local development workflow
-- [`docs/maintainer/release.md`](docs/maintainer/release.md) - WordPress.org release process
-- [`docs/maintainer/security-review.md`](docs/maintainer/security-review.md) - latest repository security review and residual risks
+This repository is the public source mirror for the plugin. External pull requests are not accepted; see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the reporting policy and the maintainer workflow.
 
 ## License
 
-This project is licensed under `GPL-2.0-or-later` — the [GNU General Public License v2.0](LICENSE), or (at your option) any later version.
+GPL-2.0-or-later - see [`LICENSE`](LICENSE).
+
+---
+
+Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it). If this project is useful to you, consider [sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
+
