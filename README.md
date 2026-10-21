@@ -26,7 +26,7 @@
 > [!NOTE]
 > This is the public source mirror for TeamVault. Installations and updates are distributed through [WordPress.org](https://wordpress.org/plugins/mikesoft-teamvault/); user support is handled in the [official support forum](https://wordpress.org/support/plugin/mikesoft-teamvault/).
 
-Current plugin version: `3.3.0`.
+Current plugin version: `3.4.0`.
 
 ![TeamVault file manager — folder tree, file cards with type-aware icons and image thumbnails, and the details panel with inline preview](.wordpress-org/assets/screenshot-1.jpg)
 
@@ -57,7 +57,7 @@ Typical uses include internal company documents, agency-to-client delivery, part
 - validated drag-and-drop uploads and inline previews, including PDFs
 - preview-only access that blocks downloads and ZIP exports
 - per-user and per-group storage quotas enforced before upload
-- access reports, activity logging, CSV export, and event notifications
+- access reports, activity logging, CSV export, and folder-aware event notifications
 - ZIP export plus orphan cleanup and storage reindex maintenance tools
 - English, Italian, French, Spanish, and German admin interfaces
 
@@ -65,7 +65,7 @@ All governance capabilities are included in the free plugin.
 
 ## Latest Release
 
-Version `3.3.0` restricts permission-rule management to administrators or users with an explicit manage rule, fixes ZIP exports on servers where the temporary archive path could not be created, surfaces specific server messages on failed actions, and adds folder results to search. No configuration changes are required.
+Version `3.4.0` makes email notifications folder-aware: selected users and groups receive an event only if they can view the folder that produced it, while administrators remain included when enabled. A new Notifications setting restores the previous global behavior, and the `mstv_notification_recipients` filter allows site-specific routing. No other configuration changes are required.
 
 See the [full changelog](changelog.txt) and [GitHub releases](https://github.com/TheStreamCode/mikesoft-teamvault/releases) for complete history.
 

@@ -64,6 +64,7 @@ function mstv_uninstall_site(array $storage_path_usage = []) {
     delete_option('mstv_notify_enabled');
     delete_option('mstv_notify_events');
     delete_option('mstv_notify_recipients');
+    delete_option('mstv_notify_folder_aware');
     delete_option('mstv_folder_notifications');
     delete_option('mstv_white_label_enabled');
     delete_option('mstv_brand_name');

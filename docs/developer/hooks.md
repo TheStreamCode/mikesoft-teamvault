@@ -78,6 +78,7 @@ Parameters:
 Payload keys currently include:
 
 - `display_name`
+- `folder_id`
 - `extension`
 - `mime_type`
 
@@ -276,10 +277,33 @@ add_filter('mstv_upload_validation', function (array $result, array $files): arr
 }, 10, 2);
 ```
 
+### `mstv_notification_recipients`
+
+Filters the email addresses that will receive a notification event after the
+configured administrators, users, and groups have been resolved and, when
+folder-aware delivery is enabled, filtered by folder access.
+
+Parameters:
+
+- `string[] $emails`
+- `string $event` (`upload`, `download`, `delete`, or `access_denied`)
+- `?int $folderId`
+
+```php
+add_filter('mstv_notification_recipients', function (array $emails, string $event, ?int $folderId): array {
+    if ($event === 'access_denied') {
+        return array_values(array_intersect($emails, ['security@example.test']));
+    }
+
+    return $emails;
+}, 10, 3);
+```
+
 ## Notes
 
 - These hooks are intended for WordPress customizations and must be used from site code, custom plugins, or mu-plugins.
 - Hook payloads reflect the current implementation and may expand in future releases.
+- Email notifications are folder-aware by default: selected users and groups receive an event only when they can view the folder that produced it, while administrators remain included if the administrator recipient option is enabled. Site owners can disable this behavior in TeamVault → Notifications, and `mstv_notification_recipients` can refine the final list.
 - Since 3.3.0, folder permission rules can only be read or changed through the
   governance REST endpoints by administrators or users whose `manage` grant
   comes from an explicit folder rule (`MSTV_Permissions::has_rule_based_manage()`).

@@ -11,7 +11,7 @@
 
 Espacio de trabajo de documentos privados para equipos, agencias y operaciones de WordPress que necesitan compartir archivos de forma controlada fuera de la Biblioteca de medios.
 
-Versión actual del plugin: `3.3.0`.
+Versión actual del plugin: `3.4.0`.
 
 Disponible directamente en WordPress.org y mantenido para las versiones actuales de WordPress.
 
@@ -60,6 +60,8 @@ Capacidades de gobernanza (todas gratuitas, desde la versión 2.6):
 - notificaciones por correo electrónico para los eventos de subida, descarga, eliminación y acceso denegado
 
 ## Última versión
+
+La versión `3.4.0` hace que las notificaciones por correo tengan en cuenta la carpeta: los usuarios y grupos seleccionados solo reciben un evento si pueden ver la carpeta que lo originó, mientras que los administradores siguen incluidos cuando están activados. Un nuevo ajuste en Notificaciones restaura el comportamiento global anterior y el filtro `mstv_notification_recipients` permite enrutamientos específicos por sitio. No se requieren otros cambios de configuración.
 
 La versión `3.3.0` reserva la gestión de las reglas de permisos a los administradores o a los usuarios con una regla de gestión explícita, corrige las exportaciones ZIP en servidores donde no se podía crear la ruta temporal del archivo, muestra los mensajes específicos del servidor en las acciones fallidas y añade las carpetas a los resultados de búsqueda. No se requieren cambios de configuración.
 

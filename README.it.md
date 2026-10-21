@@ -11,7 +11,7 @@
 
 Spazio di lavoro documentale privato per team, agenzie e reparti operativi WordPress che hanno bisogno di condividere file in modo controllato al di fuori della Libreria Media.
 
-Versione attuale del plugin: `3.3.0`.
+Versione attuale del plugin: `3.4.0`.
 
 Disponibile direttamente su WordPress.org e mantenuto per le versioni correnti di WordPress.
 
@@ -60,6 +60,8 @@ Funzionalità di governance (tutte gratuite, dalla versione 2.6):
 - notifiche email per gli eventi di caricamento, download, eliminazione e accesso negato
 
 ## Ultima versione
+
+La versione `3.4.0` rende le notifiche email consapevoli della cartella: utenti e gruppi selezionati ricevono un evento solo se possono visualizzare la cartella che lo ha generato, mentre gli amministratori restano inclusi se abilitati. Una nuova impostazione in Notifiche ripristina il precedente comportamento globale e il filtro `mstv_notification_recipients` consente routing specifici per sito. Non sono richieste altre modifiche alla configurazione.
 
 La versione `3.3.0` riserva la gestione delle regole di permesso agli amministratori o agli utenti con una regola di gestione esplicita, corregge gli export ZIP sui server in cui il percorso temporaneo dell'archivio non poteva essere creato, mostra i messaggi specifici del server per le azioni non riuscite e aggiunge le cartelle ai risultati di ricerca. Non sono richieste modifiche alla configurazione.
 
