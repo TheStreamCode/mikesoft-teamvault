@@ -17,6 +17,8 @@ final class FakeMigrationWpdb
     public array $files = [];
     /** @var string[] */
     public array $queries = [];
+    /** @var array<int,array{sql: string, args: array<int,mixed>}> */
+    public array $prepared = [];
     /** @var array<int,array{table: string, data: array, where: array}> */
     public array $updates = [];
     /** @var array<int,array{table: string, where: array}> */
@@ -100,6 +102,11 @@ final class FakeMigrationWpdb
     public function query($query)
     {
         [$sql, $args] = $this->split($query);
+
+        if (is_array($query)) {
+            $this->prepared[] = ['sql' => $sql, 'args' => $args];
+        }
+
         $this->queries[] = $sql;
 
         if (str_contains($sql, 'ADD COLUMN parent_key')) {
@@ -341,20 +348,19 @@ final class PDMMigrationDedupeTest extends TestCase
         ));
 
         // Per-folder rules of the duplicate folder are merged onto the survivor.
-        self::assertNotEmpty(array_filter(
-            $wpdb->queries,
-            static fn(string $sql): bool => str_contains(
-                $sql,
-                'UPDATE IGNORE `wp_mstv_folder_permissions` SET folder_id = 1 WHERE folder_id = 2'
-            )
+        $permissionUpdates = array_values(array_filter(
+            $wpdb->prepared,
+            static fn(array $entry): bool => str_contains($entry['sql'], 'UPDATE IGNORE `wp_mstv_folder_permissions`')
         ));
-        self::assertNotEmpty(array_filter(
-            $wpdb->queries,
-            static fn(string $sql): bool => str_contains(
-                $sql,
-                'DELETE FROM `wp_mstv_folder_permissions` WHERE folder_id = 2'
-            )
+        self::assertNotEmpty($permissionUpdates);
+        self::assertSame([1, 2], $permissionUpdates[0]['args']);
+
+        $permissionDeletes = array_values(array_filter(
+            $wpdb->prepared,
+            static fn(array $entry): bool => str_contains($entry['sql'], 'DELETE FROM `wp_mstv_folder_permissions`')
         ));
+        self::assertNotEmpty($permissionDeletes);
+        self::assertSame([2], $permissionDeletes[0]['args']);
 
         self::assertTrue(MSTV_Activator::schema_migration_applied('folder_parent_key'));
         self::assertTrue(MSTV_Activator::schema_migration_applied('folder_unique'));

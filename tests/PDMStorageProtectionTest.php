@@ -32,6 +32,9 @@ final class PDMStorageProtectionTest extends TestCase
 
     public function test_failing_writer_reports_every_required_protection_file(): void
     {
+        // Start without the storage marker so the marker result is observable.
+        unlink($this->storagePath . '/.mstv-storage');
+
         $writer = static function (): bool {
             return false;
         };

@@ -198,6 +198,8 @@ class MSTV_Activator
         self::ensure_unique_indexes($folders_table, $files_table, $folder_permissions_table);
     }
 
+    // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter -- The uniqueness migration operates on validated blog-specific plugin tables and needs explicit ALTER statements; identifiers cannot be placeholders.
+
     /**
      * Whether a one-time schema migration has been applied.
      *
@@ -668,6 +670,8 @@ class MSTV_Activator
         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- A failed one-time schema migration needs operator attention; no user data is logged.
         error_log('TeamVault: unable to apply the uniqueness migration (' . $context . ').');
     }
+
+    // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.PreparedSQL.InterpolatedNotPrepared,PluginCheck.Security.DirectDB.UnescapedDBParameter
 
     private static function normalize_logs_table(string $logsTable): void
     {

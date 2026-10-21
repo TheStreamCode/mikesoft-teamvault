@@ -40,7 +40,8 @@ final class PDMDuplicateCreationTest extends TestCase
         $controller = $this->buildController(
             $folderRepo,
             $this->getMockBuilder(MSTV_Storage::class)->disableOriginalConstructor()->getMock(),
-            $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock()
+            $this->getMockBuilder(MSTV_Repository_Files::class)->disableOriginalConstructor()->getMock(),
+            true
         );
 
         $result = $controller->create_folder(new WP_REST_Request(['name' => 'Docs', 'parent_id' => null]));

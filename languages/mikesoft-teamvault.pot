@@ -584,8 +584,28 @@ msgstr ""
 msgid "Sponsor"
 msgstr ""
 
-#: includes/class-mstv-admin.php:65
-msgid "TeamVault stores private files under WordPress uploads. Confirm your web server blocks direct access to the private-documents directory, especially on Nginx."
+#: includes/class-mstv-admin.php:82
+msgid "TeamVault cannot write to the private storage directory, so uploads are refused. Make the directory writable by WordPress, then reload this page."
+msgstr ""
+
+#: includes/class-mstv-admin.php:88
+msgid "TeamVault could not create the protection files (%s) that block direct web access to the private storage directory. Uploads are refused until the directory is writable and the files exist."
+msgstr ""
+
+#: includes/class-mstv-admin.php:94
+msgid "This server runs Nginx, which ignores .htaccess. Confirm that a server rule denies direct requests to the private storage directory, or set a custom storage path outside the public webroot (recommended)."
+msgstr ""
+
+#: includes/class-mstv-rest-controller.php:1033
+msgid "A file with this storage path already exists."
+msgstr ""
+
+#: includes/class-mstv-storage.php:175
+msgid "Upload refused: TeamVault could not create the protection files (%s) in the private storage directory. Make the directory writable, or use a storage path outside the public webroot, then retry."
+msgstr ""
+
+#: includes/class-mstv-storage.php:177
+msgid "directory not writable"
 msgstr ""
 
 #: includes/class-mstv-admin.php:111
