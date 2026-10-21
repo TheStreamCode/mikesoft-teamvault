@@ -9,10 +9,14 @@ class MSTV_Storage
     private MSTV_Settings $settings;
     private MSTV_Filesystem $filesystem;
 
-    public function __construct(MSTV_Settings $settings)
+    /** @var callable|null Optional writer used to create the storage protection files. */
+    private $protectionWriter;
+
+    public function __construct(MSTV_Settings $settings, ?callable $protectionWriter = null)
     {
         $this->settings = $settings;
         $this->filesystem = new MSTV_Filesystem($settings->get_storage_path());
+        $this->protectionWriter = $protectionWriter;
     }
 
     public function get_filesystem(): MSTV_Filesystem
@@ -155,6 +159,24 @@ class MSTV_Storage
             return [
                 'success' => false,
                 'error' => __('Unable to initialize the storage directory.', 'mikesoft-teamvault'),
+            ];
+        }
+
+        $protection = $this->get_storage_protection_status();
+
+        if (!$protection['ok'] || !$protection['directory_writable']) {
+            // Fail closed: without the web-server protection files the directory may
+            // be reachable by exact URL, so refuse to add another private document.
+            return [
+                'success' => false,
+                'error_code' => 'storage_unprotected',
+                'error' => sprintf(
+                    /* translators: %s: comma-separated list of protection files that could not be created. */
+                    __('Upload refused: TeamVault could not create the protection files (%s) in the private storage directory. Make the directory writable, or use a storage path outside the public webroot, then retry.', 'mikesoft-teamvault'),
+                    $protection['failed'] === []
+                        ? __('directory not writable', 'mikesoft-teamvault')
+                        : implode(', ', $protection['failed'])
+                ),
             ];
         }
 
@@ -528,14 +550,48 @@ class MSTV_Storage
             return false;
         }
 
-        $this->create_protection_files($basePath);
+        MSTV_Helpers::ensure_protection_files($basePath, $this->protectionWriter);
 
         return $this->filesystem->is_writable($basePath);
     }
 
-    private function create_protection_files(string $path): void
+    /**
+     * Report whether the private storage directory is writable and protected.
+     *
+     * The protection files are created here when they are missing, so the result
+     * reflects the live state instead of a cached assumption. Callers that write
+     * private documents must refuse the operation when the result is not safe.
+     *
+     * @return array{
+     *     directory_writable: bool,
+     *     files: array<string,bool>,
+     *     failed: string[],
+     *     marker: bool,
+     *     ok: bool,
+     *     inside_uploads: bool,
+     *     server_software: string
+     * }
+     */
+    public function get_storage_protection_status(): array
     {
-        MSTV_Helpers::create_protection_files($path);
+        $basePath = $this->get_base_path();
+        $directoryWritable = $basePath !== '' && is_dir($basePath) && $this->filesystem->is_writable($basePath);
+        $protection = MSTV_Helpers::ensure_protection_files($basePath, $this->protectionWriter);
+
+        $serverSoftware = '';
+        if (isset($_SERVER['SERVER_SOFTWARE']) && is_string($_SERVER['SERVER_SOFTWARE'])) {
+            $serverSoftware = sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE']));
+        }
+
+        return [
+            'directory_writable' => $directoryWritable,
+            'files' => $protection['files'],
+            'failed' => $protection['failed'],
+            'marker' => $protection['marker'],
+            'ok' => $protection['ok'],
+            'inside_uploads' => $this->settings->is_storage_path_inside_uploads(),
+            'server_software' => $serverSoftware,
+        ];
     }
 
     private function reindex_directory(
@@ -568,11 +624,20 @@ class MSTV_Storage
                     ]);
 
                     if ($folderId <= 0) {
-                        return false;
-                    }
+                        $existingFolder = $folderRepo->find_by_relative_path($itemRelativePath);
 
-                    $folderMap[$itemRelativePath] = $folderId;
-                    $stats['folders_created']++;
+                        if ($existingFolder === null) {
+                            return false;
+                        }
+
+                        // A concurrent reindex created the same folder first: reuse
+                        // the surviving row instead of failing the whole scan.
+                        $folderId = (int) $existingFolder->id;
+                        $folderMap[$itemRelativePath] = $folderId;
+                    } else {
+                        $folderMap[$itemRelativePath] = $folderId;
+                        $stats['folders_created']++;
+                    }
                 }
 
                 if (!$this->reindex_directory($itemRelativePath, $folderRepo, $filesRepo, $folderMap, $fileMap, $createdBy, $stats)) {
@@ -609,7 +674,15 @@ class MSTV_Storage
             ]);
 
             if ($fileId <= 0) {
-                return false;
+                if ($filesRepo->find_by_relative_path($itemRelativePath) === null) {
+                    return false;
+                }
+
+                // A concurrent reindex created the same file path first: keep the
+                // surviving row and continue the scan.
+                $fileMap[$itemRelativePath] = true;
+                $stats['files_skipped']++;
+                continue;
             }
 
             $fileMap[$itemRelativePath] = true;

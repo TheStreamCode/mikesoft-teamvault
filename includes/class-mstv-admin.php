@@ -51,24 +51,61 @@ class MSTV_Admin
         return $links;
     }
 
+    /**
+     * Persistent storage-protection notice.
+     *
+     * The notice is intentionally not dismissible: it reports a blocking state
+     * (uploads refused because the directory is not writable or the protection
+     * files are missing) or an unverifiable one (Nginx ignores .htaccess), and
+     * both need an operator decision before private documents are safe.
+     */
     public function render_storage_security_notice(): void
     {
-        if (!$this->is_teamvault_settings_page() || !$this->current_user_can_admin() || !$this->settings->is_storage_path_inside_uploads()) {
+        if (!$this->is_teamvault_admin_page() || !$this->current_user_can_admin()) {
             return;
         }
 
-        if (get_user_meta(get_current_user_id(), 'mstv_notice_storage_dismissed', true)) {
+        $status = (new MSTV_Storage($this->settings))->get_storage_protection_status();
+
+        $blocking = !$status['directory_writable'] || !$status['ok'];
+        $nginxWarning = !$blocking
+            && $status['inside_uploads']
+            && $this->is_nginx_server((string) $status['server_software']);
+
+        if (!$blocking && !$nginxWarning) {
             return;
         }
 
-        echo '<div class="notice notice-warning is-dismissible mstv-storage-security-notice"><p>';
-        echo esc_html__(
-            'TeamVault stores private files under WordPress uploads. Confirm your web server blocks direct access to the private-documents directory, especially on Nginx.',
-            'mikesoft-teamvault'
-        );
+        $messages = [];
+
+        if (!$status['directory_writable']) {
+            $messages[] = __('TeamVault cannot write to the private storage directory, so uploads are refused. Make the directory writable by WordPress, then reload this page.', 'mikesoft-teamvault');
+        }
+
+        if (!$status['ok']) {
+            $messages[] = sprintf(
+                /* translators: %s: comma-separated list of protection files that could not be created. */
+                __('TeamVault could not create the protection files (%s) that block direct web access to the private storage directory. Uploads are refused until the directory is writable and the files exist.', 'mikesoft-teamvault'),
+                implode(', ', $status['failed'])
+            );
+        }
+
+        if ($nginxWarning) {
+            $messages[] = __('This server runs Nginx, which ignores .htaccess. Confirm that a server rule denies direct requests to the private storage directory, or set a custom storage path outside the public webroot (recommended).', 'mikesoft-teamvault');
+        }
+
+        $noticeClass = $blocking ? 'notice notice-error' : 'notice notice-warning';
+
+        echo '<div class="' . esc_attr($noticeClass) . ' mstv-storage-security-notice"><p>';
+        echo esc_html(implode(' ', $messages));
         echo '</p></div>';
     }
 
+    /**
+     * Legacy dismissal endpoint. The storage protection notice is persistent, so
+     * the stored preference no longer hides it; the endpoint stays for
+     * compatibility with admin scripts already loaded in the browser.
+     */
     public function handle_dismiss_storage_notice(): void
     {
         if (!$this->current_user_can_admin()) {
@@ -80,12 +117,17 @@ class MSTV_Admin
         wp_die();
     }
 
-    private function is_teamvault_settings_page(): bool
+    private function is_nginx_server(string $serverSoftware): bool
+    {
+        return stripos($serverSoftware, 'nginx') !== false;
+    }
+
+    private function is_teamvault_admin_page(): bool
     {
         // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only admin page check used only to decide whether to render a notice.
         $page = isset($_GET['page']) ? sanitize_text_field(wp_unslash($_GET['page'])) : '';
 
-        return $page === 'mikesoft-teamvault-settings';
+        return in_array($page, ['mikesoft-teamvault', 'mikesoft-teamvault-settings'], true);
     }
 
     public function add_menu(): void

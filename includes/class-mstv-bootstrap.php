@@ -50,6 +50,7 @@ final class MSTV_Bootstrap
             'class-mstv-repository-permissions',
             'class-mstv-permissions',
             'class-mstv-quota',
+            'class-mstv-reindex-lock',
             'class-mstv-notifications',
             'trait-mstv-binary-stream',
             'class-mstv-download',

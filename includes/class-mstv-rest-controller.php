@@ -7,7 +7,6 @@ class MSTV_REST_Controller
     private const NAMESPACE = 'mstv/v1';
     private const DEFAULT_PER_PAGE = 50;
     private const MAX_PER_PAGE = 200;
-    private const AUTO_REINDEX_TTL = 300;
 
     private MSTV_Settings $settings;
     private MSTV_Auth $auth;
@@ -630,7 +629,7 @@ class MSTV_REST_Controller
         }
 
         if ($this->folderRepo->exists_by_name_and_parent($name, $parentId)) {
-            return new \WP_Error('duplicate_error', __('Folder already exists.', 'mikesoft-teamvault'), ['status' => 400]);
+            return new \WP_Error('duplicate_error', __('Folder already exists.', 'mikesoft-teamvault'), ['status' => 409]);
         }
 
         $result = $this->storage->create_folder($name, $parentId, $this->folderRepo);
@@ -647,6 +646,13 @@ class MSTV_REST_Controller
         ]);
 
         if ($folderId <= 0) {
+            // A concurrent request created the same sibling first and the unique key
+            // rejected this row. Keep the directory, which now belongs to the
+            // surviving folder, and report a conflict instead of a database error.
+            if ($this->folderRepo->find_by_relative_path((string) $result['relative_path']) !== null) {
+                return new \WP_Error('duplicate_error', __('Folder already exists.', 'mikesoft-teamvault'), ['status' => 409]);
+            }
+
             $this->storage->get_filesystem()->delete_directory((string) $result['relative_path']);
             return $this->database_write_error();
         }
@@ -994,8 +1000,11 @@ class MSTV_REST_Controller
 
             $result = $this->storage->store_uploaded_file($files, $folderId, $this->folderRepo);
             if (!$result['success']) {
+                $errorCode = isset($result['error_code']) && is_string($result['error_code'])
+                    ? $result['error_code']
+                    : 'storage_error';
                 ob_end_clean();
-                return new \WP_Error('storage_error', $result['error'], ['status' => 500]);
+                return new \WP_Error($errorCode, $result['error'], ['status' => 500]);
             }
 
             $storedFileSize = !empty($result['file_size']) ? (int) $result['file_size'] : (int) $validation['size'];
@@ -1014,6 +1023,18 @@ class MSTV_REST_Controller
             ]);
 
             if ($fileId <= 0) {
+                // A concurrent request already owns this exact storage path: keep the
+                // file because the surviving row references it, and report a conflict
+                // instead of a database error.
+                if ($this->filesRepo->find_by_relative_path((string) $result['relative_path']) !== null) {
+                    ob_end_clean();
+                    return new \WP_Error(
+                        'duplicate_file',
+                        __('A file with this storage path already exists.', 'mikesoft-teamvault'),
+                        ['status' => 409]
+                    );
+                }
+
                 $this->storage->get_filesystem()->delete_file((string) $result['relative_path']);
                 ob_end_clean();
                 return $this->database_write_error();
@@ -1286,18 +1307,18 @@ class MSTV_REST_Controller
 
     private function maybe_auto_restore_storage_index(): void
     {
-        $transientKey = 'mstv_auto_reindex_' . get_current_blog_id();
+        $lock = new MSTV_Reindex_Lock();
 
-        if (get_transient($transientKey)) {
+        if (!$lock->acquire()) {
             return;
         }
-
-        set_transient($transientKey, 1, self::AUTO_REINDEX_TTL);
 
         // Normal create/upload/move/delete operations keep the database in sync, so a full
         // recursive storage scan is only needed to self-heal an empty index (for example after
         // the database was reset or migrated without its records). Once the index is populated
         // we skip the scan, keeping it off the request path during normal use on large vaults.
+        // The claim stays until it goes stale, which throttles repeated scans when every stored
+        // file is rejected by the upload policy.
         if ($this->filesRepo->get_count() > 0 || $this->folderRepo->find_all() !== []) {
             return;
         }
@@ -1313,7 +1334,8 @@ class MSTV_REST_Controller
         );
 
         if (empty($result['success'])) {
-            delete_transient($transientKey);
+            // Release the claim so the next request can retry the self-healing scan.
+            $lock->release();
         }
     }
 

@@ -6,6 +6,14 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMRestControllerTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        // Each test starts without persisted option state: the auto-reindex claim
+        // and other options must not leak between tests.
+        $GLOBALS['pdm_test_options'] = [];
+        $GLOBALS['pdm_test_transients'] = [];
+    }
+
     public function test_resolve_folder_id_returns_error_for_missing_folder(): void
     {
         $folderRepo = $this->createMock(MSTV_Repository_Folders::class);
@@ -624,7 +632,8 @@ final class PDMRestControllerTest extends TestCase
 
         $controller->get_browser_data(new WP_REST_Request());
 
-        self::assertFalse(get_transient('mstv_auto_reindex_1'));
+        // A failed scan releases the claim so the next request can retry.
+        self::assertFalse(get_option('mstv_auto_reindex_claim_1'));
     }
 
     public function test_create_folder_is_forbidden_without_manage_permission(): void

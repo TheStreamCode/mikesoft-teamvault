@@ -76,7 +76,7 @@ Open `TeamVault > Settings` after activation. The main settings are:
 
 Groups, per-folder permissions, quotas, reports, and notifications have dedicated admin pages. Configure access before inviting non-administrator users.
 
-Runtime configuration is stored in WordPress options; TeamVault does not read settings from environment variables or a repository `.env` file. Keep database credentials and salts in the site-level `wp-config.php`.
+Runtime configuration is stored in WordPress options; TeamVault reads no settings from environment variables or a repository `.env` file. Keep database credentials and salts in the site-level `wp-config.php`.
 
 ## Privacy and security
 
@@ -86,8 +86,8 @@ Private files are never served through public media URLs: downloads and previews
 - Optional whitelist mode adds a second authorization layer for selected users.
 - Per-folder permissions limit access to the granted users, groups, and actions, with inheritance from parent folders. Folders without rules keep the capability-based behavior, and Administrators always keep full access.
 - Settings, groups, quotas, notifications, reports, logs, whitelist management, maintenance tools, and uninstall data controls require `manage_options`.
-- Storage defaults to `wp-content/uploads/private-documents/` and is protected with server-level deny files: the generated `.htaccess` on Apache and LiteSpeed, `web.config` on IIS, and an equivalent Nginx rule that denies direct requests to that path.
-- For high-sensitivity deployments, prefer a custom storage path outside the public webroot. The storage widget shows only TeamVault usage.
+- Storage defaults to `wp-content/uploads/private-documents/`, protected with server-level deny files: the generated `.htaccess` on Apache and LiteSpeed, `web.config` on IIS, and an equivalent Nginx rule that denies direct requests. Uploads are refused when these files cannot be created.
+- Recommended: a custom storage path outside the public webroot, especially on Nginx, which ignores `.htaccess`. The storage widget shows only TeamVault usage.
 
 See [`SECURITY.md`](SECURITY.md) for vulnerability reporting.
 
@@ -103,11 +103,11 @@ Whitelist mode is an allowlist. Keep the current administrator account in the al
 
 ### Files are missing after a site migration
 
-A site migrated without the private storage folder keeps TeamVault records in the database while the original binaries are missing. Copy the storage directory during migrations, then use the cleanup and reindex tools in the settings screen after confirming the copy.
+A site migrated without the private storage folder keeps TeamVault records in the database while the original binaries are missing. Copy the storage directory during migrations, then use the cleanup and reindex tools after confirming the copy.
 
 ### Uploads are rejected
 
-Check the allowed extensions, the maximum file size, and the PHP upload limits. TeamVault validates the extension, detected MIME type, size, and dangerous content patterns before storing a file, and reports the detected content type on a mismatch.
+Check the allowed extensions, the maximum file size, and the PHP upload limits. TeamVault validates extension, detected MIME type, size, and dangerous content patterns before storing a file, and reports the detected content type on a mismatch.
 
 ## Development
 
@@ -134,7 +134,7 @@ node --check assets/js/admin-notice-dismiss.js
 node --test tests/plugin-check-output.test.mjs
 ```
 
-There is no asset compilation step: runtime PHP, CSS, and JavaScript are committed as source. `git archive --format=zip --prefix=mikesoft-teamvault/ --output=mikesoft-teamvault.zip HEAD` builds a package from a committed revision using the `.gitattributes` export excludes.
+Runtime PHP, CSS, and JavaScript are committed as source. `git archive --format=zip --prefix=mikesoft-teamvault/ --output=mikesoft-teamvault.zip HEAD` builds a package from a committed revision using the `.gitattributes` export excludes.
 
 Maintainer and developer notes:
 
