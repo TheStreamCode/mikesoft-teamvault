@@ -11,7 +11,7 @@
 
 Espace de travail documentaire privé pour les équipes, agences et services d'exploitation WordPress qui ont besoin d'un partage de fichiers contrôlé en dehors de la Médiathèque.
 
-Version actuelle du plugin : `3.3.0`.
+Version actuelle du plugin : `3.4.0`.
 
 Disponible directement sur WordPress.org et maintenu pour les versions actuelles de WordPress.
 
@@ -60,6 +60,8 @@ Fonctionnalités de gouvernance (toutes gratuites, depuis la 2.6) :
 - notifications par e-mail pour les événements de téléversement, de téléchargement, de suppression et d'accès refusé
 
 ## Dernière version
+
+La version `3.4.0` rend les notifications par e-mail conscientes du dossier : les utilisateurs et groupes sélectionnés ne reçoivent un événement que s'ils peuvent consulter le dossier qui l'a produit, tandis que les administrateurs restent inclus lorsqu'ils sont activés. Un nouveau réglage dans Notifications rétablit le comportement global précédent et le filtre `mstv_notification_recipients` permet un routage propre à chaque site. Aucune autre modification de configuration n'est nécessaire.
 
 La version `3.3.0` réserve la gestion des règles d'autorisation aux administrateurs ou aux utilisateurs disposant d'une règle de gestion explicite, corrige les exports ZIP sur les serveurs où le chemin temporaire de l'archive ne pouvait pas être créé, affiche les messages spécifiques du serveur en cas d'échec des actions et ajoute les dossiers aux résultats de recherche. Aucune modification de configuration n'est nécessaire.
 

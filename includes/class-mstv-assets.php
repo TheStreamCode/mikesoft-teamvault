@@ -239,6 +239,7 @@ class MSTV_Assets
                 'notifEvents' => __('Events', 'mikesoft-teamvault'),
                 'notifRecipients' => __('Recipients', 'mikesoft-teamvault'),
                 'notifAdmins' => __('All administrators', 'mikesoft-teamvault'),
+                'notifFolderAware' => __('Only notify people who can access the folder', 'mikesoft-teamvault'),
                 'notifUsers' => __('Specific users', 'mikesoft-teamvault'),
                 'notifGroups' => __('Groups', 'mikesoft-teamvault'),
                 'notifAccessDenied' => __('Access denied', 'mikesoft-teamvault'),

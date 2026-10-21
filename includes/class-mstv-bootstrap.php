@@ -139,8 +139,20 @@ final class MSTV_Bootstrap
         // Record completed exports in the activity log (export is bulk download).
         add_action(MSTV_Hooks::EXPORT_COMPLETED, [$this, 'log_export_completed'], 10, 3);
 
+        if (!isset($this->services['permissions'])) {
+            $this->services['permissions'] = new MSTV_Permissions(
+                new MSTV_Repository_Folders(),
+                new MSTV_Repository_Groups(),
+                new MSTV_Repository_Permissions(),
+                $this->services['settings']
+            );
+        }
+
         if (!isset($this->services['notifications'])) {
-            $this->services['notifications'] = new MSTV_Notifications(new MSTV_Repository_Groups());
+            $this->services['notifications'] = new MSTV_Notifications(
+                new MSTV_Repository_Groups(),
+                $this->services['permissions']
+            );
             $this->services['notifications']->register();
         }
 

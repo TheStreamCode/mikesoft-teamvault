@@ -281,6 +281,7 @@ class MSTV_Activator
             'mstv_notify_enabled' => false,
             'mstv_notify_events' => '',
             'mstv_notify_recipients' => ['admins' => true, 'users' => [], 'groups' => []],
+            'mstv_notify_folder_aware' => true,
             'mstv_folder_notifications' => [],
             self::VERSION_OPTION => MSTV_VERSION,
         ];

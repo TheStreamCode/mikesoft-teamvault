@@ -6,8 +6,8 @@ use PHPUnit\Framework\TestCase;
 
 final class PDMReleaseMetadataTest extends TestCase
 {
-    private const RELEASE_VERSION = '3.3.0';
-    private const RELEASE_DATE = '2026-10-11';
+    private const RELEASE_VERSION = '3.4.0';
+    private const RELEASE_DATE = '2026-10-21';
     private const TESTED_UP_TO = '7.1';
     private const CONTACT_EMAIL = 'teamvault@mikesoft.it';
     private const PLUGIN_AUTHOR = 'Mikesoft';

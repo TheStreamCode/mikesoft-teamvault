@@ -11,7 +11,7 @@
 
 Privater Dokumenten-Arbeitsbereich für WordPress-Teams, Agenturen und Betriebsabläufe, die eine kontrollierte Dateifreigabe außerhalb der Mediathek benötigen.
 
-Aktuelle Plugin-Version: `3.3.0`.
+Aktuelle Plugin-Version: `3.4.0`.
 
 Direkt über WordPress.org verfügbar und für aktuelle WordPress-Versionen gepflegt.
 
@@ -60,6 +60,8 @@ Governance-Funktionen (alle kostenlos, seit 2.6):
 - E-Mail-Benachrichtigungen für Ereignisse beim Hochladen, Herunterladen, Löschen und bei verweigertem Zugriff
 
 ## Neueste Version
+
+Version `3.4.0` macht E-Mail-Benachrichtigungen ordnerbewusst: Ausgewählte Benutzer und Gruppen erhalten ein Ereignis nur, wenn sie den Ordner, in dem es entstanden ist, anzeigen dürfen; Administratoren bleiben eingeschlossen, wenn sie aktiviert sind. Eine neue Einstellung unter Benachrichtigungen stellt das bisherige globale Verhalten wieder her, und der Filter `mstv_notification_recipients` ermöglicht seitenspezifische Weiterleitungen. Weitere Konfigurationsänderungen sind nicht erforderlich.
 
 Version `3.3.0` beschränkt die Verwaltung von Zugriffsregeln auf Administratoren oder Benutzer mit einer expliziten Verwaltungsregel, behebt ZIP-Exporte auf Servern, auf denen der temporäre Archivpfad nicht erstellt werden konnte, zeigt bei fehlgeschlagenen Aktionen die spezifischen Servermeldungen an und ergänzt Ordner in den Suchergebnissen. Konfigurationsänderungen sind nicht erforderlich.
 
