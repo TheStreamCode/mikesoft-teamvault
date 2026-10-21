@@ -139,6 +139,7 @@ jobs:
             --exclude='README.md' \
             --exclude='README.*.md' \
             --exclude='SECURITY.md' \
+            --exclude='SUPPORT.md' \
             --exclude='composer.json' \
             --exclude='composer.lock' \
             --exclude='docs' \
