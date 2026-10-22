@@ -174,6 +174,7 @@
                 if (e.key === 'Escape') {
                     this.closeMobilePanels();
                     this.elements.filtersDropdown?.classList.remove('active');
+                    this.elements.filtersToggle?.setAttribute('aria-expanded', 'false');
                     this.hideContextMenu();
                     this.hideModal();
                     this.hidePreview();
@@ -184,6 +185,7 @@
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.pdm-toolbar-filters') && !e.target.closest('.pdm-toolbar-filters-dropdown')) {
                     this.elements.filtersDropdown?.classList.remove('active');
+                    this.elements.filtersToggle?.setAttribute('aria-expanded', 'false');
                 }
             });
 
@@ -1923,6 +1925,8 @@
                     this.elements.filtersPerPage.value = String(this.state.pagination.perPage);
                 }
             }
+
+            this.elements.filtersToggle?.setAttribute('aria-expanded', dropdown.classList.contains('active') ? 'true' : 'false');
         },
 
         clearDetails() {

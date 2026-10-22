@@ -1,8 +1,8 @@
-# Security Review — 2026-10-21
+# Security Review — 2026-10-22
 
 ## Scope and Method
 
-This review covers the 3.4.0 working tree: the folder-aware notification path, the permission resolver and governance REST surface, the export/temp-path handling, the validator messages, the admin JavaScript rendering layer, and the test infrastructure. It combines manual source review with the expanded PHPUnit suite, behavioral node tests for the shared helpers, PHP lint on the full tree, Composer validation and audit, JavaScript syntax checks, WordPress Plugin Check on an active local staging installation (no errors), and a WP-CLI functional notification test on that installation. It was not exercised through a browser session or a real mail transport in this cycle; those release checks remain required before publication.
+This review covers the 3.5.0 working tree: the shared admin design system across the File Manager and governance screens, the accessibility and responsive changes, the database uniqueness migration and fail-closed storage protection merged from the maintenance line, and the previously reviewed permission, notification, export, and client-rendering surfaces. It combines manual source review with the full PHPUnit suite (223 tests), Composer validation, audit, and CI, PHP lint, JavaScript syntax checks, behavioral node tests, WordPress Plugin Check on a clean runtime payload (no errors), and scripted browser QA on a local WordPress 7.1.3 staging installation covering every admin screen, file upload/rename/move/download/ZIP export/delete, governance settings, maintenance tools, the 3.4.0-to-3.5.0 update path, and mobile viewports. Real mail transport, Nginx-specific storage configuration, multisite, whitelist mode, and uninstall data removal were not exercised end-to-end on the staging install in this cycle; the latter two remain covered by their PHPUnit suites.
 
 No critical issue remains open in this cycle. The findings below were fixed in the reviewed tree and carry regression coverage where practical. This document is a point-in-time engineering review, not a guarantee against every vulnerability or a substitute for production configuration testing.
 
@@ -50,9 +50,19 @@ No critical issue remains open in this cycle. The findings below were fixed in t
 - Resolution: each queued event now carries its `folder_id`; non-administrator recipients are filtered through `MSTV_Permissions::user_can($userId, $folderId, 'view')`, administrators bypass the filter when the administrator recipient option is enabled, and events are grouped by recipient set so one email cannot mix files from folders with different access rules. Download events now include the folder in their hook payload. The behavior is enabled by default and can be disabled with the Notifications setting; the `mstv_notification_recipients` filter is the documented extension point. Regression tests cover group filtering, administrator bypass, direct recipients, downloads, opt-out, and cross-folder batching.
 - Compatibility note: existing sites begin filtering after the update; the setting restores the previous global behavior. This behavior change is called out in the upgrade notice.
 
+### SEC-010 — Storage: duplicate rows and unprotected storage acceptance
+
+- Severity: Medium
+- Status: Fixed in 3.5.0
+- Location: `includes/class-mstv-activator.php`, `includes/class-mstv-storage.php`, `includes/class-mstv-rest-controller.php`, `includes/class-mstv-repository-folders.php`, `includes/class-mstv-repository-files.php`
+- Evidence: folder and file uniqueness was enforced only by application checks, so concurrent or legacy writes could create duplicate names or relative paths and leave ambiguous database and storage state. Separately, uploads could proceed when the private storage directory was not writable or when its protection files could not be created, leaving private documents reachable from the web root.
+- Resolution: an option-guarded migration adds `UNIQUE (parent_key, name)` on folders and `UNIQUE (relative_path)` on files after a dedupe pass (lowest folder id survives; children, files, and per-folder rules are re-pointed; duplicate subtrees are rewritten). Duplicate inserts return 409 conflicts and the reindex path skips duplicates; the auto-reindex claim is atomic and released on failure. Uploads now fail closed when storage is not writable or `.htaccess`, `web.config`, and `index.php` cannot be created, reporting the failing files, and the admin notice is persistent and non-dismissible for blocking states and Nginx. Tests cover duplicate creation, migration dedupe, reindex locking, and storage protection.
+- Compatibility note: the first update runs the one-time deduplication automatically; it is called out in the upgrade notice.
+
 ## Residual Risks
 
-- Storage protection still depends on server configuration: the generated `.htaccess`/`web.config` cover Apache/IIS, while Nginx requires an equivalent deny rule (surfaced to operators by the settings notice).
+- Storage protection still depends on server configuration: the generated `.htaccess`/`web.config` cover Apache/IIS, while Nginx requires an equivalent deny rule (surfaced to operators by the persistent notice; out-of-webroot storage is the documented recommendation).
 - Header semantics for private streams remain guarded by source-level tests plus live HTTP verification; a CLI unit test cannot observe `header()` output.
 - The whitelist, quota, and notification surfaces rely on the capability floor plus, where applicable, database advisory locks; they were re-verified through the live governance battery but not fuzzed beyond their regression suites.
 - The notification filter resolves access per recipient and folder, which adds one cached permission lookup per event recipient; very large selected-recipient sets are bounded by the notification configuration and were not benchmarked at extreme scale.
+- The uniqueness migration scans folders and files once during the upgrade; very large libraries pay a one-time upgrade cost that was not benchmarked at extreme scale.

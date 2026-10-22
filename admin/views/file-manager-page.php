@@ -7,6 +7,7 @@ $mstv_accept_attribute = implode(',', array_map(static fn($ext) => '.' . $ext, $
 $mstv_logo_src = MSTV_PLUGIN_URL . 'assets/logo-teamvault.svg';
 ?>
 <div class="pdm-wrapper">
+    <h1 class="screen-reader-text"><?php esc_html_e('File Manager', 'mikesoft-teamvault'); ?></h1>
     <div class="pdm-app" id="pdm-app">
         <div class="pdm-sidebar" id="pdm-sidebar">
             <div class="pdm-sidebar-header">
@@ -57,21 +58,23 @@ $mstv_logo_src = MSTV_PLUGIN_URL . 'assets/logo-teamvault.svg';
                 </div>
                 <div class="pdm-toolbar-right">
                     <div class="pdm-toolbar-filters">
-                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>">
+                        <button type="button" class="pdm-btn pdm-btn-icon pdm-btn-ghost pdm-filters-toggle" id="pdm-filters-toggle" title="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>" aria-label="<?php echo esc_attr__('Filter', 'mikesoft-teamvault'); ?>" aria-expanded="false" aria-controls="pdm-filters-dropdown">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
                         </button>
                         <div class="pdm-toolbar-filters-dropdown" id="pdm-filters-dropdown">
                             <div class="pdm-toolbar-filters-row">
-                                <select class="pdm-toolbar-filters-select pdm-filters-sort">
+                                <label class="pdm-toolbar-filters-label" for="pdm-filters-sort"><?php esc_html_e('Sort by', 'mikesoft-teamvault'); ?></label>
+                                <select class="pdm-toolbar-filters-select pdm-filters-sort" id="pdm-filters-sort">
                                     <option value="display_name"><?php esc_html_e('Name', 'mikesoft-teamvault'); ?></option>
                                     <option value="created_at"><?php esc_html_e('Date', 'mikesoft-teamvault'); ?></option>
                                     <option value="file_size"><?php esc_html_e('Size', 'mikesoft-teamvault'); ?></option>
                                 </select>
                             </div>
                             <div class="pdm-toolbar-filters-row">
-                                <select class="pdm-toolbar-filters-select pdm-filters-per-page">
+                                <label class="pdm-toolbar-filters-label" for="pdm-filters-per-page"><?php esc_html_e('Per page', 'mikesoft-teamvault'); ?></label>
+                                <select class="pdm-toolbar-filters-select pdm-filters-per-page" id="pdm-filters-per-page">
                                     <option value="25">25</option>
                                     <option value="50">50</option>
                                     <option value="100">100</option>

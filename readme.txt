@@ -5,7 +5,7 @@ Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 3.4.0
+Stable tag: 3.5.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -167,6 +167,14 @@ For direct contact, email teamvault@mikesoft.it.
 
 == Changelog ==
 
+= 3.5.0 =
+* Security: duplicate folder and file records are merged safely in a one-time upgrade migration, and new duplicates are rejected.
+* Security: uploads fail closed when the private storage directory cannot be made writable or its protection files cannot be created, and the storage warning is persistent for blocking states and Nginx.
+* New: every plugin admin screen now shares one design system, with a full-screen File Manager and consistent settings, groups, quotas, notifications, reports, and activity log layouts.
+* Improved: mobile layouts, keyboard focus, touch targets, readable status badges, labeled filter popovers, accessible icon-only actions, and empty states.
+* Fixed: mobile file details keep Rename and Move available, the empty quota table no longer clips, the empty folder state fits small screens, and the File Manager toolbar no longer clips controls on common desktop widths.
+* Translations: refined labels in Italian, French, Spanish, and German.
+
 = 3.4.0 =
 * Added: folder-aware email notifications. Selected users and groups receive an upload, download, delete, or access-denied event only when they can view the folder that produced it; administrators remain included when the administrator recipient option is enabled.
 * Added: a Notifications setting to restore the previous global recipient behavior, and the `mstv_notification_recipients` filter for site-specific routing.
@@ -321,6 +329,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.5.0 =
+
+Refreshes the admin UI for consistency, mobile use, and accessibility. The first update merges duplicate folder/file records and rejects new ones; uploads fail closed when storage protection cannot be enforced. Nginx sites must confirm a deny rule or use an out-of-webroot storage path.
 
 = 3.4.0 =
 

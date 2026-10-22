@@ -30,6 +30,7 @@ $GLOBALS['pdm_test_actions'] = [];
 $GLOBALS['pdm_test_verified_nonce_actions'] = [];
 $GLOBALS['pdm_test_rest_routes'] = [];
 $GLOBALS['pdm_test_redirects'] = [];
+$GLOBALS['pdm_test_current_screen_id'] = '';
 
 function __($text, $domain = null)
 {
@@ -193,6 +194,13 @@ function apply_filters($hook, $value, ...$args)
     }
 
     return $value;
+}
+
+function get_current_screen()
+{
+    $id = (string) ($GLOBALS['pdm_test_current_screen_id'] ?? '');
+
+    return $id === '' ? null : (object) ['id' => $id];
 }
 
 function wp_strip_all_tags($text)

@@ -2,6 +2,9 @@
     --pdm-color-primary: #2563eb;
     --pdm-color-primary-hover: #1d4ed8;
     --pdm-color-primary-light: #dbeafe;
+    --pdm-color-primary-soft: #eff6ff;
+    /* Darker primary for tinted badges where #2563eb falls below AA on #dbeafe. */
+    --pdm-color-primary-text: #1e40af;
     --pdm-color-secondary: #64748b;
     --pdm-color-success: #22c55e;
     --pdm-color-success-light: #dcfce7;
@@ -9,32 +12,46 @@
     --pdm-color-danger-light: #fee2e2;
     --pdm-color-warning: #f59e0b;
     --pdm-color-warning-light: #fef3c7;
-    --pdm-color-bg: #f8fafc;
+    /* Accessible text variants for chips on tinted backgrounds. */
+    --pdm-color-success-text: #15803d;
+    --pdm-color-danger-text: #b91c1c;
+    --pdm-color-warning-text: #b45309;
+    --pdm-color-bg: #f6f8fb;
     --pdm-color-bg-secondary: #ffffff;
-    --pdm-color-border: #e2e8f0;
-    --pdm-color-text: #1e293b;
-    --pdm-color-text-secondary: #64748b;
-    /* Darkened from #94a3b8 to meet WCAG AA (>=4.5:1) for informational text. */
-    --pdm-color-text-muted: #6b7280;
-    --pdm-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --pdm-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --pdm-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --pdm-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --pdm-radius-sm: 4px;
+    --pdm-color-border: #e3e8ef;
+    --pdm-color-border-strong: #cbd5e1;
+    --pdm-color-text: #0f172a;
+    --pdm-color-text-secondary: #475569;
+    /* WCAG AA (>=4.5:1) for informational text on white and on --pdm-color-bg. */
+    --pdm-color-text-muted: #5b6575;
+    --pdm-shadow-sm: 0 1px 1px 0 rgb(15 23 42 / 0.04), 0 1px 2px 0 rgb(15 23 42 / 0.05);
+    --pdm-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.05), 0 2px 6px -1px rgb(15 23 42 / 0.08);
+    --pdm-shadow-md: 0 4px 10px -2px rgb(15 23 42 / 0.1), 0 2px 4px -2px rgb(15 23 42 / 0.06);
+    --pdm-shadow-lg: 0 18px 40px -12px rgb(15 23 42 / 0.2);
+    --pdm-radius-sm: 6px;
     --pdm-radius: 8px;
     --pdm-radius-lg: 12px;
     --pdm-radius-xl: 16px;
     --pdm-transition: all 0.15s ease;
     --pdm-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --pdm-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace;
     --pdm-sidebar-width: 260px;
     --pdm-details-width: 320px;
     --pdm-toolbar-height: 60px;
     --pdm-admin-bar-offset: 32px;
+    /* Core admin content padding; the plugin screens bleed over it edge to edge. */
+    --pdm-admin-content-pad: 20px;
+    --pdm-page-pad-y: 28px;
+    --pdm-page-pad-x: 32px;
+    --pdm-content-max: 780px;
 }
 
 @media (max-width: 782px) {
     :root {
         --pdm-admin-bar-offset: 46px;
+        --pdm-admin-content-pad: 10px;
+        --pdm-page-pad-y: 22px;
+        --pdm-page-pad-x: 20px;
     }
 }
 
@@ -60,6 +77,58 @@
     flex-shrink: 0;
     max-height: calc(100vh - 120px);
     overflow-y: auto;
+}
+
+/*
+ * TeamVault owns its admin screens: drop the WordPress chrome bands (the footer row
+ * and the gray gaps it leaves above and below the plugin panels) from every page.
+ * The File Manager goes one step further and fills the whole viewport below the admin
+ * bar, so its storage panel sits on the bottom edge.
+ */
+body.pdm-admin-page #wpfooter {
+    display: none;
+}
+
+body.pdm-admin-page #wpbody-content {
+    padding-bottom: 0;
+}
+
+body.pdm-admin-page .pdm-wrapper {
+    margin: 0;
+}
+
+body.toplevel_page_mikesoft-teamvault #wpbody-content {
+    display: flex;
+    flex-direction: column;
+    float: none;
+    height: calc(100vh - var(--pdm-admin-bar-offset));
+    padding-bottom: 0;
+    box-sizing: border-box;
+}
+
+/* Admin notices (including the persistent storage warning) keep their natural
+   height above the app; the workspace then fills exactly the remaining viewport. */
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .notice,
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .updated,
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .error {
+    flex-shrink: 0;
+}
+
+body.toplevel_page_mikesoft-teamvault .pdm-wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
+body.toplevel_page_mikesoft-teamvault .pdm-app {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+}
+
+body.toplevel_page_mikesoft-teamvault .pdm-sidebar {
+    max-height: none;
 }
 
 .pdm-sidebar-header {
@@ -879,7 +948,7 @@
     color: var(--pdm-color-text);
     resize: vertical;
     min-height: 80px;
-    font-agomily: inherit;
+    font-family: inherit;
     transition: var(--pdm-transition);
 }
 
@@ -1615,18 +1684,6 @@
         outline: 2px solid var(--pdm-color-primary, #2271b1);
         outline-offset: 1px;
     }
-
-    .pdm-btn-primary {
-        order: 1;
-    }
-
-    .pdm-view-toggle {
-        order: 0;
-    }
-
-    .pdm-btn-secondary {
-        order: 2;
-    }
 }
 
 @media (min-width: 769px) {
@@ -1637,9 +1694,9 @@
 }
 
 @media (max-width: 600px) {
-    /* Keep secondary toolbar actions compact (file-manager app only; must not affect
-       the governance pages or the shared modal, which live outside .pdm-app). */
-    .pdm-app .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
+    /* Keep secondary toolbar actions compact (file manager only; never hide the
+       details-panel actions or the shared modal controls). */
+    .pdm-app .pdm-toolbar .pdm-btn-secondary:not(.pdm-sidebar-toggle):not(#pdm-export-btn) {
         display: none;
     }
 
@@ -1664,10 +1721,6 @@
     #pdm-export-btn {
         padding: 6px 8px;
         min-width: 36px;
-    }
-
-    #pdm-export-btn span {
-        display: none;
     }
 
     #pdm-upload-btn {
@@ -1927,7 +1980,7 @@
 
 .pdm-log-context {
     font-size: 12px;
-    font-agomily: monospace;
+    font-family: var(--pdm-font-mono);
     background: var(--pdm-color-bg);
     padding: 4px 8px;
     border-radius: 4px;
@@ -2429,7 +2482,7 @@ body.pdm-no-scroll {
         padding: 12px;
     }
 
-    .pdmm-checkbox-label input[type="checkbox"] {
+    .pdm-checkbox-label input[type="checkbox"] {
         width: 22px;
         height: 22px;
     }
@@ -2815,4 +2868,1419 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     gap: 4px;
     font-size: 12px;
     color: var(--pdm-color-text-secondary);
+}
+
+/* ============================================================
+   DESIGN SYSTEM · unified style for every TeamVault screen
+   Single shared layer for the page canvas, headers, typography,
+   controls, tables, panels and empty states. It normalises the
+   earlier component rules and is the place to tune the visual
+   language for File Manager, Settings, Activity Log and the
+   governance screens at once.
+   ============================================================ */
+
+/* ---- Page canvas -------------------------------------------- */
+
+body.pdm-admin-page {
+    background: var(--pdm-color-bg);
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .pdm-settings-wrapper,
+body.pdm-admin-page .pdm-logs-wrapper,
+body.pdm-admin-page .pdm-governance-wrap {
+    box-sizing: border-box;
+    margin: 0 0 0 calc(-1 * var(--pdm-admin-content-pad));
+    padding: var(--pdm-page-pad-y) var(--pdm-page-pad-x) calc(var(--pdm-page-pad-y) + 24px);
+    background: var(--pdm-color-bg-secondary);
+    min-height: calc(100vh - var(--pdm-admin-bar-offset));
+}
+
+body.pdm-admin-page .pdm-wrapper {
+    margin-left: calc(-1 * var(--pdm-admin-content-pad));
+}
+
+body.pdm-admin-page .pdm-settings-wrapper {
+    max-width: none;
+}
+
+/* Readable single column for the settings form. */
+body.pdm-admin-page .pdm-settings-wrapper > * {
+    max-width: var(--pdm-content-max);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+body.pdm-admin-page .pdm-governance-wrap > * {
+    max-width: 1120px;
+}
+
+/* ---- Shared page headers ------------------------------------ */
+
+body.pdm-admin-page .mstv-governance-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0 0 24px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--pdm-color-border);
+}
+
+body.pdm-admin-page .mstv-governance-header > div {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+body.pdm-admin-page .mstv-governance-header .pdm-btn {
+    flex-shrink: 0;
+}
+
+body.pdm-admin-page .pdm-settings-header,
+body.pdm-admin-page .pdm-logs-header {
+    margin-top: 0;
+    margin-bottom: 26px;
+    padding: 0 0 20px;
+    border-bottom: 1px solid var(--pdm-color-border);
+}
+
+body.pdm-admin-page .mstv-governance-title,
+body.pdm-admin-page .pdm-settings-title,
+body.pdm-admin-page .pdm-logs-title {
+    margin: 0 0 6px;
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .mstv-governance-subtitle,
+body.pdm-admin-page .pdm-settings-desc,
+body.pdm-admin-page .pdm-logs-desc {
+    margin: 0;
+    max-width: 680px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--pdm-color-text-secondary);
+}
+
+/* ---- Buttons ------------------------------------------------ */
+
+body.pdm-admin-page .pdm-btn {
+    min-height: 36px;
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--pdm-radius);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    gap: 7px;
+    box-shadow: none;
+    text-shadow: none;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+body.pdm-admin-page .pdm-btn svg {
+    flex-shrink: 0;
+}
+
+body.pdm-admin-page .pdm-btn-primary {
+    background: var(--pdm-color-primary);
+    border-color: var(--pdm-color-primary);
+    color: #ffffff;
+}
+
+body.pdm-admin-page .pdm-btn-primary:hover:not(:disabled) {
+    background: var(--pdm-color-primary-hover);
+    border-color: var(--pdm-color-primary-hover);
+}
+
+body.pdm-admin-page .pdm-btn-secondary {
+    background: var(--pdm-color-bg-secondary);
+    border-color: var(--pdm-color-border);
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .pdm-btn-secondary:hover:not(:disabled) {
+    background: var(--pdm-color-bg);
+    border-color: var(--pdm-color-border-strong);
+}
+
+body.pdm-admin-page .pdm-btn-ghost {
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-btn-ghost:hover:not(:disabled) {
+    background: #eef2f7;
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .pdm-btn-danger {
+    background: var(--pdm-color-danger);
+    border-color: var(--pdm-color-danger);
+    color: #ffffff;
+}
+
+body.pdm-admin-page .pdm-btn-danger:hover:not(:disabled) {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+body.pdm-admin-page .pdm-btn-icon {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    padding: 0;
+}
+
+body.pdm-admin-page .pdm-btn-sm {
+    min-height: 30px;
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+body.pdm-admin-page .pdm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---- Form controls ------------------------------------------ */
+
+body.pdm-admin-page .pdm-input,
+body.pdm-admin-page .pdm-select,
+body.pdm-admin-page .pdm-textarea {
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid var(--pdm-color-border);
+    border-radius: var(--pdm-radius);
+    background: var(--pdm-color-bg-secondary);
+    color: var(--pdm-color-text);
+    font-family: var(--pdm-font-sans);
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: none;
+}
+
+body.pdm-admin-page .pdm-input:hover,
+body.pdm-admin-page .pdm-select:hover,
+body.pdm-admin-page .pdm-textarea:hover {
+    border-color: var(--pdm-color-border-strong);
+}
+
+body.pdm-admin-page .pdm-input:focus,
+body.pdm-admin-page .pdm-select:focus,
+body.pdm-admin-page .pdm-textarea:focus {
+    outline: none;
+    border-color: var(--pdm-color-primary);
+    box-shadow: 0 0 0 3px var(--pdm-color-primary-light);
+}
+
+body.pdm-admin-page .pdm-select {
+    padding-right: 30px;
+}
+
+body.pdm-admin-page .pdm-textarea {
+    min-height: 90px;
+}
+
+body.pdm-admin-page .pdm-field {
+    margin-bottom: 22px;
+}
+
+body.pdm-admin-page .pdm-field-label {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+body.pdm-admin-page .pdm-field-desc {
+    margin: 6px 0 10px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-checkbox-label {
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.pdm-admin-page .pdm-checkbox-label input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    margin: 0;
+    accent-color: var(--pdm-color-primary);
+}
+
+body.pdm-admin-page .pdm-checkbox-label--danger input[type="checkbox"] {
+    accent-color: var(--pdm-color-danger);
+}
+
+body.pdm-admin-page .pdm-section-title {
+    margin: 0 0 14px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--pdm-color-text);
+}
+
+/* ---- File Manager shell ------------------------------------- */
+
+body.pdm-admin-page .pdm-sidebar-header {
+    padding: 17px 16px 13px;
+}
+
+body.pdm-admin-page .pdm-sidebar-logo {
+    height: 34px;
+}
+
+body.pdm-admin-page .pdm-sidebar-search {
+    padding: 12px 14px;
+}
+
+body.pdm-admin-page .pdm-sidebar-search .pdm-input {
+    height: 36px;
+}
+
+body.pdm-admin-page .pdm-folder-tree {
+    padding: 6px 10px 12px;
+}
+
+body.pdm-admin-page .pdm-folder-item {
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: var(--pdm-radius);
+    gap: 8px;
+    font-size: 13px;
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-folder-item:hover {
+    background: #f1f5f9;
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .pdm-folder-item.active {
+    background: var(--pdm-color-primary-soft);
+    color: var(--pdm-color-primary);
+    font-weight: 500;
+}
+
+body.pdm-admin-page .pdm-folder-item svg {
+    flex-shrink: 0;
+}
+
+body.pdm-admin-page .pdm-storage-indicator {
+    padding: 16px;
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+body.pdm-admin-page .pdm-storage-title {
+    margin-bottom: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-storage-stat-value {
+    font-size: 15px;
+}
+
+body.pdm-admin-page .pdm-storage-stat-label {
+    font-size: 11px;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-toolbar {
+    padding: 10px 20px;
+    gap: 12px;
+}
+
+body.pdm-admin-page .pdm-breadcrumb {
+    font-size: 13px;
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-breadcrumb-item {
+    padding: 5px 8px;
+}
+
+body.pdm-admin-page .pdm-toolbar-label {
+    font-size: 12px;
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-view-toggle {
+    padding: 3px;
+    gap: 2px;
+    background: #eef2f7;
+    border-radius: var(--pdm-radius);
+}
+
+body.pdm-admin-page .pdm-view-toggle .pdm-btn {
+    width: 34px;
+    height: 30px;
+    min-height: 30px;
+    padding: 0;
+    border-radius: 6px;
+    color: var(--pdm-color-text-secondary);
+}
+
+body.pdm-admin-page .pdm-view-toggle .pdm-btn:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--pdm-color-text);
+}
+
+body.pdm-admin-page .pdm-view-toggle .pdm-btn.active {
+    background: var(--pdm-color-bg-secondary);
+    color: var(--pdm-color-primary);
+    box-shadow: var(--pdm-shadow-sm);
+}
+
+body.pdm-admin-page .pdm-content {
+    padding: 20px 20px 24px;
+}
+
+body.pdm-admin-page .pdm-content-grid {
+    gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+}
+
+body.pdm-admin-page .pdm-item {
+    padding: 16px 12px 14px;
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-item:hover {
+    border-color: var(--pdm-color-border-strong);
+    box-shadow: var(--pdm-shadow);
+}
+
+body.pdm-admin-page .pdm-item.selected {
+    background: var(--pdm-color-primary-soft);
+    border-color: var(--pdm-color-primary);
+    box-shadow: 0 0 0 1px var(--pdm-color-primary);
+}
+
+body.pdm-admin-page .pdm-item-icon {
+    margin-bottom: 10px;
+}
+
+body.pdm-admin-page .pdm-item-name {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+body.pdm-admin-page .pdm-item-meta {
+    margin-top: 3px;
+    font-size: 11.5px;
+}
+
+body.pdm-admin-page .pdm-list-item {
+    padding: 10px 14px;
+    border-radius: var(--pdm-radius);
+    gap: 12px;
+}
+
+body.pdm-admin-page .pdm-list-item:hover {
+    border-color: var(--pdm-color-border-strong);
+    background: var(--pdm-color-bg-secondary);
+}
+
+body.pdm-admin-page .pdm-list-item.selected {
+    background: var(--pdm-color-primary-soft);
+    border-color: var(--pdm-color-primary);
+}
+
+body.pdm-admin-page .pdm-list-item-name {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.pdm-admin-page .pdm-list-item-meta {
+    font-size: 12px;
+}
+
+body.pdm-admin-page .pdm-pagination {
+    margin-top: 22px;
+    padding-top: 16px;
+}
+
+body.pdm-admin-page .pdm-pagination-summary,
+body.pdm-admin-page .pdm-pagination-status {
+    font-size: 12.5px;
+}
+
+body.pdm-admin-page .pdm-pagination-btn {
+    min-height: 32px;
+}
+
+body.pdm-admin-page .pdm-loading {
+    font-size: 13px;
+    color: var(--pdm-color-text-muted);
+}
+
+/* ---- File details panel ------------------------------------- */
+
+body.pdm-admin-page .pdm-details-header {
+    padding: 18px 20px;
+}
+
+body.pdm-admin-page .pdm-details-name {
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+body.pdm-admin-page .pdm-details-preview {
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-details-body {
+    padding: 18px 20px;
+}
+
+body.pdm-admin-page .pdm-details-section-title {
+    margin-bottom: 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-details-row {
+    padding: 7px 0;
+    font-size: 13px;
+}
+
+body.pdm-admin-page .pdm-details-row-label {
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-details-actions {
+    padding: 16px 20px;
+    gap: 8px;
+    background: #fbfcfe;
+    flex-shrink: 0;
+}
+
+body.pdm-admin-page .pdm-details-empty {
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-details-empty p {
+    max-width: 220px;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ---- Empty states, modals, toasts --------------------------- */
+
+body.pdm-admin-page .pdm-empty-state {
+    padding: 60px 24px;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-empty-state > svg {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 18px;
+    padding: 15px;
+    box-sizing: content-box;
+    border-radius: 50%;
+    background: #eef2f7;
+    color: var(--pdm-color-text-secondary);
+    opacity: 1;
+}
+
+body.pdm-admin-page .pdm-empty-state h3 {
+    margin-bottom: 6px;
+    font-size: 17px;
+}
+
+body.pdm-admin-page .pdm-empty-state p {
+    max-width: 460px;
+    font-size: 13.5px;
+    line-height: 1.55;
+}
+
+body.pdm-admin-page .pdm-empty-state--dropzone {
+    margin: 20px;
+    background: #fbfcfe;
+    border-color: var(--pdm-color-border-strong);
+    border-radius: 14px;
+}
+
+body.pdm-admin-page .pdm-empty-actions {
+    margin-top: 20px;
+}
+
+body.pdm-admin-page .pdm-modal-content {
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 14px;
+}
+
+body.pdm-admin-page .pdm-modal-header {
+    padding: 16px 20px;
+}
+
+body.pdm-admin-page .pdm-modal-title {
+    font-size: 16px;
+    letter-spacing: -0.01em;
+}
+
+body.pdm-admin-page .pdm-modal-body {
+    padding: 20px;
+}
+
+body.pdm-admin-page .pdm-modal-footer {
+    padding: 14px 20px;
+    background: #fbfcfe;
+}
+
+body.pdm-admin-page .pdm-upload-overlay {
+    background: rgb(15 23 42 / 0.55);
+}
+
+body.pdm-admin-page .pdm-upload-dropzone {
+    max-width: min(560px, calc(100vw - 32px));
+    padding: 46px 48px;
+    border-radius: 16px;
+    box-shadow: var(--pdm-shadow-lg);
+}
+
+body.pdm-admin-page .pdm-upload-text {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+body.pdm-admin-page .pdm-toast {
+    padding: 12px 16px;
+    border: 1px solid var(--pdm-color-border);
+    border-left: 3px solid var(--pdm-color-primary);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-toast-message {
+    font-size: 13px;
+}
+
+body.pdm-admin-page .pdm-toast-icon--success {
+    color: var(--pdm-color-success-text);
+}
+
+body.pdm-admin-page .pdm-toast-icon--error {
+    color: var(--pdm-color-danger-text);
+}
+
+body.pdm-admin-page .pdm-toast-icon--warning {
+    color: var(--pdm-color-warning-text);
+}
+
+body.pdm-admin-page .context-menu {
+    padding: 5px;
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .context-menu-item {
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+body.pdm-admin-page .pdm-user-result {
+    padding: 9px 10px;
+    border-radius: 6px;
+}
+
+body.pdm-admin-page .pdm-user-tag {
+    padding: 5px 10px;
+    background: var(--pdm-color-primary-soft);
+    border: 1px solid var(--pdm-color-primary-light);
+    border-radius: 999px;
+}
+
+/* ---- Notices ------------------------------------------------ */
+
+body.pdm-admin-page .pdm-notice {
+    padding: 11px 14px;
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    border-radius: var(--pdm-radius);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+body.pdm-admin-page .pdm-notice-success {
+    background: var(--pdm-color-success-light);
+    border-color: #bbf7d0;
+    border-left-color: var(--pdm-color-success);
+    color: var(--pdm-color-success-text);
+}
+
+body.pdm-admin-page .pdm-notice-error {
+    background: var(--pdm-color-danger-light);
+    border-color: #fecaca;
+    border-left-color: var(--pdm-color-danger);
+    color: var(--pdm-color-danger-text);
+}
+
+/* Plugin-owned persistent storage notice: full-bleed alert above the page canvas. */
+body.pdm-admin-page .mstv-storage-security-notice {
+    box-sizing: border-box;
+    margin: 0 0 0 calc(-1 * var(--pdm-admin-content-pad));
+    padding: 12px var(--pdm-page-pad-x);
+    background: var(--pdm-color-warning-light);
+    border: 0;
+    border-left: 4px solid var(--pdm-color-warning);
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--pdm-color-warning-text);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+body.pdm-admin-page .mstv-storage-security-notice p {
+    margin: 0;
+}
+
+body.pdm-admin-page .mstv-storage-security-notice.notice-error {
+    background: var(--pdm-color-danger-light);
+    border-left-color: var(--pdm-color-danger);
+    color: var(--pdm-color-danger-text);
+}
+
+/* ---- Tables and status chips -------------------------------- */
+
+body.pdm-admin-page .pdm-table {
+    font-size: 13px;
+}
+
+body.pdm-admin-page .pdm-table th {
+    padding: 11px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--pdm-color-text-muted);
+    background: var(--pdm-color-bg);
+    border-bottom: 1px solid var(--pdm-color-border);
+}
+
+body.pdm-admin-page .pdm-table td {
+    padding: 13px 16px;
+    vertical-align: middle;
+}
+
+body.pdm-admin-page .pdm-table td:first-child {
+    white-space: nowrap;
+}
+
+body.pdm-admin-page .pdm-table tbody tr:hover td {
+    background: #fbfcfe;
+}
+
+body.pdm-admin-page .pdm-table-responsive {
+    overflow-x: auto;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-table-responsive .pdm-table {
+    min-width: 720px;
+}
+
+body.pdm-admin-page .pdm-log-action {
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+body.pdm-admin-page .pdm-log-action--upload,
+body.pdm-admin-page .pdm-log-action--create {
+    background: var(--pdm-color-success-light);
+    color: var(--pdm-color-success-text);
+}
+
+body.pdm-admin-page .pdm-log-action--download {
+    background: var(--pdm-color-primary-light);
+    color: var(--pdm-color-primary-text);
+}
+
+body.pdm-admin-page .pdm-log-action--delete {
+    background: var(--pdm-color-danger-light);
+    color: var(--pdm-color-danger-text);
+}
+
+body.pdm-admin-page .pdm-log-action--rename,
+body.pdm-admin-page .pdm-log-action--move {
+    background: var(--pdm-color-warning-light);
+    color: var(--pdm-color-warning-text);
+}
+
+body.pdm-admin-page .pdm-log-context {
+    max-width: 260px;
+    padding: 3px 8px;
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 6px;
+}
+
+body.pdm-admin-page .pdm-logs-toolbar {
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+body.pdm-admin-page .pdm-inline-form .pdm-select {
+    min-width: 78px;
+}
+
+/* ---- Governance screens ------------------------------------- */
+
+body.pdm-admin-page .pdm-governance-wrap .pdm-section-title {
+    margin: 26px 0 12px;
+    font-size: 15px;
+}
+
+body.pdm-admin-page .pdm-governance-wrap .pdm-section-title:first-child {
+    margin-top: 0;
+}
+
+body.pdm-admin-page .mstv-notif-events,
+body.pdm-admin-page .mstv-notif-groups {
+    gap: 6px;
+}
+
+body.pdm-admin-page .mstv-notifications-body .pdm-field-label {
+    margin-top: 18px;
+}
+
+body.pdm-admin-page .mstv-quotas-enable {
+    display: inline-flex;
+    margin: 0 0 20px;
+    padding: 10px 14px;
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .mstv-groups-list {
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+body.pdm-admin-page .mstv-group-card {
+    gap: 14px;
+    padding: 18px;
+    border-radius: 10px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+body.pdm-admin-page .mstv-group-card:hover {
+    border-color: var(--pdm-color-border-strong);
+    box-shadow: var(--pdm-shadow);
+}
+
+body.pdm-admin-page .mstv-group-name {
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+body.pdm-admin-page .mstv-group-meta {
+    font-size: 12px;
+}
+
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 52px 24px;
+    background: #fbfcfe;
+    border: 1px dashed var(--pdm-color-border-strong);
+    border-radius: 12px;
+    font-size: 13px;
+}
+
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty {
+    margin: 0;
+    padding: 56px 24px;
+    background: #fbfcfe;
+    border: 1px dashed var(--pdm-color-border-strong);
+    border-radius: 12px;
+    color: var(--pdm-color-text-muted);
+    font-size: 13px;
+}
+
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty,
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty::before,
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty::before {
+    content: "";
+    width: 40px;
+    height: 40px;
+    background-color: var(--pdm-color-border-strong);
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 40px 40px;
+    mask-size: 40px 40px;
+}
+
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
+}
+
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty::before {
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='20' x2='18' y2='10'/%3E%3Cline x1='12' y1='20' x2='12' y2='4'/%3E%3Cline x1='6' y1='20' x2='6' y2='14'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='20' x2='18' y2='10'/%3E%3Cline x1='12' y1='20' x2='12' y2='4'/%3E%3Cline x1='6' y1='20' x2='6' y2='14'/%3E%3C/svg%3E");
+}
+
+body.pdm-admin-page .mstv-reports-filters {
+    align-items: flex-end;
+    gap: 14px;
+    margin: 0 0 24px;
+    padding: 16px;
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .mstv-filter {
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .mstv-filter .pdm-select,
+body.pdm-admin-page .mstv-filter .pdm-input {
+    min-width: 170px;
+}
+
+body.pdm-admin-page .pdm-perm-table-wrap {
+    margin: 0 0 16px;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-perm-table {
+    min-width: 520px;
+}
+
+body.pdm-admin-page .pdm-perm-table th {
+    padding: 10px 12px;
+    background: var(--pdm-color-bg);
+    border-bottom: 1px solid var(--pdm-color-border);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--pdm-color-text-muted);
+}
+
+body.pdm-admin-page .pdm-perm-table td {
+    padding: 10px 12px;
+    vertical-align: middle;
+}
+
+body.pdm-admin-page .pdm-perm-table tbody tr:hover td {
+    background: #fbfcfe;
+}
+
+body.pdm-admin-page .pdm-perm-table td.pdm-perm-empty {
+    padding: 34px 20px;
+    color: var(--pdm-color-text-muted);
+    font-size: 13px;
+}
+
+body.pdm-admin-page .pdm-perm-add {
+    gap: 10px;
+    margin-top: 0;
+    padding: 14px;
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 10px;
+}
+
+body.pdm-admin-page .pdm-perm-add-user,
+body.pdm-admin-page .pdm-perm-add-group {
+    flex: 1 1 240px;
+}
+
+body.pdm-admin-page .mstv-quota-mb {
+    width: 96px;
+}
+
+body.pdm-admin-page .mstv-governance-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 24px;
+    padding: 14px 0 max(14px, env(safe-area-inset-bottom));
+    background: var(--pdm-color-bg-secondary);
+    border-top: 1px solid var(--pdm-color-border);
+}
+
+body.pdm-admin-page .mstv-chip {
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    font-size: 12px;
+}
+
+/* ---- Settings and Activity Log ------------------------------ */
+
+body.pdm-admin-page .pdm-settings-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+}
+
+body.pdm-admin-page .pdm-settings-section--danger {
+    margin: 0;
+    padding: 20px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+}
+
+body.pdm-admin-page .pdm-settings-section--danger .pdm-section-title {
+    color: #991b1b;
+}
+
+body.pdm-admin-page .pdm-settings-section--danger .pdm-field-desc {
+    color: #7f1d1d;
+}
+
+body.pdm-admin-page .pdm-settings-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px 0 0;
+    padding: 14px 0 max(14px, env(safe-area-inset-bottom));
+    background: var(--pdm-color-bg-secondary);
+    border-top: 1px solid var(--pdm-color-border);
+}
+
+body.pdm-admin-page .pdm-settings-actions input[type="submit"] {
+    min-height: 38px;
+    padding: 8px 16px;
+    background: var(--pdm-color-primary);
+    border: 1px solid var(--pdm-color-primary);
+    border-radius: var(--pdm-radius);
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+body.pdm-admin-page .pdm-settings-actions input[type="submit"]:hover {
+    background: var(--pdm-color-primary-hover);
+    border-color: var(--pdm-color-primary-hover);
+}
+
+body.pdm-admin-page .pdm-settings-info {
+    margin-top: 36px;
+    padding: 20px;
+    background: var(--pdm-color-bg);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 12px;
+}
+
+body.pdm-admin-page .pdm-settings-info li {
+    padding: 5px 0;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+body.pdm-admin-page .pdm-settings-info code {
+    padding: 1px 5px;
+    background: var(--pdm-color-bg-secondary);
+    border: 1px solid var(--pdm-color-border);
+    border-radius: 4px;
+}
+
+/* ---- Keyboard focus ----------------------------------------- */
+
+body.pdm-admin-page :is(.pdm-wrapper, .pdm-modal, .pdm-upload-overlay, .pdm-preview-modal, .pdm-toast-container, .pdm-governance-wrap) :is(button, a[href], select, input[type="checkbox"], input[type="radio"], input[type="date"], [tabindex]):focus-visible {
+    outline: 2px solid var(--pdm-color-primary);
+    outline-offset: 2px;
+}
+
+/* Overlays own the whole viewport, including the WordPress admin chrome. */
+body.pdm-admin-page .pdm-modal,
+body.pdm-admin-page .pdm-upload-overlay,
+body.pdm-admin-page .pdm-preview-modal {
+    z-index: 100000;
+}
+
+body.pdm-admin-page .context-menu {
+    z-index: 100001;
+}
+
+body.pdm-admin-page .pdm-toast-container {
+    z-index: 100002;
+}
+
+/* ---- Responsive: compact toolbar on narrower desktops ------- */
+
+@media (min-width: 769px) and (max-width: 1460px) {
+    body.pdm-admin-page .pdm-toolbar {
+        padding: 10px 16px;
+        gap: 8px;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-right {
+        gap: 6px;
+    }
+
+    /* Compact desktop toolbar: keep the visible sort control, hide the duplicate
+       filter popover, and let the sidebar provide folder context. */
+    body.pdm-admin-page .pdm-breadcrumb {
+        display: none;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters {
+        display: none;
+    }
+
+    /* Keep the per-page control visually compact without dropping its label for
+       assistive technologies. */
+    body.pdm-admin-page .pdm-page-size-control .pdm-toolbar-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+}
+
+/* From this width the toolbar has room for the visible per-page label again. */
+@media (min-width: 1024px) and (max-width: 1460px) {
+    body.pdm-admin-page .pdm-page-size-control .pdm-toolbar-label {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: nowrap;
+        border: 0;
+    }
+}
+
+/* ---- Responsive: mobile toolbar ----------------------------- */
+
+@media (max-width: 768px) {
+    body.pdm-admin-page .pdm-toolbar {
+        position: relative;
+        flex-wrap: wrap;
+        overflow: visible;
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-left {
+        min-width: 0;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-right {
+        flex: 1 1 auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    body.pdm-admin-page .pdm-page-size-control,
+    body.pdm-admin-page .pdm-sort-dropdown {
+        display: none;
+    }
+
+    /* Keep the filter dropdown available as a real popover instead of an
+       always-open row that used to clip the Export and Upload actions. */
+    body.pdm-admin-page .pdm-filters-toggle {
+        display: inline-flex !important;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters {
+        position: static;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 12px;
+        left: 12px;
+        display: none !important;
+        flex-direction: column;
+        gap: 10px;
+        width: auto;
+        min-width: 0;
+        margin: 0;
+        padding: 12px;
+        background: var(--pdm-color-bg-secondary);
+        border: 1px solid var(--pdm-color-border);
+        border-radius: 10px;
+        box-shadow: var(--pdm-shadow-lg);
+        z-index: 70;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-dropdown.active {
+        display: flex !important;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        margin-bottom: 0;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-label {
+        display: block;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-select,
+    body.pdm-admin-page .pdm-filters-sort {
+        width: 100%;
+        min-height: 38px;
+    }
+
+    body.pdm-admin-page .pdm-view-toggle .pdm-btn {
+        width: 38px;
+        height: 34px;
+        min-height: 34px;
+    }
+
+    body.pdm-admin-page .pdm-content {
+        padding: 14px 12px 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    body.pdm-admin-page :is(.mstv-governance-title, .pdm-settings-title, .pdm-logs-title) {
+        font-size: 21px;
+    }
+
+    body.pdm-admin-page :is(.mstv-governance-header, .pdm-settings-header, .pdm-logs-header) {
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+    }
+
+    body.pdm-admin-page .mstv-governance-header .pdm-btn {
+        width: 100%;
+    }
+
+    /* Icon-only Export keeps the primary actions on one row; the label stays in
+       the accessibility tree instead of being removed with display: none. */
+    body.pdm-admin-page #pdm-export-btn {
+        width: 36px;
+        min-width: 36px;
+        padding: 0;
+    }
+
+    body.pdm-admin-page #pdm-export-btn span {
+        display: inline;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+    }
+
+    body.pdm-admin-page .pdm-toolbar {
+        gap: 6px;
+    }
+
+    body.pdm-admin-page .mstv-groups-list {
+        grid-template-columns: 1fr;
+    }
+
+    body.pdm-admin-page .mstv-reports-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    body.pdm-admin-page .mstv-filter .pdm-select,
+    body.pdm-admin-page .mstv-filter .pdm-input {
+        min-width: 0;
+        width: 100%;
+    }
+
+    body.pdm-admin-page .mstv-reports-filters .pdm-btn {
+        width: 100%;
+    }
+
+    body.pdm-admin-page .pdm-perm-add {
+        flex-direction: column;
+    }
+
+    /* An empty quota table has no columns worth scrolling for: let the message
+       wrap inside the card instead of being clipped by the horizontal scroller. */
+    body.pdm-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) {
+        overflow-x: hidden;
+    }
+
+    body.pdm-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) .pdm-perm-table {
+        min-width: 0;
+    }
+
+    body.pdm-admin-page .pdm-perm-add-user,
+    body.pdm-admin-page .pdm-perm-add-group {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    body.pdm-admin-page .mstv-governance-footer .pdm-btn {
+        width: 100%;
+    }
+
+    body.pdm-admin-page .pdm-settings-actions {
+        justify-content: stretch;
+    }
+
+    body.pdm-admin-page .pdm-settings-actions input[type="submit"] {
+        width: 100%;
+    }
+
+    body.pdm-admin-page .pdm-logs-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    body.pdm-admin-page .pdm-logs-toolbar .pdm-inline-form {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    body.pdm-admin-page .pdm-inline-form .pdm-select {
+        flex: 1 1 90px;
+    }
+
+    body.pdm-admin-page .pdm-pagination {
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    body.pdm-admin-page .pdm-pagination-controls {
+        justify-content: space-between;
+    }
+
+    body.pdm-admin-page .pdm-upload-dropzone {
+        padding: 36px 22px;
+    }
+
+    body.pdm-admin-page .pdm-upload-text {
+        font-size: 16px;
+    }
+
+    body.pdm-admin-page .pdm-empty-state {
+        padding: 44px 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    body.pdm-admin-page .pdm-content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+        gap: 10px;
+    }
+
+    body.pdm-admin-page .pdm-content {
+        padding: 12px 10px 18px;
+    }
+}
+
+@media (max-width: 782px) {
+    body.pdm-admin-page .pdm-settings-wrapper,
+    body.pdm-admin-page .pdm-logs-wrapper,
+    body.pdm-admin-page .pdm-governance-wrap {
+        min-height: calc(100dvh - var(--pdm-admin-bar-offset));
+    }
+
+    body.pdm-admin-page .pdm-settings-wrapper > *,
+    body.pdm-admin-page .pdm-governance-wrap > * {
+        max-width: 100%;
+    }
+}
+
+/* ---- Touch targets ------------------------------------------ */
+
+@media (hover: none) and (pointer: coarse) {
+    body.pdm-admin-page .pdm-btn {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+
+    body.pdm-admin-page .pdm-btn-icon {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
+    }
+
+    body.pdm-admin-page .pdm-folder-item {
+        min-height: 44px;
+        padding: 10px 12px;
+    }
+
+    body.pdm-admin-page .pdm-input,
+    body.pdm-admin-page .pdm-select {
+        min-height: 44px;
+    }
+
+    body.pdm-admin-page .pdm-toolbar-filters-select {
+        min-height: 44px;
+    }
+
+    body.pdm-admin-page .pdm-view-toggle .pdm-btn {
+        width: 44px;
+        height: 40px;
+        min-height: 40px;
+    }
 }

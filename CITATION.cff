@@ -7,8 +7,8 @@ authors:
     given-names: Michael
 url: "https://github.com/TheStreamCode/mikesoft-teamvault"
 repository-code: "https://github.com/TheStreamCode/mikesoft-teamvault"
-version: "3.4.0"
-date-released: "2026-10-21"
+version: "3.5.0"
+date-released: "2026-10-22"
 keywords:
   - WordPress
   - document management
