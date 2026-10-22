@@ -168,6 +168,83 @@ final class PDMAdminAppTest extends TestCase
         );
     }
 
+    public function testTeamVaultCssRemovesAdminChromeFromEveryPluginScreen(): void
+    {
+        $source = (string) file_get_contents(dirname(__DIR__) . '/assets/css/admin.css');
+
+        self::assertStringContainsString(
+            'body.pdm-admin-page #wpfooter',
+            $source,
+            'Every TeamVault screen must hide the WordPress admin footer band.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page #wpbody-content',
+            $source,
+            'Every TeamVault screen must remove the admin bottom padding under its panels.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .pdm-wrapper',
+            $source,
+            'Panel wrappers on TeamVault screens must drop the 20px gap above and below the panel.'
+        );
+        self::assertStringContainsString(
+            'body.toplevel_page_mikesoft-teamvault #wpbody-content {',
+            $source,
+            'The File Manager viewport container must own the remaining height below notices.'
+        );
+        self::assertStringContainsString(
+            'flex: 1 1 auto;',
+            $source,
+            'The File Manager app must fill the viewport container, including when notices appear above it.'
+        );
+        self::assertStringContainsString(
+            'body.toplevel_page_mikesoft-teamvault .pdm-sidebar',
+            $source,
+            'The File Manager sidebar must stretch to the app height so the storage panel reaches the bottom edge.'
+        );
+    }
+
+    public function testDesignSystemUnifiesEveryPluginScreen(): void
+    {
+        $css = (string) file_get_contents(dirname(__DIR__) . '/assets/css/admin.css');
+
+        self::assertStringContainsString(
+            'body.pdm-admin-page .pdm-settings-wrapper,',
+            $css,
+            'Settings, Activity Log and governance screens must share the same page canvas.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .pdm-logs-wrapper,',
+            $css,
+            'The Activity Log must use the shared page canvas.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .pdm-governance-wrap > *',
+            $css,
+            'Governance screens must share the constrained content width.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .mstv-governance-footer',
+            $css,
+            'Governance save bars must share the sticky action pattern.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .pdm-settings-actions',
+            $css,
+            'Settings must keep its save action visible while scrolling.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .mstv-storage-security-notice',
+            $css,
+            'The persistent storage notice must follow the shared design system.'
+        );
+        self::assertStringContainsString(
+            "setAttribute('aria-expanded'",
+            $this->adminAppSource(),
+            'The filter popover toggle must expose its expanded state.'
+        );
+    }
+
     public function testDeleteAndMutationErrorsSurfaceServerMessages(): void
     {
         $source = $this->adminAppSource();

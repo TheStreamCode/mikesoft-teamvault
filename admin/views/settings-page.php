@@ -299,7 +299,7 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
         </div>
 
         <div class="pdm-settings-actions">
-            <?php submit_button(__('Save Settings', 'mikesoft-teamvault'), 'primary pdm-btn-primary', 'submit', false); ?>
+            <?php submit_button(__('Save Settings', 'mikesoft-teamvault'), 'primary pdm-btn pdm-btn-primary', 'submit', false); ?>
         </div>
     </form>
 

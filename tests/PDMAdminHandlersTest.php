@@ -81,6 +81,7 @@ final class PDMAdminHandlersTest extends TestCase
 
         self::assertStringContainsString('pdm-app', $html);
         self::assertStringContainsString('pdm-folder-tree', $html);
+        self::assertStringContainsString('screen-reader-text', $html);
     }
 
     public function test_handle_save_settings_rejects_unsupported_interface_language(): void
