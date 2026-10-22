@@ -2,6 +2,16 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.5.0 - 2026-10-22
+- Security: folder and file uniqueness is now enforced in the database through an option-guarded migration that merges existing duplicates before adding the unique keys. The lowest folder id survives; child folders, files, and per-folder rules are re-pointed to it, and duplicate subtrees are rewritten onto the surviving path. Duplicate inserts map to 409 conflicts and duplicate paths are skipped during reindexing. The auto-reindex claim is atomic and released when the scan fails.
+- Security: uploads now fail closed when the private storage directory is not writable or when `.htaccess`, `web.config`, or `index.php` cannot be created, and the error names the failing files. The storage warning is persistent and non-dismissible for blocking states and for Nginx, which ignores `.htaccess`; the README documents an out-of-webroot storage path as the recommended deployment.
+- Admin UI: every TeamVault screen now shares one design system: unified palette and typography tokens, full-bleed white canvas, page headers, buttons, form controls, tables, badges, empty states, spacing, and radii.
+- Admin UI: the File Manager removes the WordPress footer gap and the gray bands above and below the app, fills the viewport below the admin bar, pins the storage panel to the bottom edge, and no longer clips toolbar controls at common desktop widths. The filter control opens a labeled popover, icon-only Export keeps an accessible name, and the filter toggle announces its expanded state.
+- Accessibility: the File Manager exposes a screen-reader page heading, custom controls have visible keyboard focus, status badges and muted text meet AA contrast, and touch targets reach 44px on coarse pointers.
+- Responsive: settings, governance tables, forms, modals, the upload overlay, and report filters adapt to 360-390px screens without horizontal page overflow; the mobile toolbar keeps Export and Upload reachable, and the detail drawer keeps every file action available.
+- Fixed: secondary toolbar actions no longer hide Rename and Move in the mobile file details; the empty quota table is no longer clipped by its horizontal scroller; folder empty states size correctly at 360px; the group editor label reads "Members" and is translated in Italian, French, Spanish, and German.
+- Tests: added regression coverage for the shared admin design system, the File Manager screen-reader heading, the admin body-class scope, and the filter popover state, alongside the duplicate-creation, migration-dedupe, reindex-lock, and storage-protection suites merged from the maintenance line.
+
 ## 3.4.0 - 2026-10-21
 - Feature: email notifications are folder-aware by default. Selected users and groups receive an upload, download, delete, or access-denied event only when they can view the folder that produced it, so a document name is not disclosed to a group without access. Administrators remain included when the administrator recipient option is enabled.
 - Feature: a Notifications setting restores the previous global recipient behavior; the `mstv_notification_recipients` filter lets site code refine the final recipient list.
