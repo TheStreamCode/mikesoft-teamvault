@@ -332,7 +332,7 @@ For the full release history, see `changelog.txt` in the plugin package.
 
 = 3.5.0 =
 
-The admin interface has been refreshed for consistency, mobile use, and accessibility. The first update merges any duplicate folder and file records, then rejects new duplicates, and uploads now fail closed if the private storage protection cannot be enforced. No configuration changes are required.
+Refreshes the admin UI for consistency, mobile use, and accessibility. The first update merges duplicate folder/file records and rejects new ones; uploads fail closed when storage protection cannot be enforced. Nginx sites must confirm a deny rule or use an out-of-webroot storage path.
 
 = 3.4.0 =
 

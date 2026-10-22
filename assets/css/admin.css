@@ -97,12 +97,33 @@ body.pdm-admin-page .pdm-wrapper {
     margin: 0;
 }
 
-body.toplevel_page_mikesoft-teamvault .pdm-wrapper {
+body.toplevel_page_mikesoft-teamvault #wpbody-content {
+    display: flex;
+    flex-direction: column;
+    float: none;
     height: calc(100vh - var(--pdm-admin-bar-offset));
+    padding-bottom: 0;
+    box-sizing: border-box;
+}
+
+/* Admin notices (including the persistent storage warning) keep their natural
+   height above the app; the workspace then fills exactly the remaining viewport. */
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .notice,
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .updated,
+body.toplevel_page_mikesoft-teamvault #wpbody-content > .error {
+    flex-shrink: 0;
+}
+
+body.toplevel_page_mikesoft-teamvault .pdm-wrapper {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
 }
 
 body.toplevel_page_mikesoft-teamvault .pdm-app {
-    height: 100%;
+    flex: 1 1 auto;
+    height: auto;
     min-height: 0;
 }
 
@@ -3507,6 +3528,31 @@ body.pdm-admin-page .pdm-notice-error {
     color: var(--pdm-color-danger-text);
 }
 
+/* Plugin-owned persistent storage notice: full-bleed alert above the page canvas. */
+body.pdm-admin-page .mstv-storage-security-notice {
+    box-sizing: border-box;
+    margin: 0 0 0 calc(-1 * var(--pdm-admin-content-pad));
+    padding: 12px var(--pdm-page-pad-x);
+    background: var(--pdm-color-warning-light);
+    border: 0;
+    border-left: 4px solid var(--pdm-color-warning);
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--pdm-color-warning-text);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+body.pdm-admin-page .mstv-storage-security-notice p {
+    margin: 0;
+}
+
+body.pdm-admin-page .mstv-storage-security-notice.notice-error {
+    background: var(--pdm-color-danger-light);
+    border-left-color: var(--pdm-color-danger);
+    color: var(--pdm-color-danger-text);
+}
+
 /* ---- Tables and status chips -------------------------------- */
 
 body.pdm-admin-page .pdm-table {
@@ -3919,18 +3965,14 @@ body.pdm-admin-page .pdm-toast-container {
         gap: 6px;
     }
 
-    /* Sort and page size stay reachable through the filter popover; the
-       breadcrumb remains visible wherever it fits. */
-    body.pdm-admin-page .pdm-sort-dropdown {
+    /* Compact desktop toolbar: keep the visible sort control, hide the duplicate
+       filter popover, and let the sidebar provide folder context. */
+    body.pdm-admin-page .pdm-breadcrumb {
         display: none;
     }
 
     body.pdm-admin-page .pdm-toolbar-filters {
-        display: flex;
-    }
-
-    body.pdm-admin-page .pdm-filters-toggle {
-        display: inline-flex !important;
+        display: none;
     }
 
     /* Keep the per-page control visually compact without dropping its label for

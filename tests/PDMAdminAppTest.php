@@ -188,9 +188,14 @@ final class PDMAdminAppTest extends TestCase
             'Panel wrappers on TeamVault screens must drop the 20px gap above and below the panel.'
         );
         self::assertStringContainsString(
-            'height: calc(100vh - var(--pdm-admin-bar-offset));',
+            'body.toplevel_page_mikesoft-teamvault #wpbody-content {',
             $source,
-            'The File Manager wrapper must fill exactly the viewport below the admin bar.'
+            'The File Manager viewport container must own the remaining height below notices.'
+        );
+        self::assertStringContainsString(
+            'flex: 1 1 auto;',
+            $source,
+            'The File Manager app must fill the viewport container, including when notices appear above it.'
         );
         self::assertStringContainsString(
             'body.toplevel_page_mikesoft-teamvault .pdm-sidebar',
@@ -227,6 +232,11 @@ final class PDMAdminAppTest extends TestCase
             'body.pdm-admin-page .pdm-settings-actions',
             $css,
             'Settings must keep its save action visible while scrolling.'
+        );
+        self::assertStringContainsString(
+            'body.pdm-admin-page .mstv-storage-security-notice',
+            $css,
+            'The persistent storage notice must follow the shared design system.'
         );
         self::assertStringContainsString(
             "setAttribute('aria-expanded'",
