@@ -25,10 +25,10 @@ final class PDMAssetsTest extends TestCase
         $assets = new MSTV_Assets(new MSTV_Settings());
 
         $GLOBALS['pdm_test_current_screen_id'] = 'teamvault_page_mikesoft-teamvault-settings';
-        self::assertSame('wp-admin mstv-admin-page', $assets->add_admin_body_class('wp-admin'));
+        self::assertSame('wp-admin pdm-admin-page', $assets->add_admin_body_class('wp-admin'));
 
         $GLOBALS['pdm_test_current_screen_id'] = 'toplevel_page_mikesoft-teamvault';
-        self::assertSame('wp-admin mstv-admin-page', $assets->add_admin_body_class('wp-admin'));
+        self::assertSame('wp-admin pdm-admin-page', $assets->add_admin_body_class('wp-admin'));
 
         $GLOBALS['pdm_test_current_screen_id'] = 'edit-post';
         self::assertSame('wp-admin', $assets->add_admin_body_class('wp-admin'));

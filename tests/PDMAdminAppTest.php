@@ -173,17 +173,17 @@ final class PDMAdminAppTest extends TestCase
         $source = (string) file_get_contents(dirname(__DIR__) . '/assets/css/admin.css');
 
         self::assertStringContainsString(
-            'body.mstv-admin-page #wpfooter',
+            'body.pdm-admin-page #wpfooter',
             $source,
             'Every TeamVault screen must hide the WordPress admin footer band.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page #wpbody-content',
+            'body.pdm-admin-page #wpbody-content',
             $source,
             'Every TeamVault screen must remove the admin bottom padding under its panels.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page .pdm-wrapper',
+            'body.pdm-admin-page .pdm-wrapper',
             $source,
             'Panel wrappers on TeamVault screens must drop the 20px gap above and below the panel.'
         );
@@ -204,27 +204,27 @@ final class PDMAdminAppTest extends TestCase
         $css = (string) file_get_contents(dirname(__DIR__) . '/assets/css/admin.css');
 
         self::assertStringContainsString(
-            'body.mstv-admin-page .pdm-settings-wrapper,',
+            'body.pdm-admin-page .pdm-settings-wrapper,',
             $css,
             'Settings, Activity Log and governance screens must share the same page canvas.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page .pdm-logs-wrapper,',
+            'body.pdm-admin-page .pdm-logs-wrapper,',
             $css,
             'The Activity Log must use the shared page canvas.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page .pdm-governance-wrap > *',
+            'body.pdm-admin-page .pdm-governance-wrap > *',
             $css,
             'Governance screens must share the constrained content width.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page .mstv-governance-footer',
+            'body.pdm-admin-page .mstv-governance-footer',
             $css,
             'Governance save bars must share the sticky action pattern.'
         );
         self::assertStringContainsString(
-            'body.mstv-admin-page .pdm-settings-actions',
+            'body.pdm-admin-page .pdm-settings-actions',
             $css,
             'Settings must keep its save action visible while scrolling.'
         );

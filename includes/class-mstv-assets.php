@@ -29,7 +29,7 @@ class MSTV_Assets
             return $classes;
         }
 
-        return $classes === '' ? 'mstv-admin-page' : $classes . ' mstv-admin-page';
+        return $classes === '' ? 'pdm-admin-page' : $classes . ' pdm-admin-page';
     }
 
     private function is_teamvault_screen(): bool

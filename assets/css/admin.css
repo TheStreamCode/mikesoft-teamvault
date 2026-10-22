@@ -3,6 +3,8 @@
     --pdm-color-primary-hover: #1d4ed8;
     --pdm-color-primary-light: #dbeafe;
     --pdm-color-primary-soft: #eff6ff;
+    /* Darker primary for tinted badges where #2563eb falls below AA on #dbeafe. */
+    --pdm-color-primary-text: #1e40af;
     --pdm-color-secondary: #64748b;
     --pdm-color-success: #22c55e;
     --pdm-color-success-light: #dcfce7;
@@ -83,16 +85,16 @@
  * The File Manager goes one step further and fills the whole viewport below the admin
  * bar, so its storage panel sits on the bottom edge.
  */
-body.mstv-admin-page #wpfooter {
+body.pdm-admin-page #wpfooter {
     display: none;
 }
 
-body.mstv-admin-page #wpbody-content {
+body.pdm-admin-page #wpbody-content {
     padding-bottom: 0;
 }
 
-body.mstv-admin-page .pdm-wrapper {
-    margin: 0 0 0 -20px;
+body.pdm-admin-page .pdm-wrapper {
+    margin: 0;
 }
 
 body.toplevel_page_mikesoft-teamvault .pdm-wrapper {
@@ -1700,10 +1702,6 @@ body.toplevel_page_mikesoft-teamvault .pdm-sidebar {
         min-width: 36px;
     }
 
-    #pdm-export-btn span {
-        display: none;
-    }
-
     #pdm-upload-btn {
         padding: 6px 9px;
     }
@@ -2862,14 +2860,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 /* ---- Page canvas -------------------------------------------- */
 
-body.mstv-admin-page {
+body.pdm-admin-page {
     background: var(--pdm-color-bg);
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .pdm-settings-wrapper,
-body.mstv-admin-page .pdm-logs-wrapper,
-body.mstv-admin-page .pdm-governance-wrap {
+body.pdm-admin-page .pdm-settings-wrapper,
+body.pdm-admin-page .pdm-logs-wrapper,
+body.pdm-admin-page .pdm-governance-wrap {
     box-sizing: border-box;
     margin: 0 0 0 calc(-1 * var(--pdm-admin-content-pad));
     padding: var(--pdm-page-pad-y) var(--pdm-page-pad-x) calc(var(--pdm-page-pad-y) + 24px);
@@ -2877,28 +2875,28 @@ body.mstv-admin-page .pdm-governance-wrap {
     min-height: calc(100vh - var(--pdm-admin-bar-offset));
 }
 
-body.mstv-admin-page .pdm-wrapper {
+body.pdm-admin-page .pdm-wrapper {
     margin-left: calc(-1 * var(--pdm-admin-content-pad));
 }
 
-body.mstv-admin-page .pdm-settings-wrapper {
+body.pdm-admin-page .pdm-settings-wrapper {
     max-width: none;
 }
 
 /* Readable single column for the settings form. */
-body.mstv-admin-page .pdm-settings-wrapper > * {
+body.pdm-admin-page .pdm-settings-wrapper > * {
     max-width: var(--pdm-content-max);
     margin-left: auto;
     margin-right: auto;
 }
 
-body.mstv-admin-page .pdm-governance-wrap > * {
+body.pdm-admin-page .pdm-governance-wrap > * {
     max-width: 1120px;
 }
 
 /* ---- Shared page headers ------------------------------------ */
 
-body.mstv-admin-page .mstv-governance-header {
+body.pdm-admin-page .mstv-governance-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
@@ -2909,26 +2907,26 @@ body.mstv-admin-page .mstv-governance-header {
     border-bottom: 1px solid var(--pdm-color-border);
 }
 
-body.mstv-admin-page .mstv-governance-header > div {
+body.pdm-admin-page .mstv-governance-header > div {
     flex: 1 1 auto;
     min-width: 0;
 }
 
-body.mstv-admin-page .mstv-governance-header .pdm-btn {
+body.pdm-admin-page .mstv-governance-header .pdm-btn {
     flex-shrink: 0;
 }
 
-body.mstv-admin-page .pdm-settings-header,
-body.mstv-admin-page .pdm-logs-header {
+body.pdm-admin-page .pdm-settings-header,
+body.pdm-admin-page .pdm-logs-header {
     margin-top: 0;
     margin-bottom: 26px;
     padding: 0 0 20px;
     border-bottom: 1px solid var(--pdm-color-border);
 }
 
-body.mstv-admin-page .mstv-governance-title,
-body.mstv-admin-page .pdm-settings-title,
-body.mstv-admin-page .pdm-logs-title {
+body.pdm-admin-page .mstv-governance-title,
+body.pdm-admin-page .pdm-settings-title,
+body.pdm-admin-page .pdm-logs-title {
     margin: 0 0 6px;
     font-size: 24px;
     line-height: 1.25;
@@ -2937,9 +2935,9 @@ body.mstv-admin-page .pdm-logs-title {
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .mstv-governance-subtitle,
-body.mstv-admin-page .pdm-settings-desc,
-body.mstv-admin-page .pdm-logs-desc {
+body.pdm-admin-page .mstv-governance-subtitle,
+body.pdm-admin-page .pdm-settings-desc,
+body.pdm-admin-page .pdm-logs-desc {
     margin: 0;
     max-width: 680px;
     font-size: 14px;
@@ -2949,7 +2947,7 @@ body.mstv-admin-page .pdm-logs-desc {
 
 /* ---- Buttons ------------------------------------------------ */
 
-body.mstv-admin-page .pdm-btn {
+body.pdm-admin-page .pdm-btn {
     min-height: 36px;
     padding: 8px 14px;
     border: 1px solid transparent;
@@ -2963,75 +2961,75 @@ body.mstv-admin-page .pdm-btn {
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
-body.mstv-admin-page .pdm-btn svg {
+body.pdm-admin-page .pdm-btn svg {
     flex-shrink: 0;
 }
 
-body.mstv-admin-page .pdm-btn-primary {
+body.pdm-admin-page .pdm-btn-primary {
     background: var(--pdm-color-primary);
     border-color: var(--pdm-color-primary);
     color: #ffffff;
 }
 
-body.mstv-admin-page .pdm-btn-primary:hover:not(:disabled) {
+body.pdm-admin-page .pdm-btn-primary:hover:not(:disabled) {
     background: var(--pdm-color-primary-hover);
     border-color: var(--pdm-color-primary-hover);
 }
 
-body.mstv-admin-page .pdm-btn-secondary {
+body.pdm-admin-page .pdm-btn-secondary {
     background: var(--pdm-color-bg-secondary);
     border-color: var(--pdm-color-border);
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .pdm-btn-secondary:hover:not(:disabled) {
+body.pdm-admin-page .pdm-btn-secondary:hover:not(:disabled) {
     background: var(--pdm-color-bg);
     border-color: var(--pdm-color-border-strong);
 }
 
-body.mstv-admin-page .pdm-btn-ghost {
+body.pdm-admin-page .pdm-btn-ghost {
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-btn-ghost:hover:not(:disabled) {
+body.pdm-admin-page .pdm-btn-ghost:hover:not(:disabled) {
     background: #eef2f7;
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .pdm-btn-danger {
+body.pdm-admin-page .pdm-btn-danger {
     background: var(--pdm-color-danger);
     border-color: var(--pdm-color-danger);
     color: #ffffff;
 }
 
-body.mstv-admin-page .pdm-btn-danger:hover:not(:disabled) {
+body.pdm-admin-page .pdm-btn-danger:hover:not(:disabled) {
     background: #dc2626;
     border-color: #dc2626;
 }
 
-body.mstv-admin-page .pdm-btn-icon {
+body.pdm-admin-page .pdm-btn-icon {
     width: 36px;
     height: 36px;
     min-height: 36px;
     padding: 0;
 }
 
-body.mstv-admin-page .pdm-btn-sm {
+body.pdm-admin-page .pdm-btn-sm {
     min-height: 30px;
     padding: 5px 10px;
     font-size: 12px;
 }
 
-body.mstv-admin-page .pdm-btn:disabled {
+body.pdm-admin-page .pdm-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
 /* ---- Form controls ------------------------------------------ */
 
-body.mstv-admin-page .pdm-input,
-body.mstv-admin-page .pdm-select,
-body.mstv-admin-page .pdm-textarea {
+body.pdm-admin-page .pdm-input,
+body.pdm-admin-page .pdm-select,
+body.pdm-admin-page .pdm-textarea {
     min-height: 36px;
     padding: 8px 12px;
     border: 1px solid var(--pdm-color-border);
@@ -3044,63 +3042,63 @@ body.mstv-admin-page .pdm-textarea {
     box-shadow: none;
 }
 
-body.mstv-admin-page .pdm-input:hover,
-body.mstv-admin-page .pdm-select:hover,
-body.mstv-admin-page .pdm-textarea:hover {
+body.pdm-admin-page .pdm-input:hover,
+body.pdm-admin-page .pdm-select:hover,
+body.pdm-admin-page .pdm-textarea:hover {
     border-color: var(--pdm-color-border-strong);
 }
 
-body.mstv-admin-page .pdm-input:focus,
-body.mstv-admin-page .pdm-select:focus,
-body.mstv-admin-page .pdm-textarea:focus {
+body.pdm-admin-page .pdm-input:focus,
+body.pdm-admin-page .pdm-select:focus,
+body.pdm-admin-page .pdm-textarea:focus {
     outline: none;
     border-color: var(--pdm-color-primary);
     box-shadow: 0 0 0 3px var(--pdm-color-primary-light);
 }
 
-body.mstv-admin-page .pdm-select {
+body.pdm-admin-page .pdm-select {
     padding-right: 30px;
 }
 
-body.mstv-admin-page .pdm-textarea {
+body.pdm-admin-page .pdm-textarea {
     min-height: 90px;
 }
 
-body.mstv-admin-page .pdm-field {
+body.pdm-admin-page .pdm-field {
     margin-bottom: 22px;
 }
 
-body.mstv-admin-page .pdm-field-label {
+body.pdm-admin-page .pdm-field-label {
     margin-bottom: 6px;
     font-size: 13px;
     font-weight: 600;
 }
 
-body.mstv-admin-page .pdm-field-desc {
+body.pdm-admin-page .pdm-field-desc {
     margin: 6px 0 10px;
     font-size: 12.5px;
     line-height: 1.55;
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-checkbox-label {
+body.pdm-admin-page .pdm-checkbox-label {
     gap: 10px;
     font-size: 13px;
     font-weight: 500;
 }
 
-body.mstv-admin-page .pdm-checkbox-label input[type="checkbox"] {
+body.pdm-admin-page .pdm-checkbox-label input[type="checkbox"] {
     width: 17px;
     height: 17px;
     margin: 0;
     accent-color: var(--pdm-color-primary);
 }
 
-body.mstv-admin-page .pdm-checkbox-label--danger input[type="checkbox"] {
+body.pdm-admin-page .pdm-checkbox-label--danger input[type="checkbox"] {
     accent-color: var(--pdm-color-danger);
 }
 
-body.mstv-admin-page .pdm-section-title {
+body.pdm-admin-page .pdm-section-title {
     margin: 0 0 14px;
     font-size: 15px;
     font-weight: 600;
@@ -3110,27 +3108,27 @@ body.mstv-admin-page .pdm-section-title {
 
 /* ---- File Manager shell ------------------------------------- */
 
-body.mstv-admin-page .pdm-sidebar-header {
+body.pdm-admin-page .pdm-sidebar-header {
     padding: 17px 16px 13px;
 }
 
-body.mstv-admin-page .pdm-sidebar-logo {
+body.pdm-admin-page .pdm-sidebar-logo {
     height: 34px;
 }
 
-body.mstv-admin-page .pdm-sidebar-search {
+body.pdm-admin-page .pdm-sidebar-search {
     padding: 12px 14px;
 }
 
-body.mstv-admin-page .pdm-sidebar-search .pdm-input {
+body.pdm-admin-page .pdm-sidebar-search .pdm-input {
     height: 36px;
 }
 
-body.mstv-admin-page .pdm-folder-tree {
+body.pdm-admin-page .pdm-folder-tree {
     padding: 6px 10px 12px;
 }
 
-body.mstv-admin-page .pdm-folder-item {
+body.pdm-admin-page .pdm-folder-item {
     min-height: 34px;
     padding: 7px 10px;
     border-radius: var(--pdm-radius);
@@ -3139,69 +3137,69 @@ body.mstv-admin-page .pdm-folder-item {
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-folder-item:hover {
+body.pdm-admin-page .pdm-folder-item:hover {
     background: #f1f5f9;
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .pdm-folder-item.active {
+body.pdm-admin-page .pdm-folder-item.active {
     background: var(--pdm-color-primary-soft);
     color: var(--pdm-color-primary);
     font-weight: 500;
 }
 
-body.mstv-admin-page .pdm-folder-item svg {
+body.pdm-admin-page .pdm-folder-item svg {
     flex-shrink: 0;
 }
 
-body.mstv-admin-page .pdm-storage-indicator {
+body.pdm-admin-page .pdm-storage-indicator {
     padding: 16px;
     background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
 }
 
-body.mstv-admin-page .pdm-storage-title {
+body.pdm-admin-page .pdm-storage-title {
     margin-bottom: 10px;
     font-size: 10.5px;
     letter-spacing: 0.08em;
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-storage-stat-value {
+body.pdm-admin-page .pdm-storage-stat-value {
     font-size: 15px;
 }
 
-body.mstv-admin-page .pdm-storage-stat-label {
+body.pdm-admin-page .pdm-storage-stat-label {
     font-size: 11px;
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-toolbar {
+body.pdm-admin-page .pdm-toolbar {
     padding: 10px 20px;
     gap: 12px;
 }
 
-body.mstv-admin-page .pdm-breadcrumb {
+body.pdm-admin-page .pdm-breadcrumb {
     font-size: 13px;
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-breadcrumb-item {
+body.pdm-admin-page .pdm-breadcrumb-item {
     padding: 5px 8px;
 }
 
-body.mstv-admin-page .pdm-toolbar-label {
+body.pdm-admin-page .pdm-toolbar-label {
     font-size: 12px;
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-view-toggle {
+body.pdm-admin-page .pdm-view-toggle {
     padding: 3px;
     gap: 2px;
     background: #eef2f7;
     border-radius: var(--pdm-radius);
 }
 
-body.mstv-admin-page .pdm-view-toggle .pdm-btn {
+body.pdm-admin-page .pdm-view-toggle .pdm-btn {
     width: 34px;
     height: 30px;
     min-height: 30px;
@@ -3210,150 +3208,150 @@ body.mstv-admin-page .pdm-view-toggle .pdm-btn {
     color: var(--pdm-color-text-secondary);
 }
 
-body.mstv-admin-page .pdm-view-toggle .pdm-btn:hover:not(.active) {
+body.pdm-admin-page .pdm-view-toggle .pdm-btn:hover:not(.active) {
     background: rgba(255, 255, 255, 0.7);
     color: var(--pdm-color-text);
 }
 
-body.mstv-admin-page .pdm-view-toggle .pdm-btn.active {
+body.pdm-admin-page .pdm-view-toggle .pdm-btn.active {
     background: var(--pdm-color-bg-secondary);
     color: var(--pdm-color-primary);
     box-shadow: var(--pdm-shadow-sm);
 }
 
-body.mstv-admin-page .pdm-content {
+body.pdm-admin-page .pdm-content {
     padding: 20px 20px 24px;
 }
 
-body.mstv-admin-page .pdm-content-grid {
+body.pdm-admin-page .pdm-content-grid {
     gap: 14px;
     grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
 }
 
-body.mstv-admin-page .pdm-item {
+body.pdm-admin-page .pdm-item {
     padding: 16px 12px 14px;
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-item:hover {
+body.pdm-admin-page .pdm-item:hover {
     border-color: var(--pdm-color-border-strong);
     box-shadow: var(--pdm-shadow);
 }
 
-body.mstv-admin-page .pdm-item.selected {
+body.pdm-admin-page .pdm-item.selected {
     background: var(--pdm-color-primary-soft);
     border-color: var(--pdm-color-primary);
     box-shadow: 0 0 0 1px var(--pdm-color-primary);
 }
 
-body.mstv-admin-page .pdm-item-icon {
+body.pdm-admin-page .pdm-item-icon {
     margin-bottom: 10px;
 }
 
-body.mstv-admin-page .pdm-item-name {
+body.pdm-admin-page .pdm-item-name {
     font-size: 13px;
     font-weight: 500;
     line-height: 1.4;
 }
 
-body.mstv-admin-page .pdm-item-meta {
+body.pdm-admin-page .pdm-item-meta {
     margin-top: 3px;
     font-size: 11.5px;
 }
 
-body.mstv-admin-page .pdm-list-item {
+body.pdm-admin-page .pdm-list-item {
     padding: 10px 14px;
     border-radius: var(--pdm-radius);
     gap: 12px;
 }
 
-body.mstv-admin-page .pdm-list-item:hover {
+body.pdm-admin-page .pdm-list-item:hover {
     border-color: var(--pdm-color-border-strong);
     background: var(--pdm-color-bg-secondary);
 }
 
-body.mstv-admin-page .pdm-list-item.selected {
+body.pdm-admin-page .pdm-list-item.selected {
     background: var(--pdm-color-primary-soft);
     border-color: var(--pdm-color-primary);
 }
 
-body.mstv-admin-page .pdm-list-item-name {
+body.pdm-admin-page .pdm-list-item-name {
     font-size: 13px;
     font-weight: 500;
 }
 
-body.mstv-admin-page .pdm-list-item-meta {
+body.pdm-admin-page .pdm-list-item-meta {
     font-size: 12px;
 }
 
-body.mstv-admin-page .pdm-pagination {
+body.pdm-admin-page .pdm-pagination {
     margin-top: 22px;
     padding-top: 16px;
 }
 
-body.mstv-admin-page .pdm-pagination-summary,
-body.mstv-admin-page .pdm-pagination-status {
+body.pdm-admin-page .pdm-pagination-summary,
+body.pdm-admin-page .pdm-pagination-status {
     font-size: 12.5px;
 }
 
-body.mstv-admin-page .pdm-pagination-btn {
+body.pdm-admin-page .pdm-pagination-btn {
     min-height: 32px;
 }
 
-body.mstv-admin-page .pdm-loading {
+body.pdm-admin-page .pdm-loading {
     font-size: 13px;
     color: var(--pdm-color-text-muted);
 }
 
 /* ---- File details panel ------------------------------------- */
 
-body.mstv-admin-page .pdm-details-header {
+body.pdm-admin-page .pdm-details-header {
     padding: 18px 20px;
 }
 
-body.mstv-admin-page .pdm-details-name {
+body.pdm-admin-page .pdm-details-name {
     font-size: 15px;
     line-height: 1.35;
 }
 
-body.mstv-admin-page .pdm-details-preview {
+body.pdm-admin-page .pdm-details-preview {
     background: var(--pdm-color-bg);
     border: 1px solid var(--pdm-color-border);
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-details-body {
+body.pdm-admin-page .pdm-details-body {
     padding: 18px 20px;
 }
 
-body.mstv-admin-page .pdm-details-section-title {
+body.pdm-admin-page .pdm-details-section-title {
     margin-bottom: 8px;
     font-size: 10.5px;
     letter-spacing: 0.08em;
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-details-row {
+body.pdm-admin-page .pdm-details-row {
     padding: 7px 0;
     font-size: 13px;
 }
 
-body.mstv-admin-page .pdm-details-row-label {
+body.pdm-admin-page .pdm-details-row-label {
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-details-actions {
+body.pdm-admin-page .pdm-details-actions {
     padding: 16px 20px;
     gap: 8px;
     background: #fbfcfe;
     flex-shrink: 0;
 }
 
-body.mstv-admin-page .pdm-details-empty {
+body.pdm-admin-page .pdm-details-empty {
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-details-empty p {
+body.pdm-admin-page .pdm-details-empty p {
     max-width: 220px;
     font-size: 13px;
     line-height: 1.5;
@@ -3361,12 +3359,12 @@ body.mstv-admin-page .pdm-details-empty p {
 
 /* ---- Empty states, modals, toasts --------------------------- */
 
-body.mstv-admin-page .pdm-empty-state {
+body.pdm-admin-page .pdm-empty-state {
     padding: 60px 24px;
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-empty-state > svg {
+body.pdm-admin-page .pdm-empty-state > svg {
     width: 56px;
     height: 56px;
     margin-bottom: 18px;
@@ -3378,106 +3376,106 @@ body.mstv-admin-page .pdm-empty-state > svg {
     opacity: 1;
 }
 
-body.mstv-admin-page .pdm-empty-state h3 {
+body.pdm-admin-page .pdm-empty-state h3 {
     margin-bottom: 6px;
     font-size: 17px;
 }
 
-body.mstv-admin-page .pdm-empty-state p {
+body.pdm-admin-page .pdm-empty-state p {
     max-width: 460px;
     font-size: 13.5px;
     line-height: 1.55;
 }
 
-body.mstv-admin-page .pdm-empty-state--dropzone {
+body.pdm-admin-page .pdm-empty-state--dropzone {
     margin: 20px;
     background: #fbfcfe;
     border-color: var(--pdm-color-border-strong);
     border-radius: 14px;
 }
 
-body.mstv-admin-page .pdm-empty-actions {
+body.pdm-admin-page .pdm-empty-actions {
     margin-top: 20px;
 }
 
-body.mstv-admin-page .pdm-modal-content {
+body.pdm-admin-page .pdm-modal-content {
     border: 1px solid var(--pdm-color-border);
     border-radius: 14px;
 }
 
-body.mstv-admin-page .pdm-modal-header {
+body.pdm-admin-page .pdm-modal-header {
     padding: 16px 20px;
 }
 
-body.mstv-admin-page .pdm-modal-title {
+body.pdm-admin-page .pdm-modal-title {
     font-size: 16px;
     letter-spacing: -0.01em;
 }
 
-body.mstv-admin-page .pdm-modal-body {
+body.pdm-admin-page .pdm-modal-body {
     padding: 20px;
 }
 
-body.mstv-admin-page .pdm-modal-footer {
+body.pdm-admin-page .pdm-modal-footer {
     padding: 14px 20px;
     background: #fbfcfe;
 }
 
-body.mstv-admin-page .pdm-upload-overlay {
+body.pdm-admin-page .pdm-upload-overlay {
     background: rgb(15 23 42 / 0.55);
 }
 
-body.mstv-admin-page .pdm-upload-dropzone {
+body.pdm-admin-page .pdm-upload-dropzone {
     max-width: min(560px, calc(100vw - 32px));
     padding: 46px 48px;
     border-radius: 16px;
     box-shadow: var(--pdm-shadow-lg);
 }
 
-body.mstv-admin-page .pdm-upload-text {
+body.pdm-admin-page .pdm-upload-text {
     font-size: 17px;
     font-weight: 600;
 }
 
-body.mstv-admin-page .pdm-toast {
+body.pdm-admin-page .pdm-toast {
     padding: 12px 16px;
     border: 1px solid var(--pdm-color-border);
     border-left: 3px solid var(--pdm-color-primary);
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-toast-message {
+body.pdm-admin-page .pdm-toast-message {
     font-size: 13px;
 }
 
-body.mstv-admin-page .pdm-toast-icon--success {
+body.pdm-admin-page .pdm-toast-icon--success {
     color: var(--pdm-color-success-text);
 }
 
-body.mstv-admin-page .pdm-toast-icon--error {
+body.pdm-admin-page .pdm-toast-icon--error {
     color: var(--pdm-color-danger-text);
 }
 
-body.mstv-admin-page .pdm-toast-icon--warning {
+body.pdm-admin-page .pdm-toast-icon--warning {
     color: var(--pdm-color-warning-text);
 }
 
-body.mstv-admin-page .context-menu {
+body.pdm-admin-page .context-menu {
     padding: 5px;
     border-radius: 10px;
 }
 
-body.mstv-admin-page .context-menu-item {
+body.pdm-admin-page .context-menu-item {
     padding: 8px 10px;
     border-radius: 6px;
 }
 
-body.mstv-admin-page .pdm-user-result {
+body.pdm-admin-page .pdm-user-result {
     padding: 9px 10px;
     border-radius: 6px;
 }
 
-body.mstv-admin-page .pdm-user-tag {
+body.pdm-admin-page .pdm-user-tag {
     padding: 5px 10px;
     background: var(--pdm-color-primary-soft);
     border: 1px solid var(--pdm-color-primary-light);
@@ -3486,7 +3484,7 @@ body.mstv-admin-page .pdm-user-tag {
 
 /* ---- Notices ------------------------------------------------ */
 
-body.mstv-admin-page .pdm-notice {
+body.pdm-admin-page .pdm-notice {
     padding: 11px 14px;
     border: 1px solid transparent;
     border-left-width: 4px;
@@ -3495,14 +3493,14 @@ body.mstv-admin-page .pdm-notice {
     line-height: 1.5;
 }
 
-body.mstv-admin-page .pdm-notice-success {
+body.pdm-admin-page .pdm-notice-success {
     background: var(--pdm-color-success-light);
     border-color: #bbf7d0;
     border-left-color: var(--pdm-color-success);
     color: var(--pdm-color-success-text);
 }
 
-body.mstv-admin-page .pdm-notice-error {
+body.pdm-admin-page .pdm-notice-error {
     background: var(--pdm-color-danger-light);
     border-color: #fecaca;
     border-left-color: var(--pdm-color-danger);
@@ -3511,11 +3509,11 @@ body.mstv-admin-page .pdm-notice-error {
 
 /* ---- Tables and status chips -------------------------------- */
 
-body.mstv-admin-page .pdm-table {
+body.pdm-admin-page .pdm-table {
     font-size: 13px;
 }
 
-body.mstv-admin-page .pdm-table th {
+body.pdm-admin-page .pdm-table th {
     padding: 11px 16px;
     font-size: 11px;
     font-weight: 600;
@@ -3526,31 +3524,31 @@ body.mstv-admin-page .pdm-table th {
     border-bottom: 1px solid var(--pdm-color-border);
 }
 
-body.mstv-admin-page .pdm-table td {
+body.pdm-admin-page .pdm-table td {
     padding: 13px 16px;
     vertical-align: middle;
 }
 
-body.mstv-admin-page .pdm-table td:first-child {
+body.pdm-admin-page .pdm-table td:first-child {
     white-space: nowrap;
 }
 
-body.mstv-admin-page .pdm-table tbody tr:hover td {
+body.pdm-admin-page .pdm-table tbody tr:hover td {
     background: #fbfcfe;
 }
 
-body.mstv-admin-page .pdm-table-responsive {
+body.pdm-admin-page .pdm-table-responsive {
     overflow-x: auto;
     background: var(--pdm-color-bg-secondary);
     border: 1px solid var(--pdm-color-border);
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-table-responsive .pdm-table {
+body.pdm-admin-page .pdm-table-responsive .pdm-table {
     min-width: 720px;
 }
 
-body.mstv-admin-page .pdm-log-action {
+body.pdm-admin-page .pdm-log-action {
     padding: 3px 9px;
     border-radius: 999px;
     font-size: 10.5px;
@@ -3559,29 +3557,29 @@ body.mstv-admin-page .pdm-log-action {
     text-transform: uppercase;
 }
 
-body.mstv-admin-page .pdm-log-action--upload,
-body.mstv-admin-page .pdm-log-action--create {
+body.pdm-admin-page .pdm-log-action--upload,
+body.pdm-admin-page .pdm-log-action--create {
     background: var(--pdm-color-success-light);
     color: var(--pdm-color-success-text);
 }
 
-body.mstv-admin-page .pdm-log-action--download {
+body.pdm-admin-page .pdm-log-action--download {
     background: var(--pdm-color-primary-light);
-    color: var(--pdm-color-primary);
+    color: var(--pdm-color-primary-text);
 }
 
-body.mstv-admin-page .pdm-log-action--delete {
+body.pdm-admin-page .pdm-log-action--delete {
     background: var(--pdm-color-danger-light);
     color: var(--pdm-color-danger-text);
 }
 
-body.mstv-admin-page .pdm-log-action--rename,
-body.mstv-admin-page .pdm-log-action--move {
+body.pdm-admin-page .pdm-log-action--rename,
+body.pdm-admin-page .pdm-log-action--move {
     background: var(--pdm-color-warning-light);
     color: var(--pdm-color-warning-text);
 }
 
-body.mstv-admin-page .pdm-log-context {
+body.pdm-admin-page .pdm-log-context {
     max-width: 260px;
     padding: 3px 8px;
     background: var(--pdm-color-bg);
@@ -3589,37 +3587,37 @@ body.mstv-admin-page .pdm-log-context {
     border-radius: 6px;
 }
 
-body.mstv-admin-page .pdm-logs-toolbar {
+body.pdm-admin-page .pdm-logs-toolbar {
     flex-wrap: wrap;
     gap: 12px;
     margin-bottom: 16px;
 }
 
-body.mstv-admin-page .pdm-inline-form .pdm-select {
+body.pdm-admin-page .pdm-inline-form .pdm-select {
     min-width: 78px;
 }
 
 /* ---- Governance screens ------------------------------------- */
 
-body.mstv-admin-page .pdm-governance-wrap .pdm-section-title {
+body.pdm-admin-page .pdm-governance-wrap .pdm-section-title {
     margin: 26px 0 12px;
     font-size: 15px;
 }
 
-body.mstv-admin-page .pdm-governance-wrap .pdm-section-title:first-child {
+body.pdm-admin-page .pdm-governance-wrap .pdm-section-title:first-child {
     margin-top: 0;
 }
 
-body.mstv-admin-page .mstv-notif-events,
-body.mstv-admin-page .mstv-notif-groups {
+body.pdm-admin-page .mstv-notif-events,
+body.pdm-admin-page .mstv-notif-groups {
     gap: 6px;
 }
 
-body.mstv-admin-page .mstv-notifications-body .pdm-field-label {
+body.pdm-admin-page .mstv-notifications-body .pdm-field-label {
     margin-top: 18px;
 }
 
-body.mstv-admin-page .mstv-quotas-enable {
+body.pdm-admin-page .mstv-quotas-enable {
     display: inline-flex;
     margin: 0 0 20px;
     padding: 10px 14px;
@@ -3628,33 +3626,33 @@ body.mstv-admin-page .mstv-quotas-enable {
     border-radius: 10px;
 }
 
-body.mstv-admin-page .mstv-groups-list {
+body.pdm-admin-page .mstv-groups-list {
     gap: 16px;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
-body.mstv-admin-page .mstv-group-card {
+body.pdm-admin-page .mstv-group-card {
     gap: 14px;
     padding: 18px;
     border-radius: 10px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-body.mstv-admin-page .mstv-group-card:hover {
+body.pdm-admin-page .mstv-group-card:hover {
     border-color: var(--pdm-color-border-strong);
     box-shadow: var(--pdm-shadow);
 }
 
-body.mstv-admin-page .mstv-group-name {
+body.pdm-admin-page .mstv-group-name {
     font-size: 15px;
     line-height: 1.35;
 }
 
-body.mstv-admin-page .mstv-group-meta {
+body.pdm-admin-page .mstv-group-meta {
     font-size: 12px;
 }
 
-body.mstv-admin-page .mstv-groups-list > .pdm-perm-empty {
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty {
     grid-column: 1 / -1;
     margin: 0;
     padding: 52px 24px;
@@ -3664,7 +3662,7 @@ body.mstv-admin-page .mstv-groups-list > .pdm-perm-empty {
     font-size: 13px;
 }
 
-body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty {
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty {
     margin: 0;
     padding: 56px 24px;
     background: #fbfcfe;
@@ -3674,8 +3672,8 @@ body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty {
     font-size: 13px;
 }
 
-body.mstv-admin-page .mstv-groups-list > .pdm-perm-empty,
-body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty {
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty,
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -3689,8 +3687,8 @@ body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty {
     text-align: center;
 }
 
-body.mstv-admin-page .mstv-groups-list > .pdm-perm-empty::before,
-body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty::before {
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty::before,
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty::before {
     content: "";
     width: 40px;
     height: 40px;
@@ -3703,17 +3701,17 @@ body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty::before {
     mask-size: 40px 40px;
 }
 
-body.mstv-admin-page .mstv-groups-list > .pdm-perm-empty::before {
+body.pdm-admin-page .mstv-groups-list > .pdm-perm-empty::before {
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M23 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E");
 }
 
-body.mstv-admin-page .mstv-reports-body > .pdm-perm-empty::before {
+body.pdm-admin-page .mstv-reports-body > .pdm-perm-empty::before {
     -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='20' x2='18' y2='10'/%3E%3Cline x1='12' y1='20' x2='12' y2='4'/%3E%3Cline x1='6' y1='20' x2='6' y2='14'/%3E%3C/svg%3E");
     mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='20' x2='18' y2='10'/%3E%3Cline x1='12' y1='20' x2='12' y2='4'/%3E%3Cline x1='6' y1='20' x2='6' y2='14'/%3E%3C/svg%3E");
 }
 
-body.mstv-admin-page .mstv-reports-filters {
+body.pdm-admin-page .mstv-reports-filters {
     align-items: flex-end;
     gap: 14px;
     margin: 0 0 24px;
@@ -3723,7 +3721,7 @@ body.mstv-admin-page .mstv-reports-filters {
     border-radius: 10px;
 }
 
-body.mstv-admin-page .mstv-filter {
+body.pdm-admin-page .mstv-filter {
     gap: 6px;
     font-size: 11px;
     font-weight: 600;
@@ -3732,23 +3730,23 @@ body.mstv-admin-page .mstv-filter {
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .mstv-filter .pdm-select,
-body.mstv-admin-page .mstv-filter .pdm-input {
+body.pdm-admin-page .mstv-filter .pdm-select,
+body.pdm-admin-page .mstv-filter .pdm-input {
     min-width: 170px;
 }
 
-body.mstv-admin-page .pdm-perm-table-wrap {
+body.pdm-admin-page .pdm-perm-table-wrap {
     margin: 0 0 16px;
     background: var(--pdm-color-bg-secondary);
     border: 1px solid var(--pdm-color-border);
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-perm-table {
+body.pdm-admin-page .pdm-perm-table {
     min-width: 520px;
 }
 
-body.mstv-admin-page .pdm-perm-table th {
+body.pdm-admin-page .pdm-perm-table th {
     padding: 10px 12px;
     background: var(--pdm-color-bg);
     border-bottom: 1px solid var(--pdm-color-border);
@@ -3759,22 +3757,22 @@ body.mstv-admin-page .pdm-perm-table th {
     color: var(--pdm-color-text-muted);
 }
 
-body.mstv-admin-page .pdm-perm-table td {
+body.pdm-admin-page .pdm-perm-table td {
     padding: 10px 12px;
     vertical-align: middle;
 }
 
-body.mstv-admin-page .pdm-perm-table tbody tr:hover td {
+body.pdm-admin-page .pdm-perm-table tbody tr:hover td {
     background: #fbfcfe;
 }
 
-body.mstv-admin-page .pdm-perm-table td.pdm-perm-empty {
+body.pdm-admin-page .pdm-perm-table td.pdm-perm-empty {
     padding: 34px 20px;
     color: var(--pdm-color-text-muted);
     font-size: 13px;
 }
 
-body.mstv-admin-page .pdm-perm-add {
+body.pdm-admin-page .pdm-perm-add {
     gap: 10px;
     margin-top: 0;
     padding: 14px;
@@ -3783,16 +3781,16 @@ body.mstv-admin-page .pdm-perm-add {
     border-radius: 10px;
 }
 
-body.mstv-admin-page .pdm-perm-add-user,
-body.mstv-admin-page .pdm-perm-add-group {
+body.pdm-admin-page .pdm-perm-add-user,
+body.pdm-admin-page .pdm-perm-add-group {
     flex: 1 1 240px;
 }
 
-body.mstv-admin-page .mstv-quota-mb {
+body.pdm-admin-page .mstv-quota-mb {
     width: 96px;
 }
 
-body.mstv-admin-page .mstv-governance-footer {
+body.pdm-admin-page .mstv-governance-footer {
     position: sticky;
     bottom: 0;
     z-index: 5;
@@ -3805,7 +3803,7 @@ body.mstv-admin-page .mstv-governance-footer {
     border-top: 1px solid var(--pdm-color-border);
 }
 
-body.mstv-admin-page .mstv-chip {
+body.pdm-admin-page .mstv-chip {
     background: var(--pdm-color-bg);
     border: 1px solid var(--pdm-color-border);
     font-size: 12px;
@@ -3813,12 +3811,12 @@ body.mstv-admin-page .mstv-chip {
 
 /* ---- Settings and Activity Log ------------------------------ */
 
-body.mstv-admin-page .pdm-settings-section {
+body.pdm-admin-page .pdm-settings-section {
     margin-bottom: 30px;
     padding-bottom: 30px;
 }
 
-body.mstv-admin-page .pdm-settings-section--danger {
+body.pdm-admin-page .pdm-settings-section--danger {
     margin: 0;
     padding: 20px;
     background: #fef2f2;
@@ -3826,15 +3824,15 @@ body.mstv-admin-page .pdm-settings-section--danger {
     border-radius: 12px;
 }
 
-body.mstv-admin-page .pdm-settings-section--danger .pdm-section-title {
+body.pdm-admin-page .pdm-settings-section--danger .pdm-section-title {
     color: #991b1b;
 }
 
-body.mstv-admin-page .pdm-settings-section--danger .pdm-field-desc {
+body.pdm-admin-page .pdm-settings-section--danger .pdm-field-desc {
     color: #7f1d1d;
 }
 
-body.mstv-admin-page .pdm-settings-actions {
+body.pdm-admin-page .pdm-settings-actions {
     position: sticky;
     bottom: 0;
     z-index: 5;
@@ -3846,7 +3844,7 @@ body.mstv-admin-page .pdm-settings-actions {
     border-top: 1px solid var(--pdm-color-border);
 }
 
-body.mstv-admin-page .pdm-settings-actions input[type="submit"] {
+body.pdm-admin-page .pdm-settings-actions input[type="submit"] {
     min-height: 38px;
     padding: 8px 16px;
     background: var(--pdm-color-primary);
@@ -3861,12 +3859,12 @@ body.mstv-admin-page .pdm-settings-actions input[type="submit"] {
     cursor: pointer;
 }
 
-body.mstv-admin-page .pdm-settings-actions input[type="submit"]:hover {
+body.pdm-admin-page .pdm-settings-actions input[type="submit"]:hover {
     background: var(--pdm-color-primary-hover);
     border-color: var(--pdm-color-primary-hover);
 }
 
-body.mstv-admin-page .pdm-settings-info {
+body.pdm-admin-page .pdm-settings-info {
     margin-top: 36px;
     padding: 20px;
     background: var(--pdm-color-bg);
@@ -3874,13 +3872,13 @@ body.mstv-admin-page .pdm-settings-info {
     border-radius: 12px;
 }
 
-body.mstv-admin-page .pdm-settings-info li {
+body.pdm-admin-page .pdm-settings-info li {
     padding: 5px 0;
     line-height: 1.55;
     word-break: break-word;
 }
 
-body.mstv-admin-page .pdm-settings-info code {
+body.pdm-admin-page .pdm-settings-info code {
     padding: 1px 5px;
     background: var(--pdm-color-bg-secondary);
     border: 1px solid var(--pdm-color-border);
@@ -3889,55 +3887,55 @@ body.mstv-admin-page .pdm-settings-info code {
 
 /* ---- Keyboard focus ----------------------------------------- */
 
-body.mstv-admin-page :is(.pdm-wrapper, .pdm-modal, .pdm-upload-overlay, .pdm-preview-modal, .pdm-toast-container, .pdm-governance-wrap) :is(button, a[href], select, input[type="checkbox"], input[type="radio"], input[type="date"], [tabindex]):focus-visible {
+body.pdm-admin-page :is(.pdm-wrapper, .pdm-modal, .pdm-upload-overlay, .pdm-preview-modal, .pdm-toast-container, .pdm-governance-wrap) :is(button, a[href], select, input[type="checkbox"], input[type="radio"], input[type="date"], [tabindex]):focus-visible {
     outline: 2px solid var(--pdm-color-primary);
     outline-offset: 2px;
 }
 
 /* Overlays own the whole viewport, including the WordPress admin chrome. */
-body.mstv-admin-page .pdm-modal,
-body.mstv-admin-page .pdm-upload-overlay,
-body.mstv-admin-page .pdm-preview-modal {
+body.pdm-admin-page .pdm-modal,
+body.pdm-admin-page .pdm-upload-overlay,
+body.pdm-admin-page .pdm-preview-modal {
     z-index: 100000;
 }
 
-body.mstv-admin-page .context-menu {
+body.pdm-admin-page .context-menu {
     z-index: 100001;
 }
 
-body.mstv-admin-page .pdm-toast-container {
+body.pdm-admin-page .pdm-toast-container {
     z-index: 100002;
 }
 
 /* ---- Responsive: compact toolbar on narrower desktops ------- */
 
 @media (min-width: 769px) and (max-width: 1460px) {
-    body.mstv-admin-page .pdm-toolbar {
+    body.pdm-admin-page .pdm-toolbar {
         padding: 10px 16px;
         gap: 8px;
     }
 
-    body.mstv-admin-page .pdm-toolbar-right {
+    body.pdm-admin-page .pdm-toolbar-right {
         gap: 6px;
     }
 
     /* Sort and page size stay reachable through the filter popover; the
        breadcrumb remains visible wherever it fits. */
-    body.mstv-admin-page .pdm-sort-dropdown {
+    body.pdm-admin-page .pdm-sort-dropdown {
         display: none;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters {
+    body.pdm-admin-page .pdm-toolbar-filters {
         display: flex;
     }
 
-    body.mstv-admin-page .pdm-filters-toggle {
+    body.pdm-admin-page .pdm-filters-toggle {
         display: inline-flex !important;
     }
 
     /* Keep the per-page control visually compact without dropping its label for
        assistive technologies. */
-    body.mstv-admin-page .pdm-page-size-control .pdm-toolbar-label {
+    body.pdm-admin-page .pdm-page-size-control .pdm-toolbar-label {
         position: absolute;
         width: 1px;
         height: 1px;
@@ -3952,7 +3950,7 @@ body.mstv-admin-page .pdm-toast-container {
 
 /* From this width the toolbar has room for the visible per-page label again. */
 @media (min-width: 1024px) and (max-width: 1460px) {
-    body.mstv-admin-page .pdm-page-size-control .pdm-toolbar-label {
+    body.pdm-admin-page .pdm-page-size-control .pdm-toolbar-label {
         position: static;
         width: auto;
         height: auto;
@@ -3968,7 +3966,7 @@ body.mstv-admin-page .pdm-toast-container {
 /* ---- Responsive: mobile toolbar ----------------------------- */
 
 @media (max-width: 768px) {
-    body.mstv-admin-page .pdm-toolbar {
+    body.pdm-admin-page .pdm-toolbar {
         position: relative;
         flex-wrap: wrap;
         overflow: visible;
@@ -3976,11 +3974,11 @@ body.mstv-admin-page .pdm-toast-container {
         gap: 8px;
     }
 
-    body.mstv-admin-page .pdm-toolbar-left {
+    body.pdm-admin-page .pdm-toolbar-left {
         min-width: 0;
     }
 
-    body.mstv-admin-page .pdm-toolbar-right {
+    body.pdm-admin-page .pdm-toolbar-right {
         flex: 1 1 auto;
         flex-wrap: wrap;
         justify-content: flex-end;
@@ -3988,22 +3986,22 @@ body.mstv-admin-page .pdm-toast-container {
         min-width: 0;
     }
 
-    body.mstv-admin-page .pdm-page-size-control,
-    body.mstv-admin-page .pdm-sort-dropdown {
+    body.pdm-admin-page .pdm-page-size-control,
+    body.pdm-admin-page .pdm-sort-dropdown {
         display: none;
     }
 
     /* Keep the filter dropdown available as a real popover instead of an
        always-open row that used to clip the Export and Upload actions. */
-    body.mstv-admin-page .pdm-filters-toggle {
+    body.pdm-admin-page .pdm-filters-toggle {
         display: inline-flex !important;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters {
+    body.pdm-admin-page .pdm-toolbar-filters {
         position: static;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-dropdown {
+    body.pdm-admin-page .pdm-toolbar-filters-dropdown {
         position: absolute;
         top: calc(100% + 8px);
         right: 12px;
@@ -4022,11 +4020,11 @@ body.mstv-admin-page .pdm-toast-container {
         z-index: 70;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-dropdown.active {
+    body.pdm-admin-page .pdm-toolbar-filters-dropdown.active {
         display: flex !important;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-row {
+    body.pdm-admin-page .pdm-toolbar-filters-row {
         display: flex;
         flex-direction: column;
         align-items: stretch;
@@ -4034,50 +4032,51 @@ body.mstv-admin-page .pdm-toast-container {
         margin-bottom: 0;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-label {
+    body.pdm-admin-page .pdm-toolbar-filters-label {
         display: block;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-select,
-    body.mstv-admin-page .pdm-filters-sort {
+    body.pdm-admin-page .pdm-toolbar-filters-select,
+    body.pdm-admin-page .pdm-filters-sort {
         width: 100%;
         min-height: 38px;
     }
 
-    body.mstv-admin-page .pdm-view-toggle .pdm-btn {
+    body.pdm-admin-page .pdm-view-toggle .pdm-btn {
         width: 38px;
         height: 34px;
         min-height: 34px;
     }
 
-    body.mstv-admin-page .pdm-content {
+    body.pdm-admin-page .pdm-content {
         padding: 14px 12px 20px;
     }
 }
 
 @media (max-width: 600px) {
-    body.mstv-admin-page :is(.mstv-governance-title, .pdm-settings-title, .pdm-logs-title) {
+    body.pdm-admin-page :is(.mstv-governance-title, .pdm-settings-title, .pdm-logs-title) {
         font-size: 21px;
     }
 
-    body.mstv-admin-page :is(.mstv-governance-header, .pdm-settings-header, .pdm-logs-header) {
+    body.pdm-admin-page :is(.mstv-governance-header, .pdm-settings-header, .pdm-logs-header) {
         margin-bottom: 20px;
         padding-bottom: 16px;
     }
 
-    body.mstv-admin-page .mstv-governance-header .pdm-btn {
+    body.pdm-admin-page .mstv-governance-header .pdm-btn {
         width: 100%;
     }
 
     /* Icon-only Export keeps the primary actions on one row; the label stays in
        the accessibility tree instead of being removed with display: none. */
-    body.mstv-admin-page #pdm-export-btn {
+    body.pdm-admin-page #pdm-export-btn {
         width: 36px;
         min-width: 36px;
         padding: 0;
     }
 
-    body.mstv-admin-page #pdm-export-btn span {
+    body.pdm-admin-page #pdm-export-btn span {
+        display: inline;
         position: absolute;
         width: 1px;
         height: 1px;
@@ -4089,120 +4088,120 @@ body.mstv-admin-page .pdm-toast-container {
         border: 0;
     }
 
-    body.mstv-admin-page .pdm-toolbar {
+    body.pdm-admin-page .pdm-toolbar {
         gap: 6px;
     }
 
-    body.mstv-admin-page .mstv-groups-list {
+    body.pdm-admin-page .mstv-groups-list {
         grid-template-columns: 1fr;
     }
 
-    body.mstv-admin-page .mstv-reports-filters {
+    body.pdm-admin-page .mstv-reports-filters {
         flex-direction: column;
         align-items: stretch;
     }
 
-    body.mstv-admin-page .mstv-filter .pdm-select,
-    body.mstv-admin-page .mstv-filter .pdm-input {
+    body.pdm-admin-page .mstv-filter .pdm-select,
+    body.pdm-admin-page .mstv-filter .pdm-input {
         min-width: 0;
         width: 100%;
     }
 
-    body.mstv-admin-page .mstv-reports-filters .pdm-btn {
+    body.pdm-admin-page .mstv-reports-filters .pdm-btn {
         width: 100%;
     }
 
-    body.mstv-admin-page .pdm-perm-add {
+    body.pdm-admin-page .pdm-perm-add {
         flex-direction: column;
     }
 
     /* An empty quota table has no columns worth scrolling for: let the message
        wrap inside the card instead of being clipped by the horizontal scroller. */
-    body.mstv-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) {
+    body.pdm-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) {
         overflow-x: hidden;
     }
 
-    body.mstv-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) .pdm-perm-table {
+    body.pdm-admin-page .pdm-perm-table-wrap:has(.pdm-perm-empty) .pdm-perm-table {
         min-width: 0;
     }
 
-    body.mstv-admin-page .pdm-perm-add-user,
-    body.mstv-admin-page .pdm-perm-add-group {
+    body.pdm-admin-page .pdm-perm-add-user,
+    body.pdm-admin-page .pdm-perm-add-group {
         flex: 1 1 100%;
         width: 100%;
     }
 
-    body.mstv-admin-page .mstv-governance-footer .pdm-btn {
+    body.pdm-admin-page .mstv-governance-footer .pdm-btn {
         width: 100%;
     }
 
-    body.mstv-admin-page .pdm-settings-actions {
+    body.pdm-admin-page .pdm-settings-actions {
         justify-content: stretch;
     }
 
-    body.mstv-admin-page .pdm-settings-actions input[type="submit"] {
+    body.pdm-admin-page .pdm-settings-actions input[type="submit"] {
         width: 100%;
     }
 
-    body.mstv-admin-page .pdm-logs-toolbar {
+    body.pdm-admin-page .pdm-logs-toolbar {
         flex-direction: column;
         align-items: stretch;
         gap: 12px;
     }
 
-    body.mstv-admin-page .pdm-logs-toolbar .pdm-inline-form {
+    body.pdm-admin-page .pdm-logs-toolbar .pdm-inline-form {
         flex-direction: row;
         align-items: center;
         flex-wrap: wrap;
         gap: 8px;
     }
 
-    body.mstv-admin-page .pdm-inline-form .pdm-select {
+    body.pdm-admin-page .pdm-inline-form .pdm-select {
         flex: 1 1 90px;
     }
 
-    body.mstv-admin-page .pdm-pagination {
+    body.pdm-admin-page .pdm-pagination {
         align-items: stretch;
         gap: 12px;
     }
 
-    body.mstv-admin-page .pdm-pagination-controls {
+    body.pdm-admin-page .pdm-pagination-controls {
         justify-content: space-between;
     }
 
-    body.mstv-admin-page .pdm-upload-dropzone {
+    body.pdm-admin-page .pdm-upload-dropzone {
         padding: 36px 22px;
     }
 
-    body.mstv-admin-page .pdm-upload-text {
+    body.pdm-admin-page .pdm-upload-text {
         font-size: 16px;
     }
 
-    body.mstv-admin-page .pdm-empty-state {
+    body.pdm-admin-page .pdm-empty-state {
         padding: 44px 18px;
     }
 }
 
 @media (max-width: 480px) {
-    body.mstv-admin-page .pdm-content-grid {
+    body.pdm-admin-page .pdm-content-grid {
         grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
         gap: 10px;
     }
 
-    body.mstv-admin-page .pdm-content {
+    body.pdm-admin-page .pdm-content {
         padding: 12px 10px 18px;
     }
 }
 
 @media (max-width: 782px) {
-    body.mstv-admin-page .pdm-settings-wrapper,
-    body.mstv-admin-page .pdm-logs-wrapper,
-    body.mstv-admin-page .pdm-governance-wrap {
+    body.pdm-admin-page .pdm-settings-wrapper,
+    body.pdm-admin-page .pdm-logs-wrapper,
+    body.pdm-admin-page .pdm-governance-wrap {
         min-height: calc(100dvh - var(--pdm-admin-bar-offset));
     }
 
-    body.mstv-admin-page .pdm-settings-wrapper > *,
-    body.mstv-admin-page .pdm-governance-wrap > * {
+    body.pdm-admin-page .pdm-settings-wrapper > *,
+    body.pdm-admin-page .pdm-governance-wrap > * {
         max-width: 100%;
     }
 }
@@ -4210,12 +4209,12 @@ body.mstv-admin-page .pdm-toast-container {
 /* ---- Touch targets ------------------------------------------ */
 
 @media (hover: none) and (pointer: coarse) {
-    body.mstv-admin-page .pdm-btn {
+    body.pdm-admin-page .pdm-btn {
         min-height: 44px;
         padding: 10px 16px;
     }
 
-    body.mstv-admin-page .pdm-btn-icon {
+    body.pdm-admin-page .pdm-btn-icon {
         width: 44px;
         height: 44px;
         min-width: 44px;
@@ -4223,24 +4222,23 @@ body.mstv-admin-page .pdm-toast-container {
         padding: 0;
     }
 
-    body.mstv-admin-page .pdm-folder-item {
+    body.pdm-admin-page .pdm-folder-item {
         min-height: 44px;
         padding: 10px 12px;
     }
 
-    body.mstv-admin-page .pdm-input,
-    body.mstv-admin-page .pdm-select {
+    body.pdm-admin-page .pdm-input,
+    body.pdm-admin-page .pdm-select {
         min-height: 44px;
     }
 
-    body.mstv-admin-page .pdm-toolbar-filters-select {
+    body.pdm-admin-page .pdm-toolbar-filters-select {
         min-height: 44px;
     }
 
-    body.mstv-admin-page .pdm-view-toggle .pdm-btn {
+    body.pdm-admin-page .pdm-view-toggle .pdm-btn {
         width: 44px;
         height: 40px;
         min-height: 40px;
     }
 }
-
