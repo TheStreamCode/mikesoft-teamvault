@@ -10,13 +10,40 @@ class MSTV_Assets
     {
         $this->settings = $settings;
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_filter('admin_body_class', [$this, 'add_admin_body_class']);
+    }
+
+    /**
+     * Mark every TeamVault screen so admin.css can drop the WordPress admin chrome
+     * (the footer band and the wrapper gaps) from all plugin pages, not just the
+     * full-viewport File Manager.
+     *
+     * @param string $classes Space-separated admin body classes.
+     * @return string
+     */
+    public function add_admin_body_class($classes): string
+    {
+        $classes = is_string($classes) ? trim($classes) : '';
+
+        if (!$this->is_teamvault_screen()) {
+            return $classes;
+        }
+
+        return $classes === '' ? 'mstv-admin-page' : $classes . ' mstv-admin-page';
+    }
+
+    private function is_teamvault_screen(): bool
+    {
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+
+        return $screen !== null
+            && isset($screen->id)
+            && strpos((string) $screen->id, 'mikesoft-teamvault') !== false;
     }
 
     public function enqueue_assets(string $hook): void
     {
-        $screen = get_current_screen();
-        
-        if (!$screen || strpos($screen->id, 'mikesoft-teamvault') === false) {
+        if (!$this->is_teamvault_screen()) {
             return;
         }
 
@@ -217,6 +244,7 @@ class MSTV_Assets
                 // Governance: groups.
                 'groupsEmpty' => __('No groups yet. Create one to organize document access.', 'mikesoft-teamvault'),
                 'groupsMembers' => __('members', 'mikesoft-teamvault'),
+                'groupsMembersLabel' => __('Members', 'mikesoft-teamvault'),
                 'groupsName' => __('Group name', 'mikesoft-teamvault'),
                 'groupsDescription' => __('Description', 'mikesoft-teamvault'),
                 'groupsNew' => __('New group', 'mikesoft-teamvault'),

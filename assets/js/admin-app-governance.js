@@ -297,7 +297,7 @@
                     <input type="text" class="pdm-input" id="mstv-group-desc" value="${group ? this.escapeHtml(group.description || '') : ''}">
                 </div>
                 <div class="pdm-field">
-                    <label class="pdm-field-label">${i18n.groupsMembers}</label>
+                    <label class="pdm-field-label">${i18n.groupsMembersLabel}</label>
                     <input type="text" class="pdm-input mstv-group-user-search" placeholder="${i18n.searchUsers}" autocomplete="off">
                     <div class="pdm-perm-user-results mstv-group-user-results"></div>
                     <div class="mstv-group-chips"></div>
