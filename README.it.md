@@ -86,8 +86,8 @@ I file privati non vengono mai serviti tramite URL pubblici dei media: download 
 - La modalità whitelist opzionale aggiunge un secondo livello di autorizzazione per gli utenti selezionati.
 - I permessi per cartella limitano l'accesso agli utenti, ai gruppi e alle azioni concessi, con ereditarietà dalle cartelle padre. Le cartelle senza regole mantengono il comportamento basato sulla capability e gli Amministratori conservano sempre l'accesso completo.
 - Impostazioni, gruppi, quote, notifiche, report, registri, gestione della whitelist, strumenti di manutenzione e controlli sui dati alla disinstallazione richiedono `manage_options`.
-- L'archiviazione predefinita è `wp-content/uploads/private-documents/` ed è protetta con file di deny a livello di server: il file `.htaccess` generato su Apache e LiteSpeed, il file `web.config` su IIS e una regola Nginx equivalente che nega le richieste dirette a quel percorso.
-- Per installazioni ad alta sensibilità, preferisci un percorso di archiviazione personalizzato all'esterno della webroot pubblica. Il widget di archiviazione mostra solo l'utilizzo di TeamVault.
+- L'archiviazione predefinita è `wp-content/uploads/private-documents/` ed è protetta con file di deny a livello di server: il file `.htaccess` generato su Apache e LiteSpeed, il file `web.config` su IIS e una regola Nginx equivalente che nega le richieste dirette. I caricamenti vengono rifiutati quando questi file non possono essere creati.
+- Consigliato: un percorso di archiviazione personalizzato all'esterno della webroot pubblica, soprattutto su Nginx, che ignora `.htaccess`. Il widget di archiviazione mostra solo l'utilizzo di TeamVault.
 
 Consulta [`SECURITY.md`](SECURITY.md) per le segnalazioni di vulnerabilità.
 

@@ -28,16 +28,17 @@ The deploy script already validates plugin version and stable tag alignment.
 2. Update `Stable tag` and the current release entry in `readme.txt`.
 3. Add the full release entry to `changelog.txt`.
 4. Update the current plugin version and latest release summary in every localized `README*.md`.
-5. Run `composer validate --strict`, `composer audit --locked`, and `composer ci` from `mikesoft-teamvault-src/`.
-6. Run the JavaScript syntax checks and `node --test tests/plugin-check-output.test.mjs`.
-7. Run `Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1` from the workspace root.
-8. Run WordPress Plugin Check against the clean runtime payload.
-9. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
-10. Confirm `.wordpress-org/assets/` contains the expected public assets.
-11. Build the release ZIP and verify that repository-only files and sensitive local files are absent.
-12. Commit the release on a maintainer branch, open an internal pull request, wait for required CI and CodeQL checks, merge into protected `main`, and publish the matching GitHub tag and release with the ZIP attached.
-13. Run the WordPress.org deployment script from the workspace root.
-14. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
+5. If user-facing strings changed, regenerate `languages/mikesoft-teamvault.pot` with `wp i18n make-pot` (see `docs/developer/i18n.md`).
+6. Run `composer validate --strict`, `composer audit --locked`, and `composer ci` from `mikesoft-teamvault-src/`.
+7. Run the JavaScript syntax checks and `node --test tests/plugin-check-output.test.mjs`.
+8. Run `Invoke-Pester .\deployment\DeployWordPressOrg.Tests.ps1` from the workspace root.
+9. Run WordPress Plugin Check against the clean runtime payload.
+10. Smoke test the file browser REST endpoint with plain permalinks when REST URL handling changes.
+11. Confirm `.wordpress-org/assets/` contains the expected public assets.
+12. Build the release ZIP and verify that repository-only files and sensitive local files are absent.
+13. Commit the release on a maintainer branch, open an internal pull request, wait for required CI and CodeQL checks, merge into protected `main`, and publish the matching GitHub tag and release with the ZIP attached.
+14. Run the WordPress.org deployment script from the workspace root.
+15. Verify the public GitHub release and the WordPress.org `trunk` and version tag.
 
 ## Changelog Policy
 
@@ -52,6 +53,8 @@ The deploy script already validates plugin version and stable tag alignment.
 Keep the shipped `readme.txt` in English. WordPress.org localizes plugin listing content through translate.wordpress.org, not through locale-specific files such as `readme-it_IT.txt` in the plugin package.
 
 For Italian listing copy, translate the plugin readme strings in the plugin's Development Readme project on translate.wordpress.org and wait for locale validation.
+
+Interface translations are handled separately: the bundled fallback maps, the POT workflow, and the pack-over-map precedence are documented in `docs/developer/i18n.md`.
 
 ## Deployment Command
 
