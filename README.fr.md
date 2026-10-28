@@ -86,8 +86,8 @@ Les fichiers privés ne sont jamais servis par des URL de médias publiques : le
 - La liste d'autorisation facultative ajoute une seconde couche d'autorisation pour les utilisateurs sélectionnés.
 - Les autorisations par dossier limitent l'accès aux utilisateurs, groupes et actions accordés, avec héritage depuis les dossiers parents. Les dossiers sans règles conservent le comportement basé sur la capacité, et les administrateurs conservent toujours un accès complet.
 - Les réglages, groupes, quotas, notifications, rapports, journaux, gestion de la liste d'autorisation, outils de maintenance et contrôles des données à la désinstallation exigent `manage_options`.
-- Le stockage par défaut est `wp-content/uploads/private-documents/` et il est protégé par des fichiers de refus au niveau du serveur : le fichier `.htaccess` généré sur Apache et LiteSpeed, le fichier `web.config` sur IIS et une règle Nginx équivalente qui refuse les requêtes directes vers ce chemin.
-- Pour les déploiements à haute sensibilité, préférez un chemin de stockage personnalisé en dehors de la racine web publique. Le widget de stockage affiche uniquement l'utilisation de TeamVault.
+- Le stockage par défaut est `wp-content/uploads/private-documents/` et il est protégé par des fichiers de refus au niveau du serveur : le fichier `.htaccess` généré sur Apache et LiteSpeed, le fichier `web.config` sur IIS et une règle Nginx équivalente qui refuse les requêtes directes. Les téléversements sont refusés lorsque ces fichiers ne peuvent pas être créés.
+- Recommandé : un chemin de stockage personnalisé en dehors de la racine web publique, en particulier sur Nginx, qui ignore `.htaccess`. Le widget de stockage affiche uniquement l'utilisation de TeamVault.
 
 Consultez [`SECURITY.md`](SECURITY.md) pour signaler une vulnérabilité.
 

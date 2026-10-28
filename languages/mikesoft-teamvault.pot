@@ -1,4 +1,5 @@
-# /work/pot-comment.txt
+# Copyright (C) 2026 Mikesoft
+# This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
 "Project-Id-Version: Mikesoft TeamVault 3.5.0\n"
@@ -8,168 +9,180 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-22T10:45:00+00:00\n"
+"POT-Creation-Date: 2026-10-28T20:22:56+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: mikesoft-teamvault\n"
 
 #. Plugin Name of the plugin
-#: mikesoft-teamvault.php:3
+#: mikesoft-teamvault.php
 msgid "Mikesoft TeamVault"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: mikesoft-teamvault.php:4
+#: mikesoft-teamvault.php
 msgid "https://github.com/TheStreamCode/mikesoft-teamvault"
 msgstr ""
 
 #. Description of the plugin
-#: mikesoft-teamvault.php:5
+#: mikesoft-teamvault.php
 msgid "Private shared document management separated from the WordPress Media Library with secure access control, preview and drag-and-drop."
 msgstr ""
 
 #. Author of the plugin
-#: mikesoft-teamvault.php:7
+#: mikesoft-teamvault.php
 msgid "Mikesoft"
 msgstr ""
 
 #. Author URI of the plugin
-#: mikesoft-teamvault.php:8
+#: mikesoft-teamvault.php
 msgid "https://mikesoft.it"
 msgstr ""
 
-#: admin/views/file-manager-page.php:14
-#: includes/class-mstv-assets.php:118
-#: includes/class-mstv-assets.php:159
+#: admin/views/file-manager-page.php:10
+#: includes/class-mstv-admin.php:153
+#: includes/class-mstv-admin.php:154
+msgid "File Manager"
+msgstr ""
+
+#: admin/views/file-manager-page.php:15
+#: includes/class-mstv-assets.php:145
+#: includes/class-mstv-assets.php:186
 msgid "New folder"
 msgstr ""
 
-#: admin/views/file-manager-page.php:21
-#: includes/class-mstv-assets.php:117
+#: admin/views/file-manager-page.php:22
+#: includes/class-mstv-assets.php:144
 msgid "Search files..."
 msgstr ""
 
-#: admin/views/file-manager-page.php:26
-#: admin/views/file-manager-page.php:139
+#: admin/views/file-manager-page.php:27
+#: admin/views/file-manager-page.php:142
 #: admin/views/groups-page.php:23
 #: admin/views/notifications-page.php:19
 #: admin/views/quotas-page.php:24
-#: includes/class-mstv-assets.php:162
+#: includes/class-mstv-assets.php:189
 msgid "Loading..."
 msgstr ""
 
-#: admin/views/file-manager-page.php:30
-#: includes/class-mstv-assets.php:170
-#: includes/class-mstv-assets.php:174
+#: admin/views/file-manager-page.php:31
+#: includes/class-mstv-assets.php:197
+#: includes/class-mstv-assets.php:201
 msgid "Storage"
 msgstr ""
 
-#: admin/views/file-manager-page.php:35
-#: includes/class-mstv-assets.php:176
+#: admin/views/file-manager-page.php:36
+#: includes/class-mstv-assets.php:203
 msgid "Used by TeamVault"
 msgstr ""
 
-#: admin/views/file-manager-page.php:44
+#: admin/views/file-manager-page.php:45
 msgid "Folders"
 msgstr ""
 
-#: admin/views/file-manager-page.php:54
-#: includes/class-mstv-assets.php:151
+#: admin/views/file-manager-page.php:55
+#: includes/class-mstv-assets.php:178
 msgid "Home"
 msgstr ""
 
-#: admin/views/file-manager-page.php:60
+#: admin/views/file-manager-page.php:61
 msgid "Filter"
 msgstr ""
 
 #: admin/views/file-manager-page.php:68
-#: admin/views/file-manager-page.php:85
-#: includes/class-mstv-assets.php:127
-#: includes/class-mstv-assets.php:141
-msgid "Name"
-msgstr ""
-
-#: admin/views/file-manager-page.php:69
-#: admin/views/file-manager-page.php:86
-#: includes/class-mstv-assets.php:142
-msgid "Date"
+#: includes/class-mstv-assets.php:167
+msgid "Sort by"
 msgstr ""
 
 #: admin/views/file-manager-page.php:70
-#: admin/views/file-manager-page.php:87
-#: includes/class-mstv-assets.php:128
-#: includes/class-mstv-assets.php:143
+#: admin/views/file-manager-page.php:88
+#: includes/class-mstv-assets.php:154
+#: includes/class-mstv-assets.php:168
+msgid "Name"
+msgstr ""
+
+#: admin/views/file-manager-page.php:71
+#: admin/views/file-manager-page.php:89
+#: includes/class-mstv-assets.php:169
+msgid "Date"
+msgstr ""
+
+#: admin/views/file-manager-page.php:72
+#: admin/views/file-manager-page.php:90
+#: includes/class-mstv-assets.php:155
+#: includes/class-mstv-assets.php:170
 msgid "Size"
 msgstr ""
 
-#: admin/views/file-manager-page.php:89
-msgid "Order"
-msgstr ""
-
-#: admin/views/file-manager-page.php:96
+#: admin/views/file-manager-page.php:76
+#: admin/views/file-manager-page.php:99
 #: admin/views/logs-page.php:65
 msgid "Per page"
 msgstr ""
 
-#: admin/views/file-manager-page.php:105
-#: includes/class-mstv-assets.php:138
+#: admin/views/file-manager-page.php:92
+msgid "Order"
+msgstr ""
+
+#: admin/views/file-manager-page.php:108
+#: includes/class-mstv-assets.php:165
 msgid "Grid view"
 msgstr ""
 
-#: admin/views/file-manager-page.php:113
-#: includes/class-mstv-assets.php:139
+#: admin/views/file-manager-page.php:116
+#: includes/class-mstv-assets.php:166
 msgid "List view"
 msgstr ""
 
-#: admin/views/file-manager-page.php:125
-#: includes/class-mstv-assets.php:185
+#: admin/views/file-manager-page.php:128
+#: includes/class-mstv-assets.php:212
 msgid "Export"
 msgstr ""
 
-#: admin/views/file-manager-page.php:131
+#: admin/views/file-manager-page.php:134
 #: admin/views/logs-page.php:9
-#: includes/class-mstv-assets.php:204
+#: includes/class-mstv-assets.php:231
 msgid "Upload"
 msgstr ""
 
-#: admin/views/file-manager-page.php:150
-#: includes/class-mstv-assets.php:158
+#: admin/views/file-manager-page.php:153
+#: includes/class-mstv-assets.php:185
 msgid "Select a file or folder to view details"
 msgstr ""
 
-#: admin/views/file-manager-page.php:162
-#: includes/class-mstv-assets.php:112
+#: admin/views/file-manager-page.php:165
+#: includes/class-mstv-assets.php:139
 msgid "Drag files here to upload them"
 msgstr ""
 
-#: admin/views/file-manager-page.php:163
-#: includes/class-mstv-assets.php:113
+#: admin/views/file-manager-page.php:166
+#: includes/class-mstv-assets.php:140
 msgid "or"
 msgstr ""
 
-#: admin/views/file-manager-page.php:164
-#: includes/class-mstv-assets.php:114
+#: admin/views/file-manager-page.php:167
+#: includes/class-mstv-assets.php:141
 msgid "Browse files"
 msgstr ""
 
-#: admin/views/file-manager-page.php:174
-#: admin/views/file-manager-page.php:190
-#: includes/class-mstv-assets.php:126
+#: admin/views/file-manager-page.php:177
+#: admin/views/file-manager-page.php:193
+#: includes/class-mstv-assets.php:153
 msgid "Close"
 msgstr ""
 
-#: admin/views/file-manager-page.php:187
+#: admin/views/file-manager-page.php:190
 #: admin/views/reports-page.php:37
 #: admin/views/settings-page.php:209
-#: includes/class-mstv-assets.php:122
+#: includes/class-mstv-assets.php:149
 msgid "Preview"
 msgstr ""
 
-#: admin/views/file-manager-page.php:201
+#: admin/views/file-manager-page.php:204
 #: admin/views/logs-page.php:10
 #: admin/views/reports-page.php:38
-#: includes/class-mstv-assets.php:121
-#: includes/class-mstv-assets.php:205
+#: includes/class-mstv-assets.php:148
+#: includes/class-mstv-assets.php:232
 msgid "Download"
 msgstr ""
 
@@ -182,23 +195,23 @@ msgid "Organize users into departments or teams, then grant folder access to a w
 msgstr ""
 
 #: admin/views/groups-page.php:16
-#: includes/class-mstv-assets.php:222
+#: includes/class-mstv-assets.php:250
 msgid "New group"
 msgstr ""
 
 #: admin/views/logs-page.php:11
-#: includes/class-mstv-assets.php:120
-#: includes/class-mstv-assets.php:206
+#: includes/class-mstv-assets.php:147
+#: includes/class-mstv-assets.php:233
 msgid "Delete"
 msgstr ""
 
 #: admin/views/logs-page.php:12
-#: includes/class-mstv-assets.php:119
+#: includes/class-mstv-assets.php:146
 msgid "Rename"
 msgstr ""
 
 #: admin/views/logs-page.php:13
-#: includes/class-mstv-assets.php:123
+#: includes/class-mstv-assets.php:150
 msgid "Move"
 msgstr ""
 
@@ -208,19 +221,19 @@ msgstr ""
 
 #: admin/views/logs-page.php:36
 #: admin/views/reports-page.php:21
-#: includes/class-mstv-assets.php:133
+#: includes/class-mstv-assets.php:160
 msgid "File"
 msgstr ""
 
 #: admin/views/logs-page.php:37
 #: admin/views/reports-page.php:22
-#: includes/class-mstv-assets.php:132
+#: includes/class-mstv-assets.php:159
 msgid "Folder"
 msgstr ""
 
 #: admin/views/logs-page.php:43
-#: includes/class-mstv-admin.php:165
-#: includes/class-mstv-admin.php:166
+#: includes/class-mstv-admin.php:207
+#: includes/class-mstv-admin.php:208
 msgid "Activity Log"
 msgstr ""
 
@@ -258,7 +271,7 @@ msgstr ""
 
 #: admin/views/logs-page.php:96
 #: admin/views/reports-page.php:20
-#: includes/class-mstv-assets.php:201
+#: includes/class-mstv-assets.php:228
 msgid "User"
 msgstr ""
 
@@ -268,7 +281,7 @@ msgid "Action"
 msgstr ""
 
 #: admin/views/logs-page.php:98
-#: includes/class-mstv-assets.php:129
+#: includes/class-mstv-assets.php:156
 msgid "Type"
 msgstr ""
 
@@ -282,7 +295,7 @@ msgstr ""
 
 #: admin/views/logs-page.php:153
 #: admin/views/logs-page.php:156
-#: includes/class-mstv-assets.php:146
+#: includes/class-mstv-assets.php:173
 msgid "Previous"
 msgstr ""
 
@@ -294,7 +307,7 @@ msgstr ""
 
 #: admin/views/logs-page.php:170
 #: admin/views/logs-page.php:173
-#: includes/class-mstv-assets.php:147
+#: includes/class-mstv-assets.php:174
 msgid "Next"
 msgstr ""
 
@@ -431,17 +444,17 @@ msgid "Authorized users"
 msgstr ""
 
 #: admin/views/settings-page.php:140
-#: includes/class-mstv-assets.php:180
+#: includes/class-mstv-assets.php:207
 msgid "Search users..."
 msgstr ""
 
 #: admin/views/settings-page.php:152
-#: includes/class-mstv-assets.php:184
+#: includes/class-mstv-assets.php:211
 msgid "Remove"
 msgstr ""
 
 #: admin/views/settings-page.php:162
-#: includes/class-mstv-assets.php:181
+#: includes/class-mstv-assets.php:208
 msgid "No users selected"
 msgstr ""
 
@@ -588,7 +601,9 @@ msgstr ""
 msgid "TeamVault cannot write to the private storage directory, so uploads are refused. Make the directory writable by WordPress, then reload this page."
 msgstr ""
 
+#. translators: %s: comma-separated list of protection files that could not be created.
 #: includes/class-mstv-admin.php:88
+#, php-format
 msgid "TeamVault could not create the protection files (%s) that block direct web access to the private storage directory. Uploads are refused until the directory is writable and the files exist."
 msgstr ""
 
@@ -596,97 +611,80 @@ msgstr ""
 msgid "This server runs Nginx, which ignores .htaccess. Confirm that a server rule denies direct requests to the private storage directory, or set a custom storage path outside the public webroot (recommended)."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:1033
-msgid "A file with this storage path already exists."
-msgstr ""
-
-#: includes/class-mstv-storage.php:175
-msgid "Upload refused: TeamVault could not create the protection files (%s) in the private storage directory. Make the directory writable, or use a storage path outside the public webroot, then retry."
-msgstr ""
-
-#: includes/class-mstv-storage.php:177
-msgid "directory not writable"
-msgstr ""
-
-#: includes/class-mstv-admin.php:111
-#: includes/class-mstv-admin.php:112
-msgid "File Manager"
-msgstr ""
-
-#: includes/class-mstv-admin.php:120
-#: includes/class-mstv-admin.php:121
+#: includes/class-mstv-admin.php:162
+#: includes/class-mstv-admin.php:163
 msgid "Settings"
 msgstr ""
 
-#: includes/class-mstv-admin.php:129
-#: includes/class-mstv-admin.php:130
-#: includes/class-mstv-assets.php:243
+#: includes/class-mstv-admin.php:171
+#: includes/class-mstv-admin.php:172
+#: includes/class-mstv-assets.php:272
 msgid "Groups"
 msgstr ""
 
-#: includes/class-mstv-admin.php:138
-#: includes/class-mstv-admin.php:139
+#: includes/class-mstv-admin.php:180
+#: includes/class-mstv-admin.php:181
 msgid "Quotas"
 msgstr ""
 
-#: includes/class-mstv-admin.php:147
-#: includes/class-mstv-admin.php:148
+#: includes/class-mstv-admin.php:189
+#: includes/class-mstv-admin.php:190
 msgid "Notifications"
 msgstr ""
 
-#: includes/class-mstv-admin.php:156
-#: includes/class-mstv-admin.php:157
+#: includes/class-mstv-admin.php:198
+#: includes/class-mstv-admin.php:199
 msgid "Reports"
 msgstr ""
 
-#: includes/class-mstv-admin.php:219
-#: includes/class-mstv-admin.php:229
-#: includes/class-mstv-admin.php:251
 #: includes/class-mstv-admin.php:261
 #: includes/class-mstv-admin.php:271
-#: includes/class-mstv-admin.php:281
-#: includes/class-mstv-admin.php:291
-#: includes/class-mstv-admin.php:316
-#: includes/class-mstv-admin.php:382
-#: includes/class-mstv-admin.php:405
-#: includes/class-mstv-admin.php:472
-#: includes/class-mstv-admin.php:495
-#: includes/class-mstv-admin.php:582
+#: includes/class-mstv-admin.php:293
+#: includes/class-mstv-admin.php:303
+#: includes/class-mstv-admin.php:313
+#: includes/class-mstv-admin.php:323
+#: includes/class-mstv-admin.php:333
+#: includes/class-mstv-admin.php:358
+#: includes/class-mstv-admin.php:424
+#: includes/class-mstv-admin.php:447
+#: includes/class-mstv-admin.php:514
+#: includes/class-mstv-admin.php:537
+#: includes/class-mstv-admin.php:624
 msgid "You do not have permission to access this page."
 msgstr ""
 
-#: includes/class-mstv-admin.php:321
-#: includes/class-mstv-admin.php:387
-#: includes/class-mstv-admin.php:410
-#: includes/class-mstv-admin.php:477
-#: includes/class-mstv-admin.php:500
+#: includes/class-mstv-admin.php:363
+#: includes/class-mstv-admin.php:429
+#: includes/class-mstv-admin.php:452
+#: includes/class-mstv-admin.php:519
+#: includes/class-mstv-admin.php:542
 #: includes/class-mstv-auth.php:131
 msgid "Invalid security token."
 msgstr ""
 
-#: includes/class-mstv-admin.php:428
-#: includes/class-mstv-admin.php:442
+#: includes/class-mstv-admin.php:470
+#: includes/class-mstv-admin.php:484
 #: includes/class-mstv-download.php:41
 #: includes/class-mstv-preview.php:44
-#: includes/class-mstv-rest-controller.php:1061
-#: includes/class-mstv-rest-controller.php:1094
-#: includes/class-mstv-rest-controller.php:1148
-#: includes/class-mstv-storage.php:313
-#: includes/class-mstv-storage.php:366
+#: includes/class-mstv-rest-controller.php:1082
+#: includes/class-mstv-rest-controller.php:1115
+#: includes/class-mstv-rest-controller.php:1169
+#: includes/class-mstv-storage.php:335
+#: includes/class-mstv-storage.php:388
 msgid "File not found."
 msgstr ""
 
-#: includes/class-mstv-admin.php:428
-#: includes/class-mstv-admin.php:442
-#: includes/class-mstv-admin.php:495
-#: includes/class-mstv-admin.php:582
+#: includes/class-mstv-admin.php:470
+#: includes/class-mstv-admin.php:484
+#: includes/class-mstv-admin.php:537
+#: includes/class-mstv-admin.php:624
 #: includes/class-mstv-download.php:33
 #: includes/class-mstv-download.php:42
 #: includes/class-mstv-download.php:53
 #: includes/class-mstv-download.php:64
 #: includes/class-mstv-download.php:72
-#: includes/class-mstv-download.php:114
-#: includes/class-mstv-download.php:133
+#: includes/class-mstv-download.php:115
+#: includes/class-mstv-download.php:134
 #: includes/class-mstv-export.php:43
 #: includes/class-mstv-export.php:51
 #: includes/class-mstv-export.php:61
@@ -713,431 +711,431 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: includes/class-mstv-assets.php:95
+#: includes/class-mstv-assets.php:122
 msgid "Are you sure you want to delete this item?"
 msgstr ""
 
-#: includes/class-mstv-assets.php:96
+#: includes/class-mstv-assets.php:123
 msgid "Are you sure you want to delete this folder? It must be empty."
 msgstr ""
 
-#: includes/class-mstv-assets.php:97
+#: includes/class-mstv-assets.php:124
 msgid "File uploaded successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:98
+#: includes/class-mstv-assets.php:125
 msgid "Error while uploading the file."
 msgstr ""
 
-#: includes/class-mstv-assets.php:99
+#: includes/class-mstv-assets.php:126
 msgid "Uploading..."
 msgstr ""
 
-#: includes/class-mstv-assets.php:100
+#: includes/class-mstv-assets.php:127
 msgid "Upload cancelled."
 msgstr ""
 
-#: includes/class-mstv-assets.php:101
+#: includes/class-mstv-assets.php:128
 msgid "\"{fileName}\" ({fileSize}) exceeds the maximum allowed size of {maxSize}."
 msgstr ""
 
-#: includes/class-mstv-assets.php:102
+#: includes/class-mstv-assets.php:129
 msgid "Item deleted successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:103
+#: includes/class-mstv-assets.php:130
 msgid "Error while deleting."
 msgstr ""
 
-#: includes/class-mstv-assets.php:104
+#: includes/class-mstv-assets.php:131
 msgid "Renamed successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:105
+#: includes/class-mstv-assets.php:132
 msgid "Error while renaming."
 msgstr ""
 
-#: includes/class-mstv-assets.php:106
+#: includes/class-mstv-assets.php:133
 msgid "File moved successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:107
+#: includes/class-mstv-assets.php:134
 msgid "Error while moving the file."
 msgstr ""
 
-#: includes/class-mstv-assets.php:108
+#: includes/class-mstv-assets.php:135
 msgid "Folder moved successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:109
+#: includes/class-mstv-assets.php:136
 msgid "Error while moving the folder."
 msgstr ""
 
-#: includes/class-mstv-assets.php:110
+#: includes/class-mstv-assets.php:137
 msgid "Folder created successfully."
 msgstr ""
 
-#: includes/class-mstv-assets.php:111
+#: includes/class-mstv-assets.php:138
 msgid "Error while creating the folder."
 msgstr ""
 
-#: includes/class-mstv-assets.php:115
+#: includes/class-mstv-assets.php:142
 msgid "This folder is empty"
 msgstr ""
 
-#: includes/class-mstv-assets.php:116
+#: includes/class-mstv-assets.php:143
 msgid "Upload files or create a new folder to get started"
 msgstr ""
 
-#: includes/class-mstv-assets.php:124
+#: includes/class-mstv-assets.php:151
 msgid "Cancel"
 msgstr ""
 
-#: includes/class-mstv-assets.php:125
+#: includes/class-mstv-assets.php:152
 msgid "Confirm"
 msgstr ""
 
-#: includes/class-mstv-assets.php:130
+#: includes/class-mstv-assets.php:157
 msgid "Availability"
 msgstr ""
 
-#: includes/class-mstv-assets.php:131
+#: includes/class-mstv-assets.php:158
 msgid "Created"
 msgstr ""
 
-#: includes/class-mstv-assets.php:134
+#: includes/class-mstv-assets.php:161
 msgid "files"
 msgstr ""
 
-#: includes/class-mstv-assets.php:135
+#: includes/class-mstv-assets.php:162
 msgid "folders"
 msgstr ""
 
-#: includes/class-mstv-assets.php:136
+#: includes/class-mstv-assets.php:163
 msgid "Missing"
 msgstr ""
 
-#: includes/class-mstv-assets.php:137
+#: includes/class-mstv-assets.php:164
 msgid "selected"
 msgstr ""
 
-#: includes/class-mstv-assets.php:140
-msgid "Sort by"
-msgstr ""
-
-#: includes/class-mstv-assets.php:144
+#: includes/class-mstv-assets.php:171
 msgid "Ascending"
 msgstr ""
 
-#: includes/class-mstv-assets.php:145
+#: includes/class-mstv-assets.php:172
 msgid "Descending"
 msgstr ""
 
-#: includes/class-mstv-assets.php:148
+#: includes/class-mstv-assets.php:175
 msgid "Page"
 msgstr ""
 
-#: includes/class-mstv-assets.php:149
+#: includes/class-mstv-assets.php:176
 msgid "of"
 msgstr ""
 
-#: includes/class-mstv-assets.php:150
+#: includes/class-mstv-assets.php:177
 msgid "results"
 msgstr ""
 
-#: includes/class-mstv-assets.php:152
+#: includes/class-mstv-assets.php:179
 msgid "Open"
 msgstr ""
 
-#: includes/class-mstv-assets.php:153
+#: includes/class-mstv-assets.php:180
 msgid "Status"
 msgstr ""
 
-#: includes/class-mstv-assets.php:154
+#: includes/class-mstv-assets.php:181
 msgid "Contains subfolders"
 msgstr ""
 
-#: includes/class-mstv-assets.php:155
+#: includes/class-mstv-assets.php:182
 msgid "No subfolders"
 msgstr ""
 
-#: includes/class-mstv-assets.php:156
+#: includes/class-mstv-assets.php:183
 msgid "Expand"
 msgstr ""
 
-#: includes/class-mstv-assets.php:157
+#: includes/class-mstv-assets.php:184
 msgid "Collapse"
 msgstr ""
 
-#: includes/class-mstv-assets.php:160
+#: includes/class-mstv-assets.php:187
 msgid "Move to..."
 msgstr ""
 
-#: includes/class-mstv-assets.php:161
+#: includes/class-mstv-assets.php:188
 msgid "Select destination"
 msgstr ""
 
-#: includes/class-mstv-assets.php:163
+#: includes/class-mstv-assets.php:190
 msgid "An error occurred. Please try again."
 msgstr ""
 
-#: includes/class-mstv-assets.php:164
+#: includes/class-mstv-assets.php:191
 msgid "Your session has expired. Reload the page to continue."
 msgstr ""
 
-#: includes/class-mstv-assets.php:165
+#: includes/class-mstv-assets.php:192
 msgid "No results found"
 msgstr ""
 
-#: includes/class-mstv-assets.php:166
+#: includes/class-mstv-assets.php:193
 msgid "Try a different keyword or clear the search."
 msgstr ""
 
-#: includes/class-mstv-assets.php:167
+#: includes/class-mstv-assets.php:194
 msgid "File missing from storage"
 msgstr ""
 
-#: includes/class-mstv-assets.php:168
+#: includes/class-mstv-assets.php:195
 msgid "This record exists in the database, but the binary file is missing from the private storage directory."
 msgstr ""
 
-#: includes/class-mstv-assets.php:169
+#: includes/class-mstv-assets.php:196
 msgid "Missing from storage"
 msgstr ""
 
-#: includes/class-mstv-assets.php:171
-#: includes/class-mstv-assets.php:231
+#: includes/class-mstv-assets.php:198
+#: includes/class-mstv-assets.php:259
 msgid "Used"
 msgstr ""
 
-#: includes/class-mstv-assets.php:172
+#: includes/class-mstv-assets.php:199
 msgid "Free"
 msgstr ""
 
-#: includes/class-mstv-assets.php:173
+#: includes/class-mstv-assets.php:200
 msgid "Total"
 msgstr ""
 
-#: includes/class-mstv-assets.php:175
+#: includes/class-mstv-assets.php:202
 msgid "TeamVault"
 msgstr ""
 
-#: includes/class-mstv-assets.php:177
+#: includes/class-mstv-assets.php:204
 msgid "Other usage"
 msgstr ""
 
-#: includes/class-mstv-assets.php:178
+#: includes/class-mstv-assets.php:205
 msgid "Available"
 msgstr ""
 
-#: includes/class-mstv-assets.php:179
+#: includes/class-mstv-assets.php:206
 msgid "Capacity"
 msgstr ""
 
-#: includes/class-mstv-assets.php:182
+#: includes/class-mstv-assets.php:209
 msgid "User not found"
 msgstr ""
 
-#: includes/class-mstv-assets.php:183
+#: includes/class-mstv-assets.php:210
 msgid "User is already in the list"
 msgstr ""
 
-#: includes/class-mstv-assets.php:186
+#: includes/class-mstv-assets.php:213
 msgid "Export All"
 msgstr ""
 
-#: includes/class-mstv-assets.php:187
+#: includes/class-mstv-assets.php:214
 msgid "Export Folder"
 msgstr ""
 
-#: includes/class-mstv-assets.php:188
+#: includes/class-mstv-assets.php:215
 msgid "Create a ZIP archive with the full private document library."
 msgstr ""
 
-#: includes/class-mstv-assets.php:189
+#: includes/class-mstv-assets.php:216
 msgid "Export Selected Folders"
 msgstr ""
 
-#: includes/class-mstv-assets.php:190
+#: includes/class-mstv-assets.php:217
 msgid "Choose one or more folders to include in the ZIP archive."
 msgstr ""
 
-#: includes/class-mstv-assets.php:191
+#: includes/class-mstv-assets.php:218
 msgid "Select at least one folder to export."
 msgstr ""
 
-#: includes/class-mstv-assets.php:192
+#: includes/class-mstv-assets.php:219
 msgid "Exporting..."
 msgstr ""
 
-#: includes/class-mstv-assets.php:193
+#: includes/class-mstv-assets.php:220
 msgid "No folders available for selective export."
 msgstr ""
 
-#: includes/class-mstv-assets.php:194
+#: includes/class-mstv-assets.php:221
 msgid "Error during export"
 msgstr ""
 
-#: includes/class-mstv-assets.php:196
+#: includes/class-mstv-assets.php:223
 msgid "Permissions"
 msgstr ""
 
-#: includes/class-mstv-assets.php:197
+#: includes/class-mstv-assets.php:224
 msgid "Custom permissions"
 msgstr ""
 
-#: includes/class-mstv-assets.php:198
+#: includes/class-mstv-assets.php:225
 msgid "Folder permissions"
 msgstr ""
 
-#: includes/class-mstv-assets.php:199
+#: includes/class-mstv-assets.php:226
 msgid "Grant access to specific users or groups. With no rules, the folder follows the default access (capability and optional whitelist)."
 msgstr ""
 
-#: includes/class-mstv-assets.php:200
+#: includes/class-mstv-assets.php:227
 msgid "User / Group"
 msgstr ""
 
-#: includes/class-mstv-assets.php:202
+#: includes/class-mstv-assets.php:229
 msgid "Group"
 msgstr ""
 
-#: includes/class-mstv-assets.php:203
+#: includes/class-mstv-assets.php:230
 msgid "View"
 msgstr ""
 
-#: includes/class-mstv-assets.php:207
+#: includes/class-mstv-assets.php:234
 msgid "Manage"
 msgstr ""
 
-#: includes/class-mstv-assets.php:208
+#: includes/class-mstv-assets.php:235
 msgid "No explicit rules. Default access applies."
 msgstr ""
 
-#: includes/class-mstv-assets.php:209
+#: includes/class-mstv-assets.php:236
 msgid "No groups available"
 msgstr ""
 
-#: includes/class-mstv-assets.php:210
+#: includes/class-mstv-assets.php:237
 msgid "Add"
 msgstr ""
 
-#: includes/class-mstv-assets.php:211
+#: includes/class-mstv-assets.php:238
 msgid "Reset"
 msgstr ""
 
-#: includes/class-mstv-assets.php:212
+#: includes/class-mstv-assets.php:239
 msgid "Remove all permission rules for this folder?"
 msgstr ""
 
-#: includes/class-mstv-assets.php:213
+#: includes/class-mstv-assets.php:240
 msgid "Save permissions"
 msgstr ""
 
-#: includes/class-mstv-assets.php:214
+#: includes/class-mstv-assets.php:241
 msgid "Permissions updated."
 msgstr ""
 
-#: includes/class-mstv-assets.php:215
+#: includes/class-mstv-assets.php:242
 msgid "This user or group is already in the list."
 msgstr ""
 
-#: includes/class-mstv-assets.php:216
+#: includes/class-mstv-assets.php:243
 msgid "Heads up: some folders have rules but the Home (root) folder has none. Any folder without a rule in its parent chain stays accessible to every vault user. Add a rule on Home to restrict the default access."
 msgstr ""
 
-#: includes/class-mstv-assets.php:218
+#: includes/class-mstv-assets.php:245
 msgid "No groups yet. Create one to organize document access."
+msgstr ""
+
+#: includes/class-mstv-assets.php:246
+msgid "members"
 msgstr ""
 
 #: includes/class-mstv-assets.php:247
 msgid "Members"
 msgstr ""
 
-#: includes/class-mstv-assets.php:219
-msgid "members"
-msgstr ""
-
-#: includes/class-mstv-assets.php:220
+#: includes/class-mstv-assets.php:248
 msgid "Group name"
 msgstr ""
 
-#: includes/class-mstv-assets.php:221
+#: includes/class-mstv-assets.php:249
 msgid "Description"
 msgstr ""
 
-#: includes/class-mstv-assets.php:223
+#: includes/class-mstv-assets.php:251
 msgid "Edit group"
 msgstr ""
 
-#: includes/class-mstv-assets.php:224
+#: includes/class-mstv-assets.php:252
 #: includes/class-mstv-rest-governance.php:154
 #: includes/class-mstv-rest-governance.php:201
 msgid "The group name cannot be empty."
 msgstr ""
 
-#: includes/class-mstv-assets.php:225
+#: includes/class-mstv-assets.php:253
 msgid "Group saved."
 msgstr ""
 
-#: includes/class-mstv-assets.php:226
+#: includes/class-mstv-assets.php:254
 msgid "Delete this group? Members and its folder permissions will be removed."
 msgstr ""
 
-#: includes/class-mstv-assets.php:227
+#: includes/class-mstv-assets.php:255
 msgid "Group deleted."
 msgstr ""
 
-#: includes/class-mstv-assets.php:229
+#: includes/class-mstv-assets.php:257
 msgid "No quotas set. All users have unlimited storage."
 msgstr ""
 
-#: includes/class-mstv-assets.php:230
+#: includes/class-mstv-assets.php:258
 msgid "Limit"
 msgstr ""
 
-#: includes/class-mstv-assets.php:232
+#: includes/class-mstv-assets.php:260
 msgid "Save quotas"
 msgstr ""
 
-#: includes/class-mstv-assets.php:233
+#: includes/class-mstv-assets.php:261
 msgid "Quotas updated."
 msgstr ""
 
-#: includes/class-mstv-assets.php:235
-#: includes/class-mstv-assets.php:239
+#: includes/class-mstv-assets.php:263
+#: includes/class-mstv-assets.php:267
 msgid "Events"
 msgstr ""
 
-#: includes/class-mstv-assets.php:236
+#: includes/class-mstv-assets.php:264
 msgid "Last access"
 msgstr ""
 
-#: includes/class-mstv-assets.php:238
+#: includes/class-mstv-assets.php:266
 msgid "Enable email notifications"
 msgstr ""
 
-#: includes/class-mstv-assets.php:240
+#: includes/class-mstv-assets.php:268
 msgid "Recipients"
 msgstr ""
 
-#: includes/class-mstv-assets.php:241
+#: includes/class-mstv-assets.php:269
 msgid "All administrators"
 msgstr ""
 
-#: includes/class-mstv-assets.php:242
+#: includes/class-mstv-assets.php:270
+msgid "Only notify people who can access the folder"
+msgstr ""
+
+#: includes/class-mstv-assets.php:271
 msgid "Specific users"
 msgstr ""
 
-#: includes/class-mstv-assets.php:244
+#: includes/class-mstv-assets.php:273
 msgid "Access denied"
 msgstr ""
 
-#: includes/class-mstv-assets.php:245
+#: includes/class-mstv-assets.php:274
 msgid "Save notifications"
 msgstr ""
 
-#: includes/class-mstv-assets.php:246
+#: includes/class-mstv-assets.php:275
 msgid "Notification settings saved."
 msgstr ""
 
@@ -1172,8 +1170,8 @@ msgstr ""
 msgid "File not found in the filesystem."
 msgstr ""
 
-#: includes/class-mstv-download.php:113
-#: includes/class-mstv-download.php:132
+#: includes/class-mstv-download.php:114
+#: includes/class-mstv-download.php:133
 #: includes/class-mstv-preview.php:124
 #: includes/class-mstv-preview.php:155
 msgid "Unable to read the file."
@@ -1199,17 +1197,17 @@ msgid "Error while creating the ZIP file."
 msgstr ""
 
 #: includes/class-mstv-export.php:144
-#: includes/class-mstv-rest-controller.php:677
-#: includes/class-mstv-rest-controller.php:734
-#: includes/class-mstv-rest-controller.php:779
-#: includes/class-mstv-rest-controller.php:1194
-#: includes/class-mstv-rest-controller.php:1198
-#: includes/class-mstv-rest-controller.php:1204
-#: includes/class-mstv-rest-controller.php:1208
-#: includes/class-mstv-rest-governance.php:574
-#: includes/class-mstv-storage.php:276
-#: includes/class-mstv-storage.php:403
-#: includes/class-mstv-storage.php:460
+#: includes/class-mstv-rest-controller.php:683
+#: includes/class-mstv-rest-controller.php:740
+#: includes/class-mstv-rest-controller.php:785
+#: includes/class-mstv-rest-controller.php:1215
+#: includes/class-mstv-rest-controller.php:1219
+#: includes/class-mstv-rest-controller.php:1225
+#: includes/class-mstv-rest-controller.php:1229
+#: includes/class-mstv-rest-governance.php:580
+#: includes/class-mstv-storage.php:298
+#: includes/class-mstv-storage.php:425
+#: includes/class-mstv-storage.php:482
 msgid "Folder not found."
 msgstr ""
 
@@ -1219,53 +1217,55 @@ msgstr ""
 msgid "Unable to read the ZIP file."
 msgstr ""
 
-#: includes/class-mstv-helpers.php:183
-msgid "ago"
+#. translators: %s: time elapsed, for example "5 mins".
+#: includes/class-mstv-helpers.php:185
+#, php-format
+msgid "%s ago"
 msgstr ""
 
 #. translators: %s: file name.
-#: includes/class-mstv-notifications.php:52
+#: includes/class-mstv-notifications.php:58
 #, php-format
 msgid "Uploaded: %s"
 msgstr ""
 
 #. translators: %s: file name.
-#: includes/class-mstv-notifications.php:62
+#: includes/class-mstv-notifications.php:68
 #, php-format
 msgid "Downloaded: %s"
 msgstr ""
 
 #. translators: %s: file name.
-#: includes/class-mstv-notifications.php:72
+#: includes/class-mstv-notifications.php:78
 #, php-format
 msgid "Deleted: %s"
 msgstr ""
 
 #. translators: 1: user login, 2: attempted action, 3: folder id.
-#: includes/class-mstv-notifications.php:83
+#: includes/class-mstv-notifications.php:89
 #, php-format
 msgid "Access denied for %1$s (action: %2$s, folder: %3$s)"
 msgstr ""
 
 #. translators: 1: site name, 2: number of events, 3: event label.
-#: includes/class-mstv-notifications.php:121
+#: includes/class-mstv-notifications.php:152
 #, php-format
 msgid "[%1$s] TeamVault: %2$d %3$s event(s)"
 msgstr ""
 
-#: includes/class-mstv-notifications.php:140
+#: includes/class-mstv-notifications.php:167
 msgid "upload"
 msgstr ""
 
-#: includes/class-mstv-notifications.php:142
+#: includes/class-mstv-notifications.php:169
 msgid "download"
 msgstr ""
 
-#: includes/class-mstv-notifications.php:144
+#: includes/class-mstv-notifications.php:171
 msgid "delete"
 msgstr ""
 
-#: includes/class-mstv-notifications.php:146
+#: includes/class-mstv-notifications.php:173
 msgid "access denied"
 msgstr ""
 
@@ -1280,50 +1280,55 @@ msgstr ""
 msgid "Upload blocked: this would exceed the storage quota (%1$s). Already used: %2$s; this file: %3$s."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:75
+#: includes/class-mstv-rest-controller.php:74
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:156
-#: includes/class-mstv-rest-governance.php:600
-#: includes/class-mstv-storage.php:109
+#: includes/class-mstv-rest-controller.php:155
+#: includes/class-mstv-rest-governance.php:606
+#: includes/class-mstv-storage.php:113
 msgid "Unable to save the changes. Please try again."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:633
-#: includes/class-mstv-storage.php:251
+#: includes/class-mstv-rest-controller.php:632
+#: includes/class-mstv-rest-controller.php:653
+#: includes/class-mstv-storage.php:273
 msgid "Folder already exists."
 msgstr ""
 
 #. translators: %s: maximum allowed file size (e.g. "50 MB").
-#: includes/class-mstv-rest-controller.php:916
+#: includes/class-mstv-rest-controller.php:922
 #, php-format
 msgid "The file exceeds the maximum allowed size (%s). Please upload a smaller file."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:921
+#: includes/class-mstv-rest-controller.php:927
 #: includes/class-mstv-validator.php:379
 msgid "No file uploaded."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:926
-#: includes/class-mstv-storage.php:83
-#: includes/class-mstv-storage.php:157
-#: includes/class-mstv-storage.php:206
+#: includes/class-mstv-rest-controller.php:932
+#: includes/class-mstv-storage.php:87
+#: includes/class-mstv-storage.php:161
+#: includes/class-mstv-storage.php:228
 msgid "Unable to initialize the storage directory."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:969
+#: includes/class-mstv-rest-controller.php:975
 #: includes/class-mstv-validator.php:146
 msgid "The file name cannot be empty."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:980
-#: includes/class-mstv-storage.php:183
+#: includes/class-mstv-rest-controller.php:986
+#: includes/class-mstv-storage.php:205
 msgid "Unable to save the file."
 msgstr ""
 
-#: includes/class-mstv-rest-controller.php:1069
+#: includes/class-mstv-rest-controller.php:1033
+msgid "A file with this storage path already exists."
+msgstr ""
+
+#: includes/class-mstv-rest-controller.php:1090
 msgid "The name cannot be empty."
 msgstr ""
 
@@ -1333,11 +1338,11 @@ msgstr ""
 msgid "Group not found."
 msgstr ""
 
-#: includes/class-mstv-rest-governance.php:377
+#: includes/class-mstv-rest-governance.php:383
 msgid "Home (root)"
 msgstr ""
 
-#: includes/class-mstv-rest-governance.php:588
+#: includes/class-mstv-rest-governance.php:594
 msgid "You do not have permission to manage this folder."
 msgstr ""
 
@@ -1349,76 +1354,86 @@ msgstr ""
 msgid "Add your current account to the whitelist before enabling it, otherwise you will lock yourself out."
 msgstr ""
 
-#: includes/class-mstv-storage.php:171
+#. translators: %s: comma-separated list of protection files that could not be created.
+#: includes/class-mstv-storage.php:175
+#, php-format
+msgid "Upload refused: TeamVault could not create the protection files (%s) in the private storage directory. Make the directory writable, or use a storage path outside the public webroot, then retry."
+msgstr ""
+
+#: includes/class-mstv-storage.php:177
+msgid "directory not writable"
+msgstr ""
+
+#: includes/class-mstv-storage.php:193
 msgid "Invalid destination path."
 msgstr ""
 
-#: includes/class-mstv-storage.php:215
-#: includes/class-mstv-storage.php:411
+#: includes/class-mstv-storage.php:237
+#: includes/class-mstv-storage.php:433
 msgid "Invalid folder name."
 msgstr ""
 
-#: includes/class-mstv-storage.php:225
-#: includes/class-mstv-storage.php:478
+#: includes/class-mstv-storage.php:247
+#: includes/class-mstv-storage.php:500
 msgid "Parent folder not found."
 msgstr ""
 
-#: includes/class-mstv-storage.php:236
-#: includes/class-mstv-storage.php:498
+#: includes/class-mstv-storage.php:258
+#: includes/class-mstv-storage.php:520
 msgid "Invalid folder path."
 msgstr ""
 
-#: includes/class-mstv-storage.php:259
+#: includes/class-mstv-storage.php:281
 msgid "Unable to create the folder."
 msgstr ""
 
-#: includes/class-mstv-storage.php:284
+#: includes/class-mstv-storage.php:306
 msgid "The folder contains subfolders. Delete the subfolders first."
 msgstr ""
 
-#: includes/class-mstv-storage.php:292
+#: includes/class-mstv-storage.php:314
 msgid "The folder contains files. Delete the files first."
 msgstr ""
 
-#: includes/class-mstv-storage.php:300
+#: includes/class-mstv-storage.php:322
 msgid "Unable to delete the folder from the filesystem."
 msgstr ""
 
-#: includes/class-mstv-storage.php:321
-#: includes/class-mstv-storage.php:329
+#: includes/class-mstv-storage.php:343
+#: includes/class-mstv-storage.php:351
 msgid "Unable to delete the files from the filesystem."
 msgstr ""
 
-#: includes/class-mstv-storage.php:376
+#: includes/class-mstv-storage.php:398
 msgid "The file is already in the destination folder."
 msgstr ""
 
-#: includes/class-mstv-storage.php:384
+#: includes/class-mstv-storage.php:406
 msgid "Unable to move the file."
 msgstr ""
 
-#: includes/class-mstv-storage.php:425
+#: includes/class-mstv-storage.php:447
 msgid "The new name is identical to the current name."
 msgstr ""
 
-#: includes/class-mstv-storage.php:432
-#: includes/class-mstv-storage.php:505
+#: includes/class-mstv-storage.php:454
+#: includes/class-mstv-storage.php:527
 msgid "A folder with this name already exists."
 msgstr ""
 
-#: includes/class-mstv-storage.php:440
+#: includes/class-mstv-storage.php:462
 msgid "Unable to rename the folder."
 msgstr ""
 
-#: includes/class-mstv-storage.php:468
+#: includes/class-mstv-storage.php:490
 msgid "The folder is already in the destination folder."
 msgstr ""
 
-#: includes/class-mstv-storage.php:486
+#: includes/class-mstv-storage.php:508
 msgid "You cannot move a folder into itself or one of its subfolders."
 msgstr ""
 
-#: includes/class-mstv-storage.php:513
+#: includes/class-mstv-storage.php:535
 msgid "Unable to move the folder."
 msgstr ""
 

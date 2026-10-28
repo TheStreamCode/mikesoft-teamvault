@@ -86,8 +86,8 @@ Los archivos privados nunca se sirven mediante URL públicas de medios: las desc
 - La lista de permitidos opcional añade una segunda capa de autorización para los usuarios seleccionados.
 - Los permisos por carpeta limitan el acceso a los usuarios, grupos y acciones concedidos, con herencia desde las carpetas principales. Las carpetas sin reglas mantienen el comportamiento basado en la capability, y los administradores conservan siempre el acceso completo.
 - Los ajustes, grupos, cuotas, notificaciones, informes, registros, gestión de la lista de permitidos, herramientas de mantenimiento y controles de datos al desinstalar requieren `manage_options`.
-- El almacenamiento predeterminado es `wp-content/uploads/private-documents/` y está protegido con archivos de denegación a nivel de servidor: el archivo `.htaccess` generado en Apache y LiteSpeed, el archivo `web.config` en IIS y una regla Nginx equivalente que deniega las solicitudes directas a esa ruta.
-- Para despliegues de alta sensibilidad, prefiere una ruta de almacenamiento personalizada fuera de la raíz web pública. El widget de almacenamiento muestra solo el uso de TeamVault.
+- El almacenamiento predeterminado es `wp-content/uploads/private-documents/` y está protegido con archivos de denegación a nivel de servidor: el archivo `.htaccess` generado en Apache y LiteSpeed, el archivo `web.config` en IIS y una regla Nginx equivalente que deniega las solicitudes directas. Las subidas se rechazan cuando estos archivos no se pueden crear.
+- Recomendado: una ruta de almacenamiento personalizada fuera de la raíz web pública, especialmente en Nginx, que ignora `.htaccess`. El widget de almacenamiento muestra solo el uso de TeamVault.
 
 Consulta [`SECURITY.md`](SECURITY.md) para reportar vulnerabilidades.
 

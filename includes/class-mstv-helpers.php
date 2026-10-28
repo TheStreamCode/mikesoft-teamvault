@@ -180,7 +180,11 @@ class MSTV_Helpers
         if ($time === false) {
             return '';
         }
-        return human_time_diff($time, time()) . ' ' . __('ago', 'mikesoft-teamvault');
+        return sprintf(
+            /* translators: %s: time elapsed, for example "5 mins". */
+            __('%s ago', 'mikesoft-teamvault'),
+            human_time_diff($time, time())
+        );
     }
 
     public static function build_breadcrumb(array $folders, int $currentFolderId): array
