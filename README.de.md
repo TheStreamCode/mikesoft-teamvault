@@ -86,8 +86,8 @@ Private Dateien werden nie über öffentliche Medien-URLs ausgeliefert: Download
 - Der optionale Whitelist-Modus fügt eine zweite Autorisierungsebene für ausgewählte Benutzer hinzu.
 - Ordnerberechtigungen beschränken den Zugriff auf die gewährten Benutzer, Gruppen und Aktionen, mit Vererbung von übergeordneten Ordnern. Ordner ohne Regeln behalten das capability-basierte Verhalten, und Administratoren behalten immer vollen Zugriff.
 - Einstellungen, Gruppen, Kontingente, Benachrichtigungen, Berichte, Protokolle, Whitelist-Verwaltung, Wartungswerkzeuge und Datenkontrollen bei der Deinstallation erfordern `manage_options`.
-- Der Standardspeicher ist `wp-content/uploads/private-documents/` und wird durch serverseitige Deny-Dateien geschützt: die generierte `.htaccess` unter Apache und LiteSpeed, die `web.config` unter IIS und eine äquivalente Nginx-Regel, die direkte Anfragen an diesen Pfad verweigert.
-- Für besonders sensible Deployments ist ein eigener Speicherpfad außerhalb des öffentlichen Webroots zu bevorzugen. Das Speicher-Widget zeigt nur die Nutzung durch TeamVault.
+- Der Standardspeicher ist `wp-content/uploads/private-documents/` und wird durch serverseitige Deny-Dateien geschützt: die generierte `.htaccess` unter Apache und LiteSpeed, die `web.config` unter IIS und eine äquivalente Nginx-Regel, die direkte Anfragen verweigert. Uploads werden abgelehnt, wenn diese Dateien nicht erstellt werden können.
+- Empfohlen: ein eigener Speicherpfad außerhalb des öffentlichen Webroots, insbesondere bei Nginx, das `.htaccess` ignoriert. Das Speicher-Widget zeigt nur die Nutzung durch TeamVault.
 
 Siehe [`SECURITY.md`](SECURITY.md) für die Meldung von Schwachstellen.
 
