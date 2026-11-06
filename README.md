@@ -3,8 +3,8 @@
 Private document management for WordPress teams, with protected storage and granular access control
 
 [![CI](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml/badge.svg)](https://github.com/TheStreamCode/mikesoft-teamvault/actions/workflows/ci.yml)
-[![WordPress.org](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
 [![License](https://img.shields.io/badge/License-GPL--2.0--or--later-blue.svg)](LICENSE)
+[![WordPress.org](https://img.shields.io/wordpress/plugin/v/mikesoft-teamvault?label=WordPress.org)](https://wordpress.org/plugins/mikesoft-teamvault/)
 
 ![TeamVault banner for the WordPress.org plugin listing](.wordpress-org/assets/banner-772x250.png)
 
@@ -32,14 +32,6 @@ Manual alternative: download the release package from [WordPress.org](https://wo
 3. Create groups when permissions should follow departments or project teams, then create the document folders.
 4. Upload a file from the grid or list view and confirm preview and download behavior with a non-administrator account.
 
-## Screenshots
-
-| Per-folder permissions | Search across the vault | Storage quotas |
-| :---: | :---: | :---: |
-| [![Per-folder access control](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Search with file-type badges](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Per-user and per-group quotas](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
-| **Groups** | **Activity log** | **Settings** |
-| [![User groups](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin settings](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
-
 ## Features
 
 - Private storage outside the normal Media Library workflow.
@@ -52,6 +44,14 @@ Manual alternative: download the release package from [WordPress.org](https://wo
 - English, Italian, French, Spanish, and German admin interfaces.
 
 All governance capabilities are included in the free plugin.
+
+### Screenshots
+
+| Per-folder permissions | Search across the vault | Storage quotas |
+| :---: | :---: | :---: |
+| [![Per-folder access control](.wordpress-org/assets/screenshot-2.jpg)](.wordpress-org/assets/screenshot-2.jpg) | [![Search with file-type badges](.wordpress-org/assets/screenshot-3.jpg)](.wordpress-org/assets/screenshot-3.jpg) | [![Per-user and per-group quotas](.wordpress-org/assets/screenshot-4.jpg)](.wordpress-org/assets/screenshot-4.jpg) |
+| **Groups** | **Activity log** | **Settings** |
+| [![User groups](.wordpress-org/assets/screenshot-5.jpg)](.wordpress-org/assets/screenshot-5.jpg) | [![Audit trail](.wordpress-org/assets/screenshot-6.jpg)](.wordpress-org/assets/screenshot-6.jpg) | [![Plugin settings](.wordpress-org/assets/screenshot-7.jpg)](.wordpress-org/assets/screenshot-7.jpg) |
 
 ## Requirements
 
@@ -161,4 +161,5 @@ GPL-2.0-or-later - see [`LICENSE`](LICENSE).
 
 ---
 
-Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it). If this project is useful to you, consider [sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
+Maintained by [Michael Gasperini (Mikesoft)](https://mikesoft.it).
+If this project is useful to you, consider [sponsoring its maintenance](https://github.com/sponsors/TheStreamCode).
