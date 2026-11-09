@@ -16,6 +16,11 @@ updates:
     groups:
       composer-dev:
         patterns: ["*"]
+    ignore:
+      # PHPUnit 13 requires PHP >= 8.4.1; the CI matrix still runs 8.2 and 8.3.
+      # Remove this rule when the matrix moves to 8.4.
+      - dependency-name: "phpunit/phpunit"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
