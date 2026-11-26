@@ -15,7 +15,6 @@ final class PDMAssetsTest extends TestCase
     {
         $assets = new MSTV_Assets(new MSTV_Settings());
         $method = new ReflectionMethod(MSTV_Assets::class, 'get_effective_client_upload_limit');
-        $method->setAccessible(true);
 
         self::assertSame(5 * 1024 * 1024, $method->invoke($assets, 50 * 1024 * 1024, '8M', '5M'));
     }

@@ -32,6 +32,7 @@ final class PDMAdminHandlersTest extends TestCase
         $GLOBALS['pdm_test_transients'] = [];
         $GLOBALS['pdm_test_verified_nonce_actions'] = [];
         $GLOBALS['pdm_test_redirects'] = [];
+        unset($GLOBALS['pdm_test_max_upload_size']);
         $_POST = [];
         $_GET = [];
         $_REQUEST = [];
@@ -124,6 +125,32 @@ final class PDMAdminHandlersTest extends TestCase
         self::assertSame('pdf,doc', (string) get_option('mstv_allowed_extensions', ''));
         self::assertSame(1024, (int) get_option('mstv_max_file_size', 0));
         self::assertTrue((bool) get_transient('mstv_settings_saved_5'));
+    }
+
+    public function test_handle_save_settings_clamps_max_file_size_to_server_limit(): void
+    {
+        $GLOBALS['pdm_test_current_user_caps'] = ['manage_options' => true];
+        $GLOBALS['pdm_test_max_upload_size'] = 31457280;
+        $_POST = [
+            'mstv_settings_nonce' => 'valid-nonce',
+            'mstv_interface_language' => 'en',
+            'mstv_max_file_size' => '52428800',
+            'mstv_remove_data_on_uninstall' => '1',
+        ];
+
+        try {
+            $this->admin()->handle_save_settings();
+            self::fail('handle_save_settings did not redirect after saving.');
+        } catch (RuntimeException $exception) {
+            self::assertStringContainsString('redirect:', $exception->getMessage());
+        }
+
+        self::assertSame(31457280, (int) get_option('mstv_max_file_size', 0));
+        self::assertTrue((bool) get_option('mstv_remove_data_on_uninstall', false));
+        self::assertSame(
+            'Settings saved successfully. Maximum file size was limited to 30 MB, the maximum allowed by the server.',
+            get_transient('mstv_settings_saved_5')
+        );
     }
 
     public function test_handle_save_settings_prevents_whitelist_lockout(): void

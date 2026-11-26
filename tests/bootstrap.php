@@ -136,7 +136,7 @@ function mysql2date($format, $value)
 
 function wp_max_upload_size()
 {
-    return 52428800;
+    return $GLOBALS['pdm_test_max_upload_size'] ?? 52428800;
 }
 
 function wp_safe_redirect($location, $status = 302)
@@ -635,6 +635,11 @@ class WP_REST_Request
     public function get_param(string $name)
     {
         return $this->params[$name] ?? null;
+    }
+
+    public function get_json_params()
+    {
+        return $this->params;
     }
 }
 

@@ -14,6 +14,26 @@ final class PDMRestControllerTest extends TestCase
         $GLOBALS['pdm_test_transients'] = [];
     }
 
+    public function test_update_settings_clamps_max_file_size_to_server_limit(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 52428800;
+        $GLOBALS['pdm_test_max_upload_size'] = 31457280;
+
+        try {
+            $controller = $this->buildController($this->createMock(MSTV_Repository_Folders::class));
+            $response = $controller->update_settings(new WP_REST_Request([
+                'max_file_size' => 52428800,
+                'remove_data_on_uninstall' => true,
+            ]));
+
+            self::assertTrue($response->data['success']);
+            self::assertSame(31457280, (int) get_option('mstv_max_file_size', 0));
+            self::assertTrue((bool) get_option('mstv_remove_data_on_uninstall', false));
+        } finally {
+            unset($GLOBALS['pdm_test_max_upload_size']);
+        }
+    }
+
     public function test_resolve_folder_id_returns_error_for_missing_folder(): void
     {
         $folderRepo = $this->createMock(MSTV_Repository_Folders::class);
@@ -21,7 +41,6 @@ final class PDMRestControllerTest extends TestCase
 
         $controller = $this->buildController($folderRepo);
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'resolve_folder_id');
-        $method->setAccessible(true);
 
         $result = $method->invoke($controller, '99');
 
@@ -36,7 +55,6 @@ final class PDMRestControllerTest extends TestCase
 
         $controller = $this->buildController($folderRepo);
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'resolve_folder_id');
-        $method->setAccessible(true);
 
         self::assertSame(12, $method->invoke($controller, '12'));
         self::assertNull($method->invoke($controller, null));
@@ -49,7 +67,6 @@ final class PDMRestControllerTest extends TestCase
 
         $controller = $this->buildController($folderRepo);
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'resolve_folder_id');
-        $method->setAccessible(true);
 
         $result = $method->invoke($controller, '12abc');
 
@@ -64,7 +81,6 @@ final class PDMRestControllerTest extends TestCase
 
         $controller = $this->buildController($folderRepo);
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'resolve_folder_id');
-        $method->setAccessible(true);
 
         self::assertInstanceOf(WP_Error::class, $method->invoke($controller, 12.5));
         self::assertInstanceOf(WP_Error::class, $method->invoke($controller, true));
@@ -101,7 +117,6 @@ final class PDMRestControllerTest extends TestCase
         );
 
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'format_file');
-        $method->setAccessible(true);
 
         $result = $method->invoke($controller, (object) [
             'id' => 7,
@@ -144,7 +159,6 @@ final class PDMRestControllerTest extends TestCase
         );
 
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'format_file');
-        $method->setAccessible(true);
 
         $result = $method->invoke($controller, (object) [
             'id' => 9,
@@ -810,7 +824,6 @@ final class PDMRestControllerTest extends TestCase
         );
 
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
-        $method->setAccessible(true);
 
         $map = $method->invoke($controller, null);
 
@@ -827,7 +840,6 @@ final class PDMRestControllerTest extends TestCase
         );
 
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
-        $method->setAccessible(true);
 
         $map = $method->invoke($controller, null);
 
@@ -843,7 +855,6 @@ final class PDMRestControllerTest extends TestCase
         );
 
         $method = new ReflectionMethod(MSTV_REST_Controller::class, 'permissions_for');
-        $method->setAccessible(true);
 
         $map = $method->invoke($controller, null);
 

@@ -3,9 +3,9 @@ Contributors: thestreamcode
 Donate link: https://github.com/sponsors/TheStreamCode
 Tags: documents, secure, collaboration, privacy, file-manager
 Requires at least: 6.0
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.0
-Stable tag: 3.5.0
+Stable tag: 3.5.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -166,6 +166,11 @@ For direct contact, email teamvault@mikesoft.it.
 7. Settings: interface language, allowed file types, maximum upload size, and preview options.
 
 == Changelog ==
+
+= 3.5.1 =
+* Compatibility: tested with WordPress 7.2 RC1 and updated the "Tested up to" value to 7.2. No runtime changes were required for WordPress 7.2.
+* Fixed: a maximum file size above the server upload limit could make the browser reject the whole Settings form, so no option was saved, including "Delete all data on uninstall". The value is now limited to the server maximum and the success notice explains the adjustment.
+* Translations: added the settings adjustment notice in Italian, French, Spanish, and German.
 
 = 3.5.0 =
 * Security: duplicate folder and file records are merged safely in a one-time upgrade migration, and new duplicates are rejected.
@@ -329,6 +334,10 @@ For direct contact, email teamvault@mikesoft.it.
 For the full release history, see `changelog.txt` in the plugin package.
 
 == Upgrade Notice ==
+
+= 3.5.1 =
+
+WordPress 7.2 compatibility plus a settings fix: the maximum file size is now limited to the server maximum instead of silently blocking the Settings form, so options such as deleting data on uninstall save correctly. No configuration changes are required.
 
 = 3.5.0 =
 

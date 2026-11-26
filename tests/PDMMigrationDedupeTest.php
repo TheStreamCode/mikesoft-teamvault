@@ -432,7 +432,6 @@ final class PDMMigrationDedupeTest extends TestCase
         $GLOBALS['wpdb'] = $wpdb;
 
         $method = new ReflectionMethod(MSTV_Activator::class, 'ensure_unique_indexes');
-        $method->setAccessible(true);
         $method->invoke(null, 'wp_mstv_folders', 'wp_mstv_files', 'wp_mstv_folder_permissions');
     }
 

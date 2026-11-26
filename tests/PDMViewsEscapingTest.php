@@ -26,6 +26,7 @@ final class PDMViewsEscapingTest extends TestCase
         $GLOBALS['pdm_test_transients'] = [];
         $GLOBALS['pdm_test_users'] = [];
         $GLOBALS['pdm_test_current_user_id'] = 0;
+        unset($GLOBALS['pdm_test_max_upload_size']);
     }
 
     private function render_view(string $file, array $variables = []): string
@@ -124,6 +125,58 @@ final class PDMViewsEscapingTest extends TestCase
         self::assertStringNotContainsString('<svg onload=', $html);
         self::assertStringContainsString('&lt;script&gt;alert(2)&lt;/script&gt;', $html);
         self::assertSame('', (string) get_transient('mstv_settings_error_5'));
+    }
+
+    public function test_settings_page_limits_the_max_file_size_input_to_the_server_upload_limit(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 52428800;
+        $GLOBALS['pdm_test_max_upload_size'] = 31457280;
+
+        $html = $this->render_view('settings-page.php', [
+            'settings' => new MSTV_Settings(),
+            'orphaned_files_count' => 0,
+            'cleanup_result' => false,
+            'reindex_result' => false,
+        ]);
+
+        self::assertMatchesRegularExpression(
+            '/id="mstv_max_file_size"[^>]*value="31457280"[^>]*max="31457280"/s',
+            $html
+        );
+        self::assertStringNotContainsString('value="52428800"', $html);
+        self::assertStringContainsString('<strong>30 MB</strong>', $html);
+    }
+
+    public function test_settings_page_omits_the_max_attribute_when_the_server_limit_is_unknown(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 52428800;
+        $GLOBALS['pdm_test_max_upload_size'] = 0;
+
+        $html = $this->render_view('settings-page.php', [
+            'settings' => new MSTV_Settings(),
+            'orphaned_files_count' => 0,
+            'cleanup_result' => false,
+            'reindex_result' => false,
+        ]);
+
+        self::assertStringNotContainsString('max="0"', $html);
+        self::assertStringContainsString('value="52428800"', $html);
+    }
+
+    public function test_settings_page_escapes_and_consumes_the_saved_settings_message(): void
+    {
+        $GLOBALS['pdm_test_transients']['mstv_settings_saved_5'] = '<script>alert(4)</script>';
+
+        $html = $this->render_view('settings-page.php', [
+            'settings' => new MSTV_Settings(),
+            'orphaned_files_count' => 0,
+            'cleanup_result' => false,
+            'reindex_result' => false,
+        ]);
+
+        self::assertStringNotContainsString('<script>alert(4)', $html);
+        self::assertStringContainsString('&lt;script&gt;alert(4)&lt;/script&gt;', $html);
+        self::assertFalse(get_transient('mstv_settings_saved_5'));
     }
 
     public function test_file_manager_page_escapes_extension_allowlist(): void

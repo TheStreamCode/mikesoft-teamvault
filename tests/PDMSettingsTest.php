@@ -20,6 +20,11 @@ final class PDMSettingsTest extends TestCase
         ];
     }
 
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['pdm_test_max_upload_size']);
+    }
+
     public function test_sync_capabilities_preserves_access_for_existing_legacy_whitelist_user(): void
     {
         $settings = new MSTV_Settings();
@@ -73,5 +78,40 @@ final class PDMSettingsTest extends TestCase
 
         @unlink($externalPath . '/.mstv-storage');
         @rmdir($externalPath);
+    }
+
+    public function test_effective_max_file_size_is_limited_by_server_upload_limit(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 52428800;
+        $GLOBALS['pdm_test_max_upload_size'] = 31457280;
+
+        $settings = new MSTV_Settings();
+
+        self::assertSame(31457280, $settings->get_server_max_upload_size());
+        self::assertSame(31457280, $settings->get_effective_max_file_size());
+        self::assertSame(31457280, $settings->clamp_max_file_size(52428800));
+    }
+
+    public function test_effective_max_file_size_keeps_a_smaller_configured_value(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 10485760;
+        $GLOBALS['pdm_test_max_upload_size'] = 31457280;
+
+        $settings = new MSTV_Settings();
+
+        self::assertSame(10485760, $settings->get_effective_max_file_size());
+        self::assertSame(10485760, $settings->clamp_max_file_size(10485760));
+    }
+
+    public function test_effective_max_file_size_is_not_clamped_when_server_limit_is_unknown(): void
+    {
+        $GLOBALS['pdm_test_options']['mstv_max_file_size'] = 52428800;
+        $GLOBALS['pdm_test_max_upload_size'] = 0;
+
+        $settings = new MSTV_Settings();
+
+        self::assertSame(0, $settings->get_server_max_upload_size());
+        self::assertSame(52428800, $settings->get_effective_max_file_size());
+        self::assertSame(52428800, $settings->clamp_max_file_size(52428800));
     }
 }

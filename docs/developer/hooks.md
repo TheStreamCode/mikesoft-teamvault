@@ -226,6 +226,11 @@ Parameters:
 
 - `int $bytes`
 
+The effective upload limit is this filtered value bounded by the PHP server limit reported by
+`wp_max_upload_size()`. Values saved through the settings form or the REST API are clamped to that
+server limit, and the settings page displays the effective value, so the form always remains
+saveable.
+
 ### `mstv_storage_path`
 
 Filters the resolved storage path after plugin settings are applied.
