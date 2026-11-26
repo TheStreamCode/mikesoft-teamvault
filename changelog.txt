@@ -2,6 +2,11 @@ Mikesoft TeamVault Changelog
 
 Entries are ordered newest first. Release dates are included where recorded.
 
+## 3.5.1 - 2026-11-26
+- Compatibility: tested with WordPress 7.2 RC1 and declared support for WordPress 7.2 in the plugin readme. No runtime changes were required for core 7.2.
+- Fixed: a maximum file size above the server upload limit (the 50 MB default on servers with a lower PHP limit) made the browser reject the whole Settings form, so no option was saved, including "Delete all data on uninstall". The value is now clamped to the server limit, the rendered field is always valid, and the success notice explains the adjustment. The REST settings endpoint applies the same clamp.
+- Tests: added regression coverage for the effective upload limit in the settings model, admin handler, settings view, and REST update path; added the adjustment notice to the four bundled locales; removed redundant reflection `setAccessible()` calls deprecated in PHP 8.5 so the suite runs cleanly on PHP 8.6.
+
 ## 3.5.0 - 2026-10-22
 - Security: folder and file uniqueness is now enforced in the database through an option-guarded migration that merges existing duplicates before adding the unique keys. The lowest folder id survives; child folders, files, and per-folder rules are re-pointed to it, and duplicate subtrees are rewritten onto the surviving path. Duplicate inserts map to 409 conflicts and duplicate paths are skipped during reindexing. The auto-reindex claim is atomic and released when the scan fails.
 - Security: uploads now fail closed when the private storage directory is not writable or when `.htaccess`, `web.config`, or `index.php` cannot be created, and the error names the failing files. The storage warning is persistent and non-dismissible for blocking states and for Nginx, which ignores `.htaccess`; the README documents an out-of-webroot storage path as the recommended deployment.

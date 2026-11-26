@@ -90,7 +90,6 @@ final class PDMStorageTest extends TestCase
 
         $storage = new MSTV_Storage(new MSTV_Settings());
         $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
-        $filesystemProperty->setAccessible(true);
         $filesystemProperty->setValue($storage, $filesystem);
 
         $stats = $storage->get_storage_stats($filesRepo);
@@ -116,7 +115,6 @@ final class PDMStorageTest extends TestCase
 
         $storage = new MSTV_Storage(new MSTV_Settings());
         $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
-        $filesystemProperty->setAccessible(true);
         $filesystemProperty->setValue($storage, $filesystem);
 
         $stats = $storage->get_storage_stats($filesRepo);
@@ -185,7 +183,6 @@ final class PDMStorageTest extends TestCase
 
         $storage = new MSTV_Storage(new MSTV_Settings());
         $filesystemProperty = new ReflectionProperty(MSTV_Storage::class, 'filesystem');
-        $filesystemProperty->setAccessible(true);
         $filesystemProperty->setValue($storage, $filesystem);
 
         $result = $storage->store_uploaded_file([

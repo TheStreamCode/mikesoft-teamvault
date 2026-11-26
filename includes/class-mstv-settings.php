@@ -171,6 +171,32 @@ class MSTV_Settings
         return class_exists('MSTV_Hooks') ? MSTV_Hooks::filter_max_file_size($size) : $size;
     }
 
+    public function get_server_max_upload_size(): int
+    {
+        if (!function_exists('wp_max_upload_size')) {
+            return 0;
+        }
+
+        return max(0, (int) wp_max_upload_size());
+    }
+
+    public function get_effective_max_file_size(): int
+    {
+        return $this->clamp_max_file_size($this->get_max_file_size());
+    }
+
+    public function clamp_max_file_size(int $bytes): int
+    {
+        $bytes = max(0, $bytes);
+        $serverLimit = $this->get_server_max_upload_size();
+
+        if ($serverLimit > 0 && $bytes > $serverLimit) {
+            return $serverLimit;
+        }
+
+        return $bytes;
+    }
+
     public function is_log_enabled(): bool
     {
         return (bool) $this->get('mstv_log_enabled', true);

@@ -6,14 +6,17 @@ $mstv_interface_language = (string) get_option('mstv_interface_language', 'auto'
 $mstv_use_user_whitelist = (bool) get_option('mstv_use_user_whitelist', false);
 $mstv_allowed_users = get_option('mstv_allowed_users', []);
 $mstv_allowed_extensions = implode(',', $settings->get_allowed_extensions());
-$mstv_max_file_size = (int) get_option('mstv_max_file_size', 52428800);
+$mstv_max_file_size = $settings->get_effective_max_file_size();
 $mstv_pdf_preview_enabled = (bool) get_option('mstv_pdf_preview_enabled', true);
 $mstv_log_enabled = (bool) get_option('mstv_log_enabled', true);
 $mstv_remove_data_on_uninstall = (bool) get_option('mstv_remove_data_on_uninstall', false);
-$mstv_settings_saved = (bool) get_transient('mstv_settings_saved_' . get_current_user_id());
+$mstv_settings_saved = get_transient('mstv_settings_saved_' . get_current_user_id());
 $mstv_settings_error = get_transient('mstv_settings_error_' . get_current_user_id());
+$mstv_settings_saved_message = is_string($mstv_settings_saved) && $mstv_settings_saved !== ''
+    ? $mstv_settings_saved
+    : __('Settings saved successfully.', 'mikesoft-teamvault');
 
-if ($mstv_settings_saved) {
+if (!empty($mstv_settings_saved)) {
     delete_transient('mstv_settings_saved_' . get_current_user_id());
 }
 
@@ -24,12 +27,12 @@ if ($mstv_settings_error !== false) {
 $mstv_allowed_users = is_array($mstv_allowed_users) ? $mstv_allowed_users : [];
 $mstv_current_storage_path = $settings->get_storage_path();
 $mstv_roles_with_capability = MSTV_Capabilities::get_roles_with_capability();
-$mstv_max_server_upload_size = (int) wp_max_upload_size();
+$mstv_max_server_upload_size = $settings->get_server_max_upload_size();
 ?>
 <div class="pdm-wrapper pdm-settings-wrapper">
-    <?php if ($mstv_settings_saved) : ?>
+    <?php if (!empty($mstv_settings_saved)) : ?>
         <div class="pdm-notice pdm-notice-success">
-            <?php esc_html_e('Settings saved successfully.', 'mikesoft-teamvault'); ?>
+            <?php echo esc_html($mstv_settings_saved_message); ?>
         </div>
     <?php endif; ?>
 
@@ -200,7 +203,9 @@ $mstv_max_server_upload_size = (int) wp_max_upload_size();
                     class="pdm-input"
                     value="<?php echo esc_attr((string) $mstv_max_file_size); ?>"
                     min="1"
+<?php if ($mstv_max_server_upload_size > 0) : ?>
                     max="<?php echo esc_attr((string) $mstv_max_server_upload_size); ?>"
+<?php endif; ?>
                 >
             </div>
         </div>

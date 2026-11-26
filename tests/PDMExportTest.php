@@ -10,7 +10,6 @@ final class PDMExportTest extends TestCase
     {
         $export = $this->buildExport();
         $method = new ReflectionMethod(MSTV_Export::class, 'create_temp_zip_path');
-        $method->setAccessible(true);
 
         $first = $method->invoke($export, 'documents-export');
         $second = $method->invoke($export, 'documents-export');
@@ -38,7 +37,6 @@ final class PDMExportTest extends TestCase
 
         $export = $this->buildExport();
         $method = new ReflectionMethod(MSTV_Export::class, 'create_temp_zip_path');
-        $method->setAccessible(true);
 
         $path = $method->invoke($export, 'documents-export');
 
@@ -101,7 +99,6 @@ final class PDMExportTest extends TestCase
         self::assertTrue($zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE));
 
         $method = new ReflectionMethod(MSTV_Export::class, 'add_folder_to_zip');
-        $method->setAccessible(true);
         $method->invoke($export, $zip, null, '');
         $zip->close();
 
@@ -148,7 +145,6 @@ final class PDMExportTest extends TestCase
         self::assertTrue($zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE));
 
         $method = new ReflectionMethod(MSTV_Export::class, 'add_folder_to_zip');
-        $method->setAccessible(true);
         $method->invoke($export, $zip, 10, 'Parent/');
         self::assertTrue($zip->close());
 

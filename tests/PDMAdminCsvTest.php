@@ -10,7 +10,6 @@ final class PDMAdminCsvTest extends TestCase
     {
         $admin = new MSTV_Admin(new MSTV_Settings());
         $method = new ReflectionMethod(MSTV_Admin::class, 'build_audit_csv_row');
-        $method->setAccessible(true);
         $log = (object) [
             'created_at' => '2026-07-18 12:00:00',
             'user_login' => 'editor',

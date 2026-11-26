@@ -1363,7 +1363,10 @@ class MSTV_REST_Controller
         }
 
         if (isset($settings['max_file_size'])) {
-            $this->settings->update('mstv_max_file_size', absint($settings['max_file_size']));
+            $this->settings->update(
+                'mstv_max_file_size',
+                $this->settings->clamp_max_file_size(absint($settings['max_file_size']))
+            );
         }
 
         if (isset($settings['log_enabled'])) {

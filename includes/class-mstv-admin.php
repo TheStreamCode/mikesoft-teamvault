@@ -390,6 +390,10 @@ class MSTV_Admin
             ? absint(wp_unslash($_POST['mstv_max_file_size']))
             : 52428800;
 
+        $clampedMaxFileSize = $this->settings->clamp_max_file_size($maxFileSize);
+        $maxFileSizeAdjusted = $clampedMaxFileSize !== $maxFileSize;
+        $maxFileSize = $clampedMaxFileSize;
+
         if ($whitelistEnabled) {
             $whitelistCheck = $this->settings->validate_whitelist_selection($userIds, get_current_user_id());
 
@@ -412,7 +416,17 @@ class MSTV_Admin
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- wp_validate_boolean sanitizes the value per WP plugin review requirement.
         update_option('mstv_remove_data_on_uninstall', wp_validate_boolean(wp_unslash($_POST['mstv_remove_data_on_uninstall'] ?? false)));
 
-        set_transient('mstv_settings_saved_' . get_current_user_id(), true, MINUTE_IN_SECONDS);
+        $savedMessage = __('Settings saved successfully.', 'mikesoft-teamvault');
+
+        if ($maxFileSizeAdjusted) {
+            $savedMessage = sprintf(
+                /* translators: %s: maximum file size allowed by the server. */
+                __('Settings saved successfully. Maximum file size was limited to %s, the maximum allowed by the server.', 'mikesoft-teamvault'),
+                MSTV_Helpers::format_filesize($maxFileSize)
+            );
+        }
+
+        set_transient('mstv_settings_saved_' . get_current_user_id(), $savedMessage, MINUTE_IN_SECONDS);
 
         wp_safe_redirect(admin_url('admin.php?page=mikesoft-teamvault-settings'));
         exit;
